@@ -1,0 +1,5 @@
+name: rxdart
+description: A sample web application
+dependencies:
+  browser: any
+  js: ^0.6.0-beta
