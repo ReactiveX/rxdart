@@ -8,6 +8,7 @@ environment:
 dependencies:
   browser: ^0.10.0+2
   js: ^0.6.0-beta
+  test: '>=0.12.5+1'
 dev_dependencies:
   guinness: '>=0.1.16 <0.2.0'
   unittest: '>=0.11.4 <0.12.0'

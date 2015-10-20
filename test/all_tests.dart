@@ -1,7 +1,10 @@
+@test.TestOn("browser")
+
 library buffer_when_test;
 
 import 'dart:async';
-import 'package:guinness/guinness.dart';
+import "package:test/test.dart" as test;
+import 'package:guinness/guinness_html.dart';
 import 'package:rxdart/rxdart.dart' as Rx;
 
 Future testObservable(Rx.Observable observable, {expectation(List values)}) {
@@ -22,6 +25,8 @@ Future testObservable(Rx.Observable observable, {expectation(List values)}) {
 }
 
 void main() {
+  guinnessEnableHtmlMatchers();
+  
   Rx.Observable observable;
   
   beforeEach(() {

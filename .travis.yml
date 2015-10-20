@@ -8,4 +8,4 @@ with_content_shell: true
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-script: pub run test/all_tests -p content-shell
+script: pub run test -p content-shell test/all_tests.html
