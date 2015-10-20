@@ -11,7 +11,7 @@ void main() {
   new Rx.Observable<int>.range(0, 100)
     .bufferWithCount(2)
     .debounce(const Duration(seconds: 1))
-    .flatMapLatest((List<int> value, int index) => new Rx.Observable<List<Map<String, int>>>.from([{'first': value.first, 'last': value[0], 'index': index}]))
+    .flatMapLatest((List<int> value) => new Rx.Observable<List<Map<String, int>>>.from([{'first': value.first, 'last': value[0]}]))
     .subscribe((Map<String, int> x) => print(x));
   
   new Rx.Observable<MouseEvent>.fromEvent(querySelector('#sample_text_id'), 'click')
@@ -19,7 +19,7 @@ void main() {
     .subscribe((MouseEvent x) => print(x.target));
   
   List<Rx.Observable<int>> partitions = new Rx.Observable<int>.range(0, 100)
-    .partition((int x, _) => x % 2 == 0);
+    .partition((int x) => x % 2 == 0);
   
   partitions.first.subscribe((int i) => print('even: $i'));
   partitions.last.subscribe((int i) => print('odd: $i'));

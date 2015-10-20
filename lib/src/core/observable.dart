@@ -22,12 +22,12 @@ class Observable<T> {
     return new Observable<List>(_proxy.bufferWithCount(count, skip));
   }
   
-  Observable flatMap(Observable selector(T value, int index)) {
-    return new Observable(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value, index)._proxy)));
+  Observable flatMap(Observable selector(T value)) {
+    return new Observable(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   }
   
-  Observable flatMapLatest(Observable selector(T value, int index)) {
-    return new Observable(_proxy.flatMapLatest(allowInterop((T value, int index, Rx.Observable target) => selector(value, index)._proxy)));
+  Observable flatMapLatest(Observable selector(T value)) {
+    return new Observable(_proxy.flatMapLatest(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   }
   
   Observable<T> debounce(Duration duration) {
@@ -38,8 +38,8 @@ class Observable<T> {
     return new Observable(_proxy.debounce(selector));
   }
   
-  List<Observable<T>> partition(bool predicate(T value, int index)) {
-    final List<Rx.Observable> partitions = _proxy.partition(allowInterop((T value, int index, Rx.Observable target) => predicate(value, index)));
+  List<Observable<T>> partition(bool predicate(T value)) {
+    final List<Rx.Observable> partitions = _proxy.partition(allowInterop((T value, int index, Rx.Observable target) => predicate(value)));
     
     return <Observable<T>>[
       new Observable<T>(partitions.first), 
