@@ -5,7 +5,27 @@ packages:
     description: browser
     source: hosted
     version: "0.10.0+2"
+  collection:
+    description: collection
+    source: hosted
+    version: "1.1.3"
+  guinness:
+    description: guinness
+    source: hosted
+    version: "0.1.17"
   js:
     description: js
     source: hosted
     version: "0.6.0-beta.4"
+  path:
+    description: path
+    source: hosted
+    version: "1.3.6"
+  stack_trace:
+    description: stack_trace
+    source: hosted
+    version: "1.4.2"
+  unittest:
+    description: unittest
+    source: hosted
+    version: "0.11.6+1"

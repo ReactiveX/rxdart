@@ -3,3 +3,6 @@ description: A sample web application
 dependencies:
   browser: any
   js: ^0.6.0-beta
+dev_dependencies:
+  guinness: '>=0.1.16 <0.2.0'
+  unittest: '>=0.11.4 <0.12.0'
