@@ -1,15 +1,11 @@
 language: dart
 # Speed up builds by using containerization.
 sudo: false
-env:
-  global:
-    # COVERALLS_TOKEN
-    secure: aTnwsQmp/ngr1eXNVULJekdHhgvQq3PomunMOqeqA+5OY1MpSrdQgMigjT/VdjaMFe6mackHCR7sIhWcsiT2weZItVkeOYckT41ICrogP7bau7GgpcCjntHZ0byYN8MImbo/zJPZG3sh2iZwL2YFx+TjjHHkAbn7RovKeAmhMIM=
 dart:
 - stable
 - dev
 with_content_shell: true
+before_install:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
 script: pub run test -p content-shell test
-after_success:
-  - pub global activate dart_coveralls
-  - pub global run dart_coveralls:dart_coveralls report --exclude-test-files --token $COVERALLS_TOKEN ./test/all_tests.html
