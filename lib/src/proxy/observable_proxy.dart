@@ -41,6 +41,9 @@ class Observable {
   @Js('flatMapLatest')
   external flatMapLatest(dynamic selector(dynamic value, [int index, Observable target]));
   
+  @Js('partition')
+  external partition(dynamic predicate(dynamic value, [int index, Observable target]));
+  
   @Js('subscribe')
   external subscribe(void onListen(value), [void onError(error), void onCompleted()]);
   

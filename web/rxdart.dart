@@ -8,16 +8,20 @@ import 'package:js/js.dart';
 final Function _ = allowInterop;
 
 void main() {
-  Rx.Observable<int> O = Rx.Observable.range(0, 100);
-  
-      O
-      .bufferWithCount(2)
-      //.debounce(const Duration(seconds: 1))
-      .flatMapLatest((value, index) => Rx.Observable.from([{'first': value.first, 'last': value.last, 'index': index}]))
-      .subscribe((List x) => print(x));
-  
-  Rx.Observable.fromEvent(querySelector('#sample_text_id'), 'click')
+  new Rx.Observable<int>.range(0, 100)
+    .bufferWithCount(2)
     .debounce(const Duration(seconds: 1))
-    .subscribe((x) => print(x.target));
+    .flatMapLatest((List<int> value, int index) => new Rx.Observable<List<Map<String, int>>>.from([{'first': value.first, 'last': value[0], 'index': index}]))
+    .subscribe((Map<String, int> x) => print(x));
+  
+  new Rx.Observable<MouseEvent>.fromEvent(querySelector('#sample_text_id'), 'click')
+    .debounce(const Duration(seconds: 1))
+    .subscribe((MouseEvent x) => print(x.target));
+  
+  List<Rx.Observable<int>> partitions = new Rx.Observable<int>.range(0, 100)
+    .partition((int x, _) => x % 2 == 0);
+  
+  partitions.first.subscribe((int i) => print('even: $i'));
+  partitions.last.subscribe((int i) => print('odd: $i'));
   
 }

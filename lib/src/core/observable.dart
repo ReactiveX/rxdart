@@ -12,11 +12,11 @@ class Observable<T> {
   
   Observable(this._proxy);
   
-  static Observable from(List elements) => new Observable(Rx.Observable.from(elements));
+  factory Observable.from(List elements) => new Observable<T>(Rx.Observable.from(elements));
   
-  static Observable<Event> fromEvent(Element element, String event) => new Observable(Rx.Observable.fromEvent(element, event));
+  factory Observable.fromEvent(Element element, String event) => new Observable<T>(Rx.Observable.fromEvent(element, event));
   
-  static Observable range(int start, int count) => new Observable(Rx.Observable.range(start, count));
+  factory Observable.range(int start, int count) => new Observable<T>(Rx.Observable.range(start, count));
   
   Observable<List> bufferWithCount(int count, [int skip]) {
     return new Observable<List>(_proxy.bufferWithCount(count, skip));
@@ -36,6 +36,15 @@ class Observable<T> {
   
   Observable<T> debounceWithSelector(Observable selector(dynamic value)) {
     return new Observable(_proxy.debounce(selector));
+  }
+  
+  List<Observable<T>> partition(bool predicate(T value, int index)) {
+    final List<Rx.Observable> partitions = _proxy.partition(allowInterop((T value, int index, Rx.Observable target) => predicate(value, index)));
+    
+    return <Observable<T>>[
+      new Observable<T>(partitions.first), 
+      new Observable<T>(partitions.last)
+    ];
   }
   
   dynamic subscribe(void onListen(T value), [void onError(error), void onCompleted()]) {
