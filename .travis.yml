@@ -9,7 +9,7 @@ dart:
 - stable
 - dev
 with_content_shell: true
-script: ./tool/travis.sh
+script: pub run test -p content-shell test
 after_success:
   - pub global activate dart_coveralls
   - pub global run dart_coveralls:dart_coveralls report --exclude-test-files --token $COVERALLS_TOKEN ./test/all_tests.html
