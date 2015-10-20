@@ -1,7 +1,12 @@
 name: rxdart
-description: A sample web application
+version: 0.1.0+1
+author: Frank Pepermans <frank@igindo.com>
+description: A wrapper for the RxJs library
+homepage: https://github.com/frankpepermans/rxdart
+environment:
+  sdk: 1.13.0-dev.7.1
 dependencies:
-  browser: any
+  browser: ^0.10.0+2
   js: ^0.6.0-beta
 dev_dependencies:
   guinness: '>=0.1.16 <0.2.0'
