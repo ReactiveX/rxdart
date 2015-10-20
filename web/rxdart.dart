@@ -18,10 +18,9 @@ void main() {
     .debounce(const Duration(seconds: 1))
     .subscribe((MouseEvent x) => print(x.target));
   
-  List<Rx.Observable<int>> partitions = new Rx.Observable<int>.range(0, 100)
-    .partition((int x) => x % 2 == 0);
-  
-  partitions.first.subscribe((int i) => print('even: $i'));
-  partitions.last.subscribe((int i) => print('odd: $i'));
+  new Rx.Observable<int>.range(0, 100)
+    .partition((int x) => x % 2 == 0)
+    ..first.subscribe((int i) => print('even: $i'))
+    ..last.subscribe((int i) => print('odd: $i'));
   
 }
