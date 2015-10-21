@@ -1,4 +1,3 @@
 library rxdart;
 
-export 'src/core/observable.dart';
-
+export 'src/core/core.dart';

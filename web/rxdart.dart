@@ -40,4 +40,18 @@ void main() {
   new Rx.Observable<int>.fromFuture(F)
     .subscribe((int i) => print(i));
   
+  final Rx.Subject<int> S = new Rx.Subject<int>();
+  
+  S.subscribe(
+      (int x) => print('from Subject: $x'),
+      onError: (error) => print(error),
+      onCompleted: () => print('Subject completed')
+  );
+  
+  S.onNext(10);
+  
+  S.onCompleted();
+  
+  S.dispose();
+  
 }
