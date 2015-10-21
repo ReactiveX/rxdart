@@ -13,6 +13,9 @@ class Observable {
   @Js()
   external Observable();
   
+  @Js('combineLatest')
+  external static combineLatest(Observable o1, Observable o2);
+  
   @Js('from')
   external static Observable from(List elements);
   
