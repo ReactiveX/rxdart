@@ -47,7 +47,16 @@ void main() {
     () => print('Subject completed')    
   );
   
+  final Rx.Observer<int> O2 = new Rx.Observer<int>.fromNotifier((Rx.Notification<int> n) {
+    switch (n.kind) {
+      case Rx.Notification.NEXT :       print('Next: ${n.value}'); break;
+      case Rx.Notification.ERROR :      print('Error: ${n.error}'); break;
+      case Rx.Notification.COMPLETED :  print('Completed'); break;
+    }
+  });
+  
   S.subscribeWith(O);
+  S.subscribeWith(O2);
   
   S.onNext(10);
   
