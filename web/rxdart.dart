@@ -1,12 +1,7 @@
 import 'dart:async';
 import 'dart:html';
-import 'dart:js';
 
 import 'package:rxdart/rxdart.dart' as Rx;
-
-import 'package:js/js.dart';
-
-final Function _ = allowInterop;
 
 void main() {
   new Rx.Observable<int>.range(0, 100)
@@ -21,6 +16,7 @@ void main() {
   
   new Rx.Observable<int>.range(0, 100)
     .flatMapLatest((int x) => new Rx.Observable.from([x * 3]))
+    .map((int x) => x * 3)
     .partition((int x) => x % 2 == 0)
       ..first
         .bufferWithCount(2)

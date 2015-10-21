@@ -29,9 +29,13 @@ class Observable<T> {
   
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   
+  Observable filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
+  
   Observable flatMap(Observable selector(T value)) => new Observable._internal(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   
   Observable flatMapLatest(Observable selector(T value)) => new Observable._internal(_proxy.flatMapLatest(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
+  
+  Observable map(dynamic selector(T value)) => new Observable._internal(_proxy.map(allowInterop((T value, int index, Rx.Observable target) => selector(value))));
   
   Observable<T> debounce(Duration duration) => new Observable<T>._internal(_proxy.debounce(duration.inMilliseconds));
   
@@ -45,6 +49,8 @@ class Observable<T> {
       new Observable<T>._internal(partitions.last)
     ];
   }
+  
+  Observable<List<T>> windowWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.windowWithCount(count, skip));
   
   Rx.Disposable subscribe(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)

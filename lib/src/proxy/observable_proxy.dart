@@ -43,14 +43,23 @@ class Observable {
   @Js('debounce')
   external debounce(dynamic value);
   
+  @Js('filter')
+  external filter(dynamic predicate(dynamic value, int index, Observable target));
+  
   @Js('flatMap')
   external flatMap(dynamic selector(dynamic value, int index, Observable target));
   
   @Js('flatMapLatest')
   external flatMapLatest(dynamic selector(dynamic value, int index, Observable target));
   
+  @Js('map')
+  external map(dynamic selector(dynamic value, int index, Observable target));
+  
   @Js('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
+  
+  @Js('windowWithCount')
+  external windowWithCount(int count, int skip);
   
   @Js('subscribe')
   external subscribe(dynamic handlerOrObserver, [void onError(error), void onCompleted()]);
