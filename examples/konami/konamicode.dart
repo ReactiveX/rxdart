@@ -18,10 +18,10 @@ void main() {
   Element result = querySelector('#result');
 
   new Rx.Observable<KeyboardEvent>.fromEvent(document.body, 'keyup')
-      .map((e) => e.keyCode )           // get the key code
-      .bufferWithCount(10, 1)           // get the last 10 keys
-      .filter((x) => _equal(x, codes))  // where we match
-      .subscribe((x) => result.innerHtml = 'KONAMI!');
+      .map((KeyboardEvent e) => e.keyCode )           // get the key code
+      .bufferWithCount(10, 1)                         // get the last 10 keys
+      .filter((List<int> x) => _equal(x, codes))      // where we match
+      .subscribe((_) => result.innerHtml = 'KONAMI!');
 }
 
 bool _equal(List<int> a, List<int> b) {

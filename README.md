@@ -9,13 +9,23 @@ The RxJs library is wrapped and exposed via the Observable Dart class:
 **Example:**
 
 ```dart
-new Rx.Observable<int>.range(0, 100)
-    .flatMapLatest((int x) => new Rx.Observable.from([x * 3]))
-    .partition((int x) => x % 2 == 0)
-      ..first
-        .bufferWithCount(2)
-        .subscribe((List<int> i) => print('even: $i'))
-      ..last
-        .bufferWithCount(3)
-        .subscribe((List<int> i) => print('odd: $i'));
+List<int> codes = <int>[
+    38, // up
+    38, // up
+    40, // down
+    40, // down
+    37, // left
+    39, // right
+    37, // left
+    39, // right
+    66, // b
+    65  // a
+];
+Element result = querySelector('#result');
+
+new Rx.Observable<KeyboardEvent>.fromEvent(document.body, 'keyup')
+    .map((KeyboardEvent e) => e.keyCode )           // get the key code
+    .bufferWithCount(10, 1)                         // get the last 10 keys
+    .filter((List<int> x) => _equal(x, codes))      // where we match
+    .subscribe((_) => result.innerHtml = 'KONAMI!');
 ```
