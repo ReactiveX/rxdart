@@ -1,6 +1,6 @@
 part of rx.core;
 
-class Subject<T> extends Observer<T> {
+class Subject<T> extends Observable<T> with _ObserverMixin<T> {
   
   Rx.Subject get _proxy => super._proxy as Rx.Subject;
   
