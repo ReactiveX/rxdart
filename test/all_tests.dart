@@ -55,6 +55,13 @@ void main() {
       });
     });
     
+    guinness.describe("Rx.Observable.combineLatest", () {
+      guinness.it("creates an Observable combining other Observables", () {
+        return testObservable(new Rx.Observable.combineLatest(new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6])),
+          expectation: (values) => guinness.expect(values).toEqual([[1, 4], [2, 4], [2, 5], [3, 5], [3, 6]]));
+      });
+    });
+    
     guinness.describe("Rx.Observable.bufferWithCount", () {
       guinness.it("buffers values and creates Lists to contain the values", () {
         return testObservable(observable.bufferWithCount(2),
