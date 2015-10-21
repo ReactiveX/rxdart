@@ -11,6 +11,9 @@ class Observer extends Observable {
   @Js()
   external Observer();
   
+  @Js('create')
+  external static Observer create(void onListen(dynamic value), void onError(error), void onCompleted());
+  
   @Js('onNext')
   external onNext(dynamic value);
   

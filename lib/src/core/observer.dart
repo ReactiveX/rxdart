@@ -18,4 +18,6 @@ class Observer<T> extends Object with _ObserverMixin<T> {
     
   Observer._internal(this._proxy);
   
+  factory Observer.create(void onListen(T value), void onError(error), void onCompleted()) => new Observer._internal(Rx.Observer.create(allowInterop(onListen), allowInterop(onError), allowInterop(onCompleted)));
+  
 }

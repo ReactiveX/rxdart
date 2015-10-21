@@ -55,5 +55,5 @@ class Observable<T> {
     return _proxy.subscribe(allowInterop(onListen));
   }
   
-  Rx.Disposable subscribeWith(Observer observer) => _proxy.subscribe(observer);
+  Rx.Disposable subscribeWith(Observer observer) => _proxy.subscribe(observer._proxy);
 }

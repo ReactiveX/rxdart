@@ -41,12 +41,13 @@ void main() {
     .subscribe((int i) => print(i));
   
   final Rx.Subject<int> S = new Rx.Subject<int>();
-  
-  S.subscribe(
-      (int x) => print('from Subject: $x'),
-      onError: (error) => print(error),
-      onCompleted: () => print('Subject completed')
+  final Rx.Observer<int> O = new Rx.Observer.create(
+    (int x) => print('from Subject: $x'),
+    (error) => print(error),
+    () => print('Subject completed')    
   );
+  
+  S.subscribeWith(O);
   
   S.onNext(10);
   
