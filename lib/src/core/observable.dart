@@ -46,14 +46,14 @@ class Observable<T> {
     ];
   }
   
-  dynamic subscribe(void onListen(T value), {void onError(error), void onCompleted()}) {
+  Rx.Disposable subscribe(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)
       return _proxy.subscribe(allowInterop(onListen), allowInterop(onError), allowInterop(onCompleted));
-    
-    if (onError != null)
+    else if (onError != null)
       return _proxy.subscribe(allowInterop(onListen), allowInterop(onError));
     
     return _proxy.subscribe(allowInterop(onListen));
   }
   
+  Rx.Disposable subscribeWith(Observer observer) => _proxy.subscribe(observer);
 }
