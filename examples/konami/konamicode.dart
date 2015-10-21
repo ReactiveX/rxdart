@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:html';
 
 import 'package:rxdart/rxdart.dart' as Rx;
@@ -19,15 +18,12 @@ void main() {
   Element result = querySelector('#result');
 
   new Rx.Observable<KeyboardEvent>.fromEvent(document.body, 'keyup')
-      .map((e) => e.keyCode ) // get the key code
-      .bufferWithCount(10, 1)                     // get the last 10 keys
-      .map((x) => _equal(x, codes))
-      .filter((bool equal) => equal)  // where we match
+      .map((e) => e.keyCode )           // get the key code
+      .bufferWithCount(10, 1)           // get the last 10 keys
+      .filter((x) => _equal(x, codes))  // where we match
       .subscribe((x) => result.innerHtml = 'KONAMI!');
 }
 
 bool _equal(List<int> a, List<int> b) {
-  for (int i=0; i<10; i++) if (a[i] != b[i]) return false;
-  
-  return true;
+  for (int i=0; i<10; i++) if (a[i] != b[i]) return false; return true;
 }

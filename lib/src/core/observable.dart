@@ -50,7 +50,7 @@ class Observable<T> {
     ];
   }
   
-  Observable<List<T>> windowWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.windowWithCount(count, skip));
+  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new Observable<Observable<T>>._internal(_proxy.windowWithCount(count, skip));
   
   Rx.Disposable subscribe(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)
