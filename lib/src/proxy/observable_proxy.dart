@@ -64,6 +64,9 @@ class Observable {
   @JS('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
   
+  @JS('throttle')
+  external throttle(dynamic value);
+  
   @JS('toArray')
   external toArray();
   

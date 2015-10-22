@@ -72,6 +72,8 @@ class Observable<T> {
     return currentValue;
   });
   
+  Observable<T> throttle(Duration duration) => new Observable<T>._internal(_proxy.throttle(duration.inMilliseconds));
+  
   Observable<List<T>> toList() => new Observable._internal(_proxy.toArray());
   
   Observable<Observable<T>> windowWithCount(int count, [int skip]) 
