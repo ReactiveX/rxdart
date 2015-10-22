@@ -1,5 +1,5 @@
 name: rxdart
-version: 0.1.0+1
+version: 0.1.0+2
 author: Frank Pepermans <frank@igindo.com>
 description: A wrapper for the RxJs library
 homepage: https://github.com/frankpepermans/rxdart
