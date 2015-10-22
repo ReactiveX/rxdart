@@ -90,6 +90,13 @@ void main() {
       });
     });
     
+    guinness.describe("Rx.Observable.toList", () {
+      guinness.it("transforms a stream to a List", () {
+        return testObservable(observable.toList(),
+          expectation: (values) => guinness.expect(values).toEqual([[1, 2, 3]]));
+      });
+    });
+    
     guinness.describe("Rx.Observable.windowWithCount", () {
       guinness.it("builds new stream using a window", () {
         return testObservable(observable.windowWithCount(2).flatMap((Rx.Observable<int> o) => o.toList()),
