@@ -45,10 +45,6 @@ packages:
     description: glob
     source: hosted
     version: "1.0.5"
-  guinness:
-    description: guinness
-    source: hosted
-    version: "0.1.17"
   html:
     description: html
     source: hosted
@@ -137,10 +133,6 @@ packages:
     description: typed_data
     source: hosted
     version: "1.0.0"
-  unittest:
-    description: unittest
-    source: hosted
-    version: "0.11.6+1"
   utf:
     description: utf
     source: hosted

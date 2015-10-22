@@ -27,6 +27,8 @@ class Observable<T> {
   
   factory Observable.range(int start, int count) => new Observable<T>._internal(Rx.Observable.range(start, count));
   
+  factory Observable.timer(Duration interval) => new Observable<T>._internal(Rx.Observable.timer(interval.inMilliseconds));
+  
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   
   Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
@@ -38,6 +40,14 @@ class Observable<T> {
   Observable map(dynamic selector(T value)) => new Observable._internal(_proxy.map(allowInterop((T value, int index, Rx.Observable target) => selector(value))));
   
   Observable<T> debounce(Duration duration) => new Observable<T>._internal(_proxy.debounce(duration.inMilliseconds));
+  
+  Observable<T> delay(Duration duration) => new Observable<T>._internal(_proxy.delay(duration.inMilliseconds));
+  
+  Observable<T> delayWithDateTime(DateTime dateTime) => new Observable<T>._internal(_proxy.delay(dateTime));
+  
+  Observable<T> delayWithSubscriptionDelay(Observable<int> subscriptionDelay, [Observable<int> delayDurationSelector(int interval)]) => new Observable<T>._internal(_proxy.delay(subscriptionDelay._proxy, allowInterop((int interval) => delayDurationSelector(interval)._proxy)));
+  
+  Observable<T> delayWithDurationSelector(Observable<int> delayDurationSelector(int interval)) => new Observable<T>._internal(_proxy.delay(allowInterop((int interval) => delayDurationSelector(interval)._proxy)));
   
   Observable<T> debounceWithSelector(Observable selector(dynamic value)) => new Observable<T>._internal(_proxy.debounce(selector));
   

@@ -28,6 +28,9 @@ class Observable {
   @JS('range')
   external static Observable range(int start, int count);
   
+  @JS('timer')
+  external static Observable timer(int interval);
+  
   /*@JS("iterable")
   external List get iterable;
   
@@ -42,6 +45,9 @@ class Observable {
   
   @JS('debounce')
   external debounce(dynamic value);
+  
+  @JS('delay')
+  external delay(a, [b]);
   
   @JS('filter')
   external filter(dynamic predicate(dynamic value, int index, Observable target));
