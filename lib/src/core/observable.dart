@@ -29,7 +29,7 @@ class Observable<T> {
   
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   
-  Observable filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
+  Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
   Observable flatMap(Observable selector(T value)) => new Observable._internal(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   
@@ -50,7 +50,17 @@ class Observable<T> {
     ];
   }
   
-  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new Observable<Observable<T>>._internal(_proxy.windowWithCount(count, skip));
+  Observable<List<T>> toList() => new Observable._internal(_proxy.toArray()).map((a) {
+    final List<T> list = <T>[];
+    
+    for (int i=0, len = a['length']; i<len; i++) list.add(a[i]);
+    
+    return list;
+  });
+  
+  Observable<Observable<T>> windowWithCount(int count, [int skip]) 
+    => new Observable<Rx.Observable>._internal(_proxy.windowWithCount(count, skip))
+        .map((Rx.Observable o) => new Observable<T>._internal(o));
   
   Rx.Disposable subscribe(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)

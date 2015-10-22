@@ -89,5 +89,12 @@ void main() {
           expectation: (values) => guinness.expect(values).toEqual([2, 4, 6]));
       });
     });
+    
+    guinness.describe("Rx.Observable.windowWithCount", () {
+      guinness.it("builds new stream using a window", () {
+        return testObservable(observable.windowWithCount(2).flatMap((Rx.Observable<int> o) => o.toList()),
+          expectation: (values) => guinness.expect(values).toEqual([[1, 2], [3]]));
+      });
+    });
   });
 }
