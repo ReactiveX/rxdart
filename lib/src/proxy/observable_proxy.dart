@@ -1,4 +1,4 @@
-@Js('Rx')
+@JS('Rx')
 library rx.observable_proxy;
 
 import 'dart:html';
@@ -7,61 +7,61 @@ import 'promise_proxy.dart';
 
 import 'package:js/js.dart';
 
-@Js()
+@JS()
 class Observable {
   
-  @Js()
+  @JS()
   external Observable();
   
-  @Js('combineLatest')
+  @JS('combineLatest')
   external static combineLatest(Observable o1, Observable o2);
   
-  @Js('from')
+  @JS('from')
   external static Observable from(List elements);
   
-  @Js('fromEvent')
+  @JS('fromEvent')
   external static Observable fromEvent(Element element, String event);
   
-  @Js('fromPromise')
+  @JS('fromPromise')
   external static Observable fromPromise(Promise promise);
   
-  @Js('range')
+  @JS('range')
   external static Observable range(int start, int count);
   
-  /*@Js("iterable")
+  /*@JS("iterable")
   external List get iterable;
   
-  @Js("mapper")
+  @JS("mapper")
   external Mapper get mapper;
   
-  @Js("scheduler")
+  @JS("scheduler")
   external Scheduler get scheduler;*/
   
-  @Js('bufferWithCount')
+  @JS('bufferWithCount')
   external bufferWithCount(int count, int skip);
   
-  @Js('debounce')
+  @JS('debounce')
   external debounce(dynamic value);
   
-  @Js('filter')
+  @JS('filter')
   external filter(dynamic predicate(dynamic value, int index, Observable target));
   
-  @Js('flatMap')
+  @JS('flatMap')
   external flatMap(dynamic selector(dynamic value, int index, Observable target));
   
-  @Js('flatMapLatest')
+  @JS('flatMapLatest')
   external flatMapLatest(dynamic selector(dynamic value, int index, Observable target));
   
-  @Js('map')
+  @JS('map')
   external map(dynamic selector(dynamic value, int index, Observable target));
   
-  @Js('partition')
+  @JS('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
   
-  @Js('windowWithCount')
+  @JS('windowWithCount')
   external windowWithCount(int count, int skip);
   
-  @Js('subscribe')
+  @JS('subscribe')
   external subscribe(dynamic handlerOrObserver, [void onError(error), void onCompleted()]);
   
 }

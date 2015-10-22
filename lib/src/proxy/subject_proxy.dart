@@ -1,4 +1,4 @@
-@Js('Rx')
+@JS('Rx')
 library rx.subject_proxy;
 
 import 'package:js/js.dart';
@@ -6,13 +6,13 @@ import 'package:js/js.dart';
 import 'observer_proxy.dart';
 import 'observable_proxy.dart';
 
-@Js()
+@JS()
 class Subject extends Observer {
   
-  @Js()
+  @JS()
   external Subject();
   
-  @Js('create')
+  @JS('create')
   external static Subject create(Observer observer, Observable observable);
   
 }

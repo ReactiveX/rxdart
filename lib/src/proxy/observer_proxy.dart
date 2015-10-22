@@ -1,4 +1,4 @@
-@Js('Rx')
+@JS('Rx')
 library rx.observer_proxy;
 
 import 'package:js/js.dart';
@@ -6,25 +6,25 @@ import 'package:js/js.dart';
 import 'notification_proxy.dart';
 import 'observable_proxy.dart';
 
-@Js()
+@JS()
 class Observer extends Observable {
   
-  @Js()
+  @JS()
   external Observer();
   
-  @Js('create')
+  @JS('create')
   external static Observer create(void onListen(dynamic value), void onError(error), void onCompleted());
   
-  @Js('fromNotifier')
+  @JS('fromNotifier')
   external static Observer fromNotifier(void handler(Notification kind));
   
-  @Js('onNext')
+  @JS('onNext')
   external onNext(dynamic value);
   
-  @Js('onCompleted')
+  @JS('onCompleted')
   external onCompleted();
   
-  @Js('dispose')
+  @JS('dispose')
   external dispose();
   
 }

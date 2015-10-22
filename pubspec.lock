@@ -29,6 +29,10 @@ packages:
     description: collection
     source: hosted
     version: "1.1.3"
+  convert:
+    description: convert
+    source: hosted
+    version: "1.0.0"
   crypto:
     description: crypto
     source: hosted
@@ -56,11 +60,11 @@ packages:
   http_parser:
     description: http_parser
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   js:
     description: js
     source: hosted
-    version: "0.6.0-beta.4"
+    version: "0.6.0-beta.5"
   logging:
     description: logging
     source: hosted
@@ -96,7 +100,7 @@ packages:
   shelf:
     description: shelf
     source: hosted
-    version: "0.6.3"
+    version: "0.6.3+1"
   shelf_static:
     description: shelf_static
     source: hosted
@@ -129,6 +133,10 @@ packages:
     description: test
     source: hosted
     version: "0.12.5+1"
+  typed_data:
+    description: typed_data
+    source: hosted
+    version: "1.0.0"
   unittest:
     description: unittest
     source: hosted

@@ -1,30 +1,30 @@
-@Js('Rx')
+@JS('Rx')
 library rx.notification_proxy;
 
 import 'package:js/js.dart';
 
-@Js()
+@JS()
 class Notification {
   
-  @Js()
+  @JS()
   external Notification();
   
-  @Js('createOnNext')
+  @JS('createOnNext')
   external static Notification createOnNext(dynamic value);
   
-  @Js('createOnError')
+  @JS('createOnError')
   external static Notification createOnError(error);
   
-  @Js('createOnCompleted')
+  @JS('createOnCompleted')
   external static Notification createOnCompleted();
   
-  @Js('error')
+  @JS('error')
   external get error;
   
-  @Js('kind')
+  @JS('kind')
   external get kind;
   
-  @Js('value')
+  @JS('value')
   external get value;
   
 }

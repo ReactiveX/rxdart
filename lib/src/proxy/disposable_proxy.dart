@@ -1,15 +1,15 @@
-@Js('Rx')
+@JS('Rx')
 library rx.disposable_proxy;
 
 import 'package:js/js.dart';
 
-@Js()
+@JS()
 class Disposable {
   
-  @Js()
+  @JS()
   external Disposable();
   
-  @Js('dispose')
+  @JS('dispose')
   external dispose();
   
 }
