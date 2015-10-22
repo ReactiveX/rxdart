@@ -50,13 +50,19 @@ class Observable<T> {
     ];
   }
   
-  Observable<List<T>> toList() => new Observable._internal(_proxy.toArray()).map((a) {
-    final List<T> list = <T>[];
+  Observable pluck(List<String> path) => map((T value) {
+    dynamic currentValue = value;
     
-    for (int i=0, len = a['length']; i<len; i++) list.add(a[i]);
+    for (int i=0, len=path.length; i<len; i++) {
+      currentValue = currentValue[path[i]];
+      
+      if (currentValue == null) return null;
+    }
     
-    return list;
+    return currentValue;
   });
+  
+  Observable<List<T>> toList() => new Observable._internal(_proxy.toArray());
   
   Observable<Observable<T>> windowWithCount(int count, [int skip]) 
     => new Observable<Rx.Observable>._internal(_proxy.windowWithCount(count, skip))

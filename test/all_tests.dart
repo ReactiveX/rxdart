@@ -97,6 +97,13 @@ void main() {
       });
     });
     
+    guinness.describe("Rx.Observable.pluck", () {
+      guinness.it("plucks a property using a path", () {
+        return testObservable(new Rx.Observable.from([{'a': {'b': {'c': 'd'}}}]).pluck(['a', 'b', 'c']),
+          expectation: (values) => guinness.expect(values).toEqual(['d']));
+      });
+    });
+    
     guinness.describe("Rx.Observable.windowWithCount", () {
       guinness.it("builds new stream using a window", () {
         return testObservable(observable.windowWithCount(2).flatMap((Rx.Observable<int> o) => o.toList()),
