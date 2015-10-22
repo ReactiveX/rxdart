@@ -7,6 +7,8 @@ import 'promise_proxy.dart';
 
 import 'package:js/js.dart';
 
+import 'scheduler_proxy.dart';
+
 @JS()
 class Observable {
   
@@ -17,13 +19,16 @@ class Observable {
   external static combineLatest(Observable o1, Observable o2);
   
   @JS('from')
-  external static Observable from(List elements);
+  external static Observable from(List values);
   
   @JS('fromEvent')
   external static Observable fromEvent(Element element, String event);
   
   @JS('fromPromise')
   external static Observable fromPromise(Promise promise);
+  
+  @JS('of')
+  external static Observable of(dynamic value);
   
   @JS('range')
   external static Observable range(int start, int count);
@@ -44,7 +49,7 @@ class Observable {
   external bufferWithCount(int count, int skip);
   
   @JS('debounce')
-  external debounce(dynamic value);
+  external debounce(dynamic value, [Scheduler scheduler]);
   
   @JS('delay')
   external delay(a, [b]);
@@ -65,7 +70,7 @@ class Observable {
   external partition(dynamic predicate(dynamic value, int index, Observable target));
   
   @JS('throttle')
-  external throttle(dynamic value);
+  external throttle(dynamic value, [Scheduler scheduler]);
   
   @JS('toArray')
   external toArray();

@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart' as Rx;
 
 import 'test_utils.dart';
 
-void run() {
+void main() {
   test.test('Rx.Observable.from', () async {
     test.expect(await testObservable(
         new Rx.Observable.from([1, 2, 3])
@@ -49,9 +49,9 @@ void run() {
     ), [1, 2, 3]);
   });
   
-  test.test('Rx.Observable.delayWithDateTime', () async {
+  test.test('Rx.Observable.delayUntil', () async {
     test.expect(await testObservable(
-        new Rx.Observable.from([1, 2, 3]).delayWithDateTime(new DateTime.now().add(const Duration(seconds: 1)))
+        new Rx.Observable.from([1, 2, 3]).delayUntil(new DateTime.now().add(const Duration(seconds: 1)))
     ), [1, 2, 3]);
   });
   
@@ -90,9 +90,7 @@ void run() {
     
     test.expect(await testObservable(
         new Rx.Observable<Map<String, int>>.from(times)
-          .flatMap((Map<String, int> x) => 
-            new Rx.Observable.from([x['value']])
-              .delay(new Duration(milliseconds: x['time'])))
+          .flatMap((Map<String, int> x) => new Rx.Observable<int>.of(x['value']).delay(new Duration(milliseconds: x['time'])))
           .throttle(const Duration(milliseconds: 300))
     ), [0, 2, 3]);
   });
