@@ -36,6 +36,9 @@ class Observable {
   @JS('timer')
   external static Observable timer(int interval);
   
+  @JS('repeat')
+  external static Observable repeat(dynamic value, [int repeatCount, Scheduler scheduler]);
+  
   @JS("iterable")
   external List get iterable;
   
@@ -53,6 +56,9 @@ class Observable {
   
   @JS('delay')
   external delay(a, [b]);
+  
+  @JS('tap')
+  external tap(dynamic handlerOrObserver, [void onError(error), void onCompleted()]);
   
   @JS('filter')
   external filter(dynamic predicate(dynamic value, int index, Observable target));

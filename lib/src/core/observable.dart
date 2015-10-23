@@ -37,6 +37,8 @@ class Observable<T> {
   
   factory Observable.range(int start, int count) => new Observable<T>._internal(Rx.Observable.range(start, count));
   
+  factory Observable.repeat(T value, [int repeatCount=-1, Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.repeat(value, repeatCount, scheduler?._proxy));
+  
   factory Observable.timer(Duration interval) => new Observable<T>._internal(Rx.Observable.timer(interval.inMilliseconds));
   
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
@@ -81,6 +83,17 @@ class Observable<T> {
     
     return currentValue;
   });
+  
+  Observable<T> tap(void onListen(T value), {void onError(error), void onCompleted()}) {
+    if (onError != null && onCompleted != null)
+      return new Observable<T>._internal(_proxy.tap(allowInterop(onListen), allowInterop(onError), allowInterop(onCompleted)));
+    else if (onError != null)
+      return new Observable<T>._internal(_proxy.tap(allowInterop(onListen), allowInterop(onError)));
+    
+    return new Observable<T>._internal(_proxy.tap(allowInterop(onListen)));
+  }
+  
+  Observable<T> tapWith(Observer<T> observer) => new Observable<T>._internal(_proxy.tap(observer._proxy));
   
   Observable<T> throttle(Duration duration, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.throttle(duration.inMilliseconds, scheduler?._proxy));
   

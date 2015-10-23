@@ -19,6 +19,12 @@ void main() {
     ), [0, 1, 2]);
   });
   
+  test.test('Rx.Observable.repeat', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.repeat(1, 3)
+    ), [1, 1, 1]);
+  });
+  
   test.test('Rx.Observable.fromFuture', () async {
     test.expect(await testObservable(
         new Rx.Observable.fromFuture(new Future<int>.value(0))
@@ -136,6 +142,16 @@ void main() {
     test.expect(await testObservable(
         new Rx.Observable.from([{'a': {'b': {'c': 'd'}}}]).pluck(['a', 'b', 'c'])
     ), ['d']);
+  });
+  
+  test.test('Rx.Observable.tap', () async {
+    final List<int> sideEffects = <int>[];
+    
+    test.expect(await testObservable(
+        new Rx.Observable.of(1).tap((int i) => sideEffects.add(i))
+    ), [1]);
+    
+    test.expect(sideEffects, [1]);
   });
   
   test.test('Rx.Observable.windowWithCount', () async {
