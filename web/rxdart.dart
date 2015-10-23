@@ -28,7 +28,7 @@ void main() {
   Rx.Observable o1 = new Rx.Observable<int>.range(0, 100);
   Rx.Observable o2 = new Rx.Observable<int>.range(100, 200);
   
-  new Rx.Observable.combineLatest(o1, o2)
+  new Rx.Observable.combineLatest([o1, o2])
     .subscribe((List<int> i) => print('comb: $i'));
   
   Future<int> F = new Future<int>.value(10);

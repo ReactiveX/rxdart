@@ -24,6 +24,9 @@ class Observable {
   @JS('fromPromise')
   external static Observable fromPromise(Promise promise);
   
+  @JS('interval')
+  external static Observable interval(dynamic value, [Scheduler scheduler]);
+  
   @JS('of')
   external static Observable of(dynamic value);
   
@@ -77,6 +80,9 @@ class Observable {
   
   @JS('throttle')
   external throttle(dynamic value, [Scheduler scheduler]);
+  
+  @JS('timeInterval')
+  external timeInterval(Scheduler scheduler);
   
   @JS('toArray')
   external toArray();

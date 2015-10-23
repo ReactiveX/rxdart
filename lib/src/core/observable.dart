@@ -45,6 +45,8 @@ class Observable<T> {
   
   factory Observable.mergeWith(Scheduler scheduler, List<Observable> observables) => new Observable<T>._internal(context['Rx']['Observable'].callMethod('merge', observables.map((Observable O) => O._proxy).toList()..insert(0, scheduler._proxy)));
   
+  factory Observable.interval(Duration period, [Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.interval(period.inMilliseconds, scheduler?._proxy));
+  
   factory Observable.of(T value) => new Observable<T>._internal(Rx.Observable.of(value));
   
   factory Observable.range(int start, int count) => new Observable<T>._internal(Rx.Observable.range(start, count));
@@ -111,6 +113,8 @@ class Observable<T> {
   
   Observable<T> throttle(Duration duration, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.throttle(duration.inMilliseconds, scheduler?._proxy));
   
+  Observable<TimedEvent<T>> timeInterval([Scheduler scheduler]) => new Observable._internal(_proxy.timeInterval(scheduler?._proxy)).map((jsObject) => new TimedEvent<T>(jsObject['interval'], jsObject['value']));
+  
   Observable<List<T>> toList() => new Observable._internal(_proxy.toArray());
   
   Stream<T> toStream() {
@@ -139,4 +143,13 @@ class Observable<T> {
   }
   
   Rx.Disposable subscribeWith(Observer observer) => _proxy.subscribe(observer._proxy);
+}
+
+class TimedEvent<T> {
+  
+  final int interval;
+  final T value;
+  
+  TimedEvent(this.interval, this.value);
+  
 }

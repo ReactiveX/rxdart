@@ -13,6 +13,12 @@ void main() {
     ), [1, 2, 3]);
   });
   
+  test.test('Rx.Observable.interval', () async {
+    test.expect(await testObservable(
+        new Rx.Observable<int>.interval(const Duration(milliseconds: 300)).take(3)
+    ), [0, 1, 2]);
+  });
+  
   test.test('Rx.Observable.range', () async {
     test.expect(await testObservable(
         new Rx.Observable.range(0, 3)
@@ -124,6 +130,23 @@ void main() {
           .flatMap((Map<String, int> x) => new Rx.Observable<int>.of(x['value']).delay(new Duration(milliseconds: x['time'])))
           .throttle(const Duration(milliseconds: 300))
     ), [0, 2, 3]);
+  });
+  
+  test.test('Rx.Observable.timeInterval', () async {
+    final List<Map<String, int>> times = <Map<String, int>>[
+      { 'value': 0, 'time': 100 },
+      { 'value': 1, 'time': 600 },
+      { 'value': 2, 'time': 400 },
+      { 'value': 3, 'time': 900 },
+      { 'value': 4, 'time': 200 }
+    ];
+    
+    test.expect(await testObservable(
+        new Rx.Observable<Map<String, int>>.from(times)
+          .flatMap((Map<String, int> x) => new Rx.Observable<int>.of(x['value']).delay(new Duration(milliseconds: x['time'])).timeInterval())
+          .map((Rx.TimedEvent<int> v) => v.value)
+          .take(3)
+    ), [0, 4, 2]);
   });
   
   test.test('Rx.Observable.toList', () async {

@@ -3,8 +3,6 @@ library rx.scheduler_proxy;
 
 import 'package:js/js.dart';
 
-import 'notification_proxy.dart';
-
 @JS()
 class Scheduler {
   
