@@ -46,8 +46,14 @@ void main() {
   
   test.test('Rx.Observable.combineLatest', () async {
     test.expect(await testObservable(
-        new Rx.Observable.combineLatest(new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6]))
-    ), [[1, 4], [2, 4], [2, 5], [3, 5], [3, 6]]);
+        new Rx.Observable.combineLatest([new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6])], (int a, int b) => a + b)
+    ), [5, 6, 7, 8, 9]);
+  });
+  
+  test.test('Rx.Observable.merge', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.merge([new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6])])
+    ), [1, 4, 2, 5, 3, 6]);
   });
   
   test.test('Rx.Observable.bufferWithCount', () async {
@@ -96,6 +102,12 @@ void main() {
     test.expect(await testObservable(
         new Rx.Observable.from([1, 2, 3]).flatMapLatest((int value) => new Rx.Observable.from([value * 2]))
     ), [2, 4, 6]);
+  });
+  
+  test.test('Rx.Observable.take', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.from([1, 2, 3]).take(2)
+    ), [1, 2]);
   });
   
   test.test('Rx.Observable.throttle', () async {

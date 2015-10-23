@@ -2,6 +2,7 @@ library rx.core;
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:js';
 
 import 'package:js/js.dart';
 

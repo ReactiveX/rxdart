@@ -15,9 +15,6 @@ class Observable {
   @JS()
   external Observable();
   
-  @JS('combineLatest')
-  external static combineLatest(Observable o1, Observable o2);
-  
   @JS('from')
   external static Observable from(List values);
   
@@ -74,6 +71,9 @@ class Observable {
   
   @JS('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
+  
+  @JS('take')
+  external take(int amount, Scheduler scheduler);
   
   @JS('throttle')
   external throttle(dynamic value, [Scheduler scheduler]);

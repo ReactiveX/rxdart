@@ -8,7 +8,13 @@ class Observable<T> {
   
   Observable._internal(this._proxy);
   
-  factory Observable.combineLatest(Observable o1, Observable o2) => new Observable<T>._internal(Rx.Observable.combineLatest(o1._proxy, o2._proxy));
+  factory Observable.combineLatest(List<Observable> observables, [Function resultSelector]) {
+    final List proxies = observables.map((Observable O) => O._proxy).toList();
+    
+    if (resultSelector != null) proxies.add(allowInterop(resultSelector));
+    
+    return new Observable<T>._internal(context['Rx']['Observable'].callMethod('combineLatest', proxies));
+  }
   
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
   
@@ -34,6 +40,10 @@ class Observable<T> {
     
     return new Observable<T>._internal(S._proxy);
   }
+  
+  factory Observable.merge(List<Observable> observables) => new Observable<T>._internal(context['Rx']['Observable'].callMethod('merge', observables.map((Observable O) => O._proxy).toList()));
+  
+  factory Observable.mergeWith(Scheduler scheduler, List<Observable> observables) => new Observable<T>._internal(context['Rx']['Observable'].callMethod('merge', observables.map((Observable O) => O._proxy).toList()..insert(0, scheduler._proxy)));
   
   factory Observable.of(T value) => new Observable<T>._internal(Rx.Observable.of(value));
   
@@ -96,6 +106,8 @@ class Observable<T> {
   }
   
   Observable<T> tapWith(Observer<T> observer) => new Observable<T>._internal(_proxy.tap(observer._proxy));
+  
+  Observable<T> take(int amount, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.take(amount, scheduler?._proxy));
   
   Observable<T> throttle(Duration duration, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.throttle(duration.inMilliseconds, scheduler?._proxy));
   
