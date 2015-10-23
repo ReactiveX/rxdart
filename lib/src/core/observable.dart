@@ -78,6 +78,18 @@ class Observable<T> {
   
   Observable<List<T>> toList() => new Observable._internal(_proxy.toArray());
   
+  Stream<T> toStream() {
+    final StreamController<T> C = new StreamController<T>();
+    
+    subscribe(
+      C.add,
+      onError: C.addError,
+      onCompleted: C.close
+    );
+    
+    return C.stream.asBroadcastStream();
+  }
+  
   Observable<Observable<T>> windowWithCount(int count, [int skip]) 
     => new Observable<Rx.Observable>._internal(_proxy.windowWithCount(count, skip))
         .map((Rx.Observable o) => new Observable<T>._internal(o));

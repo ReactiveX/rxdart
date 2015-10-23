@@ -36,14 +36,14 @@ class Observable {
   @JS('timer')
   external static Observable timer(int interval);
   
-  /*@JS("iterable")
+  @JS("iterable")
   external List get iterable;
   
-  @JS("mapper")
-  external Mapper get mapper;
+  /*@JS("mapper")
+  external Mapper get mapper;*/
   
   @JS("scheduler")
-  external Scheduler get scheduler;*/
+  external Scheduler get scheduler;
   
   @JS('bufferWithCount')
   external bufferWithCount(int count, int skip);

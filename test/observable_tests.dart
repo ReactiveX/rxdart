@@ -101,6 +101,18 @@ void main() {
     ), [[1, 2, 3]]);
   });
   
+  test.test('Rx.Observable.toStream', () async {
+    final Rx.Subject<int> O = new Rx.Subject<int>();
+    final Stream<int> S = O.toStream();
+    
+    O.onNext(1);
+    O.onNext(2);
+    O.onNext(3);
+    O.onCompleted();
+    
+    test.expect(await S.toList(), [1, 2, 3]);
+  });
+  
   test.test('Rx.Observable.partition', () async {
     test.expect(await testObservable(
         new Rx.Observable.range(0, 10).partition((int x) => x % 2 == 0).first // evens
