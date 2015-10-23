@@ -15,6 +15,9 @@ class Observable {
   @JS()
   external Observable();
   
+  @JS('just')
+  external static Observable just(dynamic value);
+  
   @JS('from')
   external static Observable from(List values);
   
@@ -26,9 +29,6 @@ class Observable {
   
   @JS('interval')
   external static Observable interval(dynamic value, [Scheduler scheduler]);
-  
-  @JS('of')
-  external static Observable of(dynamic value);
   
   @JS('range')
   external static Observable range(int start, int count);

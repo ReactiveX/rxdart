@@ -56,6 +56,12 @@ void main() {
     ), [5, 6, 7, 8, 9]);
   });
   
+  test.test('Rx.Observable.of', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.of(<int>[1, 2, 3])
+    ), [1, 2, 3]);
+  });
+  
   test.test('Rx.Observable.merge', () async {
     test.expect(await testObservable(
         new Rx.Observable.merge([new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6])])
@@ -127,7 +133,7 @@ void main() {
     
     test.expect(await testObservable(
         new Rx.Observable<Map<String, int>>.from(times)
-          .flatMap((Map<String, int> x) => new Rx.Observable<int>.of(x['value']).delay(new Duration(milliseconds: x['time'])))
+          .flatMap((Map<String, int> x) => new Rx.Observable<int>.just(x['value']).delay(new Duration(milliseconds: x['time'])))
           .throttle(const Duration(milliseconds: 300))
     ), [0, 2, 3]);
   });
@@ -143,7 +149,7 @@ void main() {
     
     test.expect(await testObservable(
         new Rx.Observable<Map<String, int>>.from(times)
-          .flatMap((Map<String, int> x) => new Rx.Observable<int>.of(x['value']).delay(new Duration(milliseconds: x['time'])).timeInterval())
+          .flatMap((Map<String, int> x) => new Rx.Observable<int>.just(x['value']).delay(new Duration(milliseconds: x['time'])).timeInterval())
           .map((Rx.TimedEvent<int> v) => v.value)
           .take(3)
     ), [0, 4, 2]);
@@ -183,7 +189,7 @@ void main() {
     final List<int> sideEffects = <int>[];
     
     test.expect(await testObservable(
-        new Rx.Observable.of(1).tap((int i) => sideEffects.add(i))
+        new Rx.Observable.just(1).tap((int i) => sideEffects.add(i))
     ), [1]);
     
     test.expect(sideEffects, [1]);

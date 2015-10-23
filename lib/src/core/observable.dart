@@ -16,6 +16,8 @@ class Observable<T> {
     return new Observable<T>._internal(context['Rx']['Observable'].callMethod('combineLatest', proxies));
   }
   
+  factory Observable.just(T value) => new Observable<T>._internal(Rx.Observable.just(value));
+  
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
   
   factory Observable.fromEvent(Element element, String event) => new Observable<T>._internal(Rx.Observable.fromEvent(element, event));
@@ -47,7 +49,7 @@ class Observable<T> {
   
   factory Observable.interval(Duration period, [Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.interval(period.inMilliseconds, scheduler?._proxy));
   
-  factory Observable.of(T value) => new Observable<T>._internal(Rx.Observable.of(value));
+  factory Observable.of(List<T> values) => new Observable<T>._internal(context['Rx']['Observable'].callMethod('of', values));
   
   factory Observable.range(int start, int count) => new Observable<T>._internal(Rx.Observable.range(start, count));
   
