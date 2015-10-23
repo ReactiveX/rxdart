@@ -159,4 +159,16 @@ void main() {
         new Rx.Observable.from([1, 2, 3]).windowWithCount(2).flatMap((Rx.Observable<int> o) => o.toList())
     ), [[1, 2], [3]]);
   });
+  
+  test.test('Rx.bypass', () async {
+    final StreamController<int> C = new StreamController<int>();
+    final Stream<int> stream = Rx.bypass(C.stream.map((int i) => 'from Dart: $i'), (Rx.Observable<String> target) => target.map((String i) => 'from Rx: $i'));
+    
+    C.add(1);
+    C.add(2);
+    C.add(3);
+    C.close();
+    
+    test.expect(await stream.toList(), ['from Rx: from Dart: 1', 'from Rx: from Dart: 2', 'from Rx: from Dart: 3']);
+  });
 }

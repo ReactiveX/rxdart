@@ -1,5 +1,7 @@
 part of rx.core;
 
+Stream bypass(Stream stream, Observable handler(Observable target)) => handler(new Observable.fromStream(stream)).toStream();
+
 class Observable<T> {
   
   final Rx.Observable _proxy;
