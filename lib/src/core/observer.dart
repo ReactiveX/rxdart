@@ -5,10 +5,14 @@ abstract class _ObserverMixin<T> {
   Rx.Observer get _proxy;
   
   void onNext(T value) => _proxy.onNext(value);
+  
+  void onError(error) => _proxy.onError(error);
     
   void onCompleted() => _proxy.onCompleted();
   
   void dispose() => _proxy.dispose();
+  
+  Observer<T> asObserver() => _proxy.asObserver();
   
 }
 

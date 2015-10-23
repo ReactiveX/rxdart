@@ -25,6 +25,19 @@ void main() {
     ), [0]);
   });
   
+  test.test('Rx.Observable.fromStream', () async {
+    final StreamController<int> C = new StreamController<int>();
+    
+    C.add(1);
+    C.add(2);
+    C.add(3);
+    C.close();
+    
+    test.expect(await testObservable(
+        new Rx.Observable.fromStream(C.stream)
+    ), [1, 2, 3]);
+  });
+  
   test.test('Rx.Observable.combineLatest', () async {
     test.expect(await testObservable(
         new Rx.Observable.combineLatest(new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6]))

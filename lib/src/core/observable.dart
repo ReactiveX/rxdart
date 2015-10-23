@@ -25,6 +25,14 @@ class Observable<T> {
     return new Observable<T>._internal(Rx.Observable.fromPromise(promise));
   }
   
+  factory Observable.fromStream(Stream<T> stream) {
+    final Subject S = new Subject();
+    
+    stream.listen(S.onNext, onError: S.onError, onDone: S.onCompleted);
+    
+    return new Observable<T>._internal(S._proxy);
+  }
+  
   factory Observable.of(T value) => new Observable<T>._internal(Rx.Observable.of(value));
   
   factory Observable.range(int start, int count) => new Observable<T>._internal(Rx.Observable.range(start, count));

@@ -21,10 +21,16 @@ class Observer extends Observable {
   @JS('onNext')
   external onNext(dynamic value);
   
+  @JS('onError')
+  external onError(error);
+  
   @JS('onCompleted')
   external onCompleted();
   
   @JS('dispose')
   external dispose();
+  
+  @JS('asObserver')
+  external asObserver();
   
 }
