@@ -56,6 +56,12 @@ void main() {
     ), [5, 6, 7, 8, 9]);
   });
   
+  test.test('Rx.Observable.forkJoin', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.forkJoin([new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6]), new Future.value(10)], (int a, int b, int c) => a + b + c)
+    ), [19]);
+  });
+  
   test.test('Rx.Observable.of', () async {
     test.expect(await testObservable(
         new Rx.Observable.of(<int>[1, 2, 3])

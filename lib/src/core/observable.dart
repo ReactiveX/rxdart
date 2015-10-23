@@ -16,6 +16,19 @@ class Observable<T> {
     return new Observable<T>._internal(context['Rx']['Observable'].callMethod('combineLatest', proxies));
   }
   
+  factory Observable.forkJoin(List observablesOrFutures, [Function resultSelector]) {
+    final List proxies = observablesOrFutures.map((dynamic O) {
+      if (O is Observable) return O._proxy;
+      else if (O is Future) return new Observable.fromFuture(O)._proxy;
+      
+      throw new ArgumentError('$O is neither an Observable or a Future');
+    }).toList();
+    
+    if (resultSelector != null) proxies.add(allowInterop(resultSelector));
+    
+    return new Observable<T>._internal(context['Rx']['Observable'].callMethod('forkJoin', proxies));
+  }
+  
   factory Observable.just(T value) => new Observable<T>._internal(Rx.Observable.just(value));
   
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
