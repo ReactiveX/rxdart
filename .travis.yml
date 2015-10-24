@@ -12,4 +12,4 @@ script:
   - pub run test -p content-shell test/all_tests.html
 after_success:
   - pub global activate dart_coveralls
-  - pub global run dart_coveralls:dart_coveralls report --exclude-test-files --token $REPO_TOKEN --retry 2 ./test/all_tests.dart
+  - pub global run dart_coveralls:dart_coveralls report --exclude-test-files --token $REPO_TOKEN ./test/all_tests.dart
