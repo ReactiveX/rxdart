@@ -1,6 +1,7 @@
 library test.observable;
 
 import 'dart:async';
+
 import 'package:test/test.dart' as test;
 import 'package:rxdart/rxdart.dart' as Rx;
 
@@ -72,6 +73,28 @@ void main() {
     test.expect(await testObservable(
         new Rx.Observable.merge([new Rx.Observable.from([1, 2, 3]), new Rx.Observable.from([4, 5, 6])])
     ), [1, 4, 2, 5, 3, 6]);
+  });
+  
+  test.test('Rx.Observable.retry', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.interval(const Duration(milliseconds: 300)).flatMap((i) {
+          if (i >= 2) return new Rx.Observable.throwError(new Error());
+          
+          return new Rx.Observable.just(i);
+        }).retry().take(3)
+    ), [0, 1, 0]);
+  });
+  
+  test.test('Rx.Observable.retryWhen', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.from([1, 2, 3]).selectMany((int i) {
+          if (i == 2) return new Rx.Observable.throwError(new Error());
+          
+          return new Rx.Observable.just(i);
+        }).retryWhen((errors) {
+          return errors.delay(200);
+        }).take(3)
+    ), [1, 1, 1]);
   });
   
   test.test('Rx.Observable.bufferWithCount', () async {

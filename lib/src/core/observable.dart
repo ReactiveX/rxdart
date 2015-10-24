@@ -70,11 +70,15 @@ class Observable<T> {
   
   factory Observable.timer(Duration interval) => new Observable<T>._internal(Rx.Observable.timer(interval.inMilliseconds));
   
+  factory Observable.throwError(Error error, [Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.throwError(error, scheduler?._proxy));
+  
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   
   Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
   Observable flatMap(Observable selector(T value)) => new Observable._internal(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
+  
+  Observable selectMany(Observable selector(T value)) => flatMap(selector);
   
   Observable flatMapLatest(Observable selector(T value)) => new Observable._internal(_proxy.flatMapLatest(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   
@@ -112,6 +116,10 @@ class Observable<T> {
     
     return currentValue;
   });
+  
+  Observable<T> retry([int retryCount=-1]) => new Observable<T>._internal(_proxy.retry(retryCount));
+  
+  Observable<T> retryWhen(void onErrors(errors)) => new Observable<T>._internal(_proxy.retryWhen(allowInterop(onErrors)));
   
   Observable<T> tap(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)

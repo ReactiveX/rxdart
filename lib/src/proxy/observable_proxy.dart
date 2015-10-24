@@ -39,6 +39,9 @@ class Observable {
   @JS('repeat')
   external static Observable repeat(dynamic value, [int repeatCount, Scheduler scheduler]);
   
+  @JS('throw')
+  external static Observable throwError(Error error, [Scheduler scheduler]);
+  
   @JS("iterable")
   external List get iterable;
   
@@ -74,6 +77,12 @@ class Observable {
   
   @JS('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
+  
+  @JS('retry')
+  external retry(int retryCount);
+  
+  @JS('retryWhen')
+  external retryWhen(void onErrors(errors));
   
   @JS('take')
   external take(int amount, Scheduler scheduler);
