@@ -14,6 +14,16 @@ void main() {
     ), [1, 2, 3]);
   });
   
+  test.test('Rx.Observable.amb', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.amb([
+          new Future.delayed(const Duration(seconds: 2), () => 'after 2 seconds'),
+          new Future.delayed(const Duration(seconds: 1), () => 'after 1 second'),
+          new Rx.Observable.fromFuture(new Future.delayed(const Duration(milliseconds: 500), () => 'after 0.5 seconds'))
+        ])
+    ), ['after 0.5 seconds']);
+  });
+  
   test.test('Rx.Observable.interval', () async {
     test.expect(await testObservable(
         new Rx.Observable<int>.interval(const Duration(milliseconds: 300)).take(3)
@@ -95,6 +105,13 @@ void main() {
           return errors.delay(200);
         }).take(3)
     ), [1, 1, 1]);
+  });
+  
+  test.test('Rx.Observable.ambSingle', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.fromFuture(new Future.delayed(const Duration(seconds: 1), () => 'after 1 second'))
+          .ambSingle(new Rx.Observable.fromFuture(new Future.delayed(const Duration(milliseconds: 500), () => 'after 0.5 seconds')))
+    ), ['after 0.5 seconds']);
   });
   
   test.test('Rx.Observable.bufferWithCount', () async {

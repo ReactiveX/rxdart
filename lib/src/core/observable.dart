@@ -8,6 +8,17 @@ class Observable<T> {
   
   Observable._internal(this._proxy);
   
+  factory Observable.amb(List observablesOrFutures) {
+    final List proxies = observablesOrFutures.map((dynamic O) {
+      if (O is Observable) return O._proxy;
+      else if (O is Future) return new Observable.fromFuture(O)._proxy;
+      
+      throw new ArgumentError('$O is neither an Observable or a Future');
+    }).toList();
+    
+    return new Observable<T>._internal(context['Rx']['Observable'].callMethod('amb', proxies));
+  }
+  
   factory Observable.combineLatest(List<Observable> observables, [Function resultSelector]) {
     final List proxies = observables.map((Observable O) => O._proxy).toList();
     
@@ -71,6 +82,8 @@ class Observable<T> {
   factory Observable.timer(Duration interval) => new Observable<T>._internal(Rx.Observable.timer(interval.inMilliseconds));
   
   factory Observable.throwError(Error error, [Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.throwError(error, scheduler?._proxy));
+  
+  Observable ambSingle(Observable rightSource) => new Observable._internal(_proxy.amb(rightSource._proxy));
   
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   

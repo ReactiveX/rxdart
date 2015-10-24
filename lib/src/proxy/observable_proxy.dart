@@ -51,6 +51,9 @@ class Observable {
   @JS("scheduler")
   external Scheduler get scheduler;
   
+  @JS('amb')
+  external amb(Observable rightSource);
+  
   @JS('bufferWithCount')
   external bufferWithCount(int count, int skip);
   
