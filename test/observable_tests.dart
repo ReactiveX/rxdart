@@ -24,6 +24,15 @@ void main() {
     ), ['after 0.5 seconds']);
   });
   
+  test.test('Rx.Observable.switchCase', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.switchCase(
+          () => 'foo',
+          {'foo': new Rx.Observable.just(1), 'bar': new Rx.Observable.just(2)}
+        )
+    ), [1]);
+  });
+  
   test.test('Rx.Observable.interval', () async {
     test.expect(await testObservable(
         new Rx.Observable<int>.interval(const Duration(milliseconds: 300)).take(3)

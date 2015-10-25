@@ -18,6 +18,9 @@ class Observable {
   @JS('just')
   external static Observable just(dynamic value);
   
+  @JS('empty')
+  external static Observable empty([Scheduler scheduler]);
+  
   @JS('from')
   external static Observable from(List values);
   

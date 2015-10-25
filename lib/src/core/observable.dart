@@ -19,6 +19,18 @@ class Observable<T> {
     return new Observable<T>._internal(context['Rx']['Observable'].callMethod('amb', proxies));
   }
   
+  factory Observable.switchCase(String selector(), Map<String, Observable> sources, {Observable elseSource, Scheduler elseScheduler}) {
+    final Map<String, Rx.Observable> jsm = <String, Rx.Observable>{};
+    
+    sources.forEach((String K, Observable O) => jsm.putIfAbsent(K, () => O._proxy));
+    
+    return new Observable<T>._internal(context['Rx']['Observable'].callMethod('case', [
+      allowInterop(selector),
+      new JsObject.jsify(jsm),
+      elseSource ?? elseScheduler
+    ]));
+  }
+  
   factory Observable.combineLatest(List<Observable> observables, [Function resultSelector]) {
     final List proxies = observables.map((Observable O) => O._proxy).toList();
     
@@ -41,6 +53,8 @@ class Observable<T> {
   }
   
   factory Observable.just(T value) => new Observable<T>._internal(Rx.Observable.just(value));
+  
+  factory Observable.empty([Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.empty(scheduler?._proxy));
   
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
   
