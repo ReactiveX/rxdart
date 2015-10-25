@@ -5,6 +5,7 @@ import 'package:js/js.dart';
 
 import 'observer_proxy.dart';
 import 'observable_proxy.dart';
+import 'scheduler_proxy.dart';
 
 @JS()
 class Subject extends Observer {
@@ -14,5 +15,13 @@ class Subject extends Observer {
   
   @JS('create')
   external static Subject create(Observer observer, Observable observable);
+  
+}
+
+@JS()
+class ReplaySubject extends Subject {
+  
+  @JS()
+  external ReplaySubject(int bufferSize, int windowSize, Scheduler scheduler);
   
 }

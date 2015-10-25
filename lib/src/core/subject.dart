@@ -11,3 +11,9 @@ class Subject<T> extends Observable<T> with _ObserverMixin<T> {
   factory Subject.create(Observer observer, Observable observable) => new Subject<T>._internal(Rx.Subject.create(observer._proxy, observable._proxy));
   
 }
+
+class ReplaySubject<T> extends Subject<T> {
+  
+  ReplaySubject({int bufferSize, int windowSize, Scheduler scheduler}) : super._internal(new Rx.ReplaySubject(bufferSize, windowSize, scheduler?._proxy));
+  
+}
