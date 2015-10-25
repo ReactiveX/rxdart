@@ -28,9 +28,18 @@ void main() {
     test.expect(await testObservable(
         new Rx.Observable.switchCase(
           () => 'foo',
-          {'foo': new Rx.Observable.just(1), 'bar': new Rx.Observable.just(2)}
+          {'foo': new Rx.Observable.just(1), 'bar': new Rx.Observable.just(2)},
+          elseSource: new Rx.Observable.just(3)
         )
     ), [1]);
+    
+    test.expect(await testObservable(
+        new Rx.Observable.switchCase(
+          () => 'baz',
+          {'foo': new Rx.Observable.just(1), 'bar': new Rx.Observable.just(2)},
+          elseSource: new Rx.Observable.just(3)
+        )
+    ), [3]);
   });
   
   test.test('Rx.Observable.interval', () async {

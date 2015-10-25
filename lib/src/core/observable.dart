@@ -27,7 +27,7 @@ class Observable<T> {
     return new Observable<T>._internal(context['Rx']['Observable'].callMethod('case', [
       allowInterop(selector),
       new JsObject.jsify(jsm),
-      elseSource ?? elseScheduler
+      elseSource?._proxy ?? elseScheduler?._proxy
     ]));
   }
   
