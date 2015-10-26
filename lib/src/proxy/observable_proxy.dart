@@ -97,6 +97,9 @@ class Observable {
   @JS('take')
   external take(int amount, Scheduler scheduler);
   
+  @JS('takeUntil')
+  external takeUntil(observableOrFuture);
+  
   @JS('throttle')
   external throttle(dynamic value, [Scheduler scheduler]);
   

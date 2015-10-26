@@ -161,6 +161,16 @@ class Observable<T> {
   
   Observable<T> take(int amount, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.take(amount, scheduler?._proxy));
   
+  Observable<T> takeUntil(dynamic observableOrFuture) {
+    dynamic target;
+    
+    if (observableOrFuture is Observable) target = observableOrFuture._proxy;
+    else if (observableOrFuture is Future) target = new Observable.fromFuture(observableOrFuture)._proxy;
+    else throw new ArgumentError('$observableOrFuture is neither an Observable or a Future');
+    
+    return new Observable<T>._internal(_proxy.takeUntil(target));
+  }
+  
   Observable<T> throttle(Duration duration, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.throttle(duration.inMilliseconds, scheduler?._proxy));
   
   Observable<TimedEvent<T>> timeInterval([Scheduler scheduler]) => new Observable._internal(_proxy.timeInterval(scheduler?._proxy)).map((jsObject) => new TimedEvent<T>(jsObject['interval'], jsObject['value']));
