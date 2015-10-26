@@ -2,6 +2,7 @@
 library rx.observable_proxy;
 
 import 'dart:html';
+import 'dart:js';
 
 import 'promise_proxy.dart';
 
@@ -17,6 +18,9 @@ class Observable {
   
   @JS('just')
   external static Observable just(dynamic value);
+  
+  @JS('case')
+  external static Observable switchCase(String selector(), JsObject sources, elseSourceOrScheduler);
   
   @JS('empty')
   external static Observable empty([Scheduler scheduler]);

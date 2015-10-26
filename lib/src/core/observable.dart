@@ -24,11 +24,11 @@ class Observable<T> {
     
     sources.forEach((String K, Observable O) => jsm.putIfAbsent(K, () => O._proxy));
     
-    return new Observable<T>._internal(context['Rx']['Observable'].callMethod('case', [
-      allowInterop(selector),
-      new JsObject.jsify(jsm),
-      elseSource?._proxy ?? elseScheduler?._proxy
-    ]));
+    return new Observable<T>._internal(Rx.Observable.switchCase(
+        allowInterop(selector),
+        new JsObject.jsify(jsm),
+        elseSource?._proxy ?? elseScheduler?._proxy)
+    );
   }
   
   factory Observable.combineLatest(List<Observable> observables, [Function resultSelector]) {
