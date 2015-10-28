@@ -52,6 +52,8 @@ class Observable<T> {
     return new Observable<T>._internal(context['Rx']['Observable'].callMethod('forkJoin', proxies));
   }
   
+  factory Observable.defer(Observable<T> observableFactory ()) => new Observable<T>._internal(Rx.Observable.defer(allowInterop(() => observableFactory()._proxy)));
+  
   factory Observable.just(T value) => new Observable<T>._internal(Rx.Observable.just(value));
   
   factory Observable.empty([Scheduler scheduler]) => new Observable<T>._internal(Rx.Observable.empty(scheduler?._proxy));
@@ -103,6 +105,8 @@ class Observable<T> {
   
   Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
+  Observable<T> find(bool predicate(T value)) => new Observable._internal(_proxy.find(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
+  
   Observable flatMap(Observable selector(T value)) => new Observable._internal(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   
   Observable selectMany(Observable selector(T value)) => flatMap(selector);
@@ -110,6 +114,8 @@ class Observable<T> {
   Observable flatMapLatest(Observable selector(T value)) => new Observable._internal(_proxy.flatMapLatest(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
   
   Observable map(dynamic selector(T value)) => new Observable._internal(_proxy.map(allowInterop((T value, int index, Rx.Observable target) => selector(value))));
+  
+  Observable select(dynamic selector(T value)) => map(selector);
   
   Observable<T> debounce(Duration duration, [Scheduler scheduler]) => new Observable<T>._internal(_proxy.debounce(duration.inMilliseconds, scheduler?._proxy));
   

@@ -22,6 +22,9 @@ class Observable {
   @JS('case')
   external static Observable switchCase(String selector(), JsObject sources, elseSourceOrScheduler);
   
+  @JS('defer')
+  external static Observable defer(Function observableFactory);
+  
   @JS('empty')
   external static Observable empty([Scheduler scheduler]);
   
@@ -75,6 +78,9 @@ class Observable {
   
   @JS('filter')
   external filter(dynamic predicate(dynamic value, int index, Observable target));
+  
+  @JS('find')
+  external find(dynamic predicate(dynamic value, int index, Observable target));
   
   @JS('flatMap')
   external flatMap(dynamic selector(dynamic value, int index, Observable target));

@@ -48,6 +48,12 @@ void main() {
     ), [0, 1, 2]);
   });
   
+  test.test('Rx.Observable.defer', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.defer(() => new Rx.Observable.just(1))
+    ), [1]);
+  });
+  
   test.test('Rx.Observable.range', () async {
     test.expect(await testObservable(
         new Rx.Observable.range(0, 3)
@@ -166,6 +172,18 @@ void main() {
     test.expect(await testObservable(
         new Rx.Observable.from([1, 2, 3]).delayWithSubscriptionDelay(new Rx.Observable.timer(const Duration(milliseconds: 500)), (int i) => new Rx.Observable.timer(const Duration(seconds: 1)))
     ), [1, 2, 3]);
+  });
+  
+  test.test('Rx.Observable.filter', () async {
+    test.expect(await testObservable(
+        new Rx.Observable<int>.from([1, 2, 3]).filter((int value) => value == 2)
+    ), [2]);
+  });
+  
+  test.test('Rx.Observable.find', () async {
+    test.expect(await testObservable(
+        new Rx.Observable<int>.from([1, 2, 3]).filter((int value) => value == 2)
+    ), [2]);
   });
   
   test.test('Rx.Observable.flatMap', () async {
