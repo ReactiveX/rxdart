@@ -60,7 +60,7 @@ class Observable<T> {
   
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
   
-  factory Observable.fromEvent(Element element, String event) => new Observable<T>._internal(Rx.Observable.fromEvent(element, event));
+  factory Observable.fromEvent(EventTarget eventTarget, String event) => new Observable<T>._internal(Rx.Observable.fromEvent(eventTarget, event));
   
   factory Observable.fromFuture(Future future) {
     final Core.Promise promise = new Core.Promise(allowInterop((resolve, reject) {
@@ -104,6 +104,8 @@ class Observable<T> {
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new Observable<List<T>>._internal(_proxy.bufferWithCount(count, skip));
   
   Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
+  
+  Observable<T> count(bool predicate(T value)) => new Observable._internal(_proxy.count(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
   Observable<T> distinct({dynamic keySelector(T value), bool compare(dynamic a, dynamic b)}) {
     if (keySelector == null && compare == null) return new Observable._internal(_proxy.distinct());
@@ -168,11 +170,23 @@ class Observable<T> {
     return currentValue;
   });
   
+  Observable<T> reduce(T accumulator(dynamic accumulatedValue, dynamic currentValue, dynamic index), [dynamic seed]) => new Observable<T>._internal(_proxy.reduce(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
+  
   Observable<T> retry([int retryCount=-1]) => new Observable<T>._internal(_proxy.retry(retryCount));
   
   Observable<T> retryWhen(void onErrors(errors)) => new Observable<T>._internal(_proxy.retryWhen(allowInterop(onErrors)));
   
+  Observable<T> scan(T accumulator(dynamic accumulatedValue, dynamic currentValue, dynamic index), [dynamic seed]) => new Observable<T>._internal(_proxy.scan(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
+  
   Observable<T> share(Observer<T> observer) => new Observable<T>._internal(_proxy.share());
+  
+  Observable<T> startWith(List<T> values, {Scheduler scheduler}) {
+    final List copy = new List.from(values);
+    
+    if (scheduler != null) copy.insert(0, scheduler._proxy);
+    
+    return new Observable<T>._internal((_proxy as JsObject).callMethod('startWith', copy));
+  }
   
   Observable<T> tap(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)

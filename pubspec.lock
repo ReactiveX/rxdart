@@ -41,6 +41,10 @@ packages:
     description: csslib
     source: hosted
     version: "0.12.2"
+  faker:
+    description: faker
+    source: hosted
+    version: "0.0.4"
   glob:
     description: glob
     source: hosted
@@ -93,6 +97,14 @@ packages:
     description: pub_semver
     source: hosted
     version: "1.2.2"
+  quiver:
+    description: quiver
+    source: hosted
+    version: "0.18.2"
+  react:
+    description: react
+    source: hosted
+    version: "0.8.1"
   shelf:
     description: shelf
     source: hosted

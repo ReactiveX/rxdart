@@ -67,6 +67,9 @@ class Observable {
   @JS('bufferWithCount')
   external bufferWithCount(int count, int skip);
   
+  @JS('count')
+  external count(bool predicate(dynamic value, int index, Observable target));
+  
   @JS('debounce')
   external debounce(dynamic value, [Scheduler scheduler]);
   
@@ -100,11 +103,17 @@ class Observable {
   @JS('partition')
   external partition(dynamic predicate(dynamic value, int index, Observable target));
   
+  @JS('reduce')
+  external reduce(dynamic accumulator(acc, x, i, Observable source), [seed]);
+  
   @JS('retry')
   external retry(int retryCount);
   
   @JS('retryWhen')
   external retryWhen(void onErrors(errors));
+  
+  @JS('scan')
+  external scan(dynamic accumulator(acc, x, i, Observable source), [seed]);
   
   @JS('share')
   external share();
