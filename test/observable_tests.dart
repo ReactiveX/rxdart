@@ -156,6 +156,26 @@ void main() {
     ), [1, 2, 3]);
   });
   
+  test.test('Rx.Observable.distinct', () async {
+    test.expect(await testObservable(
+        new Rx.Observable.from([1, 2, 1, 2]).distinct()
+    ), [1, 2]);
+    
+    test.expect(await testObservable(
+        new Rx.Observable<Map<String, int>>.from([{'value': 1}, {'value': 2}, {'value': 1}, {'value': 2}])
+          .distinct(keySelector: (e) => e['value'])
+          .map((e) => e['value'])
+    ), [1, 2]);
+    
+    final DateTime a = new DateTime.fromMillisecondsSinceEpoch(1000);
+    final DateTime b = new DateTime.fromMillisecondsSinceEpoch(2000);
+    
+    test.expect(await testObservable(
+        new Rx.Observable<Map<String, DateTime>>.from([a, b, a, b])
+          .distinct(compare: (DateTime a, DateTime b) => a.isAtSameMomentAs(b))
+    ), [a, b]);
+  });
+  
   test.test('Rx.Observable.delayUntil', () async {
     test.expect(await testObservable(
         new Rx.Observable.from([1, 2, 3]).delayUntil(new DateTime.now().add(const Duration(seconds: 1)))

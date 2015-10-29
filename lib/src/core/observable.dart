@@ -105,6 +105,24 @@ class Observable<T> {
   
   Observable<T> filter(bool predicate(T value)) => new Observable._internal(_proxy.filter(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
+  Observable<T> distinct({dynamic keySelector(T value), bool compare(dynamic a, dynamic b)}) {
+    if (keySelector == null && compare == null) return new Observable._internal(_proxy.distinct());
+    
+    if (compare == null) return new Observable._internal(_proxy.distinct(allowInterop(keySelector)));
+    if (keySelector == null) return new Observable._internal(_proxy.distinct(null, allowInterop(compare)));
+    
+    return new Observable._internal(_proxy.distinct(allowInterop(keySelector), allowInterop(compare)));
+  }
+  
+  Observable<T> distinctUntilChanged({dynamic keySelector(T value), bool compare(dynamic a, dynamic b)}) {
+    if (keySelector == null && compare == null) return new Observable._internal(_proxy.distinctUntilChanged());
+    
+    if (compare == null) return new Observable._internal(_proxy.distinctUntilChanged(allowInterop(keySelector)));
+    if (keySelector == null) return new Observable._internal(_proxy.distinctUntilChanged(null, allowInterop(compare)));
+    
+    return new Observable._internal(_proxy.distinctUntilChanged(allowInterop(keySelector), allowInterop(compare)));
+  }
+  
   Observable<T> find(bool predicate(T value)) => new Observable._internal(_proxy.find(allowInterop((T value, int index, Rx.Observable target) => predicate(value))));
   
   Observable flatMap(Observable selector(T value)) => new Observable._internal(_proxy.flatMap(allowInterop((T value, int index, Rx.Observable target) => selector(value)._proxy)));
@@ -153,6 +171,8 @@ class Observable<T> {
   Observable<T> retry([int retryCount=-1]) => new Observable<T>._internal(_proxy.retry(retryCount));
   
   Observable<T> retryWhen(void onErrors(errors)) => new Observable<T>._internal(_proxy.retryWhen(allowInterop(onErrors)));
+  
+  Observable<T> share(Observer<T> observer) => new Observable<T>._internal(_proxy.share());
   
   Observable<T> tap(void onListen(T value), {void onError(error), void onCompleted()}) {
     if (onError != null && onCompleted != null)

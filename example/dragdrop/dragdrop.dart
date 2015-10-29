@@ -22,4 +22,6 @@ void main() {
         dragTarget.style.top = '${e['top']}px';
         dragTarget.style.left = '${e['left']}px';
       });
+  
+  Rx.Observable submit$;
 }

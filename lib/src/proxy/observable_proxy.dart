@@ -73,6 +73,12 @@ class Observable {
   @JS('delay')
   external delay(a, [b]);
   
+  @JS('distinct')
+  external distinct([dynamic keySelector(dynamic value), bool comparer(dynamic a, dynamic b)]);
+  
+  @JS('distinctUntilChanged')
+  external distinctUntilChanged([dynamic keySelector(dynamic value), bool comparer(dynamic a, dynamic b)]);
+  
   @JS('tap')
   external tap(dynamic handlerOrObserver, [void onError(error), void onCompleted()]);
   
@@ -99,6 +105,9 @@ class Observable {
   
   @JS('retryWhen')
   external retryWhen(void onErrors(errors));
+  
+  @JS('share')
+  external share();
   
   @JS('take')
   external take(int amount, Scheduler scheduler);
