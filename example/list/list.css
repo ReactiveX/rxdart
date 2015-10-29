@@ -12,6 +12,7 @@ body {
 .list-renderer {
   position: relative;
   width: 100%;
+  cursor: move;
 }
 
 .item-renderer {

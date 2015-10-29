@@ -26,11 +26,11 @@ void main() {
     .flatMap((e) => new Rx.Observable.merge([
       mouseMove
         .bufferWithCount(2, 1)
-        .map((f) => f.last.client.y - f.first.client.y)
+        .map((f) => f.first.client.y - f.last.client.y)
         .takeUntil(mouseUp),
       mouseWheel
         .tap((e) => e.preventDefault())
-        .map((e) => (e.deltaY * .075).toInt())
+        .map((e) => (e.deltaY * -.05).toInt())
     ]))
     .startWith([0]);
     
@@ -39,8 +39,11 @@ void main() {
     .startWith([(document.body.client.height ~/ rowHeight) + 3]);
   
   final Rx.Observable<int> accumulatedOffset = mouseDragOffset
-    .scan((int a, int c, int index) => a + c, 0)
-    .map((o) => (o < 0) ? 0 : o);
+    .scan((int a, int c, int index) {
+      int sum = a + c;
+      
+      return (sum < 0) ? 0 : sum;
+    }, 0);
   
   final Rx.Observable<List<int>> listOffset = new Rx.Observable<List<int>>.combineLatest([
     listDisplayedIndices,
