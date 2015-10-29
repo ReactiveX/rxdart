@@ -5,35 +5,38 @@ import 'package:react/react_client.dart';
 import 'package:rxdart/rxdart.dart' as Rx;
 import 'package:faker/faker.dart';
 
-const int rowHeight = 22;
+const int rowHeight = 24;
 
 void main() {
-  const count = 500;
-  final List<String> fakeNames = new List<String>.generate(count, (_) => '${new Faker().person.firstName()} ${new Faker().person.lastName()}');
+  const count = 100000;
+  final List<Person> fakePeople = new List<Person>.generate(count, (int index) => new Person(index, '${new Faker().person.firstName()} ${new Faker().person.lastName()}'));
   final _ListRenderer renderer = new _ListRenderer();
   
   setClientConfiguration();
   
   react.render(react.registerComponent(() => renderer)({}), querySelector('#content'));
   
-  final Rx.Observable<Person> dataStream = new Rx.Observable<int>.range(0, count)
-     .map((i) => new Person(fakeNames[i]));
-  
   final Rx.Observable<Event> resize = new Rx.Observable<Event>.fromEvent(window, 'resize');
   final Rx.Observable<MouseEvent> mouseDown = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousedown');
   final Rx.Observable<MouseEvent> mouseUp = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mouseup');
   final Rx.Observable<MouseEvent> mouseMove = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousemove');
+  final Rx.Observable<WheelEvent> mouseWheel = new Rx.Observable<WheelEvent>.fromEvent(document.body, 'mousewheel');
   
   final Rx.Observable<int> mouseDragOffset = mouseDown
-    .flatMap((e) => mouseMove
-                    .bufferWithCount(2, 1)
-                    .map((f) => f.first.client.y - f.last.client.y)
-                    .takeUntil(mouseUp))
+    .flatMap((e) => new Rx.Observable.merge([
+      mouseMove
+        .bufferWithCount(2, 1)
+        .map((f) => f.last.client.y - f.first.client.y)
+        .takeUntil(mouseUp),
+      mouseWheel
+        .tap((e) => e.preventDefault())
+        .map((e) => (e.deltaY * .075).toInt())
+    ]))
     .startWith([0]);
     
   final Rx.Observable<int> listDisplayedIndices = resize
-    .map((Event e) => (document.body.client.height ~/ rowHeight) + 1)
-    .startWith([(document.body.client.height ~/ rowHeight) + 1]);
+    .map((Event e) => (document.body.client.height ~/ rowHeight) + 3)
+    .startWith([(document.body.client.height ~/ rowHeight) + 3]);
   
   final Rx.Observable<int> accumulatedOffset = mouseDragOffset
     .scan((int a, int c, int index) => a + c, 0)
@@ -45,11 +48,7 @@ void main() {
   ], (int maxIndex, int offset) => [offset ~/ rowHeight, maxIndex + offset ~/ rowHeight]);
   
   final Rx.Observable<List<Person>> displayedPersons = listOffset
-    .flatMap((List<int> offsets) => dataStream.reduce((List<Person> a, Person c, int index) {
-        if (index >= offsets.first && index < offsets.last) a.add(c);
-        
-        return a;
-      }, <Person>[]));
+    .flatMap((List<int> offsets) => new Rx.Observable.from([fakePeople.sublist(offsets.first, offsets.last)]));
   
   new Rx.Observable.combineLatest([
     accumulatedOffset,
@@ -88,16 +87,17 @@ class _ListRenderer extends react.Component {
     
     return react.div({
       'className': 'list-renderer',
-      'style': {'top': '${offset}px'}
+      'style': {'top': '${offset - rowHeight}px'}
     }, children);
   }
 }
 
 class Person {
   
+  final int index;
   final String name;
   
-  Person(this.name);
+  Person(this.index, this.name);
   
   String toString() => name;
   
