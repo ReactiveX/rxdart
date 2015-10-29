@@ -26,6 +26,11 @@ body {
   user-select: none;
 }
 
+.item-renderer :hover {
+  background-color: #666;
+  color: #fff;
+}
+
 .item-renderer-label {
   vertical-align: bottom;
   font-size: 20px;
