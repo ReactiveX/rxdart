@@ -6,7 +6,7 @@ import 'package:react/react_client.dart';
 import 'package:rxdart/rxdart.dart' as Rx;
 import 'package:faker/faker.dart';
 
-const int count = 100000;
+const int count = 100;
 const int rowHeight = 24;
 
 /* VIRTUAL LIST
@@ -40,11 +40,19 @@ void main() {
           .takeUntil(mouseUp)),
     mouseWheel
       .tap((e) => e.preventDefault())
-      .map((e) => (e.deltaY * -.075).toInt())
+      .map((e) => (e.deltaY * -.075).toInt()),
+    resize
+      .map((_) => 0)
   ]).startWith([0]);
   
   final Rx.Observable<int> accumulatedOffset = dragOffset
-    .scan((int a, c, index) => (a + c < 0) ? 0 : a + c, 0);
+    .scan((int a, c, index) {
+      final int sum = a + c;
+      final int tot = (fakePeople.length - 1) * rowHeight;
+      final int max = tot - min(document.body.client.height, tot);
+      
+      return (sum < 0) ? 0 : (sum > max) ? max : sum;
+    }, 0);
   
   final Rx.Observable<int> displayedIndices = resize
     .map((Event e) => (document.body.client.height ~/ rowHeight) + 3)

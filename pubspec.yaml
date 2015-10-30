@@ -9,6 +9,6 @@ dependencies:
   browser: ^0.10.0+2
   js: ^0.6.0-beta
 dev_dependencies:
-  react: ^0.8.2
   faker: ^0.0.4
+  react: ^0.8.2
   test: ^0.12.5+1
