@@ -69,9 +69,9 @@ void main() {
     .flatMap((o) => new Rx.Observable.just(fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))));
   
   new Rx.Observable.combineLatest([
-    accumulatedOffset,
-    displayedPeople
-  ], (int acc, List<Person> people) => {'acc': acc, 'people': people})
+    displayedPeople,
+    accumulatedOffset
+  ], (List<Person> people, int offset) => {'offset': offset, 'people': people})
     .subscribe(renderer.setState);
 }
 
@@ -79,9 +79,9 @@ class _ListRenderer extends react.Component {
   
   render() {
     final List children = [];
-    final int acc = state['acc'];
+    final int offset = state['offset'];
     final List<Person> people = state['people'];
-    final int toggle = (acc != null && ((acc ~/ rowHeight) % 2) == 0) ? 0 : 1;
+    final int toggle = (offset != null && ((offset ~/ rowHeight) % 2) == 0) ? 0 : 1;
     
     if (people == null) return react.div({'className': 'list-renderer'}, []);
     
@@ -93,7 +93,7 @@ class _ListRenderer extends react.Component {
     
     return react.div({
       'className': 'list-renderer',
-      'style': {'top': '${-(acc % rowHeight) - rowHeight}px'}
+      'style': {'top': '${-(offset % rowHeight) - rowHeight}px'}
     }, children);
   }
 }
