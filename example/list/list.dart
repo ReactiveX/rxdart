@@ -6,9 +6,13 @@ import 'package:react/react_client.dart';
 import 'package:rxdart/rxdart.dart' as Rx;
 import 'package:faker/faker.dart';
 
-const int count = 5000;
+const int count = 100000;
 const int rowHeight = 24;
 
+/* VIRTUAL LIST
+ * ------------
+ * no scrollbar, use mouse click -> drag to scroll, or the mouse wheel
+ */
 void main() {
   // generate fake data
   final List<Person> fakePeople = new List<Person>.generate(count, (int index) => new Person(index, '${new Faker().person.firstName()} ${new Faker().person.lastName()}'))
