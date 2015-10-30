@@ -1,5 +1,5 @@
 name: rxdart
-version: 0.2.0+2
+version: 0.2.0+3
 author: Frank Pepermans <frank@igindo.com>
 description: A wrapper for the RxJs library
 homepage: https://github.com/frankpepermans/rxdart
@@ -7,7 +7,7 @@ environment:
   sdk: '>1.12.0'
 dependencies:
   browser: ^0.10.0+2
-  faker: any
+  faker: ^0.0.4
   js: ^0.6.0-beta
-  react: any
+  react: ^0.8.2
   test: ^0.12.5+1
