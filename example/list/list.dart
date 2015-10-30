@@ -38,21 +38,21 @@ void main() {
       .tap((e) => e.preventDefault())
       .map((e) => (e.deltaY * -.075).toInt())
   ]).startWith([0]);
-    
-  final Rx.Observable<int> listDisplayedIndices = resize
-    .map((Event e) => (document.body.client.height ~/ rowHeight) + 3)
-    .startWith([(document.body.client.height ~/ rowHeight) + 3]);
   
   final Rx.Observable<int> accumulatedOffset = dragOffset
     .scan((int a, c, index) => (a + c < 0) ? 0 : a + c, 0);
   
-  final Rx.Observable<List<int>> listOffset = new Rx.Observable.combineLatest([
-    listDisplayedIndices,
-    accumulatedOffset
-  ], (int maxIndex, int offset) => [offset ~/ rowHeight, maxIndex + offset ~/ rowHeight]);
+  final Rx.Observable<int> displayedIndices = resize
+    .map((Event e) => (document.body.client.height ~/ rowHeight) + 3)
+    .startWith([(document.body.client.height ~/ rowHeight) + 3]);
   
-  final Rx.Observable<List<Person>> displayedPeople = listOffset
-    .flatMap((o) => new Rx.Observable.just(fakePeople.sublist(o.first, min(o.last, fakePeople.length))));
+  final Rx.Observable<Map<String, int>> displayedRange = new Rx.Observable.combineLatest([
+    displayedIndices,
+    accumulatedOffset
+  ], (int maxIndex, int offset) => {'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight});
+  
+  final Rx.Observable<List<Person>> displayedPeople = displayedRange
+    .flatMap((o) => new Rx.Observable.just(fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))));
   
   new Rx.Observable.combineLatest([
     accumulatedOffset,
