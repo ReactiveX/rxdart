@@ -170,13 +170,13 @@ class Observable<T> {
     return currentValue;
   });
   
-  Observable<T> reduce(T accumulator(dynamic accumulatedValue, dynamic currentValue, dynamic index), [dynamic seed]) => new Observable<T>._internal(_proxy.reduce(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
+  Observable<T> reduce(T accumulator(dynamic accumulatedValue, T currentValue, int index), [dynamic seed]) => new Observable<T>._internal(_proxy.reduce(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
   
   Observable<T> retry([int retryCount=-1]) => new Observable<T>._internal(_proxy.retry(retryCount));
   
   Observable<T> retryWhen(void onErrors(errors)) => new Observable<T>._internal(_proxy.retryWhen(allowInterop(onErrors)));
   
-  Observable<T> scan(T accumulator(dynamic accumulatedValue, dynamic currentValue, dynamic index), [dynamic seed]) => new Observable<T>._internal(_proxy.scan(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
+  Observable<T> scan(T accumulator(dynamic accumulatedValue, T currentValue, int index), [dynamic seed]) => new Observable<T>._internal(_proxy.scan(allowInterop((dynamic accumulatedValue, dynamic currentValue, dynamic index, Rx.Observable source) => accumulator(accumulatedValue, currentValue, index)), seed));
   
   Observable<T> share(Observer<T> observer) => new Observable<T>._internal(_proxy.share());
   

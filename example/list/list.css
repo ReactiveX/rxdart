@@ -32,8 +32,7 @@ body {
 }
 
 .item-renderer-label {
-  vertical-align: bottom;
-  font-size: 20px;
+  font-size: 1.2em;
   font-family: monospace;
   color: #666;
 }
