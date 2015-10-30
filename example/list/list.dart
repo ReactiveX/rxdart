@@ -9,6 +9,8 @@ import 'package:faker/faker.dart';
 const int count = 100;
 const int rowHeight = 24;
 
+int visibleRowCount() => (document.body.client.height ~/ rowHeight) + 3;
+
 /* VIRTUAL LIST
  * ------------
  * no scrollbar, use mouse click -> drag to scroll, or the mouse wheel
@@ -55,8 +57,8 @@ void main() {
     }, 0);
   
   final Rx.Observable<int> displayedIndices = resize
-    .map((Event e) => (document.body.client.height ~/ rowHeight) + 3)
-    .startWith([(document.body.client.height ~/ rowHeight) + 3]);
+    .map((_) => visibleRowCount())
+    .startWith([visibleRowCount()]);
   
   final Rx.Observable<Map<String, int>> displayedRange = new Rx.Observable.combineLatest([
     displayedIndices,
