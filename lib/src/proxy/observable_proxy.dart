@@ -32,7 +32,7 @@ class Observable {
   external static Observable from(List values);
   
   @JS('fromEvent')
-  external static Observable fromEvent(Element element, String event);
+  external static Observable fromEvent(EventTarget element, String event, Function selector);
   
   @JS('fromPromise')
   external static Observable fromPromise(Promise promise);

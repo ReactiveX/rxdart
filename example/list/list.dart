@@ -28,7 +28,7 @@ void main() {
   react.render(react.registerComponent(() => renderer)({}), querySelector('#content'));
   
   // Rx
-  final Rx.Observable<Event> resize = new Rx.Observable<Event>.fromEvent(window, 'resize');
+  final Rx.Observable<Event> resize = new Rx.Observable<Event>.fromEvent(document.body, 'resize');
   final Rx.Observable<MouseEvent> mouseDown = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousedown');
   final Rx.Observable<MouseEvent> mouseUp = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mouseup');
   final Rx.Observable<MouseEvent> mouseMove = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousemove');

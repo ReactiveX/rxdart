@@ -60,7 +60,7 @@ class Observable<T> {
   
   factory Observable.from(List elements) => new Observable<T>._internal(Rx.Observable.from(elements));
   
-  factory Observable.fromEvent(EventTarget eventTarget, String event) => new Observable<T>._internal(Rx.Observable.fromEvent(eventTarget, event));
+  factory Observable.fromEvent(EventTarget eventTarget, String event, [Function selector]) => new Observable<T>._internal(Rx.Observable.fromEvent(eventTarget, event, selector));
   
   factory Observable.fromFuture(Future future) {
     final Core.Promise promise = new Core.Promise(allowInterop((resolve, reject) {
