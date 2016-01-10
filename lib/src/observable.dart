@@ -13,7 +13,7 @@ abstract class Observable<T> extends Stream {
 
   Observable();
 
-  factory Observable.fromStream(Stream stream) => observable(stream);
+  factory Observable.fromStream(Stream stream) => observable(stream) as Observable<T>;
 
   factory Observable.combineLatest(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, predicate, asBroadcastStream);
 
@@ -21,7 +21,7 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
 
-  Observable map(dynamic convert(T value));
+  //Observable map(dynamic convert(T value));
 
   Observable<T> retry([int count]);
 

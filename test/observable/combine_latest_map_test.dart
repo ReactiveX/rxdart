@@ -32,7 +32,7 @@ void main() {
     const List<Map<String, dynamic>> expectedOutput = const <Map<String, dynamic>>[const {'a': 0, 'b': 4, 'c': true}, const {'a': 1, 'b': 4, 'c': true}, const {'a': 2, 'b': 4, 'c': true}];
     int count = 0;
 
-    Stream<Map<String, dynamic>> observable = new rx.Observable.combineLatestMap(_getStreams());
+    Stream<Map<String, dynamic>> observable = new rx.Observable<Map<String, dynamic>>.combineLatestMap(_getStreams());
 
     observable.listen(expectAsync((Map<String, dynamic> result) {
       // test to see if the combined output matches
@@ -44,7 +44,7 @@ void main() {
   });
 
   test('rx.Observable.combineLatestMap.asBroadcastStream', () async {
-    Stream<Map<String, dynamic>> observable = new rx.Observable.combineLatestMap(_getStreams(), asBroadcastStream: true);
+    Stream<Map<String, dynamic>> observable = new rx.Observable<Map<String, dynamic>>.combineLatestMap(_getStreams(), asBroadcastStream: true);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -54,7 +54,7 @@ void main() {
   });
 
   test('rx.Observable.combineLatestMap.error.shouldThrow', () async {
-    Stream<Map<String, dynamic>> observableWithError = new rx.Observable.combineLatestMap(_getStreams()..putIfAbsent('d', () => _getErroneousStream()));
+    Stream<Map<String, dynamic>> observableWithError = new rx.Observable<Map<String, dynamic>>.combineLatestMap(_getStreams()..putIfAbsent('d', () => _getErroneousStream()));
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);
