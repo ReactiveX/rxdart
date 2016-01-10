@@ -1,4 +1,4 @@
-library rx.observable.debounce;
+library rx.operators.debounce;
 
 import 'package:rxdart/src/observable/stream.dart';
 
@@ -6,7 +6,6 @@ class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> 
 
   Timer _timer;
   Duration _duration;
-  T _lastValue;
   bool _closeAfterNextEvent = false;
 
   DebounceObservable(Stream<T> stream, Duration duration) : _duration = duration {
@@ -15,22 +14,21 @@ class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> 
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            _resetTimer();
-            _lastValue = value;
+            _resetTimer(value);
           },
-              onError: (e, s) => throwError(e, s),
-              onDone: () => _closeAfterNextEvent = true);
+          onError: (e, s) => throwError(e, s),
+          onDone: () => _closeAfterNextEvent = true);
         },
         onCancel: () => subscription.cancel());
 
     setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
   }
 
-  void _resetTimer() {
+  void _resetTimer(T value) {
     if (_timer != null && _timer.isActive) _timer.cancel();
 
     _timer = new Timer(_duration, () {
-      controller.add(_lastValue);
+      controller.add(value);
 
       if (_closeAfterNextEvent) controller.close();
     });

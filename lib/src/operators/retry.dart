@@ -1,4 +1,4 @@
-library rx.observable.retry;
+library rx.operators.retry;
 
 import 'package:rxdart/src/observable/stream.dart';
 

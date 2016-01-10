@@ -1,4 +1,4 @@
-library rx.observable.throttle;
+library rx.operators.throttle;
 
 import 'package:rxdart/src/observable/stream.dart';
 
@@ -28,7 +28,7 @@ class ThrottleObservable<T> extends StreamObservable<T> with ControllerMixin<T> 
     if (_timer != null && _timer.isActive) return false;
 
     _timer = new Timer(_duration, () {
-      if (_closeAfterNextEvent) controller.close();
+      if (_closeAfterNextEvent && !controller.isClosed) controller.close();
     });
 
     return true;
