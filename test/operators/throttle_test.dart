@@ -1,4 +1,4 @@
-library rx.test.operators.debounce;
+library rx.test.operators.throttle;
 
 import 'dart:async';
 
@@ -34,17 +34,20 @@ Stream _getErroneousStream() {
 }
 
 void main() {
-  test('rx.Observable.debounce', () async {
+  test('rx.Observable.throttle', () async {
+    const List<int> expectedOutput = const <int>[1, 4];
+    int count = 0;
+
     rx.observable(_getStream())
-        .debounce(const Duration(milliseconds: 200))
+        .throttle(const Duration(milliseconds: 250))
         .listen(expectAsync((int result) {
-      expect(result, 4);
-    }, count: 1));
+      expect(result, expectedOutput[count++]);
+    }, count: 2));
   });
 
-  test('rx.Observable.debounce.asBroadcastStream', () async {
+  test('rx.Observable.throttle.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .debounce(const Duration(milliseconds: 200));
+        .throttle(const Duration(milliseconds: 200));
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -53,9 +56,9 @@ void main() {
     expect(true, true);
   });
 
-  test('rx.Observable.debounce.error.shouldThrow', () async {
+  test('rx.Observable.throttle.error.shouldThrow', () async {
     Stream<int> observableWithError = rx.observable(_getErroneousStream())
-        .debounce(const Duration(milliseconds: 200));
+        .throttle(const Duration(milliseconds: 200));
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);

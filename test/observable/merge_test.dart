@@ -45,7 +45,7 @@ void main() {
     expect(true, true);
   });
 
-  test('rx.Observable.combineLatest.error.shouldThrow', () async {
+  test('rx.Observable.merge.error.shouldThrow', () async {
     Stream<int> observableWithError = new rx.Observable<int>.merge(_getStreams()..add(_getErroneousStream()));
 
     observableWithError.listen((_) => {}, onError: (e, s) {

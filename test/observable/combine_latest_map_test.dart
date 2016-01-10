@@ -43,7 +43,7 @@ void main() {
     }, count: 3));
   });
 
-  test('rx.Observable.combineLatest.asBroadcastStream', () async {
+  test('rx.Observable.combineLatestMap.asBroadcastStream', () async {
     Stream<Map<String, dynamic>> observable = new rx.Observable.combineLatestMap(_getStreams(), asBroadcastStream: true);
 
     // listen twice on same stream
@@ -53,7 +53,7 @@ void main() {
     expect(true, true);
   });
 
-  test('rx.Observable.combineLatest.error.shouldThrow', () async {
+  test('rx.Observable.combineLatestMap.error.shouldThrow', () async {
     Stream<Map<String, dynamic>> observableWithError = new rx.Observable.combineLatestMap(_getStreams()..putIfAbsent('d', () => _getErroneousStream()));
 
     observableWithError.listen((_) => {}, onError: (e, s) {
