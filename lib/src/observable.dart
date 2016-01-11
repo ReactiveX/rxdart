@@ -31,6 +31,8 @@ abstract class Observable<T> extends Stream {
 
   Observable mapObservable(dynamic convert(T value));
 
+  Observable whereObservable(bool test(T event));
+
   Observable<T> retry([int count]);
 
   Observable<T> debounce(Duration duration);

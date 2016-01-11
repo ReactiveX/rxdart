@@ -34,6 +34,8 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable mapObservable(dynamic convert(T value)) => new StreamObservable<T>()..setStream(stream.map(convert));
 
+  Observable whereObservable(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
+
   Observable<T> retry([int count]) => new RetryObservable<T>(stream, count);
 
   Observable<T> debounce(Duration duration) => new DebounceObservable<T>(stream, duration);

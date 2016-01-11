@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:html';
 
-import 'package:rxdart/rxdart.dart' as Rx;
+import 'package:rxdart/rx.dart' as rx;
 
 void main() {
   List<int> codes = <int>[
@@ -17,11 +18,16 @@ void main() {
   ];
   Element result = querySelector('#result');
 
-  new Rx.Observable<KeyboardEvent>.fromEvent(document.body, 'keyup')
-      .map((KeyboardEvent e) => e.keyCode )           // get the key code
-      .bufferWithCount(10, 1)                         // get the last 10 keys
-      .filter((List<int> x) => _equal(x, codes))      // where we match
-      .subscribe((_) => result.innerHtml = 'KONAMI!');
+  StreamController<KeyboardEvent> controller = new StreamController<KeyboardEvent>();
+  rx.Observable<KeyboardEvent> stream = rx.observable(controller.stream);
+
+  document.addEventListener('keyup', (KeyboardEvent event) => controller.add(event));
+
+  stream
+    .mapObservable((KeyboardEvent e) => e.keyCode )     // get the key code
+    .bufferWithCount(10, 1)                             // get the last 10 keys
+    .whereObservable((List<int> x) => _equal(x, codes)) // where we match
+    .listen((_) => result.innerHtml = 'KONAMI!');
 }
 
 bool _equal(List<int> a, List<int> b) {
