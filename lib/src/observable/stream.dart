@@ -10,6 +10,8 @@ import 'package:rxdart/src/operators/buffer_with_count.dart' show BufferWithCoun
 import 'package:rxdart/src/operators/window_with_count.dart' show WindowWithCountObservable;
 import 'package:rxdart/src/operators/flat_map.dart' show FlatMapObservable;
 import 'package:rxdart/src/operators/flat_map_latest.dart' show FlatMapLatestObservable;
+import 'package:rxdart/src/operators/take_until.dart' show TakeUntilObservable;
+import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
 
 export 'dart:async';
 
@@ -51,6 +53,10 @@ class StreamObservable<T> extends Observable<T> {
   Observable flatMap(Stream predicate(T value)) => new FlatMapObservable(stream, predicate);
 
   Observable flatMapLatest(Stream predicate(T value)) => new FlatMapLatestObservable(stream, predicate);
+
+  Observable takeUntil(Stream otherStream) => new TakeUntilObservable(stream, otherStream);
+
+  Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]) => new ScanObservable(stream, predicate, seed);
 }
 
 abstract class ControllerMixin<T> {

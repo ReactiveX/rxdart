@@ -12,6 +12,8 @@ import 'operators/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'operators/window_with_count_test.dart' as window_with_count_test;
 import 'operators/flat_map_test.dart' as flat_map_test;
 import 'operators/flat_map_latest_test.dart' as flat_map_latest_test;
+import 'operators/take_until_test.dart' as take_until_test;
+import 'operators/scan_test.dart' as scan_test;
 
 void main() {
   stream_test.main();
@@ -26,4 +28,6 @@ void main() {
   window_with_count_test.main();
   flat_map_test.main();
   flat_map_latest_test.main();
+  take_until_test.main();
+  scan_test.main();
 }

@@ -47,4 +47,8 @@ abstract class Observable<T> extends Stream {
 
   Observable flatMapLatest(Stream predicate(T value));
 
+  Observable takeUntil(Stream otherStream);
+
+  Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]);
+
 }

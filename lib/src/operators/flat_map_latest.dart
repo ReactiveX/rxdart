@@ -5,7 +5,6 @@ import 'package:rxdart/src/observable/stream.dart';
 class FlatMapLatestObservable<T, S> extends StreamObservable<T> {
 
   StreamController<S> controller;
-  Stream<S> _otherStream;
   bool _closeAfterNextEvent = false;
 
   FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {
@@ -13,16 +12,17 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<T> {
     StreamSubscription<S> otherSubscription;
     int count = 0;
 
+    stream = stream.asBroadcastStream();
+
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
             if (otherSubscription != null) otherSubscription.cancel();
 
             int current = ++count;
+            StreamObservable<S> observable = new StreamObservable<S>()..setStream(predicate(value));
 
-            _otherStream = predicate(value);
-
-            otherSubscription = _otherStream.takeWhile((_) => current == count).listen((S otherValue) => controller.add(otherValue),
+            otherSubscription = observable.takeUntil(stream).listen((S otherValue) => controller.add(otherValue),
                 onError: (e, s) => controller.addError(e, s),
                 onDone: () {
                   if (_closeAfterNextEvent) controller.close();
