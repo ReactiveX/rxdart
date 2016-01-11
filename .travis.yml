@@ -4,13 +4,13 @@ sudo: false
 dart:
 - stable
 - dev
-with_content_shell: true
+with_content_shell: false
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 script:
   - set -e
-  - pub run test -p content-shell test/all_tests.html
+  - pub run test -p test/rx_test.dart
 after_success:
   - pub global activate dart_coveralls
-  - pub global run dart_coveralls:dart_coveralls report --debug --exclude-test-files --token=$REPO_TOKEN test/all_tests.dart
+  - pub global run dart_coveralls:dart_coveralls report --debug --exclude-test-files --token=$REPO_TOKEN test/rx_test.dart
