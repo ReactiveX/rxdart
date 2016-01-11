@@ -11,6 +11,7 @@ import 'operators/retry_test.dart' as retry_test;
 import 'operators/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'operators/window_with_count_test.dart' as window_with_count_test;
 import 'operators/flat_map_test.dart' as flat_map_test;
+import 'operators/flat_map_latest_test.dart' as flat_map_latest_test;
 
 void main() {
   stream_test.main();
@@ -24,4 +25,5 @@ void main() {
   buffer_with_count_test.main();
   window_with_count_test.main();
   flat_map_test.main();
+  flat_map_latest_test.main();
 }

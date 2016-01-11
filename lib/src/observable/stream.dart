@@ -9,6 +9,7 @@ import 'package:rxdart/src/operators/throttle.dart' show ThrottleObservable;
 import 'package:rxdart/src/operators/buffer_with_count.dart' show BufferWithCountObservable;
 import 'package:rxdart/src/operators/window_with_count.dart' show WindowWithCountObservable;
 import 'package:rxdart/src/operators/flat_map.dart' show FlatMapObservable;
+import 'package:rxdart/src/operators/flat_map_latest.dart' show FlatMapLatestObservable;
 
 export 'dart:async';
 
@@ -48,6 +49,8 @@ class StreamObservable<T> extends Observable<T> {
   Observable<Stream<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream, count, skip) as Observable<Stream<T>>;
 
   Observable flatMap(Stream predicate(T value)) => new FlatMapObservable(stream, predicate);
+
+  Observable flatMapLatest(Stream predicate(T value)) => new FlatMapLatestObservable(stream, predicate);
 }
 
 abstract class ControllerMixin<T> {

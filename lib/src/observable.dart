@@ -45,4 +45,6 @@ abstract class Observable<T> extends Stream {
 
   Observable flatMap(Stream predicate(T value));
 
+  Observable flatMapLatest(Stream predicate(T value));
+
 }

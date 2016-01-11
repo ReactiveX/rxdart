@@ -10,16 +10,21 @@ class FlatMapObservable<T, S> extends StreamObservable<T> {
 
   FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
     StreamSubscription<T> subscription;
+    List<Stream<S>> streams = <Stream<S>>[];
 
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            _otherStream = predicate(value);
+            Stream<S> otherStream = predicate(value);
 
-            _otherStream.listen((S otherValue) => controller.add(otherValue),
+            streams.add(otherStream);
+
+            otherStream.listen((S otherValue) => controller.add(otherValue),
               onError: (e, s) => controller.addError(e, s),
               onDone: () {
-                if (_closeAfterNextEvent) controller.close();
+                streams.remove(otherStream);
+
+                if (_closeAfterNextEvent && streams.isEmpty) controller.close();
               });
           },
           onError: (e, s) => controller.addError(e, s),
