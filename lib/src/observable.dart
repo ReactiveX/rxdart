@@ -31,7 +31,7 @@ abstract class Observable<T> extends Stream {
 
   Observable map(dynamic convert(T value));
 
-  Observable where(bool test(T event));
+  Observable<T> where(bool test(T event));
 
   Observable<T> retry([int count]);
 
@@ -39,8 +39,10 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> throttle(Duration duration);
 
-  Observable<T> bufferWithCount(int count, [int skip]);
+  Observable<List<T>> bufferWithCount(int count, [int skip]);
 
-  Observable<T> windowWithCount(int count, [int skip]);
+  Observable<Stream<T>> windowWithCount(int count, [int skip]);
+
+  Observable flatMap(Stream predicate(T value));
 
 }

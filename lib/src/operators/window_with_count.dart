@@ -14,8 +14,8 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
 
     controller = new StreamController<S>(sync: true,
         onListen: () {
-          subscription = (observable
-              .bufferWithCount(count, skip) as StreamObservable<Iterable<T>>)
+          subscription = observable
+              .bufferWithCount(count, skip)
               .map((Iterable<T> value) => new StreamObservable<T>()..setStream(new Stream<T>.fromIterable(value)))
               .listen((StreamObservable<T> value) => controller.add(value),
             onError: (e, s) => controller.addError(e, s),
