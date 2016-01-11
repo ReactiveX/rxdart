@@ -29,9 +29,9 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
 
-  Observable mapObservable(dynamic convert(T value));
+  Observable map(dynamic convert(T value));
 
-  Observable whereObservable(bool test(T event));
+  Observable where(bool test(T event));
 
   Observable<T> retry([int count]);
 

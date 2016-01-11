@@ -24,9 +24,9 @@ void main() {
   document.addEventListener('keyup', (KeyboardEvent event) => controller.add(event));
 
   stream
-    .mapObservable((KeyboardEvent e) => e.keyCode )     // get the key code
-    .bufferWithCount(10, 1)                             // get the last 10 keys
-    .whereObservable((List<int> x) => _equal(x, codes)) // where we match
+    .map((KeyboardEvent e) => e.keyCode )     // get the key code
+    .bufferWithCount(10, 1)                   // get the last 10 keys
+    .where((List<int> x) => _equal(x, codes)) // where we match
     .listen((_) => result.innerHtml = 'KONAMI!');
 }
 

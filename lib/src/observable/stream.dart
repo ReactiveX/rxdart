@@ -32,9 +32,9 @@ class StreamObservable<T> extends Observable<T> {
       void onDone(),
       bool cancelOnError }) => stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  Observable mapObservable(dynamic convert(T value)) => new StreamObservable<T>()..setStream(stream.map(convert));
+  Observable map(dynamic convert(T value)) => new StreamObservable<T>()..setStream(stream.map(convert));
 
-  Observable whereObservable(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
+  Observable where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
 
   Observable<T> retry([int count]) => new RetryObservable<T>(stream, count);
 
