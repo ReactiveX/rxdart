@@ -5,7 +5,7 @@ import 'package:rxdart/src/observable/stream.dart';
 class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
   Timer _timer;
-  Duration _duration;
+  final Duration _duration;
   bool _closeAfterNextEvent = false;
 
   DebounceObservable(Stream<T> stream, Duration duration) : _duration = duration {

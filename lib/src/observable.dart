@@ -15,6 +15,14 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.fromStream(Stream stream) => observable(stream) as Observable<T>;
 
+  factory Observable.fromFuture(Future<T> future) => observable((new Stream.fromFuture(future)));
+
+  factory Observable.fromIterable(Iterable<T> data) => observable((new Stream.fromIterable(data)));
+
+  factory Observable.periodic(Duration period, [T computation(int computationCount)]) => observable((new Stream.periodic(period, computation)));
+
+  factory Observable.eventTransformed(Stream source, EventSink mapSink(EventSink<T> sink)) => observable((new Stream.eventTransformed(source, mapSink)));
+
   factory Observable.combineLatest(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, predicate, asBroadcastStream);
 
   factory Observable.combineLatestMap(Map<String, Stream> streamMap, {asBroadcastStream: false}) => new CombineLatestObservableMap(streamMap, asBroadcastStream);
@@ -28,5 +36,9 @@ abstract class Observable<T> extends Stream {
   Observable<T> debounce(Duration duration);
 
   Observable<T> throttle(Duration duration);
+
+  Observable<T> bufferWithCount(int count, [int skip]);
+
+  Observable<T> windowWithCount(int count, [int skip]);
 
 }
