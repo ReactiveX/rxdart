@@ -1,13 +1,22 @@
 import 'dart:html';
+import 'dart:async';
 
-import 'package:rxdart/rxdart.dart' as Rx;
+import 'package:rxdart/rx.dart' as Rx;
+
+Rx.Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
+  final StreamController<MouseEvent> controller = new StreamController<MouseEvent>.broadcast();
+
+  document.body.addEventListener(mouseEvent, controller.add);
+
+  return Rx.observable(controller.stream);
+}
 
 void main() {
   final Element dragTarget = querySelector('#dragTarget');
   
-  Rx.Observable<MouseEvent> mouseUp = new Rx.Observable<MouseEvent>.fromEvent(dragTarget, 'mouseup');
-  Rx.Observable<MouseEvent> mouseMove = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousemove');
-  Rx.Observable<Map<String, int>> mouseDown = new Rx.Observable<MouseEvent>.fromEvent(dragTarget, 'mousedown')
+  Rx.Observable<MouseEvent> mouseUp = _getMouseObservable('mouseup');
+  Rx.Observable<MouseEvent> mouseMove = _getMouseObservable('mousemove');
+  Rx.Observable<Map<String, int>> mouseDown = _getMouseObservable('mousedown')
     .map((e) {
       e.preventDefault();
       
@@ -18,7 +27,7 @@ void main() {
       (Map<String, int> e) => mouseMove
         .map((MouseEvent pos) => { 'left': pos.client.x - e['left'], 'top': pos.client.y - e['top'] })
         .takeUntil(mouseUp))
-      .subscribe((e) {
+      .listen((e) {
         dragTarget.style.top = '${e['top']}px';
         dragTarget.style.left = '${e['left']}px';
       });

@@ -12,6 +12,8 @@ import 'package:rxdart/src/operators/flat_map.dart' show FlatMapObservable;
 import 'package:rxdart/src/operators/flat_map_latest.dart' show FlatMapLatestObservable;
 import 'package:rxdart/src/operators/take_until.dart' show TakeUntilObservable;
 import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
+import 'package:rxdart/src/operators/tap.dart' show TapObservable;
+import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
 
 export 'dart:async';
 
@@ -57,6 +59,10 @@ class StreamObservable<T> extends Observable<T> {
   Observable takeUntil(Stream otherStream) => new TakeUntilObservable(stream, otherStream);
 
   Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]) => new ScanObservable(stream, predicate, seed);
+
+  Observable<T> tap(void action(T value)) => new TapObservable(stream, action);
+
+  Observable<T> startWith(T startValue) => new StartWithObservable(stream, startValue);
 }
 
 abstract class ControllerMixin<T> {

@@ -51,4 +51,8 @@ abstract class Observable<T> extends Stream {
 
   Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]);
 
+  Observable<T> tap(void action(T value));
+
+  Observable<T> startWith(T startValue);
+
 }

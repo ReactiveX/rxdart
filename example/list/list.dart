@@ -1,15 +1,32 @@
 import 'dart:html';
 import 'dart:math';
+import 'dart:async';
 
 import 'package:react/react.dart' as react;
 import 'package:react/react_client.dart';
-import 'package:rxdart/rxdart.dart' as Rx;
+import 'package:rxdart/rx.dart' as Rx;
 import 'package:faker/faker.dart';
 
 const int count = 100;
 const int rowHeight = 24;
 
 int visibleRowCount() => (document.body.client.height ~/ rowHeight) + 3;
+
+Rx.Observable<Event> _getResizeObservable() {
+  final StreamController<Event> controller = new StreamController<Event>.broadcast();
+
+  document.body.addEventListener('resize', controller.add);
+
+  return Rx.observable(controller.stream);
+}
+
+Rx.Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
+  final StreamController<MouseEvent> controller = new StreamController<MouseEvent>.broadcast();
+
+  document.body.addEventListener(mouseEvent, controller.add);
+
+  return Rx.observable(controller.stream);
+}
 
 /* VIRTUAL LIST
  * ------------
@@ -28,11 +45,11 @@ void main() {
   react.render(react.registerComponent(() => renderer)({}), querySelector('#content'));
   
   // Rx
-  final Rx.Observable<Event> resize = new Rx.Observable<Event>.fromEvent(document.body, 'resize');
-  final Rx.Observable<MouseEvent> mouseDown = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousedown');
-  final Rx.Observable<MouseEvent> mouseUp = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mouseup');
-  final Rx.Observable<MouseEvent> mouseMove = new Rx.Observable<MouseEvent>.fromEvent(document.body, 'mousemove');
-  final Rx.Observable<WheelEvent> mouseWheel = new Rx.Observable<WheelEvent>.fromEvent(document.body, 'mousewheel');
+  final Rx.Observable<Event> resize = _getResizeObservable();
+  final Rx.Observable<MouseEvent> mouseDown = _getMouseObservable('mousedown');
+  final Rx.Observable<MouseEvent> mouseUp = _getMouseObservable('mouseup');
+  final Rx.Observable<MouseEvent> mouseMove = _getMouseObservable('mousemove');
+  final Rx.Observable<WheelEvent> mouseWheel = _getMouseObservable('mousewheel');
   
   final Rx.Observable<int> dragOffset = new Rx.Observable.merge([
     mouseDown
@@ -45,7 +62,7 @@ void main() {
       .map((e) => (e.deltaY * -.075).toInt()),
     resize
       .map((_) => 0)
-  ]).startWith([0]);
+  ], asBroadcastStream: true).startWith(0);
   
   final Rx.Observable<int> accumulatedOffset = dragOffset
     .scan((int a, c, index) {
@@ -58,21 +75,22 @@ void main() {
   
   final Rx.Observable<int> displayedIndices = resize
     .map((_) => visibleRowCount())
-    .startWith([visibleRowCount()]);
+    .startWith(visibleRowCount());
   
   final Rx.Observable<Map<String, int>> displayedRange = new Rx.Observable.combineLatest([
     displayedIndices,
     accumulatedOffset
-  ], (int maxIndex, int offset) => {'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight});
+  ], (int maxIndex, int offset) => {'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
   
   final Rx.Observable<List<Person>> displayedPeople = displayedRange
-    .flatMap((o) => new Rx.Observable.just(fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))));
+    .flatMap((o) => new Rx.Observable.fromIterable([fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]));
+
+  displayedIndices.listen(print);
   
-  new Rx.Observable.combineLatest([
-    displayedPeople,
-    accumulatedOffset
-  ], (List<Person> people, int offset) => {'offset': offset, 'people': people})
-    .subscribe(renderer.setState);
+  new Rx.Observable.combineLatestMap(<String, Stream>{
+    'people': displayedPeople,
+    'offset': accumulatedOffset
+  }).listen(renderer.setState);
 }
 
 class _ListRenderer extends react.Component {
