@@ -62,7 +62,7 @@ void main() {
       .map((e) => (e.deltaY * -.075).toInt()),
     resize
       .map((_) => 0)
-  ], asBroadcastStream: true).startWith(0);
+  ], asBroadcastStream: true).startWith([0]);
   
   final Rx.Observable<int> accumulatedOffset = dragOffset
     .scan((int a, c, index) {
@@ -75,7 +75,7 @@ void main() {
   
   final Rx.Observable<int> displayedIndices = resize
     .map((_) => visibleRowCount())
-    .startWith(visibleRowCount());
+    .startWith([visibleRowCount()]);
   
   final Rx.Observable<Map<String, int>> displayedRange = new Rx.Observable.combineLatest([
     displayedIndices,

@@ -14,6 +14,7 @@ import 'package:rxdart/src/operators/take_until.dart' show TakeUntilObservable;
 import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
 import 'package:rxdart/src/operators/tap.dart' show TapObservable;
 import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
+import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
 
 export 'dart:async';
 
@@ -62,7 +63,9 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable<T> tap(void action(T value)) => new TapObservable(stream, action);
 
-  Observable<T> startWith(T startValue) => new StartWithObservable(stream, startValue);
+  Observable<T> startWith(List<T> startValues) => new StartWithObservable(stream, startValues);
+
+  Observable<T> repeat(int repeatCount) => new RepeatObservable(stream, repeatCount);
 }
 
 abstract class ControllerMixin<T> {

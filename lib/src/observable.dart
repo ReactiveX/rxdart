@@ -53,6 +53,8 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> tap(void action(T value));
 
-  Observable<T> startWith(T startValue);
+  Observable<T> startWith(List<T> startValues);
+
+  Observable<T> repeat(int repeatCount);
 
 }

@@ -1,4 +1,4 @@
-library rx.test.operators.start_with;
+library rx.test.operators.repeat;
 
 import 'dart:async';
 
@@ -22,20 +22,20 @@ Stream _getErroneousStream() {
 }
 
 void main() {
-  test('rx.Observable.startWith', () async {
-    const List<int> expectedOutput = const <int>[5, 6, 1, 2, 3, 4];
+  test('rx.Observable.repeat', () async {
+    const List<int> expectedOutput = const <int>[1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4];
     int count = 0;
 
     rx.observable(_getStream())
-        .startWith([5, 6])
+        .repeat(3)
         .listen(expectAsync((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.startWith.asBroadcastStream', () async {
+  test('rx.Observable.repeat.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .startWith([5, 6]);
+        .repeat(3);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -44,9 +44,9 @@ void main() {
     expect(true, true);
   });
 
-  test('rx.Observable.startWith.error.shouldThrow', () async {
+  test('rx.Observable.repeat.error.shouldThrow', () async {
     Stream<int> observableWithError = rx.observable(_getErroneousStream())
-        .startWith([5, 6]);
+        .repeat(3);
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);
