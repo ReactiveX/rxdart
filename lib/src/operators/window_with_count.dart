@@ -19,7 +19,7 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
               .map((Iterable<T> value) => new StreamObservable<T>()..setStream(new Stream<T>.fromIterable(value)))
               .listen((StreamObservable<T> value) => controller.add(value),
             onError: (e, s) => controller.addError(e, s),
-            onDone: () => controller.close());
+            onDone: () => controller.close()) as StreamSubscription<T>;
         },
         onCancel: () => subscription.cancel());
 

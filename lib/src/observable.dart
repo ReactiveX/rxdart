@@ -15,13 +15,13 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.fromStream(Stream stream) => observable(stream) as Observable<T>;
 
-  factory Observable.fromFuture(Future<T> future) => observable((new Stream.fromFuture(future)));
+  factory Observable.fromFuture(Future<T> future) => observable((new Stream<T>.fromFuture(future))) as Observable<T>;
 
-  factory Observable.fromIterable(Iterable<T> data) => observable((new Stream.fromIterable(data)));
+  factory Observable.fromIterable(Iterable<T> data) => observable((new Stream<T>.fromIterable(data))) as Observable<T>;
 
-  factory Observable.periodic(Duration period, [T computation(int computationCount)]) => observable((new Stream.periodic(period, computation)));
+  factory Observable.periodic(Duration period, [T computation(int computationCount)]) => observable((new Stream<T>.periodic(period, computation))) as Observable<T>;
 
-  factory Observable.eventTransformed(Stream source, EventSink mapSink(EventSink<T> sink)) => observable((new Stream.eventTransformed(source, mapSink)));
+  factory Observable.eventTransformed(Stream source, EventSink mapSink(EventSink<T> sink)) => observable((new Stream<T>.eventTransformed(source, mapSink))) as Observable<T>;
 
   factory Observable.combineLatest(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, predicate, asBroadcastStream);
 

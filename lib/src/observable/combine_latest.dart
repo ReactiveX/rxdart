@@ -46,7 +46,7 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
     T result;
 
     try {
-      result = Function.apply(predicate, values);
+      result = Function.apply(predicate, values) as T;
       assert(result is T || result == null);
     } catch (e, s) {
       throwError(e, s);

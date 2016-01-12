@@ -18,7 +18,7 @@ class CombineLatestObservableMap<T extends Map<String, dynamic>> extends StreamO
             triggered[stream] = true;
 
             if (triggered.values.reduce((bool a, bool b) => a && b)) {
-              final T result = <String, dynamic>{};
+              final T result = <String, dynamic>{} as T;
 
               streamMap.forEach((String key, Stream stream) => result[key] = values[stream]);
 

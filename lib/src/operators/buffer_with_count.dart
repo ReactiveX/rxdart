@@ -19,7 +19,7 @@ class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<T
 
     bufferKeep = count - ((skip == null) ? count : skip);
     StreamSubscription<T> subscription;
-    S buffer = <T>[];
+    S buffer = <T>[] as S;
 
     controller = new StreamController<S>(sync: true,
         onListen: () {
