@@ -11,7 +11,7 @@ while that dependency made things easy, it also meant that rxdart would be a bro
 Some notes:
 - Observable is the main class, it extends Stream obviously
 - Promote a stream to observable by wrapping it => rx.observable(myStream)
-- That doesn't mean wrapping everywhere, ```dartnew rx.Observable.merge(<Stream>[a, b, c, ...]);``` is fine
+- That doesn't mean wrapping everywhere, ```dart new rx.Observable.merge(<Stream>[a, b, c, ...]);``` is fine
 - Subject is not ported, we already have StreamController for that
 
 **Example:**
