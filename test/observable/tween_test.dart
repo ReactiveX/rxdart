@@ -114,13 +114,13 @@ void main() {
 
     new rx.Observable.zip(<Stream>[
       new rx.Observable<double>.tweenLinear(
-          0.0, 100.0, const Duration(seconds: 2)),
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
       new rx.Observable<double>.tweenQuadraticEaseIn(
-          0.0, 100.0, const Duration(seconds: 2)),
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
       new rx.Observable<double>.tweenQuadraticEaseOut(
-          0.0, 100.0, const Duration(seconds: 2)),
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
       new rx.Observable<double>.tweenQuadraticEaseInOut(
-          0.0, 100.0, const Duration(seconds: 2))
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)
     ], (double a, double b, double c, double d) => <double>[a, b, c, d])
         .map((List<double> values) =>
           values.map((double value) => (value * 100).round() / 100))

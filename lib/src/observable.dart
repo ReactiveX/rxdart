@@ -34,16 +34,15 @@ abstract class Observable<T> extends Stream {
 
   /* Tweening */
 
-  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration) {
+  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
     final StreamController<double> controller = new StreamController<double>();
-    const int interval = 20;
-    const Duration intervalDuration = const Duration(milliseconds: interval);
+    final Duration intervalDuration = new Duration(milliseconds: intervalMs);
     int currentTimeMs = 0;
 
     controller.add(startValue);
 
     new Timer.periodic(intervalDuration, (Timer timer) {
-      currentTimeMs += interval;
+      currentTimeMs += intervalMs;
 
       controller.add(changeInTime * currentTimeMs / duration.inMilliseconds + startValue);
 
@@ -57,7 +56,7 @@ abstract class Observable<T> extends Stream {
     return new StreamObservable()..setStream(controller.stream);
   }
 
-  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration) {
+  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
     final StreamController<double> controller = new StreamController<double>();
     const int interval = 20;
     const Duration intervalDuration = const Duration(milliseconds: interval);
@@ -82,7 +81,7 @@ abstract class Observable<T> extends Stream {
     return new StreamObservable()..setStream(controller.stream);
   }
 
-  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration) {
+  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
     final StreamController<double> controller = new StreamController<double>();
     const int interval = 20;
     const Duration intervalDuration = const Duration(milliseconds: interval);
@@ -107,7 +106,7 @@ abstract class Observable<T> extends Stream {
     return new StreamObservable()..setStream(controller.stream);
   }
 
-  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration) {
+  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
     final StreamController<double> controller = new StreamController<double>();
     const int interval = 20;
     const Duration intervalDuration = const Duration(milliseconds: interval);
