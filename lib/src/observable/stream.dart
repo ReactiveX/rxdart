@@ -15,6 +15,7 @@ import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
 import 'package:rxdart/src/operators/tap.dart' show TapObservable;
 import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
 import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
+import 'package:rxdart/src/operators/replay.dart' show ReplayObservable;
 
 export 'dart:async';
 
@@ -57,15 +58,17 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable flatMapLatest(Stream predicate(T value)) => new FlatMapLatestObservable(stream, predicate);
 
-  Observable takeUntil(Stream otherStream) => new TakeUntilObservable(stream, otherStream);
+  Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(stream, otherStream);
 
   Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]) => new ScanObservable(stream, predicate, seed);
 
-  Observable<T> tap(void action(T value)) => new TapObservable(stream, action);
+  Observable<T> tap(void action(T value)) => new TapObservable<T>(stream, action);
 
-  Observable<T> startWith(List<T> startValues) => new StartWithObservable(stream, startValues);
+  Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(stream, startValues);
 
-  Observable<T> repeat(int repeatCount) => new RepeatObservable(stream, repeatCount);
+  Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream, repeatCount);
+
+  Observable<T> replay([int bufferSize]) => new ReplayObservable<T>(stream, bufferSize);
 }
 
 abstract class ControllerMixin<T> {

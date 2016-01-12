@@ -9,13 +9,13 @@ class StartWithObservable<T> extends StreamObservable<T> with ControllerMixin<T>
 
     controller = new StreamController<T>(sync: true,
         onListen: () {
+          startValues.forEach(controller.add);
+
           subscription = stream.listen(controller.add,
             onError: (e, s) => throwError(e, s),
             onDone: controller.close);
         },
         onCancel: () => subscription.cancel());
-
-    startValues.forEach(controller.add);
 
     setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
   }

@@ -57,4 +57,6 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> repeat(int repeatCount);
 
+  Observable<T> replay([int bufferSize]);
+
 }

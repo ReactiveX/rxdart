@@ -17,6 +17,7 @@ import 'operators/scan_test.dart' as scan_test;
 import 'operators/tap_test.dart' as tap_test;
 import 'operators/start_with_test.dart' as start_with_test;
 import 'operators/repeat_test.dart' as repeat_test;
+import 'operators/replay_test.dart' as replay_test;
 
 void main() {
   stream_test.main();
@@ -36,4 +37,5 @@ void main() {
   tap_test.main();
   start_with_test.main();
   repeat_test.main();
+  replay_test.main();
 }
