@@ -68,7 +68,7 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream, repeatCount);
 
-  Observable<T> replay([int bufferSize]) => new ReplayObservable<T>(stream, bufferSize);
+  Observable<T> replay([int bufferSize = 0]) => new ReplayObservable<T>(stream, bufferSize);
 }
 
 abstract class ControllerMixin<T> {

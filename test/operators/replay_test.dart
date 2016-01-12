@@ -34,7 +34,7 @@ Stream _getErroneousStream() {
 void main() {
   test('rx.Observable.replay', () async {
     const List<int> expectedOutput = const <int>[1, 2, 3, 4];
-    rx.Observable<int> stream = rx.observable(_getStream()).replay(4);
+    rx.Observable<int> stream = rx.observable(_getStream()).replay();
     int count = 0, count2 = 0;
 
     stream
