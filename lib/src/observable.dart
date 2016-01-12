@@ -6,6 +6,7 @@ import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/combine_latest.dart' show CombineLatestObservable;
 import 'package:rxdart/src/observable/combine_latest_map.dart' show CombineLatestObservableMap;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
+import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
 
 Observable observable(Stream stream) => new StreamObservable()..setStream(stream);
 
@@ -28,6 +29,8 @@ abstract class Observable<T> extends Stream {
   factory Observable.combineLatestMap(Map<String, Stream> streamMap, {asBroadcastStream: false}) => new CombineLatestObservableMap(streamMap, asBroadcastStream);
 
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
+
+  factory Observable.zip(Iterable<Stream> streams, {asBroadcastStream: false}) => new ZipObservable(streams, asBroadcastStream);
 
   Observable map(dynamic convert(T value));
 

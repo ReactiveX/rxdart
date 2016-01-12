@@ -4,6 +4,7 @@ import 'observable/stream_test.dart' as stream_test;
 import 'observable/combine_latest_test.dart' as combine_latest_test;
 import 'observable/combine_latest_map_test.dart' as combine_latest_map_test;
 import 'observable/merge_test.dart' as merge_test;
+import 'observable/zip_test.dart' as zip_test;
 
 import 'operators/debounce_test.dart' as debounce_test;
 import 'operators/throttle_test.dart' as throttle_test;
@@ -24,6 +25,7 @@ void main() {
   combine_latest_test.main();
   combine_latest_map_test.main();
   merge_test.main();
+  zip_test.main();
 
   debounce_test.main();
   throttle_test.main();

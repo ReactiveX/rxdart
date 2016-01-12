@@ -27,7 +27,7 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<T> {
                 });
             },
             onError: (e, s) => controller.addError(e, s),
-            onDone: () => _closeAfterNextEvent = true) as StreamSubscription<S>;
+            onDone: () => _closeAfterNextEvent = true);
         },
         onCancel: () => subscription.cancel());
 
