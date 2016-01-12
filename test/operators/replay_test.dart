@@ -12,7 +12,11 @@ Stream _getStream() {
   controller.add(2);
   controller.add(3);
   controller.add(4);
-  controller.close();
+
+  new Timer(const Duration(milliseconds: 400), () {
+    controller.add(5);
+    controller.close();
+  });
 
   return controller.stream.asBroadcastStream();
 }
@@ -33,12 +37,14 @@ Stream _getErroneousStream() {
 
 void main() {
   test('rx.Observable.replay', () async {
-    const List<int> expectedOutput = const <int>[1, 2, 3, 4];
+    const List<int> expectedOutput = const <int>[1, 2, 3, 4, 5];
     rx.Observable<int> stream = rx.observable(_getStream()).replay();
     int count = 0, count2 = 0;
 
     stream
-      .listen((_) { /* ignore */ });
+      .listen((int result) {
+        expect(expectedOutput[count++], result);
+      });
 
     new Timer(const Duration(milliseconds: 200), () {
       stream

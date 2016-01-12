@@ -45,6 +45,8 @@ class ReplayObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
     buffer.forEach(controller.add);
 
+    gobalDataIndex += buffer.length;
+
     return subscription;
   }
 
