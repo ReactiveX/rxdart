@@ -30,7 +30,7 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
 
-  factory Observable.zip(Iterable<Stream> streams, {asBroadcastStream: false}) => new ZipObservable(streams, asBroadcastStream);
+  factory Observable.zip(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
 
   Observable map(dynamic convert(T value));
 

@@ -6,7 +6,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class ZipObservable<T extends List> extends StreamObservable<T> with ControllerMixin<T> {
 
-  ZipObservable(Iterable<Stream> streams, bool asBroadcastStream) {
+  ZipObservable(Iterable<Stream> streams, Function predicate, bool asBroadcastStream) {
     final List<StreamSubscription> subscriptions = new List<StreamSubscription>(streams.length);
 
     controller = new StreamController<T>(sync: true,
@@ -34,7 +34,7 @@ class ZipObservable<T extends List> extends StreamObservable<T> with ControllerM
               if (list.length == values.length) {
                 values.forEach((Queue q) => q.removeFirst());
 
-                controller.add(list);
+                updateWithValues(predicate, list);
 
                 break;
               }
@@ -61,6 +61,19 @@ class ZipObservable<T extends List> extends StreamObservable<T> with ControllerM
     );
 
     setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
+  }
+
+  void updateWithValues(Function predicate, Iterable values) {
+    T result;
+
+    try {
+      result = Function.apply(predicate, values) as T;
+      assert(result is T || result == null);
+    } catch (e, s) {
+      throwError(e, s);
+    }
+
+    controller.add(result);
   }
 
 }

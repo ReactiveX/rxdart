@@ -28,7 +28,7 @@ void main() {
     const List<List> expectedOutput = const <dynamic>[const <dynamic>[0, 1, true], const <dynamic>[1, 2, false], const <dynamic>[2, 3, true], const <dynamic>[3, 4, false]];
     int count = 0;
 
-    Stream<List> observable = new rx.Observable.zip(_getStreams());
+    Stream<List> observable = new rx.Observable.zip(_getStreams(), (int a, int b, bool c) => [a, b, c]);
 
     observable.listen(expectAsync((List result) {
       // test to see if the combined output matches
@@ -40,7 +40,7 @@ void main() {
   });
 
   test('rx.Observable.zip.asBroadcastStream', () async {
-    Stream<List> observable = new rx.Observable.zip(_getStreams(), asBroadcastStream: true);
+    Stream<List> observable = new rx.Observable.zip(_getStreams(), (int a, int b, bool c) => [a, b, c], asBroadcastStream: true);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -50,7 +50,7 @@ void main() {
   });
 
   test('rx.Observable.zip.error.shouldThrow', () async {
-    Stream<List> observableWithError = new rx.Observable.zip(_getStreams()..add(_getErroneousStream()));
+    Stream<List> observableWithError = new rx.Observable.zip(_getStreams()..add(_getErroneousStream()), (int a, int b, bool c) => [a, b, c]);
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);
