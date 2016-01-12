@@ -13,4 +13,4 @@ script:
   - pub run test test/rx_test.dart
 after_success:
   - pub global activate dart_coveralls
-  - pub global run dart_coveralls:dart_coveralls report --debug --exclude-test-files --token=$REPO_TOKEN test/rx_test.dart
+  - pub global run dart_coveralls:dart_coveralls report --debug --exclude-test-files --token=$REPO_TOKEN test/rxdart_test.dart
