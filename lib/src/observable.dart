@@ -32,9 +32,140 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.zip(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
 
+  /* Tweening */
+
+  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration) {
+    final StreamController<double> controller = new StreamController<double>();
+    const int interval = 20;
+    const Duration intervalDuration = const Duration(milliseconds: interval);
+    int currentTimeMs = 0;
+
+    controller.add(startValue);
+
+    new Timer.periodic(intervalDuration, (Timer timer) {
+      currentTimeMs += interval;
+
+      controller.add(changeInTime * currentTimeMs / duration.inMilliseconds + startValue);
+
+      if (currentTimeMs >= duration.inMilliseconds) {
+        timer.cancel();
+
+        controller.close();
+      }
+    });
+
+    return new StreamObservable()..setStream(controller.stream);
+  }
+
+  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration) {
+    final StreamController<double> controller = new StreamController<double>();
+    const int interval = 20;
+    const Duration intervalDuration = const Duration(milliseconds: interval);
+    int currentTimeMs = 0;
+
+    controller.add(startValue);
+
+    new Timer.periodic(intervalDuration, (Timer timer) {
+      currentTimeMs += interval;
+
+      final double t = currentTimeMs / duration.inMilliseconds;
+
+      controller.add(changeInTime * t * t + startValue);
+
+      if (currentTimeMs >= duration.inMilliseconds) {
+        timer.cancel();
+
+        controller.close();
+      }
+    });
+
+    return new StreamObservable()..setStream(controller.stream);
+  }
+
+  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration) {
+    final StreamController<double> controller = new StreamController<double>();
+    const int interval = 20;
+    const Duration intervalDuration = const Duration(milliseconds: interval);
+    int currentTimeMs = 0;
+
+    controller.add(startValue);
+
+    new Timer.periodic(intervalDuration, (Timer timer) {
+      currentTimeMs += interval;
+
+      final double t = currentTimeMs / duration.inMilliseconds;
+
+      controller.add(-changeInTime * t * (t - 2) + startValue);
+
+      if (currentTimeMs >= duration.inMilliseconds) {
+        timer.cancel();
+
+        controller.close();
+      }
+    });
+
+    return new StreamObservable()..setStream(controller.stream);
+  }
+
+  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration) {
+    final StreamController<double> controller = new StreamController<double>();
+    const int interval = 20;
+    const Duration intervalDuration = const Duration(milliseconds: interval);
+    int currentTimeMs = 0;
+
+    controller.add(startValue);
+
+    new Timer.periodic(intervalDuration, (Timer timer) {
+      currentTimeMs += interval;
+
+      double t = currentTimeMs / (duration.inMilliseconds / 2);
+
+      if (t < 1.0) controller.add(changeInTime / 2 * t * t + startValue);
+      else {
+        t--;
+
+        controller.add(-changeInTime / 2 * (t * (t - 2) - 1) + startValue);
+      }
+
+      if (currentTimeMs >= duration.inMilliseconds) {
+        timer.cancel();
+
+        controller.close();
+      }
+    });
+
+    return new StreamObservable()..setStream(controller.stream);
+  }
+
+  /* Regular */
+
+  Observable asBroadcastStream({
+    void onListen(StreamSubscription<T> subscription),
+    void onCancel(StreamSubscription<T> subscription) });
+
   Observable map(dynamic convert(T value));
 
+  Observable asyncMap(dynamic convert(T value));
+
+  Observable expand(Iterable convert(T value));
+
+  Observable asyncExpand(Stream convert(T value));
+
+  Observable<T> distinct([bool equals(T previous, T next)]);
+
   Observable<T> where(bool test(T event));
+
+  Observable<T> handleError(Function onError, { bool test(error) });
+
+  Observable<T> skip(int count);
+
+  Observable<T> skipWhile(bool test(T element));
+
+  Observable<T> take(int count);
+
+  Observable<T> takeWhile(bool test(T element));
+
+  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink sink)});
 
   Observable<T> retry([int count]);
 
@@ -44,7 +175,7 @@ abstract class Observable<T> extends Stream {
 
   Observable<List<T>> bufferWithCount(int count, [int skip]);
 
-  Observable<Stream<T>> windowWithCount(int count, [int skip]);
+  Observable<Observable<T>> windowWithCount(int count, [int skip]);
 
   Observable flatMap(Stream predicate(T value));
 

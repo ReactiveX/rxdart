@@ -40,9 +40,33 @@ class StreamObservable<T> extends Observable<T> {
       void onDone(),
       bool cancelOnError }) => stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
 
-  Observable map(dynamic convert(T value)) => new StreamObservable<T>()..setStream(stream.map(convert));
+  Observable asBroadcastStream({
+    void onListen(StreamSubscription<T> subscription),
+    void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+
+  Observable map(dynamic convert(T value)) => new StreamObservable()..setStream(stream.map(convert));
+
+  Observable asyncMap(dynamic convert(T value)) => new StreamObservable()..setStream(stream.asyncMap(convert));
 
   Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
+
+  Observable expand(Iterable convert(T value)) => new StreamObservable()..setStream(stream.expand(convert));
+
+  Observable asyncExpand(Stream convert(T value)) => new StreamObservable()..setStream(stream.asyncExpand(convert));
+
+  Observable<T> distinct([bool equals(T previous, T next)]) => new StreamObservable<T>()..setStream(stream.distinct(equals));
+
+  Observable<T> handleError(Function onError, { bool test(error) }) => new StreamObservable<T>()..setStream(stream.handleError(onError, test: test));
+
+  Observable<T> skip(int count) => new StreamObservable<T>()..setStream(stream.skip(count));
+
+  Observable<T> skipWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.skipWhile(test));
+
+  Observable<T> take(int count) => new StreamObservable<T>()..setStream(stream.take(count));
+
+  Observable<T> takeWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.takeWhile(test));
+
+  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
 
   Observable<T> retry([int count]) => new RetryObservable<T>(stream as Stream<T>, count);
 
@@ -52,7 +76,7 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable<List<T>> bufferWithCount(int count, [int skip]) => new BufferWithCountObservable<T, List<T>>(stream as Stream<T>, count, skip) as Observable<List<T>>;
 
-  Observable<Stream<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream as Stream<T>, count, skip) as Observable<Stream<T>>;
+  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream as Stream<T>, count, skip) as Observable<Stream<T>>;
 
   Observable flatMap(Stream predicate(T value)) => new FlatMapObservable(stream as Stream<T>, predicate);
 

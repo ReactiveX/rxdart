@@ -20,6 +20,8 @@ import 'operators/start_with_test.dart' as start_with_test;
 import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/replay_test.dart' as replay_test;
 
+import 'observable/tween_test.dart' as tween_test;
+
 void main() {
   stream_test.main();
   combine_latest_test.main();
@@ -40,4 +42,6 @@ void main() {
   start_with_test.main();
   repeat_test.main();
   replay_test.main();
+
+  tween_test.main();
 }
