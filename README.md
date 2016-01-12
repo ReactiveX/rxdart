@@ -4,9 +4,15 @@
 [![Coverage Status](https://coveralls.io/repos/frankpepermans/rxdart/badge.svg?branch=master&service=github)](https://coveralls.io/github/frankpepermans/rxdart?branch=master)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 
-This library uses the new Dart-Js interop available as of SDK 1.13.0
+**Update**
+This library no longer depends on RxJs and JS interop,
+while that dependency made things easy, it also meant that rxdart would be a browser lib only.
 
-The RxJs library is wrapped and exposed via the Observable Dart class:
+Some notes:
+- Observable is the main class, it extends Stream obviously
+- Promote a stream to observable by wrapping it => rx.observable(myStream)
+- That doesn't mean wrapping everywhere, ```dartnew rx.Observable.merge(<Stream>[a, b, c, ...]);``` is fine
+- Subject is not ported, we already have StreamController for that
 
 **Example:**
 
