@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:react/react.dart' as react;
 import 'package:react/react_client.dart';
-import 'package:rxdart/rx.dart' as Rx;
+import 'package:rxdart/rxdart.dart' as Rx;
 import 'package:faker/faker.dart';
 
 const int count = 100;

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:rxdart/rx.dart' as rx;
+import 'package:rxdart/rxdart.dart' as rx;
 
 void main() {
   List<int> codes = <int>[

@@ -3,7 +3,7 @@ library rx.test.observable.stream;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rx.dart' as rx;
+import 'package:rxdart/rxdart.dart' as rx;
 
 Stream _getStream() {
   Stream a = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);

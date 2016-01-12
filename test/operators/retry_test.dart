@@ -3,7 +3,7 @@ library rx.test.operators.retry;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rx.dart' as rx;
+import 'package:rxdart/rxdart.dart' as rx;
 
 Stream _getStream() {
   Stream<int> testStream = new Stream<int>.fromIterable(const <int>[0, 1, 2, 3]).map((int i) {

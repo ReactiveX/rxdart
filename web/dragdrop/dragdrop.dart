@@ -1,7 +1,7 @@
 import 'dart:html';
 import 'dart:async';
 
-import 'package:rxdart/rx.dart' as Rx;
+import 'package:rxdart/rxdart.dart' as Rx;
 
 Rx.Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
   final StreamController<MouseEvent> controller = new StreamController<MouseEvent>.broadcast();

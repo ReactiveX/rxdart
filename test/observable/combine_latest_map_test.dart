@@ -3,7 +3,7 @@ library rx.test.observable.combine_latest_map;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rx.dart' as rx;
+import 'package:rxdart/rxdart.dart' as rx;
 
 Map<String, Stream> _getStreams() {
   Stream a = new Stream<int>.periodic(const Duration(milliseconds: 20), (int count) => count).take(3);

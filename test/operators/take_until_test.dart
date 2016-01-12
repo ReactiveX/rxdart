@@ -3,7 +3,7 @@ library rx.test.operators.take_until;
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rx.dart' as rx;
+import 'package:rxdart/rxdart.dart' as rx;
 
 Stream _getStream() {
   StreamController<int> controller = new StreamController<int>();
