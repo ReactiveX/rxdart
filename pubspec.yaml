@@ -1,7 +1,7 @@
 name: rxdart
-version: 0.2.0+3
+version: 0.3.0
 author: Frank Pepermans <frank@igindo.com>
-description: A wrapper for the RxJs library
+description: Native Dart rx implementation
 homepage: https://github.com/frankpepermans/rxdart
 environment:
   sdk: '>1.12.0'
