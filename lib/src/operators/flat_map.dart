@@ -5,7 +5,6 @@ import 'package:rxdart/src/observable/stream.dart';
 class FlatMapObservable<T, S> extends StreamObservable<T> {
 
   StreamController<S> controller;
-  Stream<S> _otherStream;
   bool _closeAfterNextEvent = false;
 
   FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
