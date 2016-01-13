@@ -1,7 +1,5 @@
 library rx.observable.zip;
 
-import 'dart:collection';
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class ZipObservable<T extends List> extends StreamObservable<T> with ControllerMixin<T> {
@@ -11,33 +9,18 @@ class ZipObservable<T extends List> extends StreamObservable<T> with ControllerM
 
     controller = new StreamController<T>(sync: true,
         onListen: () {
-          final List<Queue> values = new List<Queue>.generate(streams.length, (_) => new Queue());
+          final List values = new List(streams.length);
           final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
-          void doUpdate(int index, dynamic value) {
-            final Queue queue = values[index];
-            Queue otherQueue;
+          void doUpdate(StreamSubscription subscription, int index, dynamic value) {
+            values[index] = value;
 
-            queue.add(value);
+            subscription.pause();
 
-            for (int i=0, len=queue.length; i<len; i++) {
-              List list = [];
+            if (subscriptions.firstWhere((StreamSubscription S) => !S.isPaused, orElse: () => null) == null) {
+              updateWithValues(predicate, values);
 
-              for (int j=0, len2=values.length; j<len2; j++) {
-                otherQueue = values[j];
-
-                if (otherQueue.length >= len) {
-                  list.add(otherQueue.elementAt(i));
-                }
-              }
-
-              if (list.length == values.length) {
-                values.forEach((Queue q) => q.removeFirst());
-
-                updateWithValues(predicate, list);
-
-                break;
-              }
+              subscriptions.forEach((StreamSubscription S) => S.resume());
             }
           }
 
@@ -50,14 +33,14 @@ class ZipObservable<T extends List> extends StreamObservable<T> with ControllerM
           for (int i=0, len=streams.length; i<len; i++) {
             Stream stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen((dynamic value) => doUpdate(i, value),
-                onError: (e, s) => throwError(e, s),
-                onDone: () => markDone(i));
+            subscriptions[i] = stream.listen((dynamic value) => doUpdate(subscriptions[i], i, value),
+              onError: (e, s) => throwError(e, s),
+              onDone: () => markDone(i));
           }
         },
         onCancel: () => Future.wait(subscriptions
-            .map((StreamSubscription subscription) => subscription.cancel())
-            .where((Future cancelFuture) => cancelFuture != null))
+          .map((StreamSubscription subscription) => subscription.cancel())
+          .where((Future cancelFuture) => cancelFuture != null))
     );
 
     setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
