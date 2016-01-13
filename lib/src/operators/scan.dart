@@ -14,7 +14,7 @@ class ScanObservable<T, S> extends StreamObservable<T> {
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            acc = ((acc == null) ? value : predicate(acc, value, index++)) as S;
+            acc = predicate(acc, value, index++) as S;
 
             controller.add(acc);
           },

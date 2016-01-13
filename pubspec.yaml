@@ -11,3 +11,4 @@ dev_dependencies:
   faker: ^0.0.4
   react: ^0.8.5
   test: ^0.12.5+1
+  benchmark_harness: ">=1.0.0 <2.0.0"
