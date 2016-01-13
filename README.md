@@ -11,8 +11,44 @@ while that dependency made things easy, it also meant that rxdart would be a bro
 Some notes:
 - Observable is the main class, it extends Stream obviously
 - Promote a stream to observable by wrapping it => rx.observable(myStream)
-- That doesn't mean wrapping everywhere, ```dart new rx.Observable.merge(<Stream>[a, b, c, ...]);``` is fine
+- That doesn't mean wrapping everywhere, ```new rx.Observable.merge(<Stream>[a, b, c, ...]);``` is fine
 - Subject is not ported, we already have StreamController for that
+
+**Currently supported**
+
+```dart
+ // first wrap any stream
+ Observable oStream = observable(myStream);
+ 
+ // of course all exiting Stream opeartors (map, where, ...) are inherited, so they are not listed here
+ 
+ oStream
+    .bufferWithCount
+    .debounce
+    .flatMapLatest
+    .flatMap
+    .interval
+    .max
+    .min
+    .repeat
+    .replay
+    .retry
+    .scan
+    .startWith
+    .takeUntil
+    .tap
+    .throttle
+    .windowWithCount
+    
+ // the following are contructors
+ 
+ new Observable
+    .combineLatest
+    .combineLatestMap
+    .merge
+    .tween
+    .zip
+```
 
 **Example:**
 
