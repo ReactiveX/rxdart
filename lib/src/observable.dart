@@ -7,6 +7,7 @@ import 'package:rxdart/src/observable/combine_latest.dart' show CombineLatestObs
 import 'package:rxdart/src/observable/combine_latest_map.dart' show CombineLatestObservableMap;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
+import 'package:rxdart/src/observable/tween.dart' show tweenLinear, tweenQuadraticEaseIn, tweenQuadraticEaseOut, tweenQuadraticEaseInOut;
 
 Observable observable(Stream stream) => new StreamObservable()..setStream(stream);
 
@@ -32,111 +33,13 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.zip(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
 
-  /* Tweening */
+  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenLinear(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
 
-  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
-    final StreamController<double> controller = new StreamController<double>();
-    final Duration intervalDuration = new Duration(milliseconds: intervalMs);
-    int currentTimeMs = 0;
+  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseIn(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
 
-    controller.add(startValue);
+  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseOut(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
 
-    new Timer.periodic(intervalDuration, (Timer timer) {
-      currentTimeMs += intervalMs;
-
-      controller.add(changeInTime * currentTimeMs / duration.inMilliseconds + startValue);
-
-      if (currentTimeMs >= duration.inMilliseconds) {
-        timer.cancel();
-
-        controller.close();
-      }
-    });
-
-    return new StreamObservable()..setStream(controller.stream);
-  }
-
-  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
-    final StreamController<double> controller = new StreamController<double>();
-    const int interval = 20;
-    const Duration intervalDuration = const Duration(milliseconds: interval);
-    int currentTimeMs = 0;
-
-    controller.add(startValue);
-
-    new Timer.periodic(intervalDuration, (Timer timer) {
-      currentTimeMs += interval;
-
-      final double t = currentTimeMs / duration.inMilliseconds;
-
-      controller.add(changeInTime * t * t + startValue);
-
-      if (currentTimeMs >= duration.inMilliseconds) {
-        timer.cancel();
-
-        controller.close();
-      }
-    });
-
-    return new StreamObservable()..setStream(controller.stream);
-  }
-
-  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
-    final StreamController<double> controller = new StreamController<double>();
-    const int interval = 20;
-    const Duration intervalDuration = const Duration(milliseconds: interval);
-    int currentTimeMs = 0;
-
-    controller.add(startValue);
-
-    new Timer.periodic(intervalDuration, (Timer timer) {
-      currentTimeMs += interval;
-
-      final double t = currentTimeMs / duration.inMilliseconds;
-
-      controller.add(-changeInTime * t * (t - 2) + startValue);
-
-      if (currentTimeMs >= duration.inMilliseconds) {
-        timer.cancel();
-
-        controller.close();
-      }
-    });
-
-    return new StreamObservable()..setStream(controller.stream);
-  }
-
-  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) {
-    final StreamController<double> controller = new StreamController<double>();
-    const int interval = 20;
-    const Duration intervalDuration = const Duration(milliseconds: interval);
-    int currentTimeMs = 0;
-
-    controller.add(startValue);
-
-    new Timer.periodic(intervalDuration, (Timer timer) {
-      currentTimeMs += interval;
-
-      double t = currentTimeMs / (duration.inMilliseconds / 2);
-
-      if (t < 1.0) controller.add(changeInTime / 2 * t * t + startValue);
-      else {
-        t--;
-
-        controller.add(-changeInTime / 2 * (t * (t - 2) - 1) + startValue);
-      }
-
-      if (currentTimeMs >= duration.inMilliseconds) {
-        timer.cancel();
-
-        controller.close();
-      }
-    });
-
-    return new StreamObservable()..setStream(controller.stream);
-  }
-
-  /* Regular */
+  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseInOut(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
 
   Observable asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
