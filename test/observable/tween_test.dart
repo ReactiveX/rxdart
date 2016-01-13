@@ -108,19 +108,20 @@ void main() {
       const <double>[97.0, 94.09, 99.91, 99.82],
       const <double>[98.0, 96.04, 99.96, 99.92],
       const <double>[99.0, 98.01, 99.99, 99.98],
+      const <double>[100.0, 100.0, 100.0, 100.0],
       const <double>[100.0, 100.0, 100.0, 100.0]
     ];
     int count = 0;
 
     new rx.Observable.zip(<Stream>[
-      new rx.Observable<double>.tweenLinear(
+      new rx.Observable<double>.tween(
           0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
-      new rx.Observable<double>.tweenQuadraticEaseIn(
-          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
-      new rx.Observable<double>.tweenQuadraticEaseOut(
-          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
-      new rx.Observable<double>.tweenQuadraticEaseInOut(
-          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)
+      new rx.Observable<double>.tween(
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20, ease: rx.Ease.IN),
+      new rx.Observable<double>.tween(
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20, ease: rx.Ease.OUT),
+      new rx.Observable<double>.tween(
+          0.0, 100.0, const Duration(seconds: 2), intervalMs: 20, ease: rx.Ease.IN_OUT)
     ], (double a, double b, double c, double d) => <double>[a, b, c, d])
         .map((List<double> values) =>
           values.map((double value) => (value * 100).round() / 100))

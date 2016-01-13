@@ -7,7 +7,9 @@ import 'package:rxdart/src/observable/combine_latest.dart' show CombineLatestObs
 import 'package:rxdart/src/observable/combine_latest_map.dart' show CombineLatestObservableMap;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
-import 'package:rxdart/src/observable/tween.dart' show tweenLinear, tweenQuadraticEaseIn, tweenQuadraticEaseOut, tweenQuadraticEaseInOut;
+import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
+
+export 'package:rxdart/src/observable/tween.dart' show Ease;
 
 Observable observable(Stream stream) => new StreamObservable()..setStream(stream);
 
@@ -33,13 +35,7 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.zip(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
 
-  factory Observable.tweenLinear(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenLinear(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
-
-  factory Observable.tweenQuadraticEaseIn(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseIn(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
-
-  factory Observable.tweenQuadraticEaseOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseOut(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
-
-  factory Observable.tweenQuadraticEaseInOut(double startValue, double changeInTime, Duration duration, {int intervalMs: 20}) => tweenQuadraticEaseInOut(startValue, changeInTime, duration, intervalMs: intervalMs) as Observable<T>;
+  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable(startValue, changeInTime, duration, intervalMs, ease, asBroadcastStream) as Observable<T>;
 
   Observable asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
@@ -98,5 +94,7 @@ abstract class Observable<T> extends Stream {
   Observable<T> min([int compare(T a, T b)]);
 
   Observable<T> max([int compare(T a, T b)]);
+
+  Observable<T> interval(Duration duration);
 
 }
