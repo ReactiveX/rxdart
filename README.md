@@ -33,6 +33,7 @@ Some notes:
     .repeat
     .replay
     .retry
+    .sample
     .scan
     .startWith
     .takeUntil

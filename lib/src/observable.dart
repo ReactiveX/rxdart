@@ -97,4 +97,6 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> interval(Duration duration);
 
+  Observable<T> sample(Stream sampleStream);
+
 }
