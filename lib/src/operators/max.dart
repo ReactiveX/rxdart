@@ -12,12 +12,6 @@ class MaxObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            if (compare == null && !(value is Comparable)) {
-              final ArgumentError error = new ArgumentError('Stream value is not of type Comparable and missing compare function');
-
-              throwError(error, error.stackTrace);
-            }
-
             if (_currentMax == null) updateValue(value);
             else {
               if (compare != null) {
