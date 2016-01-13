@@ -44,8 +44,21 @@ Some notes:
  
  new Observable
     .combineLatest
+    /*
+     same as combineLatest,
+     except instead of passing a predicate,
+     you pass a Map<String, Stream>,
+     the result will also be a Map, with the same keys as the above map,
+     but the values will be the latest Stream values instead
+     */
     .combineLatestMap
     .merge
+    /*
+     tween a value from a start value to an end value,
+     over a given period of time,
+     using one of 4 easing methods (linear, ease_in, ease_out, ease_in_out),
+     and sample on a given interval (e.g. every 20 milliseconds)
+     */
     .tween
     .zip
 ```
