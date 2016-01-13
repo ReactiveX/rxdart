@@ -16,6 +16,8 @@ import 'package:rxdart/src/operators/tap.dart' show TapObservable;
 import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
 import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
 import 'package:rxdart/src/operators/replay.dart' show ReplayObservable;
+import 'package:rxdart/src/operators/min.dart' show MinObservable;
+import 'package:rxdart/src/operators/max.dart' show MaxObservable;
 
 export 'dart:async';
 
@@ -93,6 +95,10 @@ class StreamObservable<T> extends Observable<T> {
   Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream as Stream<T>, repeatCount);
 
   Observable<T> replay([int bufferSize = 0]) => new ReplayObservable<T>(stream as Stream<T>, bufferSize);
+
+  Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(stream, compare);
+
+  Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(stream, compare);
 }
 
 abstract class ControllerMixin<T> {

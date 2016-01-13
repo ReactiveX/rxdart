@@ -19,6 +19,8 @@ import 'operators/tap_test.dart' as tap_test;
 import 'operators/start_with_test.dart' as start_with_test;
 import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/replay_test.dart' as replay_test;
+import 'operators/min_test.dart' as min_test;
+import 'operators/max_test.dart' as max_test;
 
 import 'observable/tween_test.dart' as tween_test;
 
@@ -42,6 +44,8 @@ void main() {
   start_with_test.main();
   repeat_test.main();
   replay_test.main();
+  min_test.main();
+  max_test.main();
 
   tween_test.main();
 }

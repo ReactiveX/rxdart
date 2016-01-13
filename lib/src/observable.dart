@@ -95,4 +95,8 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> replay([int bufferSize = 0]);
 
+  Observable<T> min([int compare(T a, T b)]);
+
+  Observable<T> max([int compare(T a, T b)]);
+
 }
