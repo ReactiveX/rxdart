@@ -21,6 +21,7 @@ import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/replay_test.dart' as replay_test;
 import 'operators/min_test.dart' as min_test;
 import 'operators/max_test.dart' as max_test;
+import 'operators/time_interval_test.dart' as time_interval_test;
 
 import 'observable/tween_test.dart' as tween_test;
 
@@ -46,6 +47,7 @@ void main() {
   replay_test.main();
   min_test.main();
   max_test.main();
+  time_interval_test.main();
 
   tween_test.main();
 }

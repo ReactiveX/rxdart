@@ -18,7 +18,7 @@ class FlatMapObservable<T, S> extends StreamObservable<T> {
 
             streams.add(otherStream);
 
-            otherStream.listen((S otherValue) => controller.add(otherValue),
+            otherStream.listen(controller.add,
               onError: (e, s) => controller.addError(e, s),
               onDone: () {
                 streams.remove(otherStream);

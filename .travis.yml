@@ -3,7 +3,6 @@ language: dart
 sudo: false
 dart:
 - stable
-- dev
 with_content_shell: false
 before_install:
   - export DISPLAY=:99.0

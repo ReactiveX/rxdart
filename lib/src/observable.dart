@@ -9,7 +9,11 @@ import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
 
+import 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
+
 export 'package:rxdart/src/observable/tween.dart' show Ease;
+
+export 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
 
 Observable observable(Stream stream) => new StreamObservable()..setStream(stream);
 
@@ -98,5 +102,7 @@ abstract class Observable<T> extends Stream {
   Observable<T> interval(Duration duration);
 
   Observable<T> sample(Stream sampleStream);
+
+  Observable<TimeInterval<T>> timeInterval();
 
 }

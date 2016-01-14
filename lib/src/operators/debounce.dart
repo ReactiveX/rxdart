@@ -13,11 +13,11 @@ class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> 
 
     controller = new StreamController<T>(sync: true,
         onListen: () {
-          subscription = stream.listen((T value) {
-            _resetTimer(value);
-          },
+          subscription = stream.listen(_resetTimer,
           onError: (e, s) => throwError(e, s),
-          onDone: () => _closeAfterNextEvent = true);
+          onDone: () {
+            _closeAfterNextEvent = true;
+          });
         },
         onCancel: () => subscription.cancel());
 

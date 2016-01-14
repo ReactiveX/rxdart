@@ -20,6 +20,7 @@ import 'package:rxdart/src/operators/min.dart' show MinObservable;
 import 'package:rxdart/src/operators/max.dart' show MaxObservable;
 import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
+import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
 
 export 'dart:async';
 
@@ -102,9 +103,11 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(stream, compare);
 
-  Observable<T> interval(Duration duration) => new IntervalObservable(stream, duration);
+  Observable<T> interval(Duration duration) => new IntervalObservable<T>(stream, duration);
 
-  Observable<T> sample(Stream sampleStream) => new SampleObservable(stream, sampleStream);
+  Observable<T> sample(Stream sampleStream) => new SampleObservable<T>(stream, sampleStream);
+
+  Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream) as Observable<TimeInterval<T>>;
 }
 
 abstract class ControllerMixin<T> {
