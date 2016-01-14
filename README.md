@@ -37,6 +37,7 @@ Some notes:
     .scan
     .startWith
     .takeUntil
+    .timeInterval
     .tap
     .throttle
     .windowWithCount
