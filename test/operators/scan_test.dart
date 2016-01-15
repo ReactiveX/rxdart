@@ -58,7 +58,9 @@ void main() {
 
   test('rx.Observable.scan.error.shouldThrow', () async {
     Stream<int> observableWithError = rx.observable(_getErroneousStream())
-        .scan((num acc, num value, int index) => ((acc == null) ? 0 : acc) + value, 0);
+      .scan((num acc, num value, int index) {
+        throw new Error();
+      });
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);

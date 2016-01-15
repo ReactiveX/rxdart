@@ -21,6 +21,7 @@ import 'package:rxdart/src/operators/max.dart' show MaxObservable;
 import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
+import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
 
 export 'dart:async';
 
@@ -108,6 +109,8 @@ class StreamObservable<T> extends Observable<T> {
   Observable<T> sample(Stream sampleStream) => new SampleObservable<T>(stream, sampleStream);
 
   Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream) as Observable<TimeInterval<T>>;
+
+  Observable pluck(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable(stream, sequence, throwOnNull: throwOnNull);
 }
 
 abstract class ControllerMixin<T> {

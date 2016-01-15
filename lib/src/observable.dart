@@ -105,4 +105,6 @@ abstract class Observable<T> extends Stream {
 
   Observable<TimeInterval<T>> timeInterval();
 
+  Observable pluck(List<dynamic> sequence, {bool throwOnNull: false});
+
 }

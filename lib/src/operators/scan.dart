@@ -14,11 +14,15 @@ class ScanObservable<T, S> extends StreamObservable<T> {
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            acc = predicate(acc, value, index++) as S;
+            try {
+              acc = predicate(acc, value, index++) as S;
 
-            controller.add(acc);
+              controller.add(acc);
+            } catch (error) {
+              controller.addError(error, error.stackTrace);
+            }
           },
-          onError: (e, s) => controller.addError(e, s),
+          onError: controller.addError,
           onDone: controller.close);
         },
         onCancel: () => subscription.cancel());
