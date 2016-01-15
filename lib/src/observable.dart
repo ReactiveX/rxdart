@@ -93,7 +93,7 @@ abstract class Observable<T> extends Stream {
 
   Observable<T> repeat(int repeatCount);
 
-  Observable<T> replay([int bufferSize = 0]);
+  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false});
 
   Observable<T> min([int compare(T a, T b)]);
 
@@ -106,5 +106,7 @@ abstract class Observable<T> extends Stream {
   Observable<TimeInterval<T>> timeInterval();
 
   Observable pluck(List<dynamic> sequence, {bool throwOnNull: false});
+
+  Observable reverse();
 
 }

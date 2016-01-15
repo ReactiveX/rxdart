@@ -8,8 +8,9 @@ class ReplayObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
   Queue<T> buffer = new Queue<T>();
   int gobalDataIndex = 0;
+  final bool _completeWhenBufferExhausted;
 
-  ReplayObservable(Stream<T> stream, [int bufferSize = 0]) {
+  ReplayObservable(Stream<T> stream, {int bufferSize: 0, bool completeWhenBufferExhausted: false}) : _completeWhenBufferExhausted = completeWhenBufferExhausted {
     StreamSubscription<T> subscription;
 
     controller = new StreamController<T>(sync: true,
@@ -44,6 +45,8 @@ class ReplayObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
     }, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
 
     buffer.forEach(controller.add);
+
+    if (_completeWhenBufferExhausted) controller.close();
 
     gobalDataIndex += buffer.length;
 

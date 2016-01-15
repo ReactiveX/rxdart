@@ -23,6 +23,7 @@ import 'operators/min_test.dart' as min_test;
 import 'operators/max_test.dart' as max_test;
 import 'operators/time_interval_test.dart' as time_interval_test;
 import 'operators/pluck_test.dart' as pluck_test;
+import 'operators/reverse_test.dart' as reverse_test;
 
 import 'observable/tween_test.dart' as tween_test;
 
@@ -50,6 +51,7 @@ void main() {
   max_test.main();
   time_interval_test.main();
   pluck_test.main();
+  reverse_test.main();
 
   tween_test.main();
 }

@@ -24,7 +24,7 @@ class TweenObservable<T extends double> extends StreamObservable<T> with Control
             case Ease.IN_OUT:   sampler = easeInOut;  break;
           }
 
-          final Stream<T> stream = sample(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
+          final Stream<T> stream = sampleFromValues(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(controller.add,
               onError: (e, s) => throwError(e, s),
@@ -38,7 +38,7 @@ class TweenObservable<T extends double> extends StreamObservable<T> with Control
     setStream(observable.interval(new Duration(milliseconds: intervalMs)));
   }
 
-  Stream sample(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
+  Stream sampleFromValues(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
     int currentTimeMs = 0;
 
     yield startValue;

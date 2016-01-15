@@ -57,7 +57,7 @@ void main() {
 
   test('rx.Observable.replay.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .replay(4);
+        .replay(bufferSize: 4);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -68,7 +68,7 @@ void main() {
 
   test('rx.Observable.replay.error.shouldThrow', () async {
     Stream<int> observableWithError = rx.observable(_getErroneousStream())
-        .replay(4);
+        .replay(bufferSize: 4);
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);

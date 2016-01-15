@@ -22,6 +22,7 @@ import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
 import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
+import 'package:rxdart/src/operators/reverse.dart' show ReverseObservable;
 
 export 'dart:async';
 
@@ -98,7 +99,7 @@ class StreamObservable<T> extends Observable<T> {
 
   Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream as Stream<T>, repeatCount);
 
-  Observable<T> replay([int bufferSize = 0]) => new ReplayObservable<T>(stream as Stream<T>, bufferSize);
+  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false}) => new ReplayObservable<T>(stream as Stream<T>, bufferSize: bufferSize, completeWhenBufferExhausted: completeWhenBufferExhausted);
 
   Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(stream, compare);
 
@@ -111,6 +112,8 @@ class StreamObservable<T> extends Observable<T> {
   Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream) as Observable<TimeInterval<T>>;
 
   Observable pluck(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable(stream, sequence, throwOnNull: throwOnNull);
+
+  Observable<T> reverse() => new ReverseObservable(stream.asBroadcastStream());
 }
 
 abstract class ControllerMixin<T> {

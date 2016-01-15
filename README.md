@@ -34,6 +34,7 @@ Some notes:
     .repeat
     .replay
     .retry
+    .reverse
     .sample
     .scan
     .startWith
