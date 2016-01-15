@@ -30,6 +30,7 @@ Some notes:
     .interval
     .max
     .min
+    .pluck
     .repeat
     .replay
     .retry
