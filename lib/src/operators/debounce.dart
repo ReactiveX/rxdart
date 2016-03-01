@@ -27,7 +27,7 @@ class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> 
   void _resetTimer(T value) {
     if (_timer != null && _timer.isActive) _timer.cancel();
 
-    _timer = new Timer(_duration, () {
+    _timer = Zone.ROOT.createTimer(_duration, () {
       controller.add(value);
 
       if (_closeAfterNextEvent) controller.close();

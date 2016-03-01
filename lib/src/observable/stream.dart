@@ -37,7 +37,6 @@ class StreamObservable<T> extends Observable<T> {
 
   StreamObservable();
 
-
   void setStream(Stream stream) {
     this.stream = stream;
   }
