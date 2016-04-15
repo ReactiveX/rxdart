@@ -40,7 +40,7 @@ class StreamObservable<T> implements Observable<T> {
 
   @override
   bool get isBroadcast {
-    return (stream != null) ? stream.isBroadcast : super.isBroadcast;
+    return (stream != null) ? stream.isBroadcast : false;
   }
 
   StreamObservable();
