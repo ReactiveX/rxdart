@@ -2,15 +2,13 @@ library rx.operators.debounce;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class DebounceObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class DebounceObservable<T> extends StreamObservable<T> {
 
   Timer _timer;
   final Duration _duration;
   bool _closeAfterNextEvent = false;
 
   DebounceObservable(Stream<T> stream, Duration duration) : _duration = duration {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen(_resetTimer,

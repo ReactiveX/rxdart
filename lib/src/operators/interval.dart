@@ -2,11 +2,9 @@ library rx.operators.interval;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class IntervalObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class IntervalObservable<T> extends StreamObservable<T> {
 
   IntervalObservable(Stream<T> stream, Duration duration) {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

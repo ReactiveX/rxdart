@@ -4,15 +4,13 @@ import 'dart:collection';
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class ReplayObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class ReplayObservable<T> extends StreamObservable<T> {
 
   Queue<T> buffer = new Queue<T>();
   int gobalDataIndex = 0;
   final bool _completeWhenBufferExhausted;
 
   ReplayObservable(Stream<T> stream, {int bufferSize: 0, bool completeWhenBufferExhausted: false}) : _completeWhenBufferExhausted = completeWhenBufferExhausted {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

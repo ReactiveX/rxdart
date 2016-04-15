@@ -2,10 +2,9 @@ library rx.operators.sample;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class SampleObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class SampleObservable<T> extends StreamObservable<T> {
 
   SampleObservable(Stream<T> stream, Stream sampleStream) {
-    StreamSubscription<T> subscription;
     StreamSubscription sampleSubscription;
     T currentValue;
 

@@ -2,14 +2,11 @@ library rx.operators.window_with_count;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class WindowWithCountObservable<T, S extends StreamObservable<T>> extends StreamObservable<T> {
+class WindowWithCountObservable<T, S extends StreamObservable<T>> extends StreamObservable<S> {
 
-  StreamController<S> controller;
   StreamObservable<T> observable;
 
   WindowWithCountObservable(Stream<T> stream, int count, [int skip]) {
-    StreamSubscription<T> subscription;
-
     if (!(stream is StreamObservable)) observable = new StreamObservable<T>()..setStream(stream);
 
     controller = new StreamController<S>(sync: true,

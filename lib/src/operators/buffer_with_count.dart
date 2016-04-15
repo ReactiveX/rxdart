@@ -2,9 +2,8 @@ library rx.operators.buffer_with_count;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<T> {
+class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<S> {
 
-  StreamController<S> controller;
   final int count;
   int skipAmount, bufferKeep;
 
@@ -18,7 +17,6 @@ class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<T
     }
 
     bufferKeep = count - ((skip == null) ? count : skip);
-    StreamSubscription<T> subscription;
     S buffer = <T>[] as S;
 
     controller = new StreamController<S>(sync: true,

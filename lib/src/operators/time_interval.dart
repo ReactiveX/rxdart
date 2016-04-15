@@ -2,13 +2,9 @@ library rx.operators.time_interval;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class TimeIntervalObservable<T, S extends TimeInterval> extends StreamObservable<T> {
-
-  StreamController<S> controller;
+class TimeIntervalObservable<T, S extends TimeInterval> extends StreamObservable<S> {
 
   TimeIntervalObservable(Stream<T> stream) {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<S>(sync: true,
         onListen: () {
           Stopwatch stopwatch = new Stopwatch()..start();

@@ -2,9 +2,8 @@ library rx.operators.flat_map_latest;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class FlatMapLatestObservable<T, S> extends StreamObservable<T> {
+class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
 
-  StreamController<S> controller;
   bool _closeAfterNextEvent = false;
 
   FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {

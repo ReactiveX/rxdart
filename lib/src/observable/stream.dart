@@ -2,6 +2,8 @@ library rx.observable.stream;
 
 import 'dart:async';
 
+import 'package:rxdart/src/observable/stream_subscription.dart' show ForwardingStreamSubscription;
+
 import 'package:rxdart/src/observable.dart' show Observable;
 import 'package:rxdart/src/operators/debounce.dart' show DebounceObservable;
 import 'package:rxdart/src/operators/retry.dart' show RetryObservable;
@@ -26,9 +28,15 @@ import 'package:rxdart/src/operators/reverse.dart' show ReverseObservable;
 
 export 'dart:async';
 
-class StreamObservable<T> extends Observable<T> {
+class StreamObservable<T> implements Observable<T> {
+
+  StreamController<T> controller;
+  StreamSubscription subscription;
+
+  void throwError(e, s) => controller.addError(e, s);
 
   Stream stream;
+  int numListeners = 0;
 
   @override
   bool get isBroadcast {
@@ -41,10 +49,26 @@ class StreamObservable<T> extends Observable<T> {
     this.stream = stream;
   }
 
+  void cancelSubscription(StreamSubscription<T> subscription) {
+    numListeners--;
+
+    if (!isBroadcast) this.subscription?.cancel();
+    else if (numListeners == 0) this.subscription?.pause();
+  }
+
   StreamSubscription<T> listen(void onData(T event),
     { Function onError,
       void onDone(),
-      bool cancelOnError }) => stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
+      bool cancelOnError }) {
+    final StreamSubscription<T> subscription = stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
+    final ForwardingStreamSubscription<T> forwarder = new ForwardingStreamSubscription<T>(subscription, this);
+
+    numListeners++;
+
+    if (this.subscription != null && this.subscription.isPaused) this.subscription.resume();
+
+    return forwarder;
+  }
 
   Observable asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
@@ -113,12 +137,53 @@ class StreamObservable<T> extends Observable<T> {
   Observable pluck(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable(stream, sequence, throwOnNull: throwOnNull);
 
   Observable<T> reverse() => new ReverseObservable(stream.asBroadcastStream());
+
+  Future<bool> any(bool test(T element)) => stream.any(test);
+
+  Future<bool> contains(Object needle) => stream.contains(needle);
+
+  Future drain([var futureValue]) => stream.drain(futureValue);
+
+  Future<T> elementAt(int index) => stream.elementAt(index);
+
+  Future<bool> every(bool test(T element)) => stream.every(test);
+
+  Future<dynamic> firstWhere(bool test(T element), {Object defaultValue()}) => stream.firstWhere(test, defaultValue: defaultValue);
+
+  Future forEach(void action(T element)) => stream.forEach(action);
+
+  Future<String> join([String separator = ""]) => stream.join(separator);
+
+  Future<dynamic> lastWhere(bool test(T element), {Object defaultValue()}) => stream.lastWhere(test, defaultValue: defaultValue);
+
+  Future pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
+
+  Future/*<S>*/ fold/*<S>*/(var/*=S*/ initialValue,
+      /*=S*/ combine(var/*=S*/ previous, T element)) => stream.fold(initialValue, combine);
+
+  Future<T> reduce(T combine(T previous, T element)) => stream.reduce(combine);
+
+  Future<T> singleWhere(bool test(T element)) => stream.singleWhere(test);
+
+  Future<List<T>> toList() => stream.toList();
+
+  Future<Set<T>> toSet() => stream.toSet();
+
+  Stream transform(StreamTransformer<T, dynamic> streamTransformer) => stream.transform(streamTransformer);
+
+  Future<T> get first => stream.first;
+
+  Future<T> get last => stream.last;
+
+  Future<T> get single => stream.single;
+
+  Future<bool> get isEmpty => stream.isEmpty;
+
+  Future<int> get length => stream.length;
 }
 
 abstract class ControllerMixin<T> {
 
-  StreamController<T> controller;
 
-  void throwError(e, s) => controller.addError(e, s);
 
 }

@@ -2,13 +2,9 @@ library rx.operators.pluck;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class PluckObservable<T, S> extends StreamObservable<T> {
-
-  StreamController<S> controller;
+class PluckObservable<T, S> extends StreamObservable<S> {
 
   PluckObservable(Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

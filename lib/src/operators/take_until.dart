@@ -2,10 +2,9 @@ library rx.operators.take_until;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class TakeUntilObservable<T, S> extends StreamObservable<T> with ControllerMixin<T> {
+class TakeUntilObservable<T, S> extends StreamObservable<T> {
 
   TakeUntilObservable(Stream<T> stream, Stream<S> otherStream) {
-    StreamSubscription<T> subscription;
     StreamSubscription<S> otherSubscription;
 
     controller = new StreamController<T>(sync: true,

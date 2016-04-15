@@ -2,10 +2,9 @@ library rx.operators.retry;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class RetryObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class RetryObservable<T> extends StreamObservable<T> {
 
   RetryObservable(Stream<T> stream, int count) {
-    StreamSubscription<T> subscription;
     int retryStep = 0;
 
     controller = new StreamController<T>(sync: true,

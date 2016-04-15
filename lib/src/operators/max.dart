@@ -2,13 +2,11 @@ library rx.operators.max;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class MaxObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
+class MaxObservable<T> extends StreamObservable<T> {
 
   T _currentMax;
 
   MaxObservable(Stream<T> stream, [int compare(T a, T b)]) {
-    StreamSubscription<T> subscription;
-
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

@@ -2,13 +2,11 @@ library rx.operators.flat_map;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class FlatMapObservable<T, S> extends StreamObservable<T> {
+class FlatMapObservable<T, S> extends StreamObservable<S> {
 
-  StreamController<S> controller;
   bool _closeAfterNextEvent = false;
 
   FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    StreamSubscription<T> subscription;
     List<Stream<S>> streams = <Stream<S>>[];
 
     controller = new StreamController<S>(sync: true,
