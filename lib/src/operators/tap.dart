@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class TapObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
-  TapObservable(Stream<T> stream, void action(T value)) {
+  TapObservable(StreamObservable parent, Stream<T> stream, void action(T value)) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
@@ -15,7 +17,7 @@ class TapObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
           onError: (e, s) => throwError(e, s),
           onDone: controller.close);
         },
-        onCancel: () => subscription.cancel());
+        onCancel: subscription?.cancel);
 
     setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
   }

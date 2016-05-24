@@ -8,7 +8,9 @@ class DebounceObservable<T> extends StreamObservable<T> {
   final Duration _duration;
   bool _closeAfterNextEvent = false;
 
-  DebounceObservable(Stream<T> stream, Duration duration) : _duration = duration {
+  DebounceObservable(StreamObservable parent, Stream<T> stream, Duration duration) : _duration = duration {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen(_resetTimer,

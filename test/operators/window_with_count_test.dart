@@ -38,7 +38,7 @@ void main() {
     const List<List<int>> expectedOutput = const <List<int>>[const [1, 2], const [3, 4]];
     int count = 0;
 
-    Stream<String> observable = rx.observable(_getStream()).windowWithCount(2);
+    Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2);
 
     observable.listen(expectAsync((Stream<int> result) {
       // test to see if the combined output matches
@@ -55,7 +55,7 @@ void main() {
     const List<List<int>> expectedOutput = const <List<int>>[const [1, 2], const [2, 3], const [3, 4], const [4]];
     int count = 0;
 
-    Stream<String> observable = rx.observable(_getStream()).windowWithCount(2, 1);
+    Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2, 1);
 
     observable.listen(expectAsync((Stream<int> result) {
       // test to see if the combined output matches
@@ -69,7 +69,7 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<Stream<int>> observable = rx.observable(_getStream().asBroadcastStream())
         .windowWithCount(2);
 
     // listen twice on same stream
@@ -80,7 +80,7 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<Stream<int>> observableWithError = rx.observable(_getErroneousStream())
         .windowWithCount(2);
 
     observableWithError.listen((_) => {}, onError: (e, s) {

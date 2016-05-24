@@ -11,7 +11,7 @@ Stream _getStream() {
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
   new Timer(const Duration(milliseconds: 200), () => controller.add(2));
   new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
+  new Timer(const Duration(milliseconds: 4000), () {
     controller.add(4);
     controller.close();
   });
@@ -23,9 +23,9 @@ Stream _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
+  new Timer(const Duration(milliseconds: 300), () => controller.add(2));
+  new Timer(const Duration(milliseconds: 500), () => controller.add(3));
+  new Timer(const Duration(milliseconds: 700), () {
     controller.add(100 / 0); // throw!!!
     controller.close();
   });

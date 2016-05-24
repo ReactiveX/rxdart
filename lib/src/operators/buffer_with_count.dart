@@ -7,7 +7,9 @@ class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<S
   final int count;
   int skipAmount, bufferKeep;
 
-  BufferWithCountObservable(Stream<T> stream, int count, [int skip]) : this.count = count {
+  BufferWithCountObservable(StreamObservable parent, Stream<T> stream, int count, [int skip]) : this.count = count {
+    this.parent = parent;
+
     skipAmount = ((skip == null) ? count : skip);
 
     if (skipAmount <= 0 || skipAmount > count) {

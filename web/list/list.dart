@@ -83,7 +83,8 @@ void main() {
   ], (int maxIndex, int offset) => {'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
   
   final Rx.Observable<List<Person>> displayedPeople = displayedRange
-    .flatMap((o) => new Rx.Observable.fromIterable([fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]));
+    .flatMap((o) => new Rx.Observable<List<Person>>.fromIterable([fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]))
+    .tap((List<Person> list) {});
 
   displayedIndices.listen(print);
   

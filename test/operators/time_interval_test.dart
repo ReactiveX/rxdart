@@ -37,7 +37,7 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<TimeInterval<int>> observable = rx.observable(_getStream().asBroadcastStream())
         .interval(const Duration(milliseconds: 20))
         .timeInterval();
 
@@ -49,7 +49,7 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<TimeInterval<int>> observableWithError = rx.observable(_getErroneousStream())
         .interval(const Duration(milliseconds: 20))
         .timeInterval();
 

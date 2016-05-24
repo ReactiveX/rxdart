@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class PluckObservable<T, S> extends StreamObservable<S> {
 
-  PluckObservable(Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
+  PluckObservable(StreamObservable parent, Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
+    this.parent = parent;
+
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
@@ -24,7 +26,9 @@ class PluckObservable<T, S> extends StreamObservable<S> {
               controller.addError(error, error.stackTrace);
             } else {
               try {
-                controller.add(curVal);
+                S pluckedValue = curVal as S;
+
+                controller.add(pluckedValue);
               } catch (error) {
                 controller.addError(error, error.stackTrace);
               }

@@ -6,7 +6,9 @@ class MaxObservable<T> extends StreamObservable<T> {
 
   T _currentMax;
 
-  MaxObservable(Stream<T> stream, [int compare(T a, T b)]) {
+  MaxObservable(StreamObservable parent, Stream<T> stream, [int compare(T a, T b)]) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
@@ -16,7 +18,8 @@ class MaxObservable<T> extends StreamObservable<T> {
                 if (compare(value, _currentMax) > 0) updateValue(value);
               } else {
                 try {
-                  Comparable currMax = _currentMax as Comparable, testMax = value as Comparable;
+                  Comparable currMax = _currentMax as Comparable,
+                      testMax = value as Comparable;
 
                   if (testMax.compareTo(currMax) > 0) updateValue(value);
                 } catch (error) {

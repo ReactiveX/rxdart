@@ -32,11 +32,11 @@ class StreamObservable<T> implements Observable<T> {
 
   StreamController<T> controller;
   StreamSubscription subscription;
+  StreamObservable parent;
 
   void throwError(e, s) => controller.addError(e, s);
 
-  Stream stream;
-  int numListeners = 0;
+  Stream<T> stream;
 
   @override
   bool get isBroadcast {
@@ -45,42 +45,35 @@ class StreamObservable<T> implements Observable<T> {
 
   StreamObservable();
 
-  void setStream(Stream stream) {
+  void setStream(Stream<T> stream) {
     this.stream = stream;
-  }
-
-  void cancelSubscription(StreamSubscription<T> subscription) {
-    numListeners--;
-
-    if (!isBroadcast) this.subscription?.cancel();
-    else if (numListeners == 0) this.subscription?.pause();
   }
 
   StreamSubscription<T> listen(void onData(T event),
     { Function onError,
       void onDone(),
       bool cancelOnError }) {
-    final StreamSubscription<T> subscription = stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
-    final ForwardingStreamSubscription<T> forwarder = new ForwardingStreamSubscription<T>(subscription, this);
+        final ForwardingStreamSubscription<T> subscription = new ForwardingStreamSubscription<T>(
+          parent,
+          stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError)
+        );
 
-    numListeners++;
-
-    if (this.subscription != null && this.subscription.isPaused) this.subscription.resume();
-
-    return forwarder;
+        return subscription;
   }
 
-  Observable asBroadcastStream({
+  Future cancelSubscription() => controller.close();
+
+  Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
     void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
-  Observable map(dynamic convert(T value)) => new StreamObservable()..setStream(stream.map(convert));
+  Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event)) => new StreamObservable()..setStream(stream.map(convert));
 
   Observable asyncMap(dynamic convert(T value)) => new StreamObservable()..setStream(stream.asyncMap(convert));
 
   Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
 
-  Observable expand(Iterable convert(T value)) => new StreamObservable()..setStream(stream.expand(convert));
+  Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value)) => new StreamObservable()..setStream(stream.expand(convert));
 
   Observable asyncExpand(Stream convert(T value)) => new StreamObservable()..setStream(stream.asyncExpand(convert));
 
@@ -96,47 +89,47 @@ class StreamObservable<T> implements Observable<T> {
 
   Observable<T> takeWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.takeWhile(test));
 
-  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
+  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout) as Stream<T>);
 
-  Observable<T> retry([int count]) => new RetryObservable<T>(stream as Stream<T>, count);
+  Observable<T> retry([int count]) => new RetryObservable<T>(this, stream, count);
 
-  Observable<T> debounce(Duration duration) => new DebounceObservable<T>(stream as Stream<T>, duration);
+  Observable<T> debounce(Duration duration) => new DebounceObservable<T>(this, stream, duration);
 
-  Observable<T> throttle(Duration duration) => new ThrottleObservable<T>(stream as Stream<T>, duration);
+  Observable<T> throttle(Duration duration) => new ThrottleObservable<T>(this, stream, duration);
 
-  Observable<List<T>> bufferWithCount(int count, [int skip]) => new BufferWithCountObservable<T, List<T>>(stream as Stream<T>, count, skip) as Observable<List<T>>;
+  Observable<List<T>> bufferWithCount(int count, [int skip]) => new BufferWithCountObservable<T, List<T>>(this, stream, count, skip);
 
-  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream as Stream<T>, count, skip) as Observable<Stream<T>>;
+  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(this, stream, count, skip);
 
-  Observable flatMap(Stream predicate(T value)) => new FlatMapObservable(stream as Stream<T>, predicate);
+  Observable/*<S>*/ flatMap/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapObservable<T, dynamic/*=S*/>(this, stream, predicate);
 
-  Observable flatMapLatest(Stream predicate(T value)) => new FlatMapLatestObservable(stream as Stream<T>, predicate);
+  Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapLatestObservable<T, dynamic/*=S*/>(this, stream, predicate);
 
-  Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(stream as Stream<T>, otherStream);
+  Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(this, stream, otherStream);
 
-  Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]) => new ScanObservable(stream as Stream<T>, predicate, seed);
+  Observable/*<S>*/ scan/*<S>*/(dynamic/*<S>*/ predicate(dynamic/*<S>*/ accumulated, T value, int index), [dynamic/*<S>*/ seed]) => new ScanObservable<T, dynamic/*=S*/>(this, stream, predicate, seed);
 
-  Observable<T> tap(void action(T value)) => new TapObservable<T>(stream as Stream<T>, action);
+  Observable<T> tap(void action(T value)) => new TapObservable<T>(this, stream, action);
 
-  Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(stream as Stream<T>, startValues);
+  Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(this, stream, startValues);
 
-  Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream as Stream<T>, repeatCount);
+  Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(this, stream, repeatCount);
 
-  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false}) => new ReplayObservable<T>(stream as Stream<T>, bufferSize: bufferSize, completeWhenBufferExhausted: completeWhenBufferExhausted);
+  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false}) => new ReplayObservable<T>(this, stream, bufferSize: bufferSize, completeWhenBufferExhausted: completeWhenBufferExhausted);
 
-  Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(stream, compare);
+  Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(this, stream, compare);
 
-  Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(stream, compare);
+  Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(this, stream, compare);
 
-  Observable<T> interval(Duration duration) => new IntervalObservable<T>(stream, duration);
+  Observable<T> interval(Duration duration) => new IntervalObservable<T>(this, stream, duration);
 
-  Observable<T> sample(Stream sampleStream) => new SampleObservable<T>(stream, sampleStream);
+  Observable<T> sample(Stream sampleStream) => new SampleObservable<T>(this, stream, sampleStream);
 
-  Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream) as Observable<TimeInterval<T>>;
+  Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(this, stream);
 
-  Observable pluck(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable(stream, sequence, throwOnNull: throwOnNull);
+  Observable/*<S>*/ pluck/*<S>*/(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable<T, dynamic/*=S*/>(this, stream, sequence, throwOnNull: throwOnNull);
 
-  Observable<T> reverse() => new ReverseObservable(stream.asBroadcastStream());
+  Observable<T> reverse() => new ReverseObservable(this, stream.asBroadcastStream());
 
   Future<bool> any(bool test(T element)) => stream.any(test);
 

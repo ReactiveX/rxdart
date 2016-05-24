@@ -4,12 +4,16 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class RetryObservable<T> extends StreamObservable<T> {
 
-  RetryObservable(Stream<T> stream, int count) {
+  RetryObservable(StreamObservable parent, Stream<T> stream, int count) {
+    this.parent = parent;
+
     int retryStep = 0;
 
     controller = new StreamController<T>(sync: true,
         onListen: () {
-          subscription = stream.listen(controller.add,
+          subscription = stream.listen((T data) {
+            controller.add(data);
+          },
               onError: (e, s) {
                 if (count > 0 && count == retryStep) {
                   final Error error = new RetryError(count);

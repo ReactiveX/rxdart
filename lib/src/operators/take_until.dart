@@ -4,12 +4,16 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class TakeUntilObservable<T, S> extends StreamObservable<T> {
 
-  TakeUntilObservable(Stream<T> stream, Stream<S> otherStream) {
+  TakeUntilObservable(StreamObservable parent, Stream<T> stream, Stream<S> otherStream) {
+    this.parent = parent;
+
     StreamSubscription<S> otherSubscription;
 
     controller = new StreamController<T>(sync: true,
         onListen: () {
-          subscription = stream.listen(controller.add,
+          subscription = stream.listen((T data) {
+            controller.add(data);
+          },
               onError: (e, s) => throwError(e, s),
               onDone: controller.close);
 

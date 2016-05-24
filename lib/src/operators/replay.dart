@@ -10,14 +10,17 @@ class ReplayObservable<T> extends StreamObservable<T> {
   int gobalDataIndex = 0;
   final bool _completeWhenBufferExhausted;
 
-  ReplayObservable(Stream<T> stream, {int bufferSize: 0, bool completeWhenBufferExhausted: false}) : _completeWhenBufferExhausted = completeWhenBufferExhausted {
+  ReplayObservable(StreamObservable parent, Stream<T> stream, {int bufferSize: 0, bool completeWhenBufferExhausted: false}) : _completeWhenBufferExhausted = completeWhenBufferExhausted {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
             buffer.add(value);
             gobalDataIndex++;
 
-            if (bufferSize > 0 && buffer.length > bufferSize) buffer.removeFirst();
+            if (bufferSize > 0 && buffer.length > bufferSize) buffer
+                .removeFirst();
 
             controller.add(value);
           },
@@ -40,7 +43,7 @@ class ReplayObservable<T> extends StreamObservable<T> {
       if (localDataIndex < gobalDataIndex) onData(data);
 
       localDataIndex++;
-    }, onError: onError, onDone: onDone, cancelOnError: cancelOnError) as StreamSubscription<T>;
+    }, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
     buffer.forEach(controller.add);
 

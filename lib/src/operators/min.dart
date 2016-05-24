@@ -6,7 +6,9 @@ class MinObservable<T> extends StreamObservable<T> {
 
   T _currentMin;
 
-  MinObservable(Stream<T> stream, [int compare(T a, T b)]) {
+  MinObservable(StreamObservable parent, Stream<T> stream, [int compare(T a, T b)]) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
@@ -16,7 +18,8 @@ class MinObservable<T> extends StreamObservable<T> {
                 if (compare(value, _currentMin) < 0) updateValue(value);
               } else {
                 try {
-                  Comparable currMin = _currentMin as Comparable, testMin = value as Comparable;
+                  Comparable currMin = _currentMin as Comparable,
+                      testMin = value as Comparable;
 
                   if (testMin.compareTo(currMin) < 0) updateValue(value);
                 } catch (error) {

@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class RepeatObservable<T> extends StreamObservable<T> {
 
-  RepeatObservable(Stream<T> stream, int repeatCount) {
+  RepeatObservable(StreamObservable parent, Stream<T> stream, int repeatCount) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

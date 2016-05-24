@@ -6,8 +6,9 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
 
   bool _closeAfterNextEvent = false;
 
-  FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    StreamSubscription<T> subscription;
+  FlatMapLatestObservable(StreamObservable parent, Stream<T> stream, Stream<S> predicate(T value)) {
+    this.parent = parent;
+
     StreamSubscription<S> otherSubscription;
 
     stream = stream.asBroadcastStream();
@@ -15,16 +16,18 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
     controller = new StreamController<S>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {
-            if (otherSubscription != null) otherSubscription.cancel();
+            otherSubscription?.cancel();
 
             StreamObservable<S> observable = new StreamObservable<S>()..setStream(predicate(value));
 
-            otherSubscription = observable.takeUntil(stream).listen((S otherValue) => controller.add(otherValue),
+            otherSubscription = observable
+                .takeUntil(stream)
+                .listen((S otherValue) => controller.add(otherValue),
                 onError: (e, s) => controller.addError(e, s),
                 onDone: () {
                   if (_closeAfterNextEvent) controller.close();
                 });
-            },
+          },
             onError: (e, s) => controller.addError(e, s),
             onDone: () => _closeAfterNextEvent = true);
         },

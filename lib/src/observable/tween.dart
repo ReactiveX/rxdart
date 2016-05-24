@@ -8,12 +8,12 @@ enum Ease {
 
 typedef double Sampler(double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
-class TweenObservable<T extends double> extends StreamObservable<T> with ControllerMixin<T> {
+class TweenObservable<double> extends StreamObservable<double> {
 
   TweenObservable(double startValue, double changeInTime, Duration duration, int intervalMs, Ease ease, bool asBroadcastStream) {
     StreamSubscription subscription;
 
-    controller = new StreamController<T>(sync: true,
+    controller = new StreamController<double>(sync: true,
         onListen: () {
           Sampler sampler;
 
@@ -24,7 +24,7 @@ class TweenObservable<T extends double> extends StreamObservable<T> with Control
             case Ease.IN_OUT:   sampler = easeInOut;  break;
           }
 
-          final Stream<T> stream = sampleFromValues(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
+          final Stream<double> stream = sampleFromValues(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(controller.add,
               onError: (e, s) => throwError(e, s),
@@ -33,12 +33,12 @@ class TweenObservable<T extends double> extends StreamObservable<T> with Control
         onCancel: () => subscription.cancel()
     );
 
-    final StreamObservable<T> observable = new StreamObservable<T>()..setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
+    final StreamObservable<double> observable = new StreamObservable<double>()..setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
 
     setStream(observable.interval(new Duration(milliseconds: intervalMs)));
   }
 
-  Stream sampleFromValues(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
+  Stream<double> sampleFromValues(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
     int currentTimeMs = 0;
 
     yield startValue;

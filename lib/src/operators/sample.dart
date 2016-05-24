@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class SampleObservable<T> extends StreamObservable<T> {
 
-  SampleObservable(Stream<T> stream, Stream sampleStream) {
+  SampleObservable(StreamObservable parent, Stream<T> stream, Stream sampleStream) {
+    this.parent = parent;
+
     StreamSubscription sampleSubscription;
     T currentValue;
 

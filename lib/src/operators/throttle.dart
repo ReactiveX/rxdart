@@ -8,7 +8,9 @@ class ThrottleObservable<T> extends StreamObservable<T> {
   final Duration _duration;
   bool _closeAfterNextEvent = false;
 
-  ThrottleObservable(Stream<T> stream, Duration duration) : _duration = duration {
+  ThrottleObservable(StreamObservable parent, Stream<T> stream, Duration duration) : _duration = duration {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
       onListen: () {
         subscription = stream.listen((T value) {

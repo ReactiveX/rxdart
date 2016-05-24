@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class IntervalObservable<T> extends StreamObservable<T> {
 
-  IntervalObservable(Stream<T> stream, Duration duration) {
+  IntervalObservable(StreamObservable parent, Stream<T> stream, Duration duration) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
         onListen: () {
           subscription = stream.listen((T value) {

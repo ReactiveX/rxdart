@@ -4,7 +4,9 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class ReverseObservable<T> extends StreamObservable<T> {
 
-  ReverseObservable(Stream<T> stream) {
+  ReverseObservable(StreamObservable parent, Stream<T> stream) {
+    this.parent = parent;
+
     controller = new StreamController<T>(sync: true,
       onListen: () {
         StreamObservable<T> observable = (new StreamObservable<T>()..setStream(stream)).replay();

@@ -6,28 +6,28 @@ import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 
 class ForwardingStreamSubscription<T> implements StreamSubscription<T> {
 
-  final StreamSubscription<T> _subscription;
-  final StreamObservable<T> _stream;
+  final StreamObservable _parent;
+  final StreamSubscription<T> _selfSubscription;
 
-  ForwardingStreamSubscription(this._subscription, this._stream);
+  ForwardingStreamSubscription(this._parent, this._selfSubscription);
 
-  Future asFuture([var futureValue]) => _subscription.asFuture(futureValue);
+  Future asFuture([var futureValue]) => _selfSubscription.asFuture(futureValue);
 
   Future cancel() {
-    _stream.cancelSubscription(_subscription);
+    _parent?.subscription?.cancel();
 
-    return _subscription.cancel();
+    return _selfSubscription.cancel();
   }
 
-  void onData(void handleData(T data)) => _subscription.onData(handleData);
+  void onData(void handleData(T data)) => _selfSubscription.onData(handleData);
 
-  void onDone(void handleDone()) => _subscription.onDone(handleDone);
+  void onDone(void handleDone()) => _selfSubscription.onDone(handleDone);
 
-  void onError(Function handleError) => _subscription.onError(handleError);
+  void onError(Function handleError) => _selfSubscription.onError(handleError);
 
-  void pause([Future resumeSignal]) => _subscription.pause(resumeSignal);
+  void pause([Future resumeSignal]) => _selfSubscription.pause(resumeSignal);
 
-  void resume() => _subscription.resume();
+  void resume() => _selfSubscription.resume();
 
-  bool get isPaused => _subscription.isPaused;
+  bool get isPaused => _selfSubscription.isPaused;
 }

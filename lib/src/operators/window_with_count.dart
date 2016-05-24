@@ -6,7 +6,9 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
 
   StreamObservable<T> observable;
 
-  WindowWithCountObservable(Stream<T> stream, int count, [int skip]) {
+  WindowWithCountObservable(StreamObservable parent, Stream<T> stream, int count, [int skip]) {
+    this.parent = parent;
+
     if (!(stream is StreamObservable)) observable = new StreamObservable<T>()..setStream(stream);
 
     controller = new StreamController<S>(sync: true,
@@ -14,7 +16,9 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
           subscription = observable
               .bufferWithCount(count, skip)
               .map((Iterable<T> value) => new StreamObservable<T>()..setStream(new Stream<T>.fromIterable(value)))
-              .listen((StreamObservable<T> value) => controller.add(value),
+              .listen((StreamObservable<T> value) {
+                controller.add(value);
+              },
             onError: (e, s) => controller.addError(e, s),
             onDone: () => controller.close()) as StreamSubscription<T>;
         },

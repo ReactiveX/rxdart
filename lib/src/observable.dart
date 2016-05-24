@@ -17,7 +17,7 @@ export 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
 
 Observable observable(Stream stream) => new StreamObservable()..setStream(stream);
 
-abstract class Observable<T> extends Stream {
+abstract class Observable<T> extends Stream<T> {
 
   Observable();
 
@@ -39,17 +39,17 @@ abstract class Observable<T> extends Stream {
 
   factory Observable.zip(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
 
-  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable(startValue, changeInTime, duration, intervalMs, ease, asBroadcastStream) as Observable<T>;
+  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable<T>(startValue as T, changeInTime as T, duration, intervalMs, ease, asBroadcastStream);
 
-  Observable asBroadcastStream({
+  Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
     void onCancel(StreamSubscription<T> subscription) });
 
-  Observable map(dynamic convert(T value));
+  Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event));
 
   Observable asyncMap(dynamic convert(T value));
 
-  Observable expand(Iterable convert(T value));
+  Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value));
 
   Observable asyncExpand(Stream convert(T value));
 
@@ -79,13 +79,13 @@ abstract class Observable<T> extends Stream {
 
   Observable<Observable<T>> windowWithCount(int count, [int skip]);
 
-  Observable flatMap(Stream predicate(T value));
+  Observable/*<S>*/ flatMap/*<S>*/(Stream/*<S>*/ predicate(T value));
 
-  Observable flatMapLatest(Stream predicate(T value));
+  Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value));
 
-  Observable takeUntil(Stream otherStream);
+  Observable<T> takeUntil(Stream otherStream);
 
-  Observable scan(dynamic predicate(dynamic accumulated, T value, int index), [dynamic seed]);
+  Observable/*<S>*/ scan/*<S>*/(dynamic/*<S>*/ predicate(/*<=S>*/dynamic accumulated, T value, int index), [dynamic/*<S>*/ seed]);
 
   Observable<T> tap(void action(T value));
 
@@ -107,6 +107,6 @@ abstract class Observable<T> extends Stream {
 
   Observable pluck(List<dynamic> sequence, {bool throwOnNull: false});
 
-  Observable reverse();
+  Observable<T> reverse();
 
 }
