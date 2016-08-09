@@ -69,13 +69,13 @@ class StreamObservable<T> implements Observable<T> {
 
   Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event)) => new StreamObservable()..setStream(stream.map(convert));
 
-  Observable asyncMap(dynamic convert(T value)) => new StreamObservable()..setStream(stream.asyncMap(convert));
+  Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value)) => new StreamObservable()..setStream(stream.asyncMap(convert));
 
   Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
 
   Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value)) => new StreamObservable()..setStream(stream.expand(convert));
 
-  Observable asyncExpand(Stream convert(T value)) => new StreamObservable()..setStream(stream.asyncExpand(convert));
+  Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value)) => new StreamObservable()..setStream(stream.asyncExpand(convert));
 
   Observable<T> distinct([bool equals(T previous, T next)]) => new StreamObservable<T>()..setStream(stream.distinct(equals));
 
@@ -89,7 +89,7 @@ class StreamObservable<T> implements Observable<T> {
 
   Observable<T> takeWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.takeWhile(test));
 
-  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout) as Stream<T>);
+  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink<T> sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
 
   Observable<T> retry([int count]) => new RetryObservable<T>(this, stream, count);
 
@@ -135,7 +135,7 @@ class StreamObservable<T> implements Observable<T> {
 
   Future<bool> contains(Object needle) => stream.contains(needle);
 
-  Future drain([var futureValue]) => stream.drain(futureValue);
+  Future/*<E>*/ drain/*<E>*/([var/*=E*/ futureValue]) => stream.drain(futureValue);
 
   Future<T> elementAt(int index) => stream.elementAt(index);
 
@@ -162,7 +162,7 @@ class StreamObservable<T> implements Observable<T> {
 
   Future<Set<T>> toSet() => stream.toSet();
 
-  Stream transform(StreamTransformer<T, dynamic> streamTransformer) => stream.transform(streamTransformer);
+  Stream/*<S>*/ transform/*<S>*/(StreamTransformer<T, dynamic/*=S*/> streamTransformer) => stream.transform(streamTransformer);
 
   Future<T> get first => stream.first;
 

@@ -2,7 +2,7 @@ library rx.observable.zip;
 
 import 'package:rxdart/src/observable/stream.dart';
 
-class ZipObservable<T extends List> extends StreamObservable<T> with ControllerMixin<T> {
+class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
   ZipObservable(Iterable<Stream> streams, Function predicate, bool asBroadcastStream) {
     final List<StreamSubscription> subscriptions = new List<StreamSubscription>(streams.length);
