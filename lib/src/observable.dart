@@ -31,13 +31,13 @@ abstract class Observable<T> extends Stream<T> {
 
   factory Observable.eventTransformed(Stream source, EventSink mapSink(EventSink<T> sink)) => observable((new Stream<T>.eventTransformed(source, mapSink)));
 
-  factory Observable.combineLatest(Iterable<Stream<T>> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, predicate, asBroadcastStream);
+  factory Observable/*<S>*/.combineLatest/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, /*=S*/ predicate, asBroadcastStream);
 
   factory Observable.combineLatestMap(Map<String, Stream<T>> streamMap, {asBroadcastStream: false}) => new CombineLatestObservableMap(streamMap, asBroadcastStream);
 
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
 
-  factory Observable.zip(Iterable<Stream<T>> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, predicate, asBroadcastStream);
+  factory Observable/*<S>*/.zip/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, /*=S*/ predicate, asBroadcastStream);
 
   factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable<T>(startValue as T, changeInTime as T, duration, intervalMs, ease, asBroadcastStream);
 
