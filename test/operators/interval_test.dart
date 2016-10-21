@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart' as rx;
 
 Stream<int> _getStream() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4]);
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -50,7 +50,7 @@ void main() {
   });
 
   test('rx.Observable.interval.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .interval(const Duration(milliseconds: 20));
 
     observableWithError.listen((_) => {}, onError: (e, s) {

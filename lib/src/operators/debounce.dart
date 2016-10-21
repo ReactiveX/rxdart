@@ -4,34 +4,40 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class DebounceObservable<T> extends StreamObservable<T> {
 
-  Timer _timer;
-  final Duration _duration;
-  bool _closeAfterNextEvent = false;
-
-  DebounceObservable(StreamObservable parent, Stream<T> stream, Duration duration) : _duration = duration {
+  DebounceObservable(StreamObservable parent, Stream<T> stream, Duration duration) {
     this.parent = parent;
+    bool _closeAfterNextEvent = false;
+    Timer _timer;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen(_resetTimer,
-          onError: (e, s) => throwError(e, s),
-          onDone: () {
-            _closeAfterNextEvent = true;
-          });
-        },
-        onCancel: () => subscription.cancel());
+    setStream(stream.transform(new StreamTransformer<T, T>(
+        (Stream<T> input, bool cancelOnError) {
+        StreamController<T> controller;
+        StreamSubscription<T> subscription;
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
-  }
+        controller = new StreamController<T>(sync: true,
+            onListen: () {
+              subscription = input.listen((T value) {
+                if (_timer != null && _timer.isActive) _timer.cancel();
 
-  void _resetTimer(T value) {
-    if (_timer != null && _timer.isActive) _timer.cancel();
+                _timer = new Timer(duration, () {
+                  controller.add(value);
 
-    _timer = Zone.ROOT.createTimer(_duration, () {
-      controller.add(value);
+                  if (_closeAfterNextEvent) controller.close();
+                });
+              },
+              onError: (e, s) => throwError(e, s),
+              onDone: () {
+                _closeAfterNextEvent = true;
+              },
+              cancelOnError: cancelOnError);
+            },
+            onPause: () => subscription.pause(),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
 
-      if (_closeAfterNextEvent) controller.close();
-    });
+        return controller.stream.listen(null);
+      }
+    )));
   }
 
 }

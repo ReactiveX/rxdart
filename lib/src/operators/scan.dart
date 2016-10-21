@@ -6,27 +6,22 @@ class ScanObservable<T, S> extends StreamObservable<S> {
 
   ScanObservable(StreamObservable parent, Stream<T> stream, S predicate(S accumulated, T value, int index), [S seed]) {
     this.parent = parent;
-
     int index = 0;
     S acc = seed;
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            try {
-              acc = predicate(acc, value, index++);
+    setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
+        handleData: (T data, EventSink<S> sink) {
+          try {
+            acc = predicate(acc, data, index++);
 
-              controller.add(acc);
-            } catch (error) {
-              controller.addError(error, error.stackTrace);
-            }
-          },
-          onError: controller.addError,
-          onDone: controller.close);
-        },
-        onCancel: () => subscription.cancel());
+            sink.add(acc);
+          } catch (error) {
+            sink.addError(error, error.stackTrace);
+          }
+        }
+    )));
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+    this.parent = parent;
   }
 
 }

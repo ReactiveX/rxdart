@@ -8,12 +8,12 @@ enum Ease {
 
 typedef double Sampler(double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
-class TweenObservable<double> extends StreamObservable<double> {
+class TweenObservable<T> extends StreamObservable<T> {
 
   TweenObservable(double startValue, double changeInTime, Duration duration, int intervalMs, Ease ease, bool asBroadcastStream) {
     StreamSubscription subscription;
 
-    controller = new StreamController<double>(sync: true,
+    controller = new StreamController<T>(sync: true,
         onListen: () {
           Sampler sampler;
 
@@ -24,7 +24,7 @@ class TweenObservable<double> extends StreamObservable<double> {
             case Ease.IN_OUT:   sampler = easeInOut;  break;
           }
 
-          final Stream<double> stream = sampleFromValues(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
+          final Stream<T> stream = sampleFromValues(sampler, startValue, changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(controller.add,
               onError: (e, s) => throwError(e, s),
@@ -33,23 +33,28 @@ class TweenObservable<double> extends StreamObservable<double> {
         onCancel: () => subscription.cancel()
     );
 
-    final StreamObservable<double> observable = new StreamObservable<double>()..setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
+    final StreamObservable<T> observable = new StreamObservable<T>()..setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
 
     setStream(observable.interval(new Duration(milliseconds: intervalMs)));
   }
 
-  Stream<double> sampleFromValues(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
+  Stream<T> sampleFromValues(Sampler sampler, double startValue, double changeInTime, int durationMs, int intervalMs) async* {
     int currentTimeMs = 0;
+    double result;
 
-    yield startValue;
+    yield startValue as T;
 
     while (currentTimeMs < durationMs) {
       currentTimeMs += intervalMs;
 
-      yield sampler(startValue, changeInTime, currentTimeMs, durationMs);
+      result = sampler(startValue, changeInTime, currentTimeMs, durationMs);
+
+      yield result as T;
     }
 
-    yield startValue + changeInTime;
+    result = startValue + changeInTime;
+
+    yield result as T;
   }
 
 }

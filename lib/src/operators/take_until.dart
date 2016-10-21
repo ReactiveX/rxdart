@@ -7,25 +7,35 @@ class TakeUntilObservable<T, S> extends StreamObservable<T> {
   TakeUntilObservable(StreamObservable parent, Stream<T> stream, Stream<S> otherStream) {
     this.parent = parent;
 
-    StreamSubscription<S> otherSubscription;
+    setStream(stream.transform(new StreamTransformer<T, T>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+      StreamSubscription<S> otherSubscription;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T data) {
-            controller.add(data);
+      controller = new StreamController<T>(sync: true,
+          onListen: () {
+            subscription = stream.listen((T data) {
+              controller.add(data);
+            },
+                onError: (e, s) => throwError(e, s),
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
+
+            otherSubscription = otherStream.listen((_) => controller.close(),
+                onError: (e, s) => throwError(e, s),
+                cancelOnError: cancelOnError);
           },
-              onError: (e, s) => throwError(e, s),
-              onDone: controller.close);
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
+          onCancel: () {
+            subscription.cancel();
+            otherSubscription.cancel();
+          });
 
-          otherSubscription = otherStream.listen((_) => controller.close(),
-              onError: (e, s) => throwError(e, s));
-        },
-        onCancel: () {
-          subscription.cancel();
-          otherSubscription.cancel();
-        });
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+      return controller.stream.listen(null);
+    }
+    )));
   }
 
 }

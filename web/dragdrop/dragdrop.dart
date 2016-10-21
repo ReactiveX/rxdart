@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart' as Rx;
 Rx.Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
   final StreamController<MouseEvent> controller = new StreamController<MouseEvent>.broadcast();
 
-  document.body.addEventListener(mouseEvent, controller.add);
+  document.body.addEventListener(mouseEvent, (Event event) => controller.add(event as MouseEvent));
 
   return Rx.observable(controller.stream);
 }
@@ -20,12 +20,12 @@ void main() {
     .map((e) {
       e.preventDefault();
       
-      return { 'left': e.client.x - dragTarget.offset.left, 'top': e.client.y - dragTarget.offset.top };
+      return <String, int>{ 'left': e.client.x - dragTarget.offset.left, 'top': e.client.y - dragTarget.offset.top };
     });
   
   mouseDown.flatMap(
       (Map<String, int> e) => mouseMove
-        .map((MouseEvent pos) => { 'left': pos.client.x - e['left'], 'top': pos.client.y - e['top'] })
+        .map((MouseEvent pos) => <String, int>{ 'left': pos.client.x - e['left'], 'top': pos.client.y - e['top'] })
         .takeUntil(mouseUp))
       .listen((e) {
         dragTarget.style.top = '${e['top']}px';

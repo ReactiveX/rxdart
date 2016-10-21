@@ -7,30 +7,40 @@ class TimeIntervalObservable<T, S extends TimeInterval<T>> extends StreamObserva
   TimeIntervalObservable(StreamObservable parent, Stream<T> stream) {
     this.parent = parent;
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          Stopwatch stopwatch = new Stopwatch()..start();
-          int ems;
+    setStream(stream.transform(new StreamTransformer<T, S>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<TimeInterval<T>> controller;
+      StreamSubscription<T> subscription;
 
-          subscription = stream.listen((T value) {
-            ems = stopwatch.elapsedMicroseconds;
+      controller = new StreamController<S>(sync: true,
+          onListen: () {
+            Stopwatch stopwatch = new Stopwatch()..start();
+            int ems;
 
-            stopwatch.stop();
+            subscription = input.listen((T value) {
+              ems = stopwatch.elapsedMicroseconds;
 
-            controller.add(new TimeInterval<T>(value, ems));
+              stopwatch.stop();
 
-            stopwatch = new Stopwatch()
-              ..start();
+              controller.add(new TimeInterval<T>(value, ems));
+
+              stopwatch = new Stopwatch()
+                ..start();
+            },
+                onError: controller.addError,
+                onDone: () {
+                  stopwatch.stop();
+                  controller.close();
+                },
+                cancelOnError: cancelOnError);
           },
-          onError: controller.addError,
-          onDone: () {
-            stopwatch.stop();
-            controller.close();
-          });
-        },
-        onCancel: () => subscription.cancel());
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+      return controller.stream.listen(null);
+    }
+    )));
   }
 
 }

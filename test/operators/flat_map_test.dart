@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() {
+Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -19,7 +19,7 @@ Stream _getStream() {
   return controller.stream;
 }
 
-Stream _getOtherStream(num value) {
+Stream<num> _getOtherStream(num value) {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(value + 1));
@@ -33,7 +33,7 @@ Stream _getOtherStream(num value) {
   return controller.stream;
 }
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -60,7 +60,7 @@ void main() {
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<num> observable = rx.observable(_getStream().asBroadcastStream())
         .flatMap(_getOtherStream);
 
     // listen twice on same stream
@@ -71,7 +71,7 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .flatMap(_getOtherStream);
 
     observableWithError.listen((_) => {}, onError: (e, s) {

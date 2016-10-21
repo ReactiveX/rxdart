@@ -7,39 +7,33 @@ class PluckObservable<T, S> extends StreamObservable<S> {
   PluckObservable(StreamObservable parent, Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
     this.parent = parent;
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            dynamic curVal = value;
+    setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
+        handleData: (T data, EventSink<S> sink) {
+          dynamic curVal = data;
 
-            sequence.forEach((dynamic part) {
-              try {
-                curVal = curVal[part];
-              } catch (error) {
-                controller.addError(error, error.stackTrace);
-              }
-            });
-
-            if (throwOnNull && curVal == null) {
-              final PluckError error = new PluckError();
-
-              controller.addError(error, error.stackTrace);
-            } else {
-              try {
-                S pluckedValue = curVal as S;
-
-                controller.add(pluckedValue);
-              } catch (error) {
-                controller.addError(error, error.stackTrace);
-              }
+          sequence.forEach((dynamic part) {
+            try {
+              curVal = curVal[part];
+            } catch (error) {
+              sink.addError(error, error.stackTrace);
             }
-          },
-              onError: controller.addError,
-              onDone: controller.close);
-        },
-        onCancel: () => subscription.cancel());
+          });
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+          if (throwOnNull && curVal == null) {
+            final PluckError error = new PluckError();
+
+            sink.addError(error, error.stackTrace);
+          } else {
+            try {
+              S pluckedValue = curVal as S;
+
+              sink.add(pluckedValue);
+            } catch (error) {
+              sink.addError(error, error.stackTrace);
+            }
+          }
+        }
+    )));
   }
 
 }

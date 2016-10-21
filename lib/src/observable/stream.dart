@@ -2,8 +2,6 @@ library rx.observable.stream;
 
 import 'dart:async';
 
-import 'package:rxdart/src/observable/stream_subscription.dart' show ForwardingStreamSubscription;
-
 import 'package:rxdart/src/observable.dart' show Observable;
 import 'package:rxdart/src/operators/debounce.dart' show DebounceObservable;
 import 'package:rxdart/src/operators/retry.dart' show RetryObservable;
@@ -17,22 +15,20 @@ import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
 import 'package:rxdart/src/operators/tap.dart' show TapObservable;
 import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
 import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
-import 'package:rxdart/src/operators/replay.dart' show ReplayObservable;
 import 'package:rxdart/src/operators/min.dart' show MinObservable;
 import 'package:rxdart/src/operators/max.dart' show MaxObservable;
 import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
 import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
-import 'package:rxdart/src/operators/reverse.dart' show ReverseObservable;
 
 export 'dart:async';
 
 class StreamObservable<T> implements Observable<T> {
 
   StreamController<T> controller;
-  StreamSubscription subscription;
-  StreamObservable parent;
+  StreamSubscription<dynamic> subscription;
+  StreamObservable<dynamic> parent;
 
   void throwError(e, s) => controller.addError(e, s);
 
@@ -52,14 +48,7 @@ class StreamObservable<T> implements Observable<T> {
   StreamSubscription<T> listen(void onData(T event),
     { Function onError,
       void onDone(),
-      bool cancelOnError }) {
-        final ForwardingStreamSubscription<T> subscription = new ForwardingStreamSubscription<T>(
-          parent,
-          stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError)
-        );
-
-        return subscription;
-  }
+      bool cancelOnError }) => stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   Future cancelSubscription() => controller.close();
 
@@ -107,15 +96,13 @@ class StreamObservable<T> implements Observable<T> {
 
   Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(this, stream, otherStream);
 
-  Observable/*<S>*/ scan/*<S>*/(dynamic/*<S>*/ predicate(dynamic/*<S>*/ accumulated, T value, int index), [dynamic/*<S>*/ seed]) => new ScanObservable<T, dynamic/*=S*/>(this, stream, predicate, seed);
+  Observable/*<S>*/ scan/*<S>*/(/*=S*/predicate(/*=S*/accumulated, T value, int index), [/*=S*/seed]) => new ScanObservable<T, dynamic/*=S*/>(this, stream, predicate, seed);
 
   Observable<T> tap(void action(T value)) => new TapObservable<T>(this, stream, action);
 
   Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(this, stream, startValues);
 
   Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(this, stream, repeatCount);
-
-  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false}) => new ReplayObservable<T>(this, stream, bufferSize: bufferSize, completeWhenBufferExhausted: completeWhenBufferExhausted);
 
   Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(this, stream, compare);
 
@@ -128,8 +115,6 @@ class StreamObservable<T> implements Observable<T> {
   Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(this, stream);
 
   Observable/*<S>*/ pluck/*<S>*/(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable<T, dynamic/*=S*/>(this, stream, sequence, throwOnNull: throwOnNull);
-
-  Observable<T> reverse() => new ReverseObservable(this, stream.asBroadcastStream());
 
   Future<bool> any(bool test(T element)) => stream.any(test);
 

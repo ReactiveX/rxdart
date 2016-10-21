@@ -5,10 +5,10 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() => new Stream<int>.periodic(const Duration(milliseconds: 20), (int count) => count).take(5);
-Stream _getSampleStream() => new Stream<int>.periodic(const Duration(milliseconds: 35), (int count) => count).take(5);
+Stream<int> _getStream() => new Stream<int>.periodic(const Duration(milliseconds: 20), (int count) => count).take(5);
+Stream<int> _getSampleStream() => new Stream<int>.periodic(const Duration(milliseconds: 35), (int count) => count).take(5);
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -46,7 +46,7 @@ void main() {
   });
 
   test('rx.Observable.sample.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .sample(_getSampleStream());
 
     observableWithError.listen((_) => {}, onError: (e, s) {

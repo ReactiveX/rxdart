@@ -2,7 +2,6 @@ library test.rx;
 
 import 'observable/stream_test.dart' as stream_test;
 import 'observable/combine_latest_test.dart' as combine_latest_test;
-import 'observable/combine_latest_map_test.dart' as combine_latest_map_test;
 import 'observable/merge_test.dart' as merge_test;
 import 'observable/zip_test.dart' as zip_test;
 
@@ -18,19 +17,16 @@ import 'operators/scan_test.dart' as scan_test;
 import 'operators/tap_test.dart' as tap_test;
 import 'operators/start_with_test.dart' as start_with_test;
 import 'operators/repeat_test.dart' as repeat_test;
-import 'operators/replay_test.dart' as replay_test;
 import 'operators/min_test.dart' as min_test;
 import 'operators/max_test.dart' as max_test;
 import 'operators/time_interval_test.dart' as time_interval_test;
 import 'operators/pluck_test.dart' as pluck_test;
-import 'operators/reverse_test.dart' as reverse_test;
 
 import 'observable/tween_test.dart' as tween_test;
 
 void main() {
   stream_test.main();
   combine_latest_test.main();
-  combine_latest_map_test.main();
   merge_test.main();
   zip_test.main();
 
@@ -46,12 +42,10 @@ void main() {
   tap_test.main();
   start_with_test.main();
   repeat_test.main();
-  replay_test.main();
   min_test.main();
   max_test.main();
   time_interval_test.main();
   pluck_test.main();
-  reverse_test.main();
 
   tween_test.main();
 }

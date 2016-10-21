@@ -88,10 +88,10 @@ void main() {
 
   displayedIndices.listen(print);
   
-  new Rx.Observable.combineLatestMap(<String, Stream>{
-    'people': displayedPeople,
-    'offset': accumulatedOffset
-  }).listen(renderer.setState);
+  new Rx.Observable.combineLatest(<Stream>[
+    displayedPeople,
+    accumulatedOffset
+  ], (List<Person> people, int offset) => <String, dynamic>{'people': people, 'offset': offset}).listen(renderer.setState);
 }
 
 class _ListRenderer extends react.Component {

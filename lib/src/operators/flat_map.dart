@@ -8,30 +8,39 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
 
   FlatMapObservable(StreamObservable parent, Stream<T> stream, Stream<S> predicate(T value)) {
     this.parent = parent;
-
     List<Stream<S>> streams = <Stream<S>>[];
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            Stream<S> otherStream = predicate(value);
+    setStream(stream.transform(new StreamTransformer<T, S>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<S> controller;
+      StreamSubscription<T> subscription;
 
-            streams.add(otherStream);
+      controller = new StreamController<S>(sync: true,
+          onListen: () {
+            subscription = input.listen((T value) {
+              Stream<S> otherStream = predicate(value);
 
-            otherStream.listen(controller.add,
+              streams.add(otherStream);
+
+              otherStream.listen(controller.add,
+                  onError: (e, s) => controller.addError(e, s),
+                  onDone: () {
+                    streams.remove(otherStream);
+
+                    if (_closeAfterNextEvent && streams.isEmpty) controller.close();
+                  });
+            },
                 onError: (e, s) => controller.addError(e, s),
-                onDone: () {
-                  streams.remove(otherStream);
-
-                  if (_closeAfterNextEvent && streams.isEmpty) controller.close();
-                });
+                onDone: () => _closeAfterNextEvent = true,
+                cancelOnError: cancelOnError);
           },
-          onError: (e, s) => controller.addError(e, s),
-          onDone: () => _closeAfterNextEvent = true);
-        },
-        onCancel: () => subscription.cancel());
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+      return controller.stream.listen(null);
+    }
+    )));
   }
 
 }

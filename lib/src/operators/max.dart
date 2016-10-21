@@ -4,43 +4,41 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class MaxObservable<T> extends StreamObservable<T> {
 
-  T _currentMax;
-
   MaxObservable(StreamObservable parent, Stream<T> stream, [int compare(T a, T b)]) {
     this.parent = parent;
+    T _currentMax;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            if (_currentMax == null) updateValue(value);
-            else {
-              if (compare != null) {
-                if (compare(value, _currentMax) > 0) updateValue(value);
-              } else {
-                try {
-                  Comparable currMax = _currentMax as Comparable,
-                      testMax = value as Comparable;
+    setStream(stream.transform(new StreamTransformer<T, T>.fromHandlers(
+        handleData: (T data, EventSink<T> sink) {
+          if (_currentMax == null) {
+            _currentMax = data;
 
-                  if (testMax.compareTo(currMax) > 0) updateValue(value);
-                } catch (error) {
-                  throwError(error, error.stackTrace);
+            sink.add(data);
+          }
+          else {
+            if (compare != null) {
+              if (compare(data, _currentMax) > 0) {
+                _currentMax = data;
+
+                sink.add(data);
+              }
+            } else {
+              try {
+                Comparable currMax = _currentMax as Comparable,
+                    testMax = data as Comparable;
+
+                if (testMax.compareTo(currMax) > 0) {
+                  _currentMax = data;
+
+                  sink.add(data);
                 }
+              } catch (error) {
+                throwError(error, error.stackTrace);
               }
             }
-          },
-              onError: (e, s) => throwError(e, s),
-              onDone: controller.close);
-        },
-        onCancel: () => subscription.cancel());
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
-
-  }
-
-  void updateValue(T newMax) {
-    _currentMax = newMax;
-
-    controller.add(newMax);
+          }
+        }
+    )));
   }
 
 }

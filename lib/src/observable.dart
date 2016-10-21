@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/combine_latest.dart' show CombineLatestObservable;
-import 'package:rxdart/src/observable/combine_latest_map.dart' show CombineLatestObservableMap;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
@@ -33,13 +32,11 @@ abstract class Observable<T> extends Stream<T> {
 
   factory Observable/*<S>*/.combineLatest/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, /*=S*/ predicate, asBroadcastStream);
 
-  factory Observable.combineLatestMap(Map<String, Stream<T>> streamMap, {asBroadcastStream: false}) => new CombineLatestObservableMap(streamMap, asBroadcastStream);
-
   factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
 
   factory Observable/*<S>*/.zip/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, /*=S*/ predicate, asBroadcastStream);
 
-  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable<T>(startValue as T, changeInTime as T, duration, intervalMs, ease, asBroadcastStream);
+  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable<T>(startValue, changeInTime, duration, intervalMs, ease, asBroadcastStream);
 
   Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
@@ -93,8 +90,6 @@ abstract class Observable<T> extends Stream<T> {
 
   Observable<T> repeat(int repeatCount);
 
-  Observable<T> replay({int bufferSize: 0, bool completeWhenBufferExhausted: false});
-
   Observable<T> min([int compare(T a, T b)]);
 
   Observable<T> max([int compare(T a, T b)]);
@@ -106,7 +101,5 @@ abstract class Observable<T> extends Stream<T> {
   Observable<TimeInterval<T>> timeInterval();
 
   Observable pluck(List<dynamic> sequence, {bool throwOnNull: false});
-
-  Observable<T> reverse();
 
 }

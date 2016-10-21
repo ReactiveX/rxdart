@@ -7,26 +7,32 @@ class RetryObservable<T> extends StreamObservable<T> {
   RetryObservable(StreamObservable parent, Stream<T> stream, int count) {
     this.parent = parent;
 
-    int retryStep = 0;
+    setStream(stream.transform(new StreamTransformer<T, T>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+      int retryStep = 0;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T data) {
-            controller.add(data);
+      controller = new StreamController<T>(sync: true,
+          onListen: () {
+            subscription = input.listen((T data) {
+              controller.add(data);
+            },
+                onError: (e, s) {
+                  if (count > 0 && count == retryStep) controller.addError(new RetryError(count));
+
+                  retryStep++;
+                },
+                onDone: () => controller.close(),
+                cancelOnError: cancelOnError);
           },
-              onError: (e, s) {
-                if (count > 0 && count == retryStep) {
-                  final Error error = new RetryError(count);
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
 
-                  throwError(error, error.stackTrace);
-                }
-                retryStep++;
-              },
-              onDone: () => controller.close());
-        },
-        onCancel: () => subscription.cancel());
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+      return controller.stream.listen(null);
+    }
+    )));
   }
 
 }

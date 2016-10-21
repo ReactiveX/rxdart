@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() {
+Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -19,7 +19,7 @@ Stream _getStream() {
   return controller.stream;
 }
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -80,7 +80,7 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.error.shouldThrow', () async {
-    Stream<Stream<int>> observableWithError = rx.observable(_getErroneousStream())
+    Stream<Stream<num>> observableWithError = rx.observable(_getErroneousStream())
         .windowWithCount(2);
 
     observableWithError.listen((_) => {}, onError: (e, s) {

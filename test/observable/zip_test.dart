@@ -23,20 +23,22 @@ Stream _getErroneousStream() {
   return controller.stream;
 }
 
+typedef void ExpectAsync(List<dynamic> list);
+
 void main() {
   test('rx.Observable.zip', () async {
-    const List<List> expectedOutput = const <dynamic>[const <dynamic>[0, 1, true], const <dynamic>[1, 2, false], const <dynamic>[2, 3, true], const <dynamic>[3, 4, false]];
+    const List<List<dynamic>> expectedOutput = const <List<dynamic>>[const <dynamic>[0, 1, true], const <dynamic>[1, 2, false], const <dynamic>[2, 3, true], const <dynamic>[3, 4, false]];
     int count = 0;
 
     Stream<List> observable = new rx.Observable.zip(_getStreams(), (int a, int b, bool c) => [a, b, c]);
 
-    observable.listen(expectAsync((List result) {
+    observable.listen(expectAsync((List<dynamic> result) {
       // test to see if the combined output matches
       for (int i=0, len=result.length; i<len; i++)
         expect(result[i], expectedOutput[count][i]);
 
       count++;
-    }, count: expectedOutput.length));
+    }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.zip.asBroadcastStream', () async {

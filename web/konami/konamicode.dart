@@ -21,7 +21,7 @@ void main() {
   StreamController<KeyboardEvent> controller = new StreamController<KeyboardEvent>();
   rx.Observable<KeyboardEvent> stream = rx.observable(controller.stream);
 
-  document.addEventListener('keyup', (KeyboardEvent event) => controller.add(event));
+  document.addEventListener('keyup', (Event event) => controller.add(event as KeyboardEvent));
 
   stream
     .map((KeyboardEvent e) => e.keyCode )     // get the key code

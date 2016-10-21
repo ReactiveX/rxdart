@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() {
+Stream<int> _getStream() {
   Stream<int> testStream = new Stream<int>.fromIterable(const <int>[0, 1, 2, 3]).map((int i) {
     if (i < 3) throw new Error();
 

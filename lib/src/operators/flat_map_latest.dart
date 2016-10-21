@@ -9,31 +9,37 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
   FlatMapLatestObservable(StreamObservable parent, Stream<T> stream, Stream<S> predicate(T value)) {
     this.parent = parent;
 
-    StreamSubscription<S> otherSubscription;
+    setStream(stream.transform(new StreamTransformer<T, S>(
+        (Stream<T> input, bool cancelOnError) {
+          StreamController<S> controller;
+          StreamSubscription<T> subscription;
+          StreamSubscription<S> otherSubscription;
 
-    stream = stream.asBroadcastStream();
+          controller = new StreamController<S>(sync: true,
+              onListen: () {
+                subscription = input.listen((T value) {
+                  otherSubscription?.cancel();
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            otherSubscription?.cancel();
+                  StreamObservable<S> observable = new StreamObservable<S>()..setStream(predicate(value));
 
-            StreamObservable<S> observable = new StreamObservable<S>()..setStream(predicate(value));
+                  otherSubscription = observable
+                      .listen((S otherValue) => controller.add(otherValue),
+                      onError: (e, s) => controller.addError(e, s),
+                      onDone: () {
+                        if (_closeAfterNextEvent) controller.close();
+                      });
+                },
+                    onError: (e, s) => controller.addError(e, s),
+                    onDone: () => _closeAfterNextEvent = true,
+                    cancelOnError: cancelOnError);
+              },
+              onPause: () => subscription.pause(),
+              onResume: () => subscription.resume(),
+              onCancel: () => subscription.cancel());
 
-            otherSubscription = observable
-                .takeUntil(stream)
-                .listen((S otherValue) => controller.add(otherValue),
-                onError: (e, s) => controller.addError(e, s),
-                onDone: () {
-                  if (_closeAfterNextEvent) controller.close();
-                });
-          },
-            onError: (e, s) => controller.addError(e, s),
-            onDone: () => _closeAfterNextEvent = true);
-        },
-        onCancel: () => subscription.cancel());
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+          return controller.stream.listen(null);
+        }
+    )));
   }
 
 }

@@ -5,9 +5,9 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() => new Stream<int>.fromIterable([10, 3, 3, 5, 2, 9, 1, 2, 0]);
+Stream<int> _getStream() => new Stream<int>.fromIterable([10, 3, 3, 5, 2, 9, 1, 2, 0]);
 
-Stream _getErroneousStream() => new Stream<Map>.fromIterable([{'value': 10}, {'value': 12}, {'value': 8}]);
+Stream<Map<String, int>> _getErroneousStream() => new Stream<Map<String, int>>.fromIterable([{'value': 10}, {'value': 12}, {'value': 8}]);
 
 void main() {
   test('rx.Observable.min', () async {
@@ -55,7 +55,7 @@ void main() {
   });
 
   test('rx.Observable.min.error.shouldThrow', () async {
-    Stream<Map> observableWithError = rx.observable(_getErroneousStream())
+    Stream<Map<String, int>> observableWithError = rx.observable(_getErroneousStream())
         .min();
 
     observableWithError.listen((_) => {}, onError: (e, s) {

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() => new Stream.fromIterable([{'first': {2: {true: 'done!'}}}]);
+Stream<Map<String, Map<int, Map<bool, String>>>> _getStream() => new Stream.fromIterable([{'first': {2: {true: 'done!'}}}]);
 
 void main() {
   test('rx.Observable.pluck', () async {
@@ -15,7 +15,7 @@ void main() {
   });
 
   test('rx.Observable.pluck.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<dynamic> observable = rx.observable(_getStream().asBroadcastStream())
         .pluck(['first', 2, true]);
 
     // listen twice on same stream

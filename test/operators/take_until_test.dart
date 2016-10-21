@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() {
+Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -19,7 +19,7 @@ Stream _getStream() {
   return controller.stream;
 }
 
-Stream _getOtherStream() {
+Stream<num> _getOtherStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 250), () {
@@ -30,7 +30,7 @@ Stream _getOtherStream() {
   return controller.stream;
 }
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -58,7 +58,7 @@ void main() {
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .takeUntil(_getOtherStream());
+        .takeUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -68,7 +68,7 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream())
+    Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .takeUntil(_getOtherStream());
 
     observableWithError.listen((_) => {}, onError: (e, s) {

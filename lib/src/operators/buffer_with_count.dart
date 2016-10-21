@@ -21,26 +21,19 @@ class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<S
     bufferKeep = count - ((skip == null) ? count : skip);
     S buffer = <T>[] as S;
 
-    controller = new StreamController<S>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            buffer.add(value);
+    setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
+      handleData: (T data, EventSink<S> sink) {
+        buffer.add(data);
 
-            if (buffer.length == count) {
-              controller.add(buffer);
-              buffer = buffer.sublist(count - bufferKeep);
-            }
-          },
-          onError: (e, s) => controller.addError(e, s),
-          onDone: () {
-            if (buffer.isNotEmpty) controller.add(buffer);
+        if (buffer.length == count) {
+          sink.add(buffer);
 
-            controller.close();
-          });
-        },
-        onCancel: () => subscription.cancel());
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+          buffer = buffer.sublist(count - bufferKeep);
+        }
+      }, handleDone: (EventSink<S> sink) {
+        if (buffer.isNotEmpty) sink.add(buffer);
+      }
+    )));
   }
 
 }

@@ -7,30 +7,39 @@ class SampleObservable<T> extends StreamObservable<T> {
   SampleObservable(StreamObservable parent, Stream<T> stream, Stream sampleStream) {
     this.parent = parent;
 
-    StreamSubscription sampleSubscription;
-    T currentValue;
+    setStream(stream.transform(new StreamTransformer<T, T>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+      StreamSubscription sampleSubscription;
+      T currentValue;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            currentValue = value;
+      controller = new StreamController<T>(sync: true,
+          onListen: () {
+            subscription = input.listen((T value) {
+              currentValue = value;
+            },
+                onError: throwError);
+
+            sampleSubscription = sampleStream.listen((_) {
+              if (currentValue != null) controller.add(currentValue);
+            },
+                onError: throwError,
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
           },
-          onError: throwError);
+          onPause: () => subscription.pause(),
+          onResume: () => subscription.resume(),
+          onCancel: () {
+            return Future.wait([
+              subscription.cancel(),
+              sampleSubscription.cancel()
+            ].where((Future cancelFuture) => cancelFuture != null));
+          });
 
-          sampleSubscription = sampleStream.listen((_) {
-            if (currentValue != null) controller.add(currentValue);
-          },
-          onError: throwError,
-          onDone: controller.close);
-        },
-        onCancel: () {
-          return Future.wait([
-            subscription.cancel(),
-            sampleSubscription.cancel()
-          ].where((Future cancelFuture) => cancelFuture != null));
-        });
-
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+      return controller.stream.listen(null);
+    }
+    )));
   }
 
 }

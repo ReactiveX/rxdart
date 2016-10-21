@@ -5,13 +5,13 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream _getStream() {
-  Stream a = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+Stream<int> _getStream() {
+  Stream<int> a = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
   return a;
 }
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   controller.add(1);
@@ -48,7 +48,7 @@ void main() {
   });
 
   test('rx.Observable.stream.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(_getErroneousStream());
+    Stream<num> observableWithError = rx.observable(_getErroneousStream());
 
     observableWithError.listen((_) => {}, onError: (e, s) {
       expect(true, true);

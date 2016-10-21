@@ -7,22 +7,32 @@ class IntervalObservable<T> extends StreamObservable<T> {
   IntervalObservable(StreamObservable parent, Stream<T> stream, Duration duration) {
     this.parent = parent;
 
-    controller = new StreamController<T>(sync: true,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            subscription.pause();
+    setStream(stream.transform(new StreamTransformer<T, T>(
+        (Stream<T> input, bool cancelOnError) {
+        StreamController<T> controller;
+        StreamSubscription<T> subscription;
 
-            new Timer(duration, () {
-              controller.add(value);
-              subscription.resume();
-            });
-          },
-              onError: (e, s) => throwError(e, s),
-              onDone: controller.close);
-        },
-        onCancel: () => subscription.cancel());
+        controller = new StreamController<T>(sync: true,
+            onListen: () {
+              subscription = input.listen((T value) {
+                subscription.pause();
 
-    setStream(stream.isBroadcast ? controller.stream.asBroadcastStream() : controller.stream);
+                new Timer(duration, () {
+                  controller.add(value);
+                  subscription.resume();
+                });
+              },
+                  onError: (e, s) => throwError(e, s),
+                  onDone: controller.close,
+                  cancelOnError: cancelOnError);
+            },
+            onPause: () => subscription.pause(),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
+
+        return controller.stream.listen(null);
+      }
+    )));
   }
 
 }
