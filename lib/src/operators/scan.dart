@@ -4,8 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class ScanObservable<T, S> extends StreamObservable<S> {
 
-  ScanObservable(StreamObservable parent, Stream<T> stream, S predicate(S accumulated, T value, int index), [S seed]) {
-    this.parent = parent;
+  ScanObservable(Stream<T> stream, S predicate(S accumulated, T value, int index), [S seed]) {
     int index = 0;
     S acc = seed;
 
@@ -20,8 +19,6 @@ class ScanObservable<T, S> extends StreamObservable<S> {
           }
         }
     )));
-
-    this.parent = parent;
   }
 
 }

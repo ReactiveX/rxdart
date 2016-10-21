@@ -4,8 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class MinObservable<T> extends StreamObservable<T> {
 
-  MinObservable(StreamObservable parent, Stream<T> stream, [int compare(T a, T b)]) {
-    this.parent = parent;
+  MinObservable(Stream<T> stream, [int compare(T a, T b)]) {
     T _currentMin;
 
     setStream(stream.transform(new StreamTransformer<T, T>.fromHandlers(
@@ -24,16 +23,16 @@ class MinObservable<T> extends StreamObservable<T> {
               }
             } else {
               try {
-                Comparable currMin = _currentMin as Comparable,
-                    testMin = data as Comparable;
+                T currMin = _currentMin,
+                    testMin = data;
 
-                if (testMin.compareTo(currMin) < 0) {
+                if ((testMin as Comparable<dynamic>).compareTo(currMin) < 0) {
                   _currentMin = data;
 
                   sink.add(data);
                 }
               } catch (error) {
-                throwError(error, error.stackTrace);
+                sink.addError(error, error.stackTrace);
               }
             }
           }

@@ -4,9 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class PluckObservable<T, S> extends StreamObservable<S> {
 
-  PluckObservable(StreamObservable parent, Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
-    this.parent = parent;
-
+  PluckObservable(Stream<T> stream, List<dynamic> sequence, {bool throwOnNull: false}) {
     setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
         handleData: (T data, EventSink<S> sink) {
           dynamic curVal = data;

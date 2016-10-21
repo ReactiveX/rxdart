@@ -4,8 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class ThrottleObservable<T> extends StreamObservable<T> {
 
-  ThrottleObservable(StreamObservable parent, Stream<T> stream, Duration duration) {
-    this.parent = parent;
+  ThrottleObservable(Stream<T> stream, Duration duration) {
     Timer _timer;
     bool _closeAfterNextEvent = false;
 
@@ -29,7 +28,7 @@ class ThrottleObservable<T> extends StreamObservable<T> {
             subscription = input.listen((T value) {
               if (_resetTimer()) controller.add(value);
             },
-                onError: (e, s) => throwError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 onDone: () => _closeAfterNextEvent = true,
                 cancelOnError: cancelOnError);
           },

@@ -4,9 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class TimeIntervalObservable<T, S extends TimeInterval<T>> extends StreamObservable<TimeInterval<T>> {
 
-  TimeIntervalObservable(StreamObservable parent, Stream<T> stream) {
-    this.parent = parent;
-
+  TimeIntervalObservable(Stream<T> stream) {
     setStream(stream.transform(new StreamTransformer<T, S>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<TimeInterval<T>> controller;

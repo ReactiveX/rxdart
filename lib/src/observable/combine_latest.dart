@@ -4,12 +4,14 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
-  CombineLatestObservable(Iterable<Stream> streams, Function predicate, bool asBroadcastStream) {
-    final List<StreamSubscription> subscriptions = new List<StreamSubscription>(streams.length);
+  StreamController<T> _controller;
 
-    controller = new StreamController<T>(sync: true,
+  CombineLatestObservable(Iterable<Stream<dynamic>> streams, Function predicate, bool asBroadcastStream) {
+    final List<StreamSubscription<dynamic>> subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
+
+    _controller = new StreamController<T>(sync: true,
         onListen: () {
-          final List values = new List(streams.length);
+          final List<dynamic> values = new List<dynamic>(streams.length);
           final List<bool> triggered = new List<bool>.generate(streams.length, (_) => false);
           final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
@@ -23,36 +25,36 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
           void markDone(int i) {
             completedStatus[i] = true;
 
-            if (completedStatus.reduce((bool a, bool b) => a && b)) controller.close();
+            if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
           }
 
           for (int i=0, len=streams.length; i<len; i++) {
-            Stream stream = streams.elementAt(i);
+            Stream<dynamic> stream = streams.elementAt(i);
 
             subscriptions[i] = stream.listen((dynamic value) => doUpdate(i, value),
-                onError: (e, s) => throwError(e, s),
+                onError: (dynamic e, dynamic s) => _controller.addError(e, s),
                 onDone: () => markDone(i));
           }
         },
         onCancel: () => Future.wait(subscriptions
-            .map((StreamSubscription subscription) => subscription.cancel())
-            .where((Future cancelFuture) => cancelFuture != null))
+            .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
+            .where((Future<dynamic> cancelFuture) => cancelFuture != null))
     );
 
-    setStream(asBroadcastStream ? controller.stream.asBroadcastStream() : controller.stream);
+    setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
   }
 
-  void updateWithValues(Function predicate, Iterable values) {
+  void updateWithValues(Function predicate, Iterable<dynamic> values) {
     T result;
 
     try {
       result = Function.apply(predicate, values) as T;
       assert(result is T || result == null);
     } catch (e, s) {
-      throwError(e, s);
+      _controller.addError(e, s);
     }
 
-    controller.add(result);
+    _controller.add(result);
   }
 
 }

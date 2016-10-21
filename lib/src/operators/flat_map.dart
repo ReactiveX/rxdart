@@ -6,8 +6,7 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
 
   bool _closeAfterNextEvent = false;
 
-  FlatMapObservable(StreamObservable parent, Stream<T> stream, Stream<S> predicate(T value)) {
-    this.parent = parent;
+  FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
     List<Stream<S>> streams = <Stream<S>>[];
 
     setStream(stream.transform(new StreamTransformer<T, S>(
@@ -23,14 +22,14 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
               streams.add(otherStream);
 
               otherStream.listen(controller.add,
-                  onError: (e, s) => controller.addError(e, s),
+                  onError: (dynamic e, dynamic s) => controller.addError(e, s),
                   onDone: () {
                     streams.remove(otherStream);
 
                     if (_closeAfterNextEvent && streams.isEmpty) controller.close();
                   });
             },
-                onError: (e, s) => controller.addError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 onDone: () => _closeAfterNextEvent = true,
                 cancelOnError: cancelOnError);
           },

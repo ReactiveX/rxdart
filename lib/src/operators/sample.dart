@@ -4,14 +4,12 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class SampleObservable<T> extends StreamObservable<T> {
 
-  SampleObservable(StreamObservable parent, Stream<T> stream, Stream sampleStream) {
-    this.parent = parent;
-
+  SampleObservable(Stream<T> stream, Stream<dynamic> sampleStream) {
     setStream(stream.transform(new StreamTransformer<T, T>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
-      StreamSubscription sampleSubscription;
+      StreamSubscription<dynamic> sampleSubscription;
       T currentValue;
 
       controller = new StreamController<T>(sync: true,
@@ -19,22 +17,22 @@ class SampleObservable<T> extends StreamObservable<T> {
             subscription = input.listen((T value) {
               currentValue = value;
             },
-                onError: throwError);
+                onError: controller.addError);
 
             sampleSubscription = sampleStream.listen((_) {
               if (currentValue != null) controller.add(currentValue);
             },
-                onError: throwError,
+                onError: controller.addError,
                 onDone: controller.close,
                 cancelOnError: cancelOnError);
           },
           onPause: () => subscription.pause(),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait([
+            return Future.wait(<Future<dynamic>>[
               subscription.cancel(),
               sampleSubscription.cancel()
-            ].where((Future cancelFuture) => cancelFuture != null));
+            ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
           });
 
       return controller.stream.listen(null);

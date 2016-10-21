@@ -4,9 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class TakeUntilObservable<T, S> extends StreamObservable<T> {
 
-  TakeUntilObservable(StreamObservable parent, Stream<T> stream, Stream<S> otherStream) {
-    this.parent = parent;
-
+  TakeUntilObservable(Stream<T> stream, Stream<S> otherStream) {
     setStream(stream.transform(new StreamTransformer<T, T>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
@@ -18,12 +16,12 @@ class TakeUntilObservable<T, S> extends StreamObservable<T> {
             subscription = stream.listen((T data) {
               controller.add(data);
             },
-                onError: (e, s) => throwError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 onDone: controller.close,
                 cancelOnError: cancelOnError);
 
             otherSubscription = otherStream.listen((_) => controller.close(),
-                onError: (e, s) => throwError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 cancelOnError: cancelOnError);
           },
           onPause: () => subscription.pause(),

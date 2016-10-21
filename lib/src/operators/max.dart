@@ -4,8 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class MaxObservable<T> extends StreamObservable<T> {
 
-  MaxObservable(StreamObservable parent, Stream<T> stream, [int compare(T a, T b)]) {
-    this.parent = parent;
+  MaxObservable(Stream<T> stream, [int compare(T a, T b)]) {
     T _currentMax;
 
     setStream(stream.transform(new StreamTransformer<T, T>.fromHandlers(
@@ -24,16 +23,16 @@ class MaxObservable<T> extends StreamObservable<T> {
               }
             } else {
               try {
-                Comparable currMax = _currentMax as Comparable,
-                    testMax = data as Comparable;
+                T currMax = _currentMax,
+                    testMax = data;
 
-                if (testMax.compareTo(currMax) > 0) {
+                if ((testMax as Comparable<dynamic>).compareTo(currMax) > 0) {
                   _currentMax = data;
 
                   sink.add(data);
                 }
               } catch (error) {
-                throwError(error, error.stackTrace);
+                sink.addError(error, error.stackTrace);
               }
             }
           }

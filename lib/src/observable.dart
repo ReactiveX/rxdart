@@ -14,13 +14,13 @@ export 'package:rxdart/src/observable/tween.dart' show Ease;
 
 export 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
 
-Observable/*<S>*/ observable/*<S>*/(Stream<dynamic/*=S*/> stream) => new StreamObservable()..setStream(stream);
+Observable/*<S>*/ observable/*<S>*/(Stream<dynamic/*=S*/> stream) => new StreamObservable/*<S>*/()..setStream(stream);
 
 abstract class Observable<T> extends Stream<T> {
 
   Observable();
 
-  factory Observable.fromStream(Stream stream) => observable(stream) as Observable<T>;
+  factory Observable.fromStream(Stream<T> stream) => observable(stream);
 
   factory Observable.fromFuture(Future<T> future) => observable((new Stream<T>.fromFuture(future)));
 
@@ -28,43 +28,43 @@ abstract class Observable<T> extends Stream<T> {
 
   factory Observable.periodic(Duration period, [T computation(int computationCount)]) => observable((new Stream<T>.periodic(period, computation)));
 
-  factory Observable.eventTransformed(Stream source, EventSink mapSink(EventSink<T> sink)) => observable((new Stream<T>.eventTransformed(source, mapSink)));
+  factory Observable.eventTransformed(Stream<T> source, EventSink<T> mapSink(EventSink<T> sink)) => observable((new Stream<T>.eventTransformed(source, mapSink)));
 
-  factory Observable/*<S>*/.combineLatest/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new CombineLatestObservable(streams, /*=S*/ predicate, asBroadcastStream);
+  factory Observable/*<S>*/.combineLatest/*<S>*/(Iterable<Stream<dynamic>> streams, Function predicate, {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(streams, /*=S*/ predicate, asBroadcastStream);
 
-  factory Observable.merge(Iterable<Stream<T>> streams, {asBroadcastStream: false}) => new MergeObservable(streams, asBroadcastStream);
+  factory Observable.merge(Iterable<Stream<T>> streams, {bool asBroadcastStream: false}) => new MergeObservable<T>(streams, asBroadcastStream);
 
-  factory Observable/*<S>*/.zip/*<S>*/(Iterable<Stream> streams, Function predicate, {asBroadcastStream: false}) => new ZipObservable(streams, /*=S*/ predicate, asBroadcastStream);
+  factory Observable/*<S>*/.zip/*<S>*/(Iterable<Stream<dynamic>> streams, Function predicate, {bool asBroadcastStream: false}) => new ZipObservable<T>(streams, /*=S*/ predicate, asBroadcastStream);
 
-  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, asBroadcastStream: false}) => new TweenObservable<T>(startValue, changeInTime, duration, intervalMs, ease, asBroadcastStream);
+  factory Observable.tween(double startValue, double changeInTime, Duration duration, {int intervalMs: 20, Ease ease: Ease.LINEAR, bool asBroadcastStream: false}) => new TweenObservable<T>(startValue, changeInTime, duration, intervalMs, ease, asBroadcastStream);
 
-  Observable<T> asBroadcastStream({
+  @override Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
     void onCancel(StreamSubscription<T> subscription) });
 
-  Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event));
+  @override Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event));
 
-  Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value));
+  @override Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value));
 
-  Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value));
+  @override Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value));
 
-  Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value));
+  @override Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value));
 
-  Observable<T> distinct([bool equals(T previous, T next)]);
+  @override Observable<T> distinct([bool equals(T previous, T next)]);
 
-  Observable<T> where(bool test(T event));
+  @override Observable<T> where(bool test(T event));
 
-  Observable<T> handleError(Function onError, { bool test(error) });
+  @override Observable<T> handleError(Function onError, { bool test(dynamic error) });
 
-  Observable<T> skip(int count);
+  @override Observable<T> skip(int count);
 
-  Observable<T> skipWhile(bool test(T element));
+  @override Observable<T> skipWhile(bool test(T element));
 
-  Observable<T> take(int count);
+  @override Observable<T> take(int count);
 
-  Observable<T> takeWhile(bool test(T element));
+  @override Observable<T> takeWhile(bool test(T element));
 
-  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink<T> sink)});
+  @override Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink<T> sink)});
 
   Observable<T> retry([int count]);
 
@@ -80,7 +80,7 @@ abstract class Observable<T> extends Stream<T> {
 
   Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value));
 
-  Observable<T> takeUntil(Stream otherStream);
+  Observable<T> takeUntil(Stream<dynamic> otherStream);
 
   Observable/*<S>*/ scan/*<S>*/(dynamic/*<S>*/ predicate(/*<=S>*/dynamic accumulated, T value, int index), [dynamic/*<S>*/ seed]);
 
@@ -96,10 +96,10 @@ abstract class Observable<T> extends Stream<T> {
 
   Observable<T> interval(Duration duration);
 
-  Observable<T> sample(Stream sampleStream);
+  Observable<T> sample(Stream<dynamic> sampleStream);
 
   Observable<TimeInterval<T>> timeInterval();
 
-  Observable pluck(List<dynamic> sequence, {bool throwOnNull: false});
+  Observable<dynamic> pluck(List<dynamic> sequence, {bool throwOnNull: false});
 
 }

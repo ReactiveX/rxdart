@@ -6,9 +6,7 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
 
   StreamObservable<T> observable;
 
-  WindowWithCountObservable(StreamObservable parent, Stream<T> stream, int count, [int skip]) {
-    this.parent = parent;
-
+  WindowWithCountObservable(Stream<T> stream, int count, [int skip]) {
     setStream(stream.transform(new StreamTransformer<T, S>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
@@ -25,7 +23,7 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
                 controller.add(value);
               },
                 cancelOnError: cancelOnError,
-                onError: (e, s) => controller.addError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 onDone: () => controller.close()) as StreamSubscription<T>;
           },
           onPause: () => subscription.pause(),

@@ -28,7 +28,7 @@ void main() {
     const List<String> expectedOutput = const <String>['0 4 true', '1 4 true', '2 4 true'];
     int count = 0;
 
-    Stream<String> observable = new rx.Observable.combineLatest(_getStreams(),
+    Stream<String> observable = new rx.Observable<String>.combineLatest(_getStreams(),
         (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
     });

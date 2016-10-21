@@ -4,8 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class DebounceObservable<T> extends StreamObservable<T> {
 
-  DebounceObservable(StreamObservable parent, Stream<T> stream, Duration duration) {
-    this.parent = parent;
+  DebounceObservable(Stream<T> stream, Duration duration) {
     bool _closeAfterNextEvent = false;
     Timer _timer;
 
@@ -25,7 +24,7 @@ class DebounceObservable<T> extends StreamObservable<T> {
                   if (_closeAfterNextEvent) controller.close();
                 });
               },
-              onError: (e, s) => throwError(e, s),
+              onError: (dynamic e, dynamic s) => controller.addError(e, s),
               onDone: () {
                 _closeAfterNextEvent = true;
               },

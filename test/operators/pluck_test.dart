@@ -5,12 +5,15 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-Stream<Map<String, Map<int, Map<bool, String>>>> _getStream() => new Stream.fromIterable([{'first': {2: {true: 'done!'}}}]);
+Stream<Map<String, Map<int, Map<bool, String>>>> _getStream() =>
+    new Stream<Map<String, Map<int, Map<bool, String>>>>.fromIterable(
+        <Map<String, Map<int, Map<bool, String>>>>[<String, Map<int, Map<bool, String>>>{'first': <int, Map<bool, String>>{2: <bool, String>{true: 'done!'}}}]
+    );
 
 void main() {
   test('rx.Observable.pluck', () async {
     rx.observable(_getStream())
-        .pluck(['first', 2, true])
+        .pluck(<dynamic>['first', 2, true])
         .listen((String result) => expect(result, 'done!'));
   });
 

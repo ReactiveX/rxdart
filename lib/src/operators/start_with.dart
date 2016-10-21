@@ -4,9 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class StartWithObservable<T> extends StreamObservable<T> {
 
-  StartWithObservable(StreamObservable parent, Stream<T> stream, List<T> startValues) {
-    this.parent = parent;
-
+  StartWithObservable(Stream<T> stream, List<T> startValues) {
     setStream(stream.transform(new StreamTransformer<T, T>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
@@ -19,7 +17,7 @@ class StartWithObservable<T> extends StreamObservable<T> {
             subscription = input.listen((T data) {
               controller.add(data);
             },
-                onError: (e, s) => throwError(e, s),
+                onError: (dynamic e, dynamic s) => controller.addError(e, s),
                 onDone: controller.close,
                 cancelOnError: cancelOnError);
           },

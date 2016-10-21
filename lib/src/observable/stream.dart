@@ -26,12 +26,6 @@ export 'dart:async';
 
 class StreamObservable<T> implements Observable<T> {
 
-  StreamController<T> controller;
-  StreamSubscription<dynamic> subscription;
-  StreamObservable<dynamic> parent;
-
-  void throwError(e, s) => controller.addError(e, s);
-
   Stream<T> stream;
 
   @override
@@ -45,119 +39,117 @@ class StreamObservable<T> implements Observable<T> {
     this.stream = stream;
   }
 
-  StreamSubscription<T> listen(void onData(T event),
+  @override StreamSubscription<T> listen(void onData(T event),
     { Function onError,
       void onDone(),
       bool cancelOnError }) => stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  Future cancelSubscription() => controller.close();
-
-  Observable<T> asBroadcastStream({
+  @override Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
-    void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+    void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable<T>()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
-  Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event)) => new StreamObservable()..setStream(stream.map(convert));
+  @override Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event)) => new StreamObservable/*<S>*/()..setStream(stream.map(convert));
 
-  Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value)) => new StreamObservable()..setStream(stream.asyncMap(convert));
+  @override Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.asyncMap(convert));
 
-  Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
+  @override Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
 
-  Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value)) => new StreamObservable()..setStream(stream.expand(convert));
+  @override Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.expand(convert));
 
-  Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value)) => new StreamObservable()..setStream(stream.asyncExpand(convert));
+  @override Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.asyncExpand(convert));
 
-  Observable<T> distinct([bool equals(T previous, T next)]) => new StreamObservable<T>()..setStream(stream.distinct(equals));
+  @override Observable<T> distinct([bool equals(T previous, T next)]) => new StreamObservable<T>()..setStream(stream.distinct(equals));
 
-  Observable<T> handleError(Function onError, { bool test(error) }) => new StreamObservable<T>()..setStream(stream.handleError(onError, test: test));
+  @override Observable<T> handleError(Function onError, { bool test(dynamic error) }) => new StreamObservable<T>()..setStream(stream.handleError(onError, test: test));
 
-  Observable<T> skip(int count) => new StreamObservable<T>()..setStream(stream.skip(count));
+  @override Observable<T> skip(int count) => new StreamObservable<T>()..setStream(stream.skip(count));
 
-  Observable<T> skipWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.skipWhile(test));
+  @override Observable<T> skipWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.skipWhile(test));
 
-  Observable<T> take(int count) => new StreamObservable<T>()..setStream(stream.take(count));
+  @override Observable<T> take(int count) => new StreamObservable<T>()..setStream(stream.take(count));
 
-  Observable<T> takeWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.takeWhile(test));
+  @override Observable<T> takeWhile(bool test(T element)) => new StreamObservable<T>()..setStream(stream.takeWhile(test));
 
-  Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink<T> sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
+  @override Observable<T> timeout(Duration timeLimit, {void onTimeout(EventSink<T> sink)}) => new StreamObservable<T>()..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
 
-  Observable<T> retry([int count]) => new RetryObservable<T>(this, stream, count);
+  @override Observable<T> retry([int count]) => new RetryObservable<T>(stream, count);
 
-  Observable<T> debounce(Duration duration) => new DebounceObservable<T>(this, stream, duration);
+  @override Observable<T> debounce(Duration duration) => new DebounceObservable<T>(stream, duration);
 
-  Observable<T> throttle(Duration duration) => new ThrottleObservable<T>(this, stream, duration);
+  @override Observable<T> throttle(Duration duration) => new ThrottleObservable<T>(stream, duration);
 
-  Observable<List<T>> bufferWithCount(int count, [int skip]) => new BufferWithCountObservable<T, List<T>>(this, stream, count, skip);
+  @override Observable<List<T>> bufferWithCount(int count, [int skip]) => new BufferWithCountObservable<T, List<T>>(stream, count, skip);
 
-  Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(this, stream, count, skip);
+  @override Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream, count, skip);
 
-  Observable/*<S>*/ flatMap/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapObservable<T, dynamic/*=S*/>(this, stream, predicate);
+  @override Observable/*<S>*/ flatMap/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapObservable<T, dynamic/*=S*/>(stream, predicate);
 
-  Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapLatestObservable<T, dynamic/*=S*/>(this, stream, predicate);
+  @override Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapLatestObservable<T, dynamic/*=S*/>(stream, predicate);
 
-  Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(this, stream, otherStream);
+  @override Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(stream, otherStream);
 
-  Observable/*<S>*/ scan/*<S>*/(/*=S*/predicate(/*=S*/accumulated, T value, int index), [/*=S*/seed]) => new ScanObservable<T, dynamic/*=S*/>(this, stream, predicate, seed);
+  @override Observable/*<S>*/ scan/*<S>*/(/*=S*/predicate(/*=S*/accumulated, T value, int index), /*<S>*/[/*=S*/seed]) => new ScanObservable<T, dynamic/*=S*/>(stream, predicate, seed);
 
-  Observable<T> tap(void action(T value)) => new TapObservable<T>(this, stream, action);
+  @override Observable<T> tap(void action(T value)) => new TapObservable<T>(stream, action);
 
-  Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(this, stream, startValues);
+  @override Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(stream, startValues);
 
-  Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(this, stream, repeatCount);
+  @override Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream, repeatCount);
 
-  Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(this, stream, compare);
+  @override Observable<T> min([int compare(T a, T b)]) => new MinObservable<T>(stream, compare);
 
-  Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(this, stream, compare);
+  @override Observable<T> max([int compare(T a, T b)]) => new MaxObservable<T>(stream, compare);
 
-  Observable<T> interval(Duration duration) => new IntervalObservable<T>(this, stream, duration);
+  @override Observable<T> interval(Duration duration) => new IntervalObservable<T>(stream, duration);
 
-  Observable<T> sample(Stream sampleStream) => new SampleObservable<T>(this, stream, sampleStream);
+  @override Observable<T> sample(Stream<dynamic> sampleStream) => new SampleObservable<T>(stream, sampleStream);
 
-  Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(this, stream);
+  @override Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream);
 
-  Observable/*<S>*/ pluck/*<S>*/(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable<T, dynamic/*=S*/>(this, stream, sequence, throwOnNull: throwOnNull);
+  @override Observable<dynamic> pluck(List<dynamic> sequence, {bool throwOnNull: false}) => new PluckObservable<T, dynamic>(stream, sequence, throwOnNull: throwOnNull);
 
-  Future<bool> any(bool test(T element)) => stream.any(test);
+  @override Future<bool> any(bool test(T element)) => stream.any(test);
 
-  Future<bool> contains(Object needle) => stream.contains(needle);
+  @override Future<bool> contains(Object needle) => stream.contains(needle);
 
-  Future/*<E>*/ drain/*<E>*/([var/*=E*/ futureValue]) => stream.drain(futureValue);
+  @override Future/*<E>*/ drain/*<E>*/([var/*=E*/ futureValue]) => stream.drain(futureValue);
 
-  Future<T> elementAt(int index) => stream.elementAt(index);
+  @override Future<T> elementAt(int index) => stream.elementAt(index);
 
-  Future<bool> every(bool test(T element)) => stream.every(test);
+  @override Future<bool> every(bool test(T element)) => stream.every(test);
 
-  Future<dynamic> firstWhere(bool test(T element), {Object defaultValue()}) => stream.firstWhere(test, defaultValue: defaultValue);
+  @override Future<dynamic> firstWhere(bool test(T element), {Object defaultValue()}) => stream.firstWhere(test, defaultValue: defaultValue);
 
-  Future forEach(void action(T element)) => stream.forEach(action);
+  @override Future<dynamic> forEach(void action(T element)) => stream.forEach(action);
 
-  Future<String> join([String separator = ""]) => stream.join(separator);
+  @override Future<String> join([String separator = ""]) => stream.join(separator);
 
-  Future<dynamic> lastWhere(bool test(T element), {Object defaultValue()}) => stream.lastWhere(test, defaultValue: defaultValue);
+  @override Future<dynamic> lastWhere(bool test(T element), {Object defaultValue()}) => stream.lastWhere(test, defaultValue: defaultValue);
 
-  Future pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
+  @override Future<dynamic> pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
 
-  Future/*<S>*/ fold/*<S>*/(var/*=S*/ initialValue,
+  @override Future/*<S>*/ fold/*<S>*/(var/*=S*/ initialValue,
       /*=S*/ combine(var/*=S*/ previous, T element)) => stream.fold(initialValue, combine);
 
-  Future<T> reduce(T combine(T previous, T element)) => stream.reduce(combine);
+  @override Future<T> reduce(T combine(T previous, T element)) => stream.reduce(combine);
 
-  Future<T> singleWhere(bool test(T element)) => stream.singleWhere(test);
+  @override Future<T> singleWhere(bool test(T element)) => stream.singleWhere(test);
 
-  Future<List<T>> toList() => stream.toList();
+  @override Future<List<T>> toList() => stream.toList();
 
-  Future<Set<T>> toSet() => stream.toSet();
+  @override Future<Set<T>> toSet() => stream.toSet();
 
-  Stream/*<S>*/ transform/*<S>*/(StreamTransformer<T, dynamic/*=S*/> streamTransformer) => stream.transform(streamTransformer);
+  @override Stream/*<S>*/ transform/*<S>*/(StreamTransformer<T, dynamic/*=S*/> streamTransformer) => stream.transform(streamTransformer);
 
-  Future<T> get first => stream.first;
+  @override Future<T> get first => stream.first;
 
-  Future<T> get last => stream.last;
+  @override Future<T> get last => stream.last;
 
-  Future<T> get single => stream.single;
+  @override Future<T> get single => stream.single;
 
-  Future<bool> get isEmpty => stream.isEmpty;
+  @override Future<bool> get isEmpty => stream.isEmpty;
 
-  Future<int> get length => stream.length;
+  @override Future<int> get length => stream.length;
 }
 
 abstract class ControllerMixin<T> {
