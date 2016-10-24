@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(int result);
+
 Stream<int> _getStream() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4]);
 
 Stream<num> _getErroneousStream() {
@@ -35,7 +37,7 @@ void main() {
           if (lastInterval != -1) expect(stopwatch.elapsedMilliseconds - lastInterval >= 20, true);
 
           lastInterval = stopwatch.elapsedMilliseconds;
-        }, count: expectedOutput.length), onDone: stopwatch.stop);
+        }, count: expectedOutput.length) as ExpectAsync, onDone: stopwatch.stop);
   });
 
   test('rx.Observable.interval.asBroadcastStream', () async {

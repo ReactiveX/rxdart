@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(Iterable<double> result);
+
 void main() {
   test('rx.Observable.tween', () async {
     const List<List<double>> expectedValues = const <List<double>>[
@@ -125,12 +127,12 @@ void main() {
     ], (double a, double b, double c, double d) => <double>[a, b, c, d])
         .map((List<double> values) =>
           values.map((double value) => (value * 100).round() / 100))
-        .listen(expectAsync((Iterable result) {
+        .listen(expectAsync((Iterable<double> result) {
       // test to see if the combined output matches
       final List<double> expected = expectedValues[count++];
 
       for (int i = 0, len = result.length; i < len; i++)
         expect(expected[i], result.elementAt(i));
-    }, count: expectedValues.length));
+    }, count: expectedValues.length) as ExpectAsync);
   });
 }

@@ -1,31 +1,32 @@
 import 'dart:html';
+import 'dart:js';
 import 'dart:math';
 import 'dart:async';
 
 import 'package:react/react.dart' as react;
 import 'package:react/react_client.dart';
-import 'package:rxdart/rxdart.dart' as Rx;
+import 'package:rxdart/rxdart.dart' as rx;
 import 'package:faker/faker.dart';
 
 const int count = 100;
 const int rowHeight = 24;
 
-int visibleRowCount() => (document.body.client.height ~/ rowHeight) + 3;
+num visibleRowCount() => (document.body.client.height ~/ rowHeight) + 3;
 
-Rx.Observable<Event> _getResizeObservable() {
+rx.Observable<Event> _getResizeObservable() {
   final StreamController<Event> controller = new StreamController<Event>.broadcast();
 
   document.body.addEventListener('resize', controller.add);
 
-  return Rx.observable(controller.stream);
+  return rx.observable(controller.stream);
 }
 
-Rx.Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
-  final StreamController<MouseEvent> controller = new StreamController<MouseEvent>.broadcast();
+rx.Observable<Event> _getMouseObservable(String mouseEvent) {
+  final StreamController<Event> controller = new StreamController<Event>.broadcast();
 
   document.body.addEventListener(mouseEvent, controller.add);
 
-  return Rx.observable(controller.stream);
+  return rx.observable(controller.stream);
 }
 
 /* VIRTUAL LIST
@@ -42,53 +43,53 @@ void main() {
   
   setClientConfiguration();
   
-  react.render(react.registerComponent(() => renderer)({}), querySelector('#content'));
+  react.render(react.registerComponent(() => renderer)(const {}), querySelector('#content'));
   
   // Rx
-  final Rx.Observable<Event> resize = _getResizeObservable();
-  final Rx.Observable<MouseEvent> mouseDown = _getMouseObservable('mousedown');
-  final Rx.Observable<MouseEvent> mouseUp = _getMouseObservable('mouseup');
-  final Rx.Observable<MouseEvent> mouseMove = _getMouseObservable('mousemove');
-  final Rx.Observable<WheelEvent> mouseWheel = _getMouseObservable('mousewheel');
+  final rx.Observable<Event> resize = _getResizeObservable();
+  final rx.Observable<MouseEvent> mouseDown = _getMouseObservable('mousedown');
+  final rx.Observable<MouseEvent> mouseUp = _getMouseObservable('mouseup');
+  final rx.Observable<MouseEvent> mouseMove = _getMouseObservable('mousemove');
+  final rx.Observable<WheelEvent> mouseWheel = _getMouseObservable('mousewheel');
   
-  final Rx.Observable<int> dragOffset = new Rx.Observable.merge([
+  final rx.Observable<num> dragOffset = new rx.Observable<num>.merge(<Stream<num>>[
     mouseDown
-      .flatMap((e) => mouseMove
+      .flatMap((MouseEvent e) => mouseMove
           .bufferWithCount(2, 1)
-          .map((f) => f.first.client.y - f.last.client.y)
+          .map((Iterable<MouseEvent> f) => f.first.client.y - f.last.client.y)
           .takeUntil(mouseUp)),
     mouseWheel
-      .tap((e) => e.preventDefault())
-      .map((e) => (e.deltaY * -.075).toInt()),
+      .tap((WheelEvent e) => e.preventDefault())
+      .map((WheelEvent e) => (e.deltaY * -.075).toInt()),
     resize
       .map((_) => 0)
-  ], asBroadcastStream: true).startWith([0]);
+  ], asBroadcastStream: true).startWith(<int>[0]);
   
-  final Rx.Observable<int> accumulatedOffset = dragOffset
-    .scan((int a, c, index) {
-      final int sum = a + c;
-      final int tot = (fakePeople.length - 1) * rowHeight;
-      final int max = tot - min(document.body.client.height, tot);
+  final rx.Observable<num> accumulatedOffset = dragOffset
+    .scan((num a, num c, num index) {
+      final num sum = a + c;
+      final num tot = (fakePeople.length - 1) * rowHeight;
+      final num max = tot - min(document.body.client.height, tot);
       
       return (sum < 0) ? 0 : (sum > max) ? max : sum;
     }, 0);
   
-  final Rx.Observable<int> displayedIndices = resize
+  final rx.Observable<num> displayedIndices = resize
     .map((_) => visibleRowCount())
-    .startWith([visibleRowCount()]);
+    .startWith(<num>[visibleRowCount()]);
   
-  final Rx.Observable<Map<String, int>> displayedRange = new Rx.Observable.combineLatest([
+  final rx.Observable<Map<String, int>> displayedRange = new rx.Observable<Map<String, int>>.combineLatest(<Stream<num>>[
     displayedIndices,
     accumulatedOffset
-  ], (int maxIndex, int offset) => {'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
+  ], (int maxIndex, int offset) => <String, int>{'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
   
-  final Rx.Observable<List<Person>> displayedPeople = displayedRange
-    .flatMap((o) => new Rx.Observable<List<Person>>.fromIterable([fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]))
+  final rx.Observable<List<Person>> displayedPeople = displayedRange
+    .flatMap((Map<String, int> o) => new rx.Observable<List<Person>>.fromIterable(<List<Person>>[fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]))
     .tap((List<Person> list) {});
 
   displayedIndices.listen(print);
   
-  new Rx.Observable.combineLatest(<Stream>[
+  new rx.Observable<Map<String, dynamic>>.combineLatest(<Stream<dynamic>>[
     displayedPeople,
     accumulatedOffset
   ], (List<Person> people, int offset) => <String, dynamic>{'people': people, 'offset': offset}).listen(renderer.setState);
@@ -96,23 +97,23 @@ void main() {
 
 class _ListRenderer extends react.Component {
   
-  render() {
-    final List children = [];
+  @override JsObject render() {
+    final List<dynamic> children = <dynamic>[];
     final int offset = state['offset'];
-    final List<Person> people = state['people'];
+    final List<Person> people = state['people'] as List<Person>;
     final int toggle = (offset != null && ((offset ~/ rowHeight) % 2) == 0) ? 0 : 1;
     
-    if (people == null) return react.div({'className': 'list-renderer'}, []);
+    if (people == null) return react.div(<String, String>{'className': 'list-renderer'}, const []);
     
     for (int i=0, len=people.length; i<len; i++)
-      children.add(react.div({'className': 'item-renderer', 'style': {'height': '${rowHeight}px'}}, [react.div({
+      children.add(react.div(<String, dynamic>{'className': 'item-renderer', 'style': <String, String>{'height': '${rowHeight}px'}}, <dynamic>[react.div(<String, dynamic>{
         'className': (i % 2 == toggle) ? 'item-renderer-label even' : 'item-renderer-label odd', 
-        'style': {'height': '${rowHeight}px'}
+        'style': <String, String>{'height': '${rowHeight}px'}
       }, people[i].name)]));
     
-    return react.div({
+    return react.div(<String, dynamic>{
       'className': 'list-renderer',
-      'style': {'top': '${-(offset % rowHeight) - rowHeight}px'}
+      'style': <String, String>{'top': '${-(offset % rowHeight) - rowHeight}px'}
     }, children);
   }
 }
@@ -124,6 +125,6 @@ class Person {
   
   Person(this.index, this.name);
   
-  String toString() => name;
+  @override String toString() => name;
   
 }

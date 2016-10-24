@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(int result);
+
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -42,7 +44,7 @@ void main() {
         .throttle(const Duration(milliseconds: 250))
         .listen(expectAsync((int result) {
       expect(result, expectedOutput[count++]);
-    }, count: 2));
+    }, count: 2) as ExpectAsync);
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {

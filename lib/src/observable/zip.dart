@@ -10,39 +10,39 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
     final List<StreamSubscription<dynamic>> subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
 
     _controller = new StreamController<T>(sync: true,
-        onListen: () {
-          final List<dynamic> values = new List<dynamic>(streams.length);
-          final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
+      onListen: () {
+        final List<dynamic> values = new List<dynamic>(streams.length);
+        final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
-          void doUpdate(StreamSubscription<dynamic> subscription, int index, dynamic value) {
-            values[index] = value;
+        void doUpdate(StreamSubscription<dynamic> subscription, int index, dynamic value) {
+          values[index] = value;
 
-            subscription.pause();
+          subscription.pause();
 
-            if (subscriptions.firstWhere((StreamSubscription<dynamic> S) => !S.isPaused, orElse: () => null) == null) {
-              updateWithValues(predicate, values);
+          if (_areAllPaused(subscriptions)) {
+            updateWithValues(predicate, values);
 
-              subscriptions.forEach((StreamSubscription<dynamic> S) => S.resume());
-            }
+            _resumeAll(subscriptions);
           }
+        }
 
-          void markDone(int i) {
-            completedStatus[i] = true;
+        void markDone(int i) {
+          completedStatus[i] = true;
 
-            if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
-          }
+          if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
+        }
 
-          for (int i=0, len=streams.length; i<len; i++) {
-            Stream<dynamic> stream = streams.elementAt(i);
+        for (int i=0, len=streams.length; i<len; i++) {
+          Stream<dynamic> stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen((dynamic value) => doUpdate(subscriptions[i], i, value),
-              onError: (dynamic e, dynamic s) => _controller.addError(e, s),
-              onDone: () => markDone(i));
-          }
-        },
-        onCancel: () => Future.wait(subscriptions
-          .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
-          .where((Future<dynamic> cancelFuture) => cancelFuture != null))
+          subscriptions[i] = stream.listen((dynamic value) => doUpdate(subscriptions[i], i, value),
+            onError: _controller.addError,
+            onDone: () => markDone(i));
+        }
+      },
+      onCancel: () => Future.wait(subscriptions
+        .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
+        .where((Future<dynamic> cancelFuture) => cancelFuture != null))
     );
 
     setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
@@ -53,12 +53,25 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
     try {
       result = Function.apply(predicate, values) as T;
+
       assert(result is T || result == null);
     } catch (e, s) {
       _controller.addError(e, s);
     }
 
     _controller.add(result);
+  }
+
+  bool _areAllPaused(List<StreamSubscription<dynamic>> subscriptions) {
+    for (int i=0, len=subscriptions.length; i<len; i++) {
+      if (!subscriptions[i].isPaused) return false;
+    }
+
+    return true;
+  }
+
+  void _resumeAll(List<StreamSubscription<dynamic>> subscriptions) {
+    for (int i=0, len=subscriptions.length; i<len; i++) subscriptions[i].resume();
   }
 
 }

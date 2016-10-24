@@ -4,41 +4,61 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class FlatMapObservable<T, S> extends StreamObservable<S> {
 
-  bool _closeAfterNextEvent = false;
-
   FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    List<Stream<S>> streams = <Stream<S>>[];
 
     setStream(stream.transform(new StreamTransformer<T, S>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
+      (Stream<T> input, bool cancelOnError) {
+        final List<Stream<S>> streams = <Stream<S>>[];
+        final List<StreamSubscription<S>> subscriptions = <StreamSubscription<S>>[];
+        StreamController<S> controller;
+        StreamSubscription<T> subscription;
+        StreamSubscription<S> otherSubscription;
+        bool closeAfterNextEvent = false;
 
-      controller = new StreamController<S>(sync: true,
+        controller = new StreamController<S>(sync: true,
           onListen: () {
             subscription = input.listen((T value) {
               Stream<S> otherStream = predicate(value);
 
               streams.add(otherStream);
 
-              otherStream.listen(controller.add,
-                  onError: (dynamic e, dynamic s) => controller.addError(e, s),
-                  onDone: () {
-                    streams.remove(otherStream);
+              otherSubscription = otherStream.listen(controller.add,
+                onError: controller.addError,
+                onDone: () {
+                  streams.remove(otherStream);
+                  subscriptions.remove(otherSubscription);
 
-                    if (_closeAfterNextEvent && streams.isEmpty) controller.close();
-                  });
+                  if (closeAfterNextEvent && streams.isEmpty) controller.close();
+                });
+
+              subscriptions.add(otherSubscription);
             },
-                onError: (dynamic e, dynamic s) => controller.addError(e, s),
-                onDone: () => _closeAfterNextEvent = true,
-                cancelOnError: cancelOnError);
+              onError: controller.addError,
+              onDone: () => closeAfterNextEvent = true,
+              cancelOnError: cancelOnError);
           },
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            onPause: ([Future<dynamic> resumeSignal]) {
+              subscription.pause(resumeSignal);
 
-      return controller.stream.listen(null);
-    }
+              subscriptions.forEach((StreamSubscription<S> otherSubscription) => otherSubscription.pause(resumeSignal));
+            },
+            onResume: () {
+              subscription.resume();
+
+              subscriptions.forEach((StreamSubscription<S> otherSubscription) => otherSubscription.resume());
+            },
+            onCancel: () {
+              final List<StreamSubscription<dynamic>> list = new List<StreamSubscription<dynamic>>.from(subscriptions)
+                ..add(subscription);
+
+              return Future.wait(list
+                .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
+                .where((Future<dynamic> cancelFuture) => cancelFuture != null)
+              );
+            });
+
+        return controller.stream.listen(null);
+      }
     )));
   }
 

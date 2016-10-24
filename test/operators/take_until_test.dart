@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(int result);
+
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -53,7 +55,7 @@ void main() {
         .takeUntil(_getOtherStream())
         .listen(expectAsync((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+    }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {

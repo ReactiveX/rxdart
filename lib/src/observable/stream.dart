@@ -88,7 +88,7 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(stream, otherStream);
 
-  @override Observable/*<S>*/ scan/*<S>*/(/*=S*/predicate(/*=S*/accumulated, T value, int index), /*<S>*/[/*=S*/seed]) => new ScanObservable<T, dynamic/*=S*/>(stream, predicate, seed);
+  @override Observable/*<S>*/ scan/*<S>*/(/*=S*/ predicate(var/*=S*/ accumulated, T value, int index), [var/*=S*/ seed]) => new ScanObservable<T, dynamic/*=S*/>(stream, predicate, seed);
 
   @override Observable<T> tap(void action(T value)) => new TapObservable<T>(stream, action);
 

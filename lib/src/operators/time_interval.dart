@@ -6,11 +6,11 @@ class TimeIntervalObservable<T, S extends TimeInterval<T>> extends StreamObserva
 
   TimeIntervalObservable(Stream<T> stream) {
     setStream(stream.transform(new StreamTransformer<T, S>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<TimeInterval<T>> controller;
-      StreamSubscription<T> subscription;
+      (Stream<T> input, bool cancelOnError) {
+        StreamController<TimeInterval<T>> controller;
+        StreamSubscription<T> subscription;
 
-      controller = new StreamController<S>(sync: true,
+        controller = new StreamController<S>(sync: true,
           onListen: () {
             Stopwatch stopwatch = new Stopwatch()..start();
             int ems;
@@ -22,22 +22,21 @@ class TimeIntervalObservable<T, S extends TimeInterval<T>> extends StreamObserva
 
               controller.add(new TimeInterval<T>(value, ems));
 
-              stopwatch = new Stopwatch()
-                ..start();
+              stopwatch = new Stopwatch()..start();
             },
-                onError: controller.addError,
-                onDone: () {
-                  stopwatch.stop();
-                  controller.close();
-                },
-                cancelOnError: cancelOnError);
+              onError: controller.addError,
+              onDone: () {
+                stopwatch.stop();
+                controller.close();
+              },
+              cancelOnError: cancelOnError);
           },
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            onPause: ([Future<dynamic> resumeSignal]) => subscription.pause(resumeSignal),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
 
-      return controller.stream.listen(null);
-    }
+        return controller.stream.listen(null);
+      }
     )));
   }
 

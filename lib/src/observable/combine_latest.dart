@@ -10,35 +10,35 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
     final List<StreamSubscription<dynamic>> subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
 
     _controller = new StreamController<T>(sync: true,
-        onListen: () {
-          final List<dynamic> values = new List<dynamic>(streams.length);
-          final List<bool> triggered = new List<bool>.generate(streams.length, (_) => false);
-          final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
+      onListen: () {
+        final List<dynamic> values = new List<dynamic>(streams.length);
+        final List<bool> triggered = new List<bool>.generate(streams.length, (_) => false);
+        final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
-          void doUpdate(int i, dynamic value) {
-            values[i] = value;
-            triggered[i] = true;
+        void doUpdate(int i, dynamic value) {
+          values[i] = value;
+          triggered[i] = true;
 
-            if (triggered.reduce((bool a, bool b) => a && b)) updateWithValues(predicate, values);
-          }
+          if (triggered.reduce((bool a, bool b) => a && b)) updateWithValues(predicate, values);
+        }
 
-          void markDone(int i) {
-            completedStatus[i] = true;
+        void markDone(int i) {
+          completedStatus[i] = true;
 
-            if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
-          }
+          if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
+        }
 
-          for (int i=0, len=streams.length; i<len; i++) {
-            Stream<dynamic> stream = streams.elementAt(i);
+        for (int i=0, len=streams.length; i<len; i++) {
+          Stream<dynamic> stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen((dynamic value) => doUpdate(i, value),
-                onError: (dynamic e, dynamic s) => _controller.addError(e, s),
-                onDone: () => markDone(i));
-          }
-        },
-        onCancel: () => Future.wait(subscriptions
-            .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
-            .where((Future<dynamic> cancelFuture) => cancelFuture != null))
+          subscriptions[i] = stream.listen((dynamic value) => doUpdate(i, value),
+            onError: _controller.addError,
+            onDone: () => markDone(i));
+        }
+      },
+      onCancel: () => Future.wait(subscriptions
+        .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
+        .where((Future<dynamic> cancelFuture) => cancelFuture != null))
     );
 
     setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
@@ -49,6 +49,7 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
 
     try {
       result = Function.apply(predicate, values) as T;
+
       assert(result is T || result == null);
     } catch (e, s) {
       _controller.addError(e, s);

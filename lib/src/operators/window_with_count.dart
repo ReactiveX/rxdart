@@ -8,30 +8,29 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>> extends Stream
 
   WindowWithCountObservable(Stream<T> stream, int count, [int skip]) {
     setStream(stream.transform(new StreamTransformer<T, S>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
+      (Stream<T> input, bool cancelOnError) {
+        StreamController<S> controller;
+        StreamSubscription<Iterable<T>> subscription;
 
-      controller = new StreamController<S>(sync: true,
+        controller = new StreamController<S>(sync: true,
           onListen: () {
             if (!(input is StreamObservable)) observable = new StreamObservable<T>()..setStream(input);
 
             subscription = observable
               .bufferWithCount(count, skip)
-              .map((Iterable<T> value) => new StreamObservable<T>()..setStream(new Stream<T>.fromIterable(value)))
-              .listen((StreamObservable<T> value) {
-                controller.add(value);
+              .listen((Iterable<T> value) {
+                controller.add(new StreamObservable<T>()..setStream(new Stream<T>.fromIterable(value)));
               },
                 cancelOnError: cancelOnError,
-                onError: (dynamic e, dynamic s) => controller.addError(e, s),
-                onDone: () => controller.close()) as StreamSubscription<T>;
+                onError: controller.addError,
+                onDone: controller.close);
           },
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            onPause: ([Future<dynamic> resumeSignal]) => subscription.pause(resumeSignal),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
 
-      return controller.stream.listen(null);
-    }
+        return controller.stream.listen(null);
+      }
     )));
   }
 

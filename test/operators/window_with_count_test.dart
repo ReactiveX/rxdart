@@ -5,6 +5,9 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(Stream<int> result);
+typedef void ExpectAsync2(int result);
+
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -47,8 +50,8 @@ void main() {
 
       result.listen(expectAsync((int value) {
         expect(expected[innerCount++], value);
-      }, count: expected.length));
-    }, count: 2));
+      }, count: expected.length) as ExpectAsync2);
+    }, count: 2) as ExpectAsync);
   });
 
   test('rx.Observable.windowWithCount.skip', () async {
@@ -64,8 +67,8 @@ void main() {
 
       result.listen(expectAsync((int value) {
         expect(expected[innerCount++], value);
-      }, count: expected.length));
-    }, count: 4));
+      }, count: expected.length) as ExpectAsync2);
+    }, count: 4) as ExpectAsync);
   });
 
   test('rx.Observable.windowWithCount.asBroadcastStream', () async {

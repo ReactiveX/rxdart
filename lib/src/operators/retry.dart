@@ -6,12 +6,12 @@ class RetryObservable<T> extends StreamObservable<T> {
 
   RetryObservable(Stream<T> stream, int count) {
     setStream(stream.transform(new StreamTransformer<T, T>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-      int retryStep = 0;
+      (Stream<T> input, bool cancelOnError) {
+        StreamController<T> controller;
+        StreamSubscription<T> subscription;
+        int retryStep = 0;
 
-      controller = new StreamController<T>(sync: true,
+        controller = new StreamController<T>(sync: true,
           onListen: () {
             subscription = input.listen((T data) {
               controller.add(data);
@@ -21,15 +21,15 @@ class RetryObservable<T> extends StreamObservable<T> {
 
                   retryStep++;
                 },
-                onDone: () => controller.close(),
+                onDone: controller.close,
                 cancelOnError: cancelOnError);
           },
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            onPause: ([Future<dynamic> resumeSignal]) => subscription.pause(resumeSignal),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
 
-      return controller.stream.listen(null);
-    }
+        return controller.stream.listen(null);
+      }
     )));
   }
 

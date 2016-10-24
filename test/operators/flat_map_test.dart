@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(num result);
+
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -54,9 +56,9 @@ void main() {
 
     rx.observable(_getStream())
         .flatMap(_getOtherStream)
-        .listen(expectAsync((int result) {
+        .listen(expectAsync((num result) {
           expect(expectedOutput[count++], result);
-        }, count: expectedOutput.length));
+        }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {

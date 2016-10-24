@@ -5,6 +5,9 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+typedef void ExpectAsync(int result);
+typedef void ExpectAsync2(Map<String, int> result);
+
 Stream<int> _getStream() => new Stream<int>.fromIterable([2, 3, 3, 5, 2, 9, 1, 2, 0]);
 
 Stream<Map<String, int>> _getErroneousStream() => new Stream<Map<String, int>>.fromIterable([{'value': 10}, {'value': 12}, {'value': 8}]);
@@ -18,7 +21,7 @@ void main() {
         .max()
         .listen(expectAsync((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+    }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.max.withCompare', () async {
@@ -29,7 +32,7 @@ void main() {
         .max((int a, int b) => 1)
         .listen(expectAsync((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+    }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.min.withCompare.withoutComparable', () async {
@@ -40,7 +43,7 @@ void main() {
         .max((Map<String, int> a, Map<String, int> b) => a['value'].compareTo(b['value']))
         .listen(expectAsync((Map<String, int> result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+    }, count: expectedOutput.length) as ExpectAsync2);
   });
 
   test('rx.Observable.max.asBroadcastStream', () async {
