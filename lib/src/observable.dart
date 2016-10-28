@@ -82,7 +82,7 @@ abstract class Observable<T> extends Stream<T> {
 
   Observable<T> takeUntil(Stream<dynamic> otherStream);
 
-  Observable/*<S>*/ scan/*<S>*/(dynamic/*<S>*/ predicate(/*<=S>*/dynamic accumulated, T value, int index), [dynamic/*<S>*/ seed]);
+  Observable/*<S>*/ scan/*<S>*/(/*=S*/ predicate(var/*=S*/ accumulated, T value, int index), [var/*=S*/ seed]);
 
   Observable<T> tap(void action(T value));
 

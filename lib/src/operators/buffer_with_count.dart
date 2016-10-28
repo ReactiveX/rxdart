@@ -10,7 +10,7 @@ class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<S
   BufferWithCountObservable(Stream<T> stream, int count, [int skip]) : this.count = count {
     skipAmount = ((skip == null) ? count : skip);
     bufferKeep = count - ((skip == null) ? count : skip);
-    S buffer = <T>[] as S;
+    List<T> buffer = <T>[];
 
     setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
       handleData: (T data, EventSink<S> sink) {

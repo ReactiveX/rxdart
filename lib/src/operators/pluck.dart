@@ -23,9 +23,11 @@ class PluckObservable<T, S> extends StreamObservable<S> {
           sink.addError(error, error.stackTrace);
         } else {
           try {
-            S pluckedValue = curVal as S;
+            dynamic result = curVal;
 
-            sink.add(pluckedValue);
+            if (result is S) sink.add(result);
+            else if (result == null) sink.add(null);
+            else sink.addError(new ArgumentError('predicate result is of type ${result.runtimeType} and not of expected type $S'));
           } catch (error) {
             sink.addError(error, error.stackTrace);
           }
@@ -42,6 +44,6 @@ class PluckError extends Error {
 
   PluckError() : message = 'Value was resolved as null from the pluck sequence';
 
-  String toString() => message;
+  @override String toString() => message;
 
 }

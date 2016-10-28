@@ -49,17 +49,11 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
   }
 
   void updateWithValues(Function predicate, Iterable<dynamic> values) {
-    T result;
+    dynamic result = Function.apply(predicate, values);
 
-    try {
-      result = Function.apply(predicate, values) as T;
-
-      assert(result is T || result == null);
-    } catch (e, s) {
-      _controller.addError(e, s);
-    }
-
-    _controller.add(result);
+    if (result is T) _controller.add(result);
+    else if (result == null) _controller.add(null);
+    else _controller.addError(new ArgumentError('predicate result is of type ${result.runtimeType} and not of expected type $T'));
   }
 
   bool _areAllPaused(List<StreamSubscription<dynamic>> subscriptions) {

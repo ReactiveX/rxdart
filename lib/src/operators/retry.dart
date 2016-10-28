@@ -44,6 +44,6 @@ class RetryError extends Error {
     message = 'Received an error after attempting {$count} retries';
   }
 
-  String toString() => message;
+  @override String toString() => message;
 
 }
