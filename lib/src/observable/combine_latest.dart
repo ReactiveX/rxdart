@@ -45,11 +45,15 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
   }
 
   void updateWithValues(Function predicate, Iterable<dynamic> values) {
-    dynamic result = Function.apply(predicate, values);
+    try {
+      dynamic result = Function.apply(predicate, values);
 
-    if (result is T) _controller.add(result);
-    else if (result == null) _controller.add(null);
-    else _controller.addError(new ArgumentError('predicate result is of type ${result.runtimeType} and not of expected type $T'));
+      if (result is T) _controller.add(result);
+      else if (result == null) _controller.add(null);
+      else _controller.addError(new ArgumentError('predicate result is of type ${result.runtimeType} and not of expected type $T'));
+    } catch (e, s) {
+      _controller.addError(e, s);
+    }
   }
 
 }
