@@ -20,9 +20,7 @@ class MergeObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
         }
 
         for (int i=0, len=streams.length; i<len; i++) {
-          Stream<T> stream = streams.elementAt(i);
-
-          subscriptions[i] = stream.listen(_controller.add,
+          subscriptions[i] = streams.elementAt(i).listen(_controller.add,
             onError: _controller.addError,
             onDone: () => markDone(i));
         }
