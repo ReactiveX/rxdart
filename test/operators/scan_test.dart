@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart' as rx;
 
 typedef void ExpectAsync(int result);
 
-Stream _getStream() {
+Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
@@ -21,7 +21,7 @@ Stream _getStream() {
   return controller.stream;
 }
 
-Stream _getErroneousStream() {
+Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));

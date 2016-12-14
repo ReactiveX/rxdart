@@ -32,9 +32,7 @@ Some notes:
     .min
     .pluck
     .repeat
-    .replay
     .retry
-    .reverse
     .sample
     .scan
     .startWith

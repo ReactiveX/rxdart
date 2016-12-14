@@ -48,15 +48,15 @@ class StreamObservable<T> implements Observable<T> {
     void onListen(StreamSubscription<T> subscription),
     void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable<T>()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
-  @override Observable/*<S>*/ map/*<S>*/(/*=S*/ convert(T event)) => new StreamObservable/*<S>*/()..setStream(stream.map(convert));
+  @override Observable<S> map<S>(S convert(T event)) => new StreamObservable<S>()..setStream(stream.map(convert));
 
-  @override Observable/*<S>*/ asyncMap/*<S>*/(dynamic convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.asyncMap(convert));
+  @override Observable<S> asyncMap<S>(dynamic convert(T value)) => new StreamObservable<S>()..setStream(stream.asyncMap(convert));
 
   @override Observable<T> where(bool test(T event)) => new StreamObservable<T>()..setStream(stream.where(test));
 
-  @override Observable/*<S>*/ expand/*<S>*/(Iterable/*<S>*/ convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.expand(convert));
+  @override Observable<S> expand<S>(Iterable<S> convert(T value)) => new StreamObservable<S>()..setStream(stream.expand(convert));
 
-  @override Observable/*<S>*/ asyncExpand/*<S>*/(Stream/*<S>*/ convert(T value)) => new StreamObservable/*<S>*/()..setStream(stream.asyncExpand(convert));
+  @override Observable<S> asyncExpand<S>(Stream<S> convert(T value)) => new StreamObservable<S>()..setStream(stream.asyncExpand(convert));
 
   @override Observable<T> distinct([bool equals(T previous, T next)]) => new StreamObservable<T>()..setStream(stream.distinct(equals));
 
@@ -82,13 +82,13 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Observable<Observable<T>> windowWithCount(int count, [int skip]) => new WindowWithCountObservable<T, StreamObservable<T>>(stream, count, skip);
 
-  @override Observable/*<S>*/ flatMap/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapObservable<T, dynamic/*=S*/>(stream, predicate);
+  @override Observable<S> flatMap<S>(Stream<S> predicate(T value)) => new FlatMapObservable<T, S>(stream, predicate);
 
-  @override Observable/*<S>*/ flatMapLatest/*<S>*/(Stream/*<S>*/ predicate(T value)) => new FlatMapLatestObservable<T, dynamic/*=S*/>(stream, predicate);
+  @override Observable<S> flatMapLatest<S>(Stream<S> predicate(T value)) => new FlatMapLatestObservable<T, S>(stream, predicate);
 
   @override Observable<T> takeUntil(Stream<dynamic> otherStream) => new TakeUntilObservable<T, dynamic>(stream, otherStream);
 
-  @override Observable/*<S>*/ scan/*<S>*/(/*=S*/ predicate(var/*=S*/ accumulated, T value, int index), [var/*=S*/ seed]) => new ScanObservable<T, dynamic/*=S*/>(stream, predicate, seed);
+  @override Observable<S> scan<S>(S predicate(S accumulated, T value, int index), [S seed]) => new ScanObservable<T, S>(stream, predicate, seed);
 
   @override Observable<T> tap(void action(T value)) => new TapObservable<T>(stream, action);
 
@@ -112,7 +112,7 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Future<bool> contains(Object needle) => stream.contains(needle);
 
-  @override Future/*<E>*/ drain/*<E>*/([var/*=E*/ futureValue]) => stream.drain(futureValue);
+  @override Future<S> drain<S>([S futureValue]) => stream.drain(futureValue);
 
   @override Future<T> elementAt(int index) => stream.elementAt(index);
 
@@ -128,8 +128,8 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Future<dynamic> pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
 
-  @override Future/*<S>*/ fold/*<S>*/(var/*=S*/ initialValue,
-      /*=S*/ combine(var/*=S*/ previous, T element)) => stream.fold(initialValue, combine);
+  @override Future<S> fold<S>(S initialValue,
+      S combine(S previous, T element)) => stream.fold(initialValue, combine);
 
   @override Future<T> reduce(T combine(T previous, T element)) => stream.reduce(combine);
 
@@ -139,7 +139,7 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Future<Set<T>> toSet() => stream.toSet();
 
-  @override Stream/*<S>*/ transform/*<S>*/(StreamTransformer<T, dynamic/*=S*/> streamTransformer) => stream.transform(streamTransformer);
+  @override Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) => stream.transform(streamTransformer);
 
   @override Future<T> get first => stream.first;
 
