@@ -10,5 +10,5 @@ dev_dependencies:
   browser: ^0.10.0+2
   faker: ^0.0.4
   react: ^0.8.5
-  test: ^0.12.5+1
+  test: ">=0.12.5 <0.12.18" #v0.12.18 has an incompatibility with `expectAsync`.
   benchmark_harness: ">=1.0.0 <2.0.0"
