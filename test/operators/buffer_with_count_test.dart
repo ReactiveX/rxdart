@@ -42,7 +42,7 @@ void main() {
 
     Stream<List<int>> observable = rx.observable(_getStream()).bufferWithCount(2);
 
-    observable.listen(expectAsync((List<int> result) {
+    observable.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
       expect(expectedOutput[count][0], result[0]);
       expect(expectedOutput[count][1], result[1]);
@@ -56,7 +56,7 @@ void main() {
 
     Stream<List<int>> observable = rx.observable(_getStream()).bufferWithCount(2, 1);
 
-    observable.listen(expectAsync((List<int> result) {
+    observable.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
       expect(expectedOutput[count].length, result.length);
       expect(expectedOutput[count][0], result[0]);

@@ -19,7 +19,7 @@ void main() {
 
     rx.observable(_getStream())
         .min()
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length) as ExpectAsync);
   });
@@ -30,7 +30,7 @@ void main() {
 
     rx.observable(_getStream())
         .min((int a, int b) => -1)
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });
@@ -41,7 +41,7 @@ void main() {
 
     rx.observable(_getErroneousStream())
         .min((Map<String, int> a, Map<String, int> b) => a['value'].compareTo(b['value']))
-        .listen(expectAsync((Map<String, int> result) {
+        .listen(expectAsync1((Map<String, int> result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync2);
   });

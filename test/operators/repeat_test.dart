@@ -30,7 +30,7 @@ void main() {
 
     rx.observable(_getStream())
         .repeat(3)
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });

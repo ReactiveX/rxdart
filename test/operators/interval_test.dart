@@ -31,7 +31,7 @@ void main() {
 
     rx.observable(_getStream())
       .interval(const Duration(milliseconds: 20))
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
 
           if (lastInterval != -1) expect(stopwatch.elapsedMilliseconds - lastInterval >= 20, true);

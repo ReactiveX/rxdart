@@ -31,7 +31,7 @@ void main() {
     rx.observable(_getStream())
         .interval(const Duration(milliseconds: 20))
         .timeInterval()
-        .listen(expectAsync((rx.TimeInterval<int> result) {
+        .listen(expectAsync1((rx.TimeInterval<int> result) {
           expect(expectedOutput[count++], result.value);
 
           expect(result.interval >= 20000 /* microseconds! */, true);

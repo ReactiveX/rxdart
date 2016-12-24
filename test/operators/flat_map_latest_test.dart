@@ -56,7 +56,7 @@ void main() {
 
     rx.observable(_getStream())
         .flatMapLatest(_getOtherStream)
-        .listen(expectAsync((num result) {
+        .listen(expectAsync1((num result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });

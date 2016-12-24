@@ -53,7 +53,7 @@ void main() {
 
     rx.observable(_getStream())
         .takeUntil(_getOtherStream())
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });

@@ -21,7 +21,7 @@ void main() {
   test('rx.Observable.retry', () async {
     rx.observable(_getStream())
         .retry(3)
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(result, 3);
     }, count: 1) as ExpectAsync);
   });

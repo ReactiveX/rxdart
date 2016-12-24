@@ -33,7 +33,7 @@ void main() {
     expect(observable is Stream<int>, true);
     expect(observable is rx.Observable<int>, true);
 
-    observable.listen(expectAsync((int result) {
+    observable.listen(expectAsync1((int result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length) as ExpectAsync);

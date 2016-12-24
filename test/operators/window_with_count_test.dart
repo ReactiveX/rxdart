@@ -43,12 +43,12 @@ void main() {
 
     Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2);
 
-    observable.listen(expectAsync((Stream<int> result) {
+    observable.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
       List<int> expected = expectedOutput[count++];
       int innerCount = 0;
 
-      result.listen(expectAsync((int value) {
+      result.listen(expectAsync1((int value) {
         expect(expected[innerCount++], value);
       }, count: expected.length) as ExpectAsync2);
     }, count: 2) as ExpectAsync);
@@ -60,12 +60,12 @@ void main() {
 
     Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2, 1);
 
-    observable.listen(expectAsync((Stream<int> result) {
+    observable.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
       List<int> expected = expectedOutput[count++];
       int innerCount = 0;
 
-      result.listen(expectAsync((int value) {
+      result.listen(expectAsync1((int value) {
         expect(expected[innerCount++], value);
       }, count: expected.length) as ExpectAsync2);
     }, count: 4) as ExpectAsync);

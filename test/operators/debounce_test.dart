@@ -39,7 +39,7 @@ void main() {
   test('rx.Observable.debounce', () async {
     rx.observable(_getStream())
         .debounce(const Duration(milliseconds: 200))
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(result, 4);
     }, count: 1) as ExpectAsync);
   });

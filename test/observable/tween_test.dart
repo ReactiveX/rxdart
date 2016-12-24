@@ -127,7 +127,7 @@ void main() {
     ], (double a, double b, double c, double d) => <double>[a, b, c, d])
         .map((List<double> values) =>
           values.map((double value) => (value * 100).round() / 100))
-        .listen(expectAsync((Iterable<double> result) {
+        .listen(expectAsync1((Iterable<double> result) {
       // test to see if the combined output matches
       final List<double> expected = expectedValues[count++];
 

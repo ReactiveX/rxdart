@@ -42,7 +42,7 @@ void main() {
 
     rx.observable(_getStream())
         .throttle(const Duration(milliseconds: 250))
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(result, expectedOutput[count++]);
     }, count: 2) as ExpectAsync);
   });

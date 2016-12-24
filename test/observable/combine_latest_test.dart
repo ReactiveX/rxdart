@@ -35,7 +35,7 @@ void main() {
       return '$a_value $b_value $c_value';
     });
 
-    observable.listen(expectAsync((String result) {
+    observable.listen(expectAsync1((String result) {
       // test to see if the combined output matches
       expect(result.compareTo(expectedOutput[count++]), 0);
     }, count: 3) as ExpectAsync);

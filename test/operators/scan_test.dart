@@ -42,7 +42,7 @@ void main() {
 
     rx.observable(_getStream())
         .scan((int acc, int value, int index) => ((acc == null) ? 0 : acc) + value)
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });

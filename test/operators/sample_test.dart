@@ -31,14 +31,14 @@ void main() {
 
     rx.observable(_getStream())
         .sample(_getSampleStream())
-        .listen(expectAsync((int result) {
+        .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length) as ExpectAsync);
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .sample(_getSampleStream());
+        .sample(_getSampleStream().asBroadcastStream());
 
     // listen twice on same stream
     observable.listen((_) {});

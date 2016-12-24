@@ -31,7 +31,7 @@ void main() {
 
     Stream<num> observable = new rx.Observable<num>.merge(_getStreams());
 
-    observable.listen(expectAsync((num result) {
+    observable.listen(expectAsync1((num result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length) as ExpectAsync);

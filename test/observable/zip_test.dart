@@ -32,7 +32,7 @@ void main() {
 
     Stream<List> observable = new rx.Observable.zip(_getStreams(), (int a, int b, bool c) => [a, b, c]);
 
-    observable.listen(expectAsync((List<dynamic> result) {
+    observable.listen(expectAsync1((List<dynamic> result) {
       // test to see if the combined output matches
       for (int i=0, len=result.length; i<len; i++)
         expect(result[i], expectedOutput[count][i]);
