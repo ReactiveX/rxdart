@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(int result);
-
 Stream<int> _getStream() => new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
 Stream<num> _getErroneousStream() {
@@ -29,15 +27,15 @@ void main() {
     int count = 0;
 
     rx.observable(_getStream())
-        .startWith([5, 6])
+        .startWith(const <int>[5, 6])
         .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length) as ExpectAsync);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWith.asBroadcastStream', () async {
     Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .startWith([5, 6]);
+        .startWith(const <int>[5, 6]);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -48,9 +46,9 @@ void main() {
 
   test('rx.Observable.startWith.error.shouldThrow', () async {
     Stream<num> observableWithError = rx.observable(_getErroneousStream())
-        .startWith([5, 6]);
+        .startWith(const <int>[5, 6]);
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

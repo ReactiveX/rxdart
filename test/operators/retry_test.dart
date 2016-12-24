@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(int result);
-
 Stream<int> _getStream() {
   Stream<int> testStream = new Stream<int>.fromIterable(const <int>[0, 1, 2, 3]).map((int i) {
     if (i < 3) throw new Error();
@@ -23,7 +21,7 @@ void main() {
         .retry(3)
         .listen(expectAsync1((int result) {
       expect(result, 3);
-    }, count: 1) as ExpectAsync);
+    }, count: 1));
   });
 
   test('rx.Observable.retry.asBroadcastStream', () async {
@@ -41,7 +39,7 @@ void main() {
     Stream<int> observableWithError = rx.observable(_getStream())
         .retry(2);
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(Iterable<double> result);
-
 void main() {
   test('rx.Observable.tween', () async {
     const List<List<double>> expectedValues = const <List<double>>[
@@ -115,7 +113,7 @@ void main() {
     ];
     int count = 0;
 
-    new rx.Observable.zip(<Stream>[
+    new rx.Observable<List<double>>.zip(<Stream<double>>[
       new rx.Observable<double>.tween(
           0.0, 100.0, const Duration(seconds: 2), intervalMs: 20),
       new rx.Observable<double>.tween(
@@ -133,6 +131,6 @@ void main() {
 
       for (int i = 0, len = result.length; i < len; i++)
         expect(expected[i], result.elementAt(i));
-    }, count: expectedValues.length) as ExpectAsync);
+    }, count: expectedValues.length));
   });
 }

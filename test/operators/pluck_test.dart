@@ -19,7 +19,7 @@ void main() {
 
   test('rx.Observable.pluck.asBroadcastStream', () async {
     Stream<dynamic> observable = rx.observable(_getStream().asBroadcastStream())
-        .pluck(['first', 2, true]);
+        .pluck(<dynamic>['first', 2, true]);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -30,16 +30,16 @@ void main() {
 
   test('rx.Observable.pluck.error.shouldThrow.A', () async {
     rx.observable(_getStream())
-      .pluck(['first', 3, true])
-      .listen((_) {}, onError: (e) {
+      .pluck(<dynamic>['first', 3, true])
+      .listen(null, onError: (dynamic e) {
         expect(true, true);
       });
   });
 
   test('rx.Observable.pluck.error.shouldThrow.B', () async {
     rx.observable(_getStream())
-      .pluck(['first', 2, false], throwOnNull: true)
-      .listen((_) {}, onError: (e) {
+      .pluck(<dynamic>['first', 2, false], throwOnNull: true)
+      .listen(null, onError: (dynamic e) {
         expect(true, true);
       });
   });

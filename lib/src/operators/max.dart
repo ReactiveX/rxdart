@@ -25,7 +25,7 @@ class MaxObservable<T> extends StreamObservable<T> {
               T currMax = _currentMax,
                   testMax = data;
 
-              if ((testMax as Comparable<dynamic>).compareTo(currMax) > 0) {
+              if (testMax is Comparable<dynamic> && testMax.compareTo(currMax) > 0) {
                 _currentMax = data;
 
                 sink.add(data);

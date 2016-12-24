@@ -5,9 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(Stream<int> result);
-typedef void ExpectAsync2(int result);
-
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -38,7 +35,7 @@ Stream<num> _getErroneousStream() {
 
 void main() {
   test('rx.Observable.windowWithCount.noSkip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const [1, 2], const [3, 4]];
+    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[3, 4]];
     int count = 0;
 
     Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2);
@@ -50,12 +47,12 @@ void main() {
 
       result.listen(expectAsync1((int value) {
         expect(expected[innerCount++], value);
-      }, count: expected.length) as ExpectAsync2);
-    }, count: 2) as ExpectAsync);
+      }, count: expected.length));
+    }, count: 2));
   });
 
   test('rx.Observable.windowWithCount.skip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const [1, 2], const [2, 3], const [3, 4], const [4]];
+    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[2, 3], const <int>[3, 4], const <int>[4]];
     int count = 0;
 
     Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2, 1);
@@ -67,8 +64,8 @@ void main() {
 
       result.listen(expectAsync1((int value) {
         expect(expected[innerCount++], value);
-      }, count: expected.length) as ExpectAsync2);
-    }, count: 4) as ExpectAsync);
+      }, count: expected.length));
+    }, count: 4));
   });
 
   test('rx.Observable.windowWithCount.asBroadcastStream', () async {
@@ -86,7 +83,7 @@ void main() {
     Stream<Stream<num>> observableWithError = rx.observable(_getErroneousStream())
         .windowWithCount(2);
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

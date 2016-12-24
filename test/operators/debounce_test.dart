@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(int result);
-
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -41,7 +39,7 @@ void main() {
         .debounce(const Duration(milliseconds: 200))
         .listen(expectAsync1((int result) {
       expect(result, 4);
-    }, count: 1) as ExpectAsync);
+    }, count: 1));
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
@@ -59,7 +57,7 @@ void main() {
     Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .debounce(const Duration(milliseconds: 200));
 
-    observableWithError.listen((_) => const {}, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

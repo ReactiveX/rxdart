@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(num result);
-
 List<Stream<num>> _getStreams() {
   Stream<num> a = new Stream<num>.periodic(const Duration(milliseconds: 20), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
@@ -20,6 +18,7 @@ Stream<num> _getErroneousStream() {
   controller.add(1);
   controller.add(2);
   controller.add(100 / 0); // throw!!!
+  controller.close();
 
   return controller.stream;
 }
@@ -34,7 +33,7 @@ void main() {
     observable.listen(expectAsync1((num result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
-    }, count: expectedOutput.length) as ExpectAsync);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.merge.asBroadcastStream', () async {
@@ -50,7 +49,7 @@ void main() {
   test('rx.Observable.merge.error.shouldThrow', () async {
     Stream<num> observableWithError = new rx.Observable<num>.merge(_getStreams()..add(_getErroneousStream()));
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

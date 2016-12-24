@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(List<int> result);
-
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
@@ -47,7 +45,7 @@ void main() {
       expect(expectedOutput[count][0], result[0]);
       expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 2) as ExpectAsync);
+    }, count: 2));
   });
 
   test('rx.Observable.bufferWithCount.skip', () async {
@@ -62,7 +60,7 @@ void main() {
       expect(expectedOutput[count][0], result[0]);
       if (expectedOutput[count].length > 1) expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 4) as ExpectAsync);
+    }, count: 4));
   });
 
   test('rx.Observable.bufferWithCount.asBroadcastStream', () async {
@@ -80,7 +78,7 @@ void main() {
     Stream<List<num>> observableWithError = rx.observable(_getErroneousStream())
       .bufferWithCount(2);
 
-    observableWithError.listen((_) => const {}, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

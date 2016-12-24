@@ -25,7 +25,7 @@ class MinObservable<T> extends StreamObservable<T> {
               T currMin = _currentMin,
                   testMin = data;
 
-              if ((testMin as Comparable<dynamic>).compareTo(currMin) < 0) {
+              if (testMin is Comparable<dynamic> && testMin.compareTo(currMin) < 0) {
                 _currentMin = data;
 
                 sink.add(data);

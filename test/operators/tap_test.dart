@@ -58,7 +58,7 @@ void main() {
     Stream<num> observableWithError = rx.observable(_getErroneousStream())
         .tap((_) {});
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

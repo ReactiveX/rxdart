@@ -100,7 +100,7 @@ class _ListRenderer extends react.Component {
   @override JsObject render() {
     final List<dynamic> children = <dynamic>[];
     final int offset = state['offset'];
-    final List<Person> people = state['people'] as List<Person>;
+    final List<Person> people = state['people'];
     final int toggle = (offset != null && ((offset ~/ rowHeight) % 2) == 0) ? 0 : 1;
     
     if (people == null) return react.div(<String, String>{'className': 'list-renderer'}, const []);

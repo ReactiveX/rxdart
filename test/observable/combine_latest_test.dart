@@ -19,11 +19,10 @@ Stream<num> _getErroneousStream() {
   controller.add(1);
   controller.add(2);
   controller.add(100 / 0); // throw!!!
+  controller.close();
 
   return controller.stream;
 }
-
-typedef void ExpectAsync(String result);
 
 void main() {
   test('rx.Observable.combineLatest', () async {
@@ -38,7 +37,7 @@ void main() {
     observable.listen(expectAsync1((String result) {
       // test to see if the combined output matches
       expect(result.compareTo(expectedOutput[count++]), 0);
-    }, count: 3) as ExpectAsync);
+    }, count: 3));
   });
 
   test('rx.Observable.combineLatest.asBroadcastStream', () async {
@@ -60,7 +59,7 @@ void main() {
       return '$a_value $b_value $c_value';
     });
 
-    observableWithError.listen((_) => const {}, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });
@@ -71,7 +70,7 @@ void main() {
       return '$a_value $b_value $c_value $_';
     });
 
-    observableWithError.listen((_) => const {}, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

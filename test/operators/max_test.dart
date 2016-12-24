@@ -5,12 +5,9 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(int result);
-typedef void ExpectAsync2(Map<String, int> result);
+Stream<int> _getStream() => new Stream<int>.fromIterable(const <int>[2, 3, 3, 5, 2, 9, 1, 2, 0]);
 
-Stream<int> _getStream() => new Stream<int>.fromIterable([2, 3, 3, 5, 2, 9, 1, 2, 0]);
-
-Stream<Map<String, int>> _getErroneousStream() => new Stream<Map<String, int>>.fromIterable([{'value': 10}, {'value': 12}, {'value': 8}]);
+Stream<Map<String, int>> _getErroneousStream() => new Stream<Map<String, int>>.fromIterable(const <Map<String, int>>[const <String, int>{'value': 10}, const <String, int>{'value': 12}, const <String, int>{'value': 8}]);
 
 void main() {
   test('rx.Observable.max', () async {
@@ -21,7 +18,7 @@ void main() {
         .max()
         .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length) as ExpectAsync);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.max.withCompare', () async {
@@ -32,18 +29,18 @@ void main() {
         .max((int a, int b) => 1)
         .listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length) as ExpectAsync);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.min.withCompare.withoutComparable', () async {
-    const List<Map<String, int>> expectedOutput = const <Map<String, int>>[const {'value': 10}, const {'value': 12}];
+    const List<Map<String, int>> expectedOutput = const <Map<String, int>>[const <String, int>{'value': 10}, const <String, int>{'value': 12}];
     int count = 0;
 
     rx.observable(_getErroneousStream())
         .max((Map<String, int> a, Map<String, int> b) => a['value'].compareTo(b['value']))
         .listen(expectAsync1((Map<String, int> result) {
       expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length) as ExpectAsync2);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.max.asBroadcastStream', () async {
@@ -61,7 +58,7 @@ void main() {
     Stream<Map<String, int>> observableWithError = rx.observable(_getErroneousStream())
         .max();
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

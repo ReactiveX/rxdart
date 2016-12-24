@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
-typedef void ExpectAsync(rx.TimeInterval<int> result);
-
 Stream<int> _getStream() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
 
 Stream<num> _getErroneousStream() {
@@ -35,7 +33,7 @@ void main() {
           expect(expectedOutput[count++], result.value);
 
           expect(result.interval >= 20000 /* microseconds! */, true);
-        }, count: expectedOutput.length) as ExpectAsync);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
@@ -55,7 +53,7 @@ void main() {
         .interval(const Duration(milliseconds: 20))
         .timeInterval();
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });
