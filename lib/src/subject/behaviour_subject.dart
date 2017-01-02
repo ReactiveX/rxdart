@@ -108,5 +108,10 @@ class BehaviourSubject<T> implements StreamController<T> {
   }
 
   @override
-  Future<dynamic> close() => _controller.close();
+  Future<dynamic> close() {
+    _hasLastValue = false;
+    _lastValue = null;
+
+    _controller.close();
+  }
 }

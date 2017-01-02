@@ -19,8 +19,7 @@ class _ReplaySink<T> implements EventSink<T> {
 
 class ReplaySubject<T> implements StreamController<T> {
   final StreamController<T> _controller;
-
-  Queue<T> _queue = new Queue<T>();
+  final Queue<T> _queue = new Queue<T>();
 
   @override
   Stream<T> get stream => new Stream<T>.eventTransformed(_controller.stream,
@@ -107,5 +106,9 @@ class ReplaySubject<T> implements StreamController<T> {
   }
 
   @override
-  Future<dynamic> close() => _controller.close();
+  Future<dynamic> close() {
+    _queue.clear();
+
+    _controller.close();
+  }
 }
