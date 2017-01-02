@@ -1,5 +1,7 @@
 library rx.observable.zip;
 
+import 'dart:async';
+
 import 'package:rxdart/src/observable/stream.dart';
 
 class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
@@ -7,6 +9,7 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
   StreamController<T> _controller;
 
   ZipObservable(Iterable<Stream<dynamic>> streams, Function predicate, bool asBroadcastStream) {
+    final List<bool> pausedStates = new List<bool>.generate(streams.length, (_) => false, growable: false);
     final List<StreamSubscription<dynamic>> subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
 
     _controller = new StreamController<T>(sync: true,
@@ -14,15 +17,17 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
         final List<dynamic> values = new List<dynamic>(streams.length);
         final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
-        void doUpdate(StreamSubscription<dynamic> subscription, int index, dynamic value) {
+        void doUpdate(int index, dynamic value) {
           values[index] = value;
+          pausedStates[index] = true;
 
-          subscription.pause();
+          // subscriptions[i] might be null if doUpdate triggers instantly (i.e. BehaviourSubject)
+          if (subscriptions[index] != null) subscriptions[index].pause();
 
-          if (_areAllPaused(subscriptions)) {
+          if (_areAllPaused(pausedStates)) {
             updateWithValues(predicate, values);
 
-            _resumeAll(subscriptions);
+            _resumeAll(subscriptions, pausedStates);
           }
         }
 
@@ -33,9 +38,12 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
         }
 
         for (int i=0, len=streams.length; i<len; i++) {
-          subscriptions[i] = streams.elementAt(i).listen((dynamic value) => doUpdate(subscriptions[i], i, value),
+          subscriptions[i] = streams.elementAt(i).listen((dynamic value) => doUpdate(i, value),
             onError: _controller.addError,
             onDone: () => markDone(i));
+
+          // updating the above subscription if doUpdate triggered too soon
+          if (pausedStates[i] && !subscriptions[i].isPaused) subscriptions[i].pause();
         }
       },
       onCancel: () => Future.wait(subscriptions
@@ -58,16 +66,19 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
     }
   }
 
-  bool _areAllPaused(List<StreamSubscription<dynamic>> subscriptions) {
-    for (int i=0, len=subscriptions.length; i<len; i++) {
-      if (!subscriptions[i].isPaused) return false;
+  bool _areAllPaused(List<bool> pausedStates) {
+    for (int i=0, len=pausedStates.length; i<len; i++) {
+      if (!pausedStates[i]) return false;
     }
 
     return true;
   }
 
-  void _resumeAll(List<StreamSubscription<dynamic>> subscriptions) {
-    for (int i=0, len=subscriptions.length; i<len; i++) subscriptions[i].resume();
+  void _resumeAll(List<StreamSubscription<dynamic>> subscriptions, List<bool> pausedStates) {
+    for (int i=0, len=subscriptions.length; i<len; i++) {
+      pausedStates[i] = false;
+      subscriptions[i].resume();
+    }
   }
 
 }
