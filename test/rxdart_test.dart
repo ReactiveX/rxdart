@@ -24,6 +24,8 @@ import 'operators/pluck_test.dart' as pluck_test;
 
 import 'observable/tween_test.dart' as tween_test;
 
+import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
+
 void main() {
   stream_test.main();
   combine_latest_test.main();
@@ -48,4 +50,6 @@ void main() {
   pluck_test.main();
 
   tween_test.main();
+
+  behaviour_subject_test.main();
 }

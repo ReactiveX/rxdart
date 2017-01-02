@@ -8,6 +8,8 @@ void main() {
   RxBenchmark.main();
 }
 
+Iterable<int> list;
+
 class RxBenchmark extends BenchmarkBase {
 
   const RxBenchmark() : super("Template");
@@ -17,16 +19,15 @@ class RxBenchmark extends BenchmarkBase {
   }
 
   @override void run() {
-    Stream<int> _streamA = new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-    Stream<int> _streamB = new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-
-    rx.observable(_streamA)
-      .flatMapLatest((int value) => _streamB)
+    rx.observable(new Stream<int>.fromIterable(list))
+      .flatMapLatest((int value) => new Stream<int>.fromIterable(list))
       .listen(null);
   }
 
   // Not measured: setup code executed before the benchmark runs.
-  @override void setup() {}
+  @override void setup() {
+    list = const <int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  }
 
   // Not measured: teardown code executed after the benchmark runs.
   @override void teardown() {}
