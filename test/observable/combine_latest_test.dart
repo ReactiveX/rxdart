@@ -40,6 +40,25 @@ void main() {
     }, count: 3));
   });
 
+  test('rx.Observable.combineThreeLatest', () async {
+    const List<String> expectedOutput = const <String>['0 4 true', '1 4 true', '2 4 true'];
+    int count = 0;
+
+    Stream<int> a = new Stream<int>.periodic(const Duration(milliseconds: 20), (int count) => count).take(3);
+    Stream<int> b = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+    StreamController<bool> c = new StreamController<bool>()..add(true)..close();
+
+    Stream<String> observable = rx.Observable.combineThreeLatest(
+        a, b, c.stream,
+        (int a_value, int b_value, bool c_value) => '$a_value $b_value $c_value'
+    );
+
+    observable.listen(expectAsync1((String result) {
+      // test to see if the combined output matches
+      expect(result.compareTo(expectedOutput[count++]), 0);
+    }, count: 3));
+  });
+
   test('rx.Observable.combineLatest.asBroadcastStream', () async {
     Stream<String> observable = new rx.Observable<String>.combineLatest(_getStreams(),
         (int a_value, int b_value, bool c_value) {

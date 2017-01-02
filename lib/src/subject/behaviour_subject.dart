@@ -112,6 +112,6 @@ class BehaviourSubject<T> implements StreamController<T> {
     _hasLastValue = false;
     _lastValue = null;
 
-    _controller.close();
+    return _controller.close();
   }
 }

@@ -33,7 +33,7 @@ void main() {
   });
 
   test('rx.Observable.min.withCompare.withoutComparable', () async {
-    const List<Map<String, int>> expectedOutput = const <Map<String, int>>[const {'value': 10}, const {'value': 8}];
+    const List<Map<String, int>> expectedOutput = const <Map<String, int>>[const <String, int>{'value': 10}, const <String, int>{'value': 8}];
     int count = 0;
 
     rx.observable(_getErroneousStream())
@@ -58,7 +58,7 @@ void main() {
     Stream<Map<String, int>> observableWithError = rx.observable(_getErroneousStream())
         .min();
 
-    observableWithError.listen((_) => {}, onError: (e, s) {
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(true, true);
     });
   });

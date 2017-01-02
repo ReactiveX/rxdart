@@ -109,6 +109,6 @@ class ReplaySubject<T> implements StreamController<T> {
   Future<dynamic> close() {
     _queue.clear();
 
-    _controller.close();
+    return _controller.close();
   }
 }
