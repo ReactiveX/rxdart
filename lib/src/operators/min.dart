@@ -1,5 +1,3 @@
-library rx.operators.min;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class MinObservable<T> extends StreamObservable<T> {

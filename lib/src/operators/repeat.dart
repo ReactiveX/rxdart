@@ -1,5 +1,3 @@
-library rx.operators.repeat;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class RepeatObservable<T> extends StreamObservable<T> {

@@ -1,5 +1,3 @@
-library rx.operators.scan;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class ScanObservable<T, S> extends StreamObservable<S> {

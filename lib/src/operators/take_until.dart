@@ -1,5 +1,3 @@
-library rx.operators.take_until;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class TakeUntilObservable<T, S> extends StreamObservable<T> {

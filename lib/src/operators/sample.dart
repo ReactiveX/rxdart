@@ -1,5 +1,3 @@
-library rx.operators.sample;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class SampleObservable<T> extends StreamObservable<T> {

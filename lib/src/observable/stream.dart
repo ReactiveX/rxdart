@@ -1,5 +1,3 @@
-library rx.observable.stream;
-
 import 'dart:async';
 
 import 'package:rxdart/src/observable.dart' show Observable;
@@ -14,6 +12,7 @@ import 'package:rxdart/src/operators/take_until.dart' show TakeUntilObservable;
 import 'package:rxdart/src/operators/scan.dart' show ScanObservable;
 import 'package:rxdart/src/operators/tap.dart' show TapObservable;
 import 'package:rxdart/src/operators/start_with.dart' show StartWithObservable;
+import 'package:rxdart/src/operators/start_with_many.dart' show StartWithManyObservable;
 import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
 import 'package:rxdart/src/operators/min.dart' show MinObservable;
 import 'package:rxdart/src/operators/max.dart' show MaxObservable;
@@ -92,7 +91,9 @@ class StreamObservable<T> implements Observable<T> {
 
   @override Observable<T> tap(void action(T value)) => new TapObservable<T>(stream, action);
 
-  @override Observable<T> startWith(List<T> startValues) => new StartWithObservable<T>(stream, startValues);
+  @override Observable<T> startWith(T startValue) => new StartWithObservable<T>(stream, startValue);
+
+  @override Observable<T> startWithMany(List<T> startValues) => new StartWithManyObservable<T>(stream, startValues);
 
   @override Observable<T> repeat(int repeatCount) => new RepeatObservable<T>(stream, repeatCount);
 

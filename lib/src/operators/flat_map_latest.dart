@@ -1,5 +1,3 @@
-library rx.operators.flat_map_latest;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class FlatMapLatestObservable<T, S> extends StreamObservable<S> {

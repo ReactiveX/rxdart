@@ -1,5 +1,3 @@
-library rx.operators.debounce;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class DebounceObservable<T> extends StreamObservable<T> {

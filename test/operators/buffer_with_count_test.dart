@@ -1,5 +1,3 @@
-library rx.test.operators.buffer_with_count;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

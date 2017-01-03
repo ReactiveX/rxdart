@@ -1,5 +1,3 @@
-library rx.test.operators.flat_map_latest;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

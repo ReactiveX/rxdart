@@ -1,5 +1,3 @@
-library rx.observable.merge;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class MergeObservable<T> extends StreamObservable<T> with ControllerMixin<T> {

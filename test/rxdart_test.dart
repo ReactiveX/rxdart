@@ -16,6 +16,7 @@ import 'operators/take_until_test.dart' as take_until_test;
 import 'operators/scan_test.dart' as scan_test;
 import 'operators/tap_test.dart' as tap_test;
 import 'operators/start_with_test.dart' as start_with_test;
+import 'operators/start_with_many_test.dart' as start_with_many_test;
 import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/min_test.dart' as min_test;
 import 'operators/max_test.dart' as max_test;
@@ -43,6 +44,7 @@ void main() {
   scan_test.main();
   tap_test.main();
   start_with_test.main();
+  start_with_many_test.main();
   repeat_test.main();
   min_test.main();
   max_test.main();

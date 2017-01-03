@@ -1,5 +1,3 @@
-library rx.operators.window_with_count;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class WindowWithCountObservable<T, S extends StreamObservable<T>> extends StreamObservable<S> {

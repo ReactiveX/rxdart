@@ -1,21 +1,21 @@
 import 'package:rxdart/src/observable/stream.dart';
 
-class StartWithObservable<T> extends StreamObservable<T> {
+class StartWithManyObservable<T> extends StreamObservable<T> {
 
-  StartWithObservable(Stream<T> stream, T startValue) {
+  StartWithManyObservable(Stream<T> stream, List<T> startValues) {
     setStream(stream.transform(new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 
       controller = new StreamController<T>(sync: true,
-        onListen: () {
-          controller.add(startValue);
+          onListen: () {
+            startValues.forEach(controller.add);
 
-          subscription = input.listen(controller.add,
-            onError: controller.addError,
-            onDone: controller.close,
-            cancelOnError: cancelOnError);
-        },
+            subscription = input.listen(controller.add,
+                onError: controller.addError,
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
+          },
           onPause: ([Future<dynamic> resumeSignal]) => subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () => subscription.cancel());

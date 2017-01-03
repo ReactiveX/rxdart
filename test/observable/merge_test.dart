@@ -1,5 +1,3 @@
-library rx.test.observable.merge;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

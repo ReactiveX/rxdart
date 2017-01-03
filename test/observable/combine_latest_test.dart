@@ -1,5 +1,3 @@
-library rx.test.observable.combine_latest;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

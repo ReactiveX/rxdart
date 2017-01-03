@@ -1,5 +1,3 @@
-library rx.operators.tap;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class TapObservable<T> extends StreamObservable<T> {

@@ -63,7 +63,7 @@ void main() {
       .map((WheelEvent e) => (e.deltaY * -.075).toInt()),
     resize
       .map((_) => 0)
-  ], asBroadcastStream: true).startWith(<int>[0]);
+  ], asBroadcastStream: true).startWith(0);
   
   final rx.Observable<num> accumulatedOffset = dragOffset
     .scan((num a, num c, num index) {
@@ -76,12 +76,12 @@ void main() {
   
   final rx.Observable<num> displayedIndices = resize
     .map((_) => visibleRowCount())
-    .startWith(<num>[visibleRowCount()]);
+    .startWith(visibleRowCount());
   
-  final rx.Observable<Map<String, int>> displayedRange = new rx.Observable<Map<String, int>>.combineLatest(<Stream<num>>[
+  final rx.Observable<Map<String, int>> displayedRange = rx.Observable.combineTwoLatest(
     displayedIndices,
     accumulatedOffset
-  ], (int maxIndex, int offset) => <String, int>{'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
+  , (num maxIndex, num offset) => <String, int>{'from': offset ~/ rowHeight, 'to': maxIndex + offset ~/ rowHeight}, asBroadcastStream: true);
   
   final rx.Observable<List<Person>> displayedPeople = displayedRange
     .flatMap((Map<String, int> o) => new rx.Observable<List<Person>>.fromIterable(<List<Person>>[fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))]))
@@ -89,10 +89,10 @@ void main() {
 
   displayedIndices.listen(print);
   
-  new rx.Observable<Map<String, dynamic>>.combineLatest(<Stream<dynamic>>[
+  rx.Observable.combineTwoLatest(
     displayedPeople,
     accumulatedOffset
-  ], (List<Person> people, int offset) => <String, dynamic>{'people': people, 'offset': offset}).listen(renderer.setState);
+  , (List<Person> people, num offset) => <String, dynamic>{'people': people, 'offset': offset}).listen(renderer.setState);
 }
 
 class _ListRenderer extends react.Component {

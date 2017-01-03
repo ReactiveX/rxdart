@@ -1,5 +1,3 @@
-library rx.observable.tween;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 enum Ease {

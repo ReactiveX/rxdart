@@ -1,5 +1,3 @@
-library rx.operators.time_interval;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class TimeIntervalObservable<T, S extends TimeInterval<T>> extends StreamObservable<TimeInterval<T>> {

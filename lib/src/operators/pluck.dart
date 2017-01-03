@@ -1,5 +1,3 @@
-library rx.operators.pluck;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class PluckObservable<T, S> extends StreamObservable<S> {

@@ -1,5 +1,3 @@
-library rx.test.observable.stream;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

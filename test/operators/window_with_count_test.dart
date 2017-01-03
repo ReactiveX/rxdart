@@ -1,5 +1,3 @@
-library rx.test.operators.window_with_count;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

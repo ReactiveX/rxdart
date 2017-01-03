@@ -1,5 +1,3 @@
-library rx.operators.interval;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class IntervalObservable<T> extends StreamObservable<T> {

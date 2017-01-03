@@ -1,3 +1,10 @@
+## 0.6.0
+* BREAKING: startWith now takes just one parameter instead of an Iterable. To add multiple starting events, please use startWithMany.
+* Added BehaviourSubject and ReplaySubject. These implement StreamController.
+* BehaviourSubject will notify the last added event upon listening.
+* ReplaySubject will notify all past events upon listening.
+* DEPRECATED: zip and combineLatest, use their strong-type-friendly alternatives instead (available as static methods on the Observable class, i.e. Observable.combineThreeLatest, Observable.zipFour, ...)
+
 ## 0.5.1
 
 * Added documentation (thanks to dustinlessard-wf)

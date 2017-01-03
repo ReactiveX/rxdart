@@ -1,5 +1,3 @@
-library rx.operators.flat_map;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class FlatMapObservable<T, S> extends StreamObservable<S> {

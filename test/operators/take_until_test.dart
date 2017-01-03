@@ -1,5 +1,3 @@
-library rx.test.operators.take_until;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

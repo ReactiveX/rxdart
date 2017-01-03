@@ -1,5 +1,3 @@
-library rx.operators.throttle;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class ThrottleObservable<T> extends StreamObservable<T> {

@@ -1,5 +1,3 @@
-library rx.test.operators.pluck;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

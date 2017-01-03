@@ -1,5 +1,3 @@
-library rx.test.subject.behaviour_subject;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

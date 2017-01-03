@@ -1,5 +1,3 @@
-library rx.operators.retry;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class RetryObservable<T> extends StreamObservable<T> {

@@ -1,5 +1,3 @@
-library rx.observable;
-
 import 'dart:async';
 
 import 'package:rxdart/src/observable/combine_latest.dart'
@@ -603,8 +601,11 @@ abstract class Observable<T> extends Stream<T> {
   @override
   Observable<T> skipWhile(bool test(T element));
 
+  /// Prepends a value to the source Observable.
+  Observable<T> startWith(T startValue);
+
   /// Prepends a sequence of values to the source Observable.
-  Observable<T> startWith(List<T> startValues);
+  Observable<T> startWithMany(List<T> startValues);
 
   /// Provides at most the first `n` values of this stream.
   /// Forwards the first n data events of this stream, and all error events, to

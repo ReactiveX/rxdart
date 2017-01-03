@@ -1,5 +1,3 @@
-library rx.test.operators.repeat;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

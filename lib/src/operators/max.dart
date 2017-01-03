@@ -1,5 +1,3 @@
-library rx.operators.max;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class MaxObservable<T> extends StreamObservable<T> {

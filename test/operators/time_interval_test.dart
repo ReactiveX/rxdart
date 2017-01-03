@@ -1,5 +1,3 @@
-library rx.test.operators.time_interval;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

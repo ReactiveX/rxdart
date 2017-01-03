@@ -1,5 +1,3 @@
-library rx.operators.buffer_with_count;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class BufferWithCountObservable<T, S extends List<T>> extends StreamObservable<S> {

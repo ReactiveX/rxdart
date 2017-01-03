@@ -1,5 +1,3 @@
-library rx.test.subject.replay_subject;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

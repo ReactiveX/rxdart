@@ -1,5 +1,3 @@
-library rx.test.operators.tap;
-
 import 'dart:async';
 
 import 'package:test/test.dart';

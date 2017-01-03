@@ -1,5 +1,3 @@
-library rx.observable.combine_latest;
-
 import 'package:rxdart/src/observable/stream.dart';
 
 class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
@@ -46,11 +44,22 @@ class CombineLatestObservable<T> extends StreamObservable<T> with ControllerMixi
 
   void updateWithValues(Function predicate, Iterable<dynamic> values) {
     try {
-      dynamic result = Function.apply(predicate, values);
+      final int len = values.length;
+      T result;
 
-      if (result is T) _controller.add(result);
-      else if (result == null) _controller.add(null);
-      else _controller.addError(new ArgumentError('predicate result is of type ${result.runtimeType} and not of expected type $T'));
+      switch (len) {
+        case 1: result = predicate(values.elementAt(0)); break;
+        case 2: result = predicate(values.elementAt(0), values.elementAt(1)); break;
+        case 3: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2)); break;
+        case 4: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3)); break;
+        case 5: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3), values.elementAt(4)); break;
+        case 6: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3), values.elementAt(4), values.elementAt(5)); break;
+        case 7: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3), values.elementAt(4), values.elementAt(5), values.elementAt(6)); break;
+        case 8: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3), values.elementAt(4), values.elementAt(5), values.elementAt(6), values.elementAt(7)); break;
+        case 9: result = predicate(values.elementAt(0), values.elementAt(1), values.elementAt(2), values.elementAt(3), values.elementAt(4), values.elementAt(5), values.elementAt(6), values.elementAt(7), values.elementAt(8)); break;
+      }
+
+      _controller.add(result);
     } catch (e, s) {
       _controller.addError(e, s);
     }

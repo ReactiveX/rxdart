@@ -1,5 +1,3 @@
-library rx.test.operators.throttle;
-
 import 'dart:async';
 
 import 'package:test/test.dart';
