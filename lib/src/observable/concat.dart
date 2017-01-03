@@ -3,30 +3,63 @@ import 'package:rxdart/src/observable/stream.dart';
 class ConcatObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
   StreamController<T> _controller;
-  StreamSubscription<T> _subscription;
 
   ConcatObservable(Iterable<Stream<T>> streams, bool asBroadcastStream) {
+    final List<StreamSubscription<T>> subscriptions = new List<StreamSubscription<T>>(streams.length);
+    final List<List<T>> buffer = new List<List<T>>.generate(streams.length, (_) => <T>[]);
+
     _controller = new StreamController<T>(sync: true,
-        onListen: () => subscribeNext(streams, 0),
-        onCancel: () => _subscription?.cancel());
+        onListen: () {
+          final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
+
+          void drainNext(int index) {
+            if (index < streams.length) {
+              for (int i=0, len=buffer.length; i<len; i++) {
+                if (buffer[i].isNotEmpty) {
+                  buffer[i].forEach(_controller.add);
+                  buffer[i].clear();
+
+                  break;
+                }
+              }
+            }
+          }
+
+          void markDone(int i) {
+            completedStatus[i] = true;
+            drainNext(i + 1);
+
+            if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
+          }
+
+          void handleEvent(T event, int index) {
+            bool isBuffered = false;
+
+            for (int i=0, len=completedStatus.length; i<len; i++) {
+              if (i < index && !completedStatus[i]) {
+                isBuffered = true;
+
+                buffer[index].add(event);
+
+                break;
+              }
+            }
+
+            if (!isBuffered) _controller.add(event);
+          }
+
+          for (int i=0, len=streams.length; i<len; i++) {
+            subscriptions[i] = streams.elementAt(i).listen((T event) => handleEvent(event, i),
+                onError: _controller.addError,
+                onDone: () => markDone(i));
+          }
+        },
+        onCancel: () => Future.wait(subscriptions
+            .map((StreamSubscription<T> subscription) => subscription.cancel())
+            .where((Future<dynamic> cancelFuture) => cancelFuture != null))
+    );
 
     setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
-  }
-
-  void markDone(Iterable<Stream<T>> streams, int i) {
-    if (i < streams.length - 1) {
-      subscribeNext(streams, i + 1);
-    } else {
-      _subscription?.cancel()?.whenComplete(_controller.close);
-    }
-  }
-
-  void subscribeNext(Iterable<Stream<T>> streams, int index) {
-    _subscription?.cancel();
-
-    _subscription = streams.elementAt(index).listen(_controller.add,
-        onError: _controller.addError,
-        onDone: () => markDone(streams, index));
   }
 
 }
