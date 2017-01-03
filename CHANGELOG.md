@@ -1,4 +1,7 @@
 ## 0.6.0
+* Added concat
+
+## 0.6.0
 * BREAKING: startWith now takes just one parameter instead of an Iterable. To add multiple starting events, please use startWithMany.
 * Added BehaviourSubject and ReplaySubject. These implement StreamController.
 * BehaviourSubject will notify the last added event upon listening.

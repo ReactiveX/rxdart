@@ -38,6 +38,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
  /// the following are contructors
  new Observable
     .combineLatest (deprecated - see below)
+    .concat
     .merge
     .tween
     .zip (deprecated - see below)

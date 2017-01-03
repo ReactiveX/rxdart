@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/src/observable/combine_latest.dart'
     show CombineLatestObservable;
+import 'package:rxdart/src/observable/concat.dart'
+    show ConcatObservable;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
@@ -134,6 +136,13 @@ abstract class Observable<T> extends Stream<T> {
       Stream<I> streamNine,
       T predicate(A a, B b, C c, D d, E e, F f),
       {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight, streamNine], predicate, asBroadcastStream);
+
+  /// Concatenates all of the specified observable sequences, as long as the previous observable sequence terminated successfully..
+  ///
+  /// http://rxmarbles.com/#concat
+  factory Observable.concat(Iterable<Stream<T>> streams,
+      {bool asBroadcastStream: false}) =>
+      new ConcatObservable<T>(streams, asBroadcastStream);
 
   ///  Creates an Observable where all events of an existing stream are piped through
   ///  a sink-transformation.
