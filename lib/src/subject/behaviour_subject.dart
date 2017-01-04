@@ -4,6 +4,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class _BehaviourSink<T> implements EventSink<T> {
   final EventSink<T> _outputSink;
+  bool _isClosed = false;
 
   _BehaviourSink(this._outputSink, bool hasInitialValue, T initialValue) {
     if (hasInitialValue) _outputSink.add(initialValue);
@@ -13,7 +14,7 @@ class _BehaviourSink<T> implements EventSink<T> {
 
   @override void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
 
-  @override void close() => _outputSink.close();
+  @override void close() => _isClosed ? _outputSink.close() : null;
 }
 
 class BehaviourSubject<T> implements StreamController<T> {
@@ -24,7 +25,7 @@ class BehaviourSubject<T> implements StreamController<T> {
 
   @override
   StreamObservable<T> get stream => new StreamObservable<T>()..setStream(new Stream<T>.eventTransformed(_controller.stream,
-          (EventSink<T> sink) => new _BehaviourSink<T>(sink, _controller.stream.isBroadcast ? _hasLastValue : false, _lastValue)));
+          (EventSink<T> sink) => new _BehaviourSink<T>(sink, _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false, _lastValue)));
 
   @override
   StreamSink<T> get sink => _controller.sink;

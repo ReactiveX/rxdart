@@ -5,6 +5,7 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class _ReplaySink<T> implements EventSink<T> {
   final EventSink<T> _outputSink;
+  bool _isClosed = false;
 
   _ReplaySink(this._outputSink, Queue<T> queue) {
     queue?.forEach(_outputSink.add);
@@ -14,7 +15,7 @@ class _ReplaySink<T> implements EventSink<T> {
 
   @override void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
 
-  @override void close() => _outputSink.close();
+  @override void close() => _isClosed ? _outputSink.close() : null;
 }
 
 class ReplaySubject<T> implements StreamController<T> {
@@ -23,7 +24,7 @@ class ReplaySubject<T> implements StreamController<T> {
 
   @override
   StreamObservable<T> get stream => new StreamObservable<T>()..setStream(new Stream<T>.eventTransformed(_controller.stream,
-          (EventSink<T> sink) => new _ReplaySink<T>(sink, _controller.stream.isBroadcast ? _queue : null)));
+          (EventSink<T> sink) => new _ReplaySink<T>(sink, _controller.stream.isBroadcast && !isClosed ? _queue : null)));
 
   @override
   StreamSink<T> get sink => _controller.sink;
