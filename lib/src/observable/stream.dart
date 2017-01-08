@@ -20,6 +20,7 @@ import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
 import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
+import 'package:rxdart/src/operators/group_by.dart' show GroupByObservable, GroupByMap;
 
 export 'dart:async';
 
@@ -46,6 +47,8 @@ class StreamObservable<T> implements Observable<T> {
   @override Observable<T> asBroadcastStream({
     void onListen(StreamSubscription<T> subscription),
     void onCancel(StreamSubscription<T> subscription) }) => new StreamObservable<T>()..setStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+
+  @override Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value), {int compareKeys(S keyA, S keyB): null}) => new GroupByObservable<T, S>(stream, keySelector, compareKeys: compareKeys);
 
   @override Observable<S> map<S>(S convert(T event)) => new StreamObservable<S>()..setStream(stream.map(convert));
 

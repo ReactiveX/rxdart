@@ -11,9 +11,11 @@ import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
+import 'package:rxdart/src/operators/group_by.dart' show GroupByMap;
 
 export 'package:rxdart/src/observable/tween.dart' show Ease;
 export 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
+export 'package:rxdart/src/operators/group_by.dart' show GroupByMap;
 
 Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>()
   ..setStream(stream);
@@ -530,6 +532,8 @@ abstract class Observable<T> extends Stream<T> {
   /// then it ignores the previous one and begins emitting items emitted by the
   /// new one.
   Observable<S> flatMapLatest<S>(Stream<S> predicate(T value));
+
+  Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value), {int compareKeys(S keyA, S keyB)});
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
