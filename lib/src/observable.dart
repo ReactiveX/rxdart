@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/observable/amb.dart'
+    show AmbObservable;
 import 'package:rxdart/src/observable/combine_latest.dart'
     show CombineLatestObservable;
 import 'package:rxdart/src/observable/concat.dart'
@@ -18,6 +20,98 @@ Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>()
 
 abstract class Observable<T> extends Stream<T> {
   Observable();
+
+  /// given two source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambTwo(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo], asBroadcastStream);
+
+  /// given three source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambThree(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree], asBroadcastStream);
+
+  /// given four source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambFour(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour], asBroadcastStream);
+
+  /// given five source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambFive(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      Stream<T> streamFive,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour, streamFive], asBroadcastStream);
+
+  /// given six source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambSix(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      Stream<T> streamFive,
+      Stream<T> streamSix,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix], asBroadcastStream);
+
+  /// given seven source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambSeven(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      Stream<T> streamFive,
+      Stream<T> streamSix,
+      Stream<T> streamSeven,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven], asBroadcastStream);
+
+  /// given eight source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambEight(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      Stream<T> streamFive,
+      Stream<T> streamSix,
+      Stream<T> streamSeven,
+      Stream<T> streamEight,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight], asBroadcastStream);
+
+  /// given nine source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  ///
+  /// http://rxmarbles.com/#amb
+  factory Observable.ambNine(
+      Stream<T> streamOne,
+      Stream<T> streamTwo,
+      Stream<T> streamThree,
+      Stream<T> streamFour,
+      Stream<T> streamFive,
+      Stream<T> streamSix,
+      Stream<T> streamSeven,
+      Stream<T> streamEight,
+      Stream<T> streamNine,
+      {bool asBroadcastStream: false}) => new AmbObservable<T>(<Stream<T>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight, streamNine], asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
