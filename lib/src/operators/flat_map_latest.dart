@@ -26,7 +26,7 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
                   });
               },
                 onError: controller.addError,
-                onDone: () {print('cloing left');
+                onDone: () {
                   _leftClosed = true;
 
                   if (_rightClosed) controller.close();
