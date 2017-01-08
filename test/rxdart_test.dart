@@ -1,6 +1,7 @@
 library test.rx;
 
 import 'observable/stream_test.dart' as stream_test;
+import 'observable/amb_test.dart' as amb_test;
 import 'observable/combine_latest_test.dart' as combine_latest_test;
 import 'observable/concat_test.dart' as concat_test;
 import 'observable/merge_test.dart' as merge_test;
@@ -30,6 +31,7 @@ import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
 
 void main() {
   stream_test.main();
+  amb_test.main();
   combine_latest_test.main();
   concat_test.main();
   merge_test.main();
