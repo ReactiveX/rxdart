@@ -13,7 +13,7 @@ class FlatMapBenchmark extends BenchmarkBase {
   static void main() => new FlatMapBenchmark().report();
 
   @override void run() {
-    rx.observable(range())
+    range()
         .flatMap((int i) => range())
         .listen(null);
   }

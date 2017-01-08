@@ -13,7 +13,7 @@ class StartWithBenchmark extends BenchmarkBase {
   static void main() => new StartWithBenchmark().report();
 
   @override void run() {
-    rx.observable(range())
+    range()
         .startWith(-1)
         .listen(null);
   }

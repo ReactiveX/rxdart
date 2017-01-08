@@ -3,7 +3,7 @@ import 'package:rxdart/src/observable/stream.dart';
 class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
 
   FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    bool _closeAfterNextEvent = false;
+    bool _leftClosed = false, _rightClosed = false;
 
     setStream(stream.transform(new StreamTransformer<T, S>(
       (Stream<T> input, bool cancelOnError) {
@@ -13,18 +13,24 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
 
         controller = new StreamController<S>(sync: true,
           onListen: () {
-            subscription = input.listen((T value) {
-              otherSubscription?.cancel();
+            subscription = input.listen((T value) async {
+              await otherSubscription?.cancel();
 
               otherSubscription = predicate(value)
                 .listen(controller.add,
                   onError: controller.addError,
                   onDone: () {
-                    if (_closeAfterNextEvent) controller.close();
+                    _rightClosed = true;
+
+                    if (_leftClosed) controller.close();
                   });
               },
                 onError: controller.addError,
-                onDone: () => _closeAfterNextEvent = true,
+                onDone: () {print('cloing left');
+                  _leftClosed = true;
+
+                  if (_rightClosed) controller.close();
+                },
                 cancelOnError: cancelOnError);
           },
             onPause: ([Future<dynamic> resumeSignal]) {
@@ -35,11 +41,10 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
               subscription.resume();
               otherSubscription?.resume();
             },
-            onCancel: () => Future.wait(<Future<dynamic>>[
-              subscription.cancel(),
-              otherSubscription?.cancel()
-            ].where((Future<dynamic> cancelFuture) => cancelFuture != null))
-            );
+            onCancel: () async {
+              await subscription.cancel();
+              await otherSubscription?.cancel();
+            });
 
         return controller.stream.listen(null);
       }

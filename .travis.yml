@@ -18,8 +18,6 @@ script:
   - pub run --mode=release test/benchmarks/zip_benchmark.dart
   - pub run --mode=release test/benchmarks/debounce_benchmark.dart
   - pub run --mode=release test/benchmarks/start_with_benchmark.dart
-  - pub run --mode=release test/benchmarks/flat_map_benchmark.dart
-  - pub run --mode=release test/benchmarks/flat_map_latest_benchmark.dart
 after_success:
   - pub global activate dart_coveralls
   - pub global run dart_coveralls:dart_coveralls report --debug --exclude-test-files --token=$REPO_TOKEN test/rxdart_test.dart

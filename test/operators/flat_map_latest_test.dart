@@ -45,6 +45,8 @@ Stream<num> _getErroneousStream() {
   return controller.stream;
 }
 
+Stream<int> range() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
 void main() {
   test('rx.Observable.flatMapLatest', () async {
     const List<int> expectedOutput = const <int>[5, 6, 7, 8];

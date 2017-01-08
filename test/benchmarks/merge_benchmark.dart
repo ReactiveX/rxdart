@@ -15,7 +15,7 @@ class MergeBenchmark extends BenchmarkBase {
   static void main() => new MergeBenchmark().report();
 
   @override void run() {
-    new rx.Observable.merge(<Stream<int>>[
+    new rx.Observable<int>.merge(<Stream<int>>[
       range(), range()
     ])
         .listen(null);

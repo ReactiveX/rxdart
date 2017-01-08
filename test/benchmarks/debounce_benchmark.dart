@@ -13,7 +13,7 @@ class DebounceBenchmark extends BenchmarkBase {
   static void main() => new DebounceBenchmark().report();
 
   @override void run() {
-    rx.observable(range())
+    range()
         .debounce(const Duration(milliseconds: 50))
         .listen(null);
   }
