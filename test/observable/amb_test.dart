@@ -22,10 +22,10 @@ void main() {
     final Stream<num> last = getDelayedStream(70, 3);
     int expected = 1;
 
-    new rx.Observable.ambThree(
+    new rx.Observable<num>.amb(<Stream<num>>[
       first,
       second,
-      last
+      last]
     ).listen(expectAsync1((num result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
@@ -37,10 +37,10 @@ void main() {
     final Stream<num> second = getDelayedStream(60, 2);
     final Stream<num> last = getDelayedStream(70, 3);
 
-    Stream<num> observable = new rx.Observable<num>.ambThree(
+    Stream<num> observable = new rx.Observable<num>.amb(<Stream<num>>[
         first,
         second,
-        last,
+        last],
         asBroadcastStream: true
     );
 
