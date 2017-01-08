@@ -30,6 +30,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .sample
     .scan
     .startWith
+    .startWithMany
     .takeUntil
     .timeInterval
     .tap
@@ -38,6 +39,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     
  /// the following are contructors
  new Observable
+    .just
     .combineLatest (deprecated - see below)
     .concat
     .merge
