@@ -21,6 +21,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .debounce
     .flatMapLatest
     .flatMap
+    .groupBy
     .interval
     .max
     .min
@@ -39,9 +40,10 @@ allowing usage of this library in server side (or Flutter) projects as well.
     
  /// the following are contructors
  new Observable
-    .just
+    .amb
     .combineLatest (deprecated - see below)
     .concat
+    .just
     .merge
     .tween
     .zip (deprecated - see below)
