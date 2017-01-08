@@ -1,4 +1,9 @@
-## 0.6.0
+## 0.6.2
+* Added just (thanks to [brianegan](https://github.com/brianegan "GitHub link"))
+* Added groupBy
+* Added amb
+
+## 0.6.1
 * Added concat
 
 ## 0.6.0
@@ -10,7 +15,7 @@
 
 ## 0.5.1
 
-* Added documentation (thanks to dustinlessard-wf)
+* Added documentation (thanks to [dustinlessard-wf](https://github.com/dustinlessard-wf "GitHub link"))
 * Fix tests breaking due to deprecation of expectAsync
 * Fix tests to satisfy strong mode requirements
 

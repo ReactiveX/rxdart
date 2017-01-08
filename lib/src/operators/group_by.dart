@@ -36,7 +36,7 @@ class GroupByObservable<T, S> extends StreamObservable<GroupByMap<S, T>> {
                       await Future.wait(allMaps
                           .map((GroupByMap<S, T> map) => map._close()));
 
-                      return controller.close();
+                      await controller.close();
                     },
                     cancelOnError: cancelOnError);
               },
