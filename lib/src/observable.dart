@@ -185,6 +185,12 @@ abstract class Observable<T> extends Stream<T> {
   factory Observable.fromIterable(Iterable<T> data) =>
       observable((new Stream<T>.fromIterable(data)));
 
+  /// Creates an Observable that contains a single value
+  ///
+  /// The value is emitted when the stream receives a listener.
+  factory Observable.just(T data) =>
+      observable((new Stream<T>.fromIterable(<T>[data])));
+
   /// Creates an Observable that gets its data from [stream].
   ///
   /// If stream throws an error, the Observable ends immediately with

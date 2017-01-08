@@ -6,6 +6,7 @@ import 'observable/combine_latest_test.dart' as combine_latest_test;
 import 'observable/concat_test.dart' as concat_test;
 import 'observable/merge_test.dart' as merge_test;
 import 'observable/zip_test.dart' as zip_test;
+import 'observable/just_test.dart' as just_test;
 
 import 'operators/debounce_test.dart' as debounce_test;
 import 'operators/throttle_test.dart' as throttle_test;
@@ -36,6 +37,7 @@ void main() {
   concat_test.main();
   merge_test.main();
   zip_test.main();
+  just_test.main();
 
   debounce_test.main();
   throttle_test.main();
