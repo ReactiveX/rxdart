@@ -3,33 +3,33 @@ import 'package:rxdart/src/observable/stream.dart';
 class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
 
   FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    bool _leftClosed = false, _rightClosed = false;
 
     setStream(stream.transform(new StreamTransformer<T, S>(
       (Stream<T> input, bool cancelOnError) {
         StreamController<S> controller;
         StreamSubscription<T> subscription;
         StreamSubscription<S> otherSubscription;
+        bool leftClosed = false, rightClosed = false;
 
         controller = new StreamController<S>(sync: true,
           onListen: () {
-            subscription = input.listen((T value) async {
-              await otherSubscription?.cancel();
+            subscription = input.listen((T value) {
+              otherSubscription?.cancel();
 
               otherSubscription = predicate(value)
                 .listen(controller.add,
                   onError: controller.addError,
                   onDone: () {
-                    _rightClosed = true;
+                    rightClosed = true;
 
-                    if (_leftClosed) controller.close();
+                    if (leftClosed) controller.close();
                   });
               },
                 onError: controller.addError,
                 onDone: () {
-                  _leftClosed = true;
+                  leftClosed = true;
 
-                  if (_rightClosed) controller.close();
+                  if (rightClosed) controller.close();
                 },
                 cancelOnError: cancelOnError);
           },
