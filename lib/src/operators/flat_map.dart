@@ -12,11 +12,14 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
         StreamSubscription<T> subscription;
         StreamSubscription<S> otherSubscription;
         bool closeAfterNextEvent = false;
+        bool hasMainEvent = false;
 
         controller = new StreamController<S>(sync: true,
           onListen: () {
             subscription = input.listen((T value) {
               Stream<S> otherStream = predicate(value);
+
+              hasMainEvent = true;
 
               streams.add(otherStream);
 
@@ -32,7 +35,10 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
               subscriptions.add(otherSubscription);
             },
               onError: controller.addError,
-              onDone: () => closeAfterNextEvent = true,
+              onDone: () {
+                if (!hasMainEvent) controller.close();
+                else closeAfterNextEvent = true;
+              },
               cancelOnError: cancelOnError);
           },
             onPause: ([Future<dynamic> resumeSignal]) {

@@ -10,6 +10,14 @@ List<Stream<num>> _getStreams() {
   return <Stream<num>>[a, b];
 }
 
+List<Stream<num>> _getStreamsIncludingEmpty() {
+  Stream<num> a = new Stream<num>.periodic(const Duration(milliseconds: 20), (num count) => count).take(3);
+  Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
+  Stream<num> c = rx.observable(new Stream<num>.fromIterable(const [])).map((_) => _).flatMap((_) => new Stream<num>.fromIterable(<num>[_])).flatMapLatest((_) => new Stream<num>.fromIterable(<num>[_]));
+
+  return <Stream<num>>[c, a, b];
+}
+
 Stream<num> _getErroneousStream() {
   StreamController<num> controller = new StreamController<num>();
 
@@ -27,6 +35,18 @@ void main() {
     int count = 0;
 
     Stream<num> observable = new rx.Observable<num>.concat(_getStreams());
+
+    observable.listen(expectAsync1((num result) {
+      // test to see if the combined output matches
+      expect(result, expectedOutput[count++]);
+    }, count: expectedOutput.length));
+  });
+
+  test('rx.Observable.concat.withEmptyStream', () async {
+    const List<num> expectedOutput = const <num>[0, 1, 2, 1, 2, 3, 4];
+    int count = 0;
+
+    Stream<num> observable = new rx.Observable<num>.concat(_getStreamsIncludingEmpty());
 
     observable.listen(expectAsync1((num result) {
       // test to see if the combined output matches

@@ -10,11 +10,14 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
         StreamSubscription<T> subscription;
         StreamSubscription<S> otherSubscription;
         bool leftClosed = false, rightClosed = false;
+        bool hasMainEvent = false;
 
         controller = new StreamController<S>(sync: true,
           onListen: () {
             subscription = input.listen((T value) {
               otherSubscription?.cancel();
+
+              hasMainEvent = true;
 
               otherSubscription = predicate(value)
                 .listen(controller.add,
@@ -29,7 +32,7 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
                 onDone: () {
                   leftClosed = true;
 
-                  if (rightClosed) controller.close();
+                  if (rightClosed || !hasMainEvent) controller.close();
                 },
                 cancelOnError: cancelOnError);
           },
