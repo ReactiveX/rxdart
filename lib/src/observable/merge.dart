@@ -11,16 +11,14 @@ class MergeObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
       onListen: () {
         final List<bool> completedStatus = new List<bool>.generate(streams.length, (_) => false);
 
-        void markDone(int i) {
-          completedStatus[i] = true;
-
-          if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
-        }
-
         for (int i=0, len=streams.length; i<len; i++) {
           subscriptions[i] = streams.elementAt(i).listen(_controller.add,
             onError: _controller.addError,
-            onDone: () => markDone(i));
+            onDone: () {
+              completedStatus[i] = true;
+
+              if (completedStatus.reduce((bool a, bool b) => a && b)) _controller.close();
+            });
         }
       },
       onCancel: () => Future.wait(subscriptions

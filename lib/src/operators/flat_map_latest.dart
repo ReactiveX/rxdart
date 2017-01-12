@@ -46,7 +46,8 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
             },
             onCancel: () async {
               await subscription.cancel();
-              await otherSubscription?.cancel();
+
+              if (hasMainEvent) await otherSubscription.cancel();
             });
 
         return controller.stream.listen(null);

@@ -10,15 +10,7 @@ class IntervalObservable<T> extends StreamObservable<T> {
 
         controller = new StreamController<T>(sync: true,
           onListen: () {
-            subscription = input.listen((T value) {
-              subscription.pause();
-
-              new Timer(duration, () {
-                controller.add(value);
-
-                subscription.resume();
-              });
-            },
+            subscription = input.listen((T value) => subscription.pause(new Future<T>.delayed(duration, () => value).then(controller.add)),
               onError: controller.addError,
               onDone: controller.close,
               cancelOnError: cancelOnError);

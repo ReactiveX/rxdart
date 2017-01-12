@@ -10,10 +10,13 @@ class DebounceObservable<T> extends StreamObservable<T> {
       (Stream<T> input, bool cancelOnError) {
         StreamController<T> controller;
         StreamSubscription<T> subscription;
+        bool streamHasEvent = false;
 
         controller = new StreamController<T>(sync: true,
           onListen: () {
             subscription = input.listen((T value) {
+              streamHasEvent = true;
+
               if (_timer != null && _timer.isActive) _timer.cancel();
 
               _timer = new Timer(duration, () {
@@ -24,7 +27,8 @@ class DebounceObservable<T> extends StreamObservable<T> {
             },
             onError: controller.addError,
             onDone: () {
-              _closeAfterNextEvent = true;
+              if (!streamHasEvent) controller.close();
+              else _closeAfterNextEvent = true;
             },
             cancelOnError: cancelOnError);
           },
