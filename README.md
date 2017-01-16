@@ -37,7 +37,8 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .tap
     .throttle
     .windowWithCount
-    
+    .withLatestFrom
+
  /// the following are contructors
  new Observable
     .amb

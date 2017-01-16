@@ -21,6 +21,7 @@ import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeIntervalObservable, TimeInterval;
 import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
 import 'package:rxdart/src/operators/group_by.dart' show GroupByObservable, GroupByMap;
+import 'package:rxdart/src/operators/with_latest_from.dart' show WithLatestFromObservable;
 
 export 'dart:async';
 
@@ -107,6 +108,9 @@ class StreamObservable<T> implements Observable<T> {
   @override Observable<T> interval(Duration duration) => new IntervalObservable<T>(stream, duration);
 
   @override Observable<T> sample(Stream<dynamic> sampleStream) => new SampleObservable<T>(stream, sampleStream);
+
+  @override
+  Observable<R> withLatestFrom<S, R>(Stream<S> latestFromStream, R fn(T t, S s)) => new WithLatestFromObservable<T, S, R>(stream, latestFromStream, fn);
 
   @override Observable<TimeInterval<T>> timeInterval() => new TimeIntervalObservable<T, TimeInterval<T>>(stream);
 

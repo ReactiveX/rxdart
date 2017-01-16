@@ -601,6 +601,16 @@ abstract class Observable<T> extends Stream<T> {
   /// sequence whenever the sampleStream itself emits a value.
   Observable<T> sample(Stream<dynamic> sampleStream);
 
+  /// Creates an Observable that emits when the source stream emits,
+  /// combining the latest values from the two streams using
+  /// the provided function.
+  ///
+  /// If the latestFromStream has not emitted any values, this stream will not
+  /// emit either.
+  ///
+  /// http://rxmarbles.com/#withLatestFrom
+  Observable<R> withLatestFrom<S, R>(Stream<S> latestFromStream, R fn(T t, S s));
+
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial
   /// accumulator value.
