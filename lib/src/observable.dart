@@ -6,6 +6,7 @@ import 'package:rxdart/src/observable/combine_latest.dart'
     show CombineLatestObservable;
 import 'package:rxdart/src/observable/concat.dart'
     show ConcatObservable;
+import 'package:rxdart/src/observable/defer.dart' show DeferObservable;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
@@ -153,6 +154,19 @@ abstract class Observable<T> extends Stream<T> {
   factory Observable.concat(Iterable<Stream<T>> streams,
       {bool asBroadcastStream: false}) =>
       new ConcatObservable<T>(streams, asBroadcastStream);
+
+  /// The defer factory waits until an observer subscribes to it, and then it
+  /// generates an Observable with the given function.
+  ///
+  /// It does this afresh for each subscriber, so although each subscriber may
+  /// think it is subscribing to the same Observable, in fact each subscriber
+  /// gets its own individual sequence.
+  ///
+  /// In some circumstances, waiting until the last minute (that is, until
+  /// subscription time) to generate the Observable can ensure that this
+  /// Observable contains the freshest data.
+  factory Observable.defer(Stream<T> create()) =>
+      new DeferObservable<T>(create);
 
   ///  Creates an Observable where all events of an existing stream are piped through
   ///  a sink-transformation.

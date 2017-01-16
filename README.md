@@ -44,6 +44,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .amb
     .combineLatest (deprecated - see below)
     .concat
+    .defer
     .just
     .merge
     .tween
