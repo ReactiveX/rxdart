@@ -20,7 +20,7 @@ Observable oStream = observable(myStream);
 
 RxDart's Observables extend the Stream class, meaning all methods defined [here](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) can be used on Observables as well.
 
-On top of this, RxDart provides a list of its own API:
+On top of this, RxDart provides its own API:
 
 ### Factory Constructors
 - amb()
