@@ -871,6 +871,24 @@ which are produced based on element count information.
 
 ##### Returns: Observable
 
+### Objects
+
+#### <a id="observable"></a> Observable
+
+This is the core object
+
+–––
+
+#### <a id="BehaviourSubject"></a> BehaviourSubject
+
+Will only send the last added event, on listening to it
+
+–––
+
+#### <a id="ReplaySubject"></a> ReplaySubject
+
+Will send all past events, on listening to it
+
 ## Notable References
 - [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
