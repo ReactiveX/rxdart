@@ -1,3 +1,8 @@
+## 0.6.3
+* Added withLatestFrom 
+* Added defer ctr
+(both thanks to [brianegan](https://github.com/brianegan "GitHub link"))
+
 ## 0.6.2
 * Added just (thanks to [brianegan](https://github.com/brianegan "GitHub link"))
 * Added groupBy
