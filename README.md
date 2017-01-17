@@ -22,8 +22,34 @@ RxDart's Observables extend the Stream class, meaning all methods defined [here]
 
 On top of this, RxDart provides its own API:
 
-### Constructors
+### Factory Constructors
+
+##### Usage
+`var myObservable = new Observable.amb([myFirstStream, mySecondStream])`
+
+##### Available Methods
 - [amb](#amb)
+- [concat](#concat)
+- [defer](#defer)
+- [just](#just)
+- [merge](#merge)
+- [periodic](#periodic)
+- [tween](#tween)
+
+### Static Instantiation Methods
+
+To better support strong mode, combineLatest and zip have been pulled apart into fixed-length constructors.  
+These methods are available as static methods, since class factory methods don't support generic method types.
+
+##### Usage
+```dart
+var myObservable = Observable.combineTwoLatest(
+    myFirstStream, 
+    mySecondStream, 
+    (firstData, secondData) => print(firstData + ' ' + secondData));
+```
+
+##### Available Methods
 - [combineTwoLatest](#combineLatest)  
 [combineThreeLatest](#combineLatest)  
 [combineFourLatest](#combineLatest)  
@@ -32,12 +58,6 @@ On top of this, RxDart provides its own API:
 [combineSevenLatest](#combineLatest)  
 [combineEightLatest](#combineLatest)  
 [combineNineLatest](#combineLatest)
-- [concat](#concat)
-- [defer](#defer)
-- [just](#just)
-- [merge](#merge)
-- [periodic](#periodic)
-- [tween](#tween)
 - [zipTwo](#zip)  
 [zipThree](#zip)   
 [zipFour](#zip)   
@@ -47,8 +67,16 @@ On top of this, RxDart provides its own API:
 [zipEight](#zip)   
 [zipNine](#zip) 
 
-### Methods
+### Operators
+
+##### Usage
+```Dart
+myObservable
+    .bufferWithCount(5)
+    .distinct()
+```
     
+##### Available Methods
 - [bufferWithCount](#bufferWithCount)
 - [debounce](#debounce)
 - [flatMapLatest](#flatMapLatest)
