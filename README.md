@@ -22,7 +22,7 @@ RxDart's Observables extend the Stream class, meaning all methods defined [here]
 
 On top of this, RxDart provides its own API:
 
-### Factory Constructors
+### Constructors
 - [amb](#amb)
 - [combineTwoLatest](#combineLatest)  
 [combineThreeLatest](#combineLatest)  
@@ -47,7 +47,7 @@ On top of this, RxDart provides its own API:
 [zipEight](#zip)   
 [zipNine](#zip) 
 
-### Methods and Operators
+### Methods
     
 - [bufferWithCount](#bufferWithCount)
 - [debounce](#debounce)
