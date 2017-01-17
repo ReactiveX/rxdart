@@ -387,10 +387,9 @@ that are rapidly followed by another emitted item.
 - `Duration duration`
 
 ##### Returns: Observable
+##### [RxMarbles Diagram](http://rxmarbles.com/#debounce)
 
 –––
-
-##### [RxMarbles Diagram](http://rxmarbles.com/#debounce)
 
 #### <a id="distinct"></a> distinct
 
@@ -411,7 +410,6 @@ individually perform the equals test.
 - `bool equals(T previous, T next)` (optional)
 
 ##### Returns: Observable
-
 ##### [RxMarbles Diagram](http://rxmarbles.com/#distinct)
 
 –––
@@ -632,10 +630,9 @@ emit either.
 - `fn(T t, S s)`
 
 ##### Returns: Observable
+##### [RxMarbles Diagram](http://rxmarbles.com/#withLatestFrom)
 
 –––
-
-##### [RxMarbles Diagram](http://rxmarbles.com/#withLatestFrom)
 
 #### <a id="scan"></a> scan
 
