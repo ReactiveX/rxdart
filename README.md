@@ -24,27 +24,28 @@ On top of this, RxDart provides its own API:
 
 ### Factory Constructors
 - [amb](#amb)
-- combineTwoLatest  
-combineThreeLatest  
-combineFourLatest  
-combineFiveLatest  
-combineSixLatest  
-combineSevenLatest  
-combineEightLatest  
-combineNineLatest
-- concat
-- defer
-- just
-- merge
-- tween
-- zipTwo  
-zipThree  
-zipFour  
-zipFive  
-zipSix  
-zipSeven  
-zipEight  
-zipNine
+- [combineTwoLatest](#combineLatest)
+[combineThreeLatest](#combineLatest)  
+[combineFourLatest](#combineLatest)  
+[combineFiveLatest](#combineLatest)  
+[combineSixLatest](#combineLatest)  
+[combineSevenLatest](#combineLatest)  
+[combineEightLatest](#combineLatest)  
+[combineNineLatest](#combineLatest)
+- [concat](#concat)
+- [defer](#defer)
+- [just](#just)
+- [merge](#merge)
+- [periodic](#periodic)
+- [tween](#tween)
+- [zipTwo](#zip)  
+[zipThree](#zip)   
+[zipFour](#zip)   
+[zipFive](#zip)   
+[zipSix](#zip)   
+[zipSeven](#zip)   
+[zipEight](#zip)   
+[zipNine](#zip) 
 
 ### Methods and Operators
     
@@ -91,7 +92,7 @@ Given two or more source Streams, emits all of the items from only the first of 
 ##### Returns: AmbObservable
 ##### [RxMarbles Diagram](http://rxmarbles.com/#amb)
 
-#### combineTwoLatest, combineThreeLatest, ..., combineNineLatest
+#### <a id="combineLatest"></a> combineTwoLatest, combineThreeLatest, ..., combineNineLatest
 
 Creates an Observable where each item is the result of passing the latest values from each feeder stream into the predicate function.
 
@@ -106,7 +107,7 @@ Creates an Observable where each item is the result of passing the latest values
 ##### Returns: CombineLatestObservable
 ##### [RxMarbles Diagram](http://rxmarbles.com/#combineLatest)
 
-#### concat
+#### <a id="concat"></a> concat
 
 Concatenates all of the specified observable sequences, as long as the previous observable sequence terminated successfully..
 
@@ -117,7 +118,7 @@ Concatenates all of the specified observable sequences, as long as the previous 
 ##### Returns: ConcatObservable
 ##### [RxMarbles Diagram](http://rxmarbles.com/#concat)
 
-#### defer
+#### <a id="defer"></a> defer
 
 The defer factory waits until an observer subscribes to it, and then it generates an Observable with the given function.
 
@@ -134,7 +135,7 @@ Observable contains the freshest data.
 
 ##### Returns: DeferObservable
 
-#### eventTransformed
+#### <a id="eventTransformed"></a> eventTransformed
 
 Creates an Observable where all events of an existing stream are piped through a sink-transformation.
 
@@ -152,7 +153,7 @@ being the sink it received.
 
 ##### Returns: Observable
 
-#### fromFuture
+#### <a id="fromFuture"></a> fromFuture
 
 Creates an Observable from a `Future`.
 When the `Future` completes, the stream will fire one event, either data or error, and then close with a done-event.
@@ -162,7 +163,7 @@ When the `Future` completes, the stream will fire one event, either data or erro
 
 ##### Returns: Observable
 
-#### fromIterable
+#### <a id="fromIterable"></a> fromIterable
 
 Creates an Observable that gets its data from [data].
 
@@ -179,7 +180,7 @@ continue.
 
 ##### Returns: Observable
 
-#### just
+#### <a id="just"></a> just
 
 Creates an Observable that contains a single value.  
 The value is emitted when the stream receives a listener.
@@ -189,7 +190,7 @@ The value is emitted when the stream receives a listener.
 
 ##### Returns: Observable
 
-#### fromStream
+#### <a id="fromStream"></a> fromStream
 
 Creates an Observable that gets its data from [stream].
 
@@ -201,7 +202,7 @@ that error. When stream is closed, the Observable will also be closed.
 
 ##### Returns: Observable
 
-#### merge
+#### <a id="merge"></a> merge
 
 Creates an Observable where each item is the interleaved output emitted by the feeder streams.
 
@@ -212,7 +213,7 @@ Creates an Observable where each item is the interleaved output emitted by the f
 ##### Returns: MergeObservable
 ##### [RxMarbles Diagram](http://rxmarbles.com/#merge)
 
-#### periodic
+#### <a id="periodic"></a> periodic
 
 Creates an Observable that repeatedly emits events at [period] intervals.
 
@@ -226,7 +227,7 @@ If [computation] is omitted the event values will all be `null`.
 
 ##### Returns: Observable
 
-#### tween
+#### <a id="tween"></a> tween
 
 Creates an Observable that emits values starting from startValue and incrementing
 according to the ease type over the duration.
@@ -241,7 +242,7 @@ according to the ease type over the duration.
 
 ##### Returns: TweenObservable
 
-#### zipTwo, zipThree, ..., zipNine
+#### <a id="zip"></a> zipTwo, zipThree, ..., zipNine
 
 Creates an Observable that applies a function of your choosing to the
 combination of items emitted, in sequence, by two (or more) other
