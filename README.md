@@ -23,7 +23,7 @@ RxDart's Observables extend the Stream class, meaning all methods defined [here]
 On top of this, RxDart provides its own API:
 
 ### Factory Constructors
-- amb
+- [amb](#amb)
 - combineTwoLatest  
 combineThreeLatest  
 combineFourLatest  
@@ -80,7 +80,7 @@ zipNine
 
 ### Factory Constructors
 
-#### amb
+#### <a id="amb"></a> amb
 
 Given two or more source Streams, emits all of the items from only the first of these Streams to emit an item or notification.
 
