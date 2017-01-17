@@ -16,6 +16,42 @@ Use the method `observable()` to wrap a native Dart Stream.
 var myObservable = observable(myStream);
 ```
 
+## Example
+
+```dart
+void main() {
+  var codes = <int>[
+      38, // up
+      38, // up
+      40, // down
+      40, // down
+      37, // left
+      39, // right
+      37, // left
+      39, // right
+      66, // b
+      65  // a
+  ];
+  var result = querySelector('#result');
+  var controller = new StreamController<KeyboardEvent>();
+  var stream = rx.observable(controller.stream);
+
+  document.addEventListener('keyup', (event) => controller.add(event));
+
+  stream
+    .map((event) => event.keyCode )           // get the key code
+    .bufferWithCount(10, 1)                   // get the last 10 keys
+    .where((list) => _areTwoListsEqual(list, codes))
+    .listen((_) => result.innerHtml = 'KONAMI!');
+}
+
+bool _areTwoListsEqual(List<int> a, List<int> b) {
+  for (int i=0; i<10; i++) if (a[i] != b[i]) return false;
+  
+  return true;
+}
+```
+
 ## API Overview
 
 RxDart's Observables extend the Stream class, meaning all methods defined [here](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on Observables as well.
