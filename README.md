@@ -13,7 +13,7 @@ This library is built on top of it as an enhancement.
 ## How To Use RxDart
 Use the method `observable()` to wrap a native Dart Stream.
 ```dart
-Observable oStream = observable(myStream);
+var myObservable = observable(myStream);
 ```
 
 ## API Overview
@@ -26,7 +26,7 @@ On top of this, RxDart provides its own API:
 ##### Usage
 ```dart
 var myObservable = new Observable.amb([myFirstStream, mySecondStream])
-
+```
 
 ##### Available Methods
 - [amb](#amb)
@@ -72,7 +72,7 @@ var myObservable = Observable.combineTwoLatest(
 
 ##### Usage
 ```Dart
-var myObservable = Observable(myStream)
+var myObservable = observable(myStream)
     .bufferWithCount(5)
     .distinct()
 ```
