@@ -122,23 +122,6 @@ Given two or more source Streams, emits all of the items from only the first of 
 
 –––
 
-#### <a id="combineLatest"></a> combineTwoLatest, combineThreeLatest, ..., combineNineLatest
-
-Creates an Observable where each item is the result of passing the latest values from each feeder stream into the predicate function.
-
-##### Arguments
-- `Stream streamOne`
-- `Stream streamTwo`
-- ...
-- `Stream streamNine`
-- `T predicate`
-- `bool asBroadcastStream` (optional, default: false)
-
-##### Returns: CombineLatestObservable
-##### [RxMarbles Diagram](http://rxmarbles.com/#combineLatest)
-
-–––
-
 #### <a id="concat"></a> concat
 
 Concatenates all of the specified observable sequences, as long as the previous observable sequence terminated successfully..
@@ -292,6 +275,23 @@ according to the ease type over the duration.
 
 ##### Returns: TweenObservable
 
+### Static Instantiation Methods
+
+#### <a id="combineLatest"></a> combineTwoLatest, combineThreeLatest, ..., combineNineLatest
+
+Creates an Observable where each item is the result of passing the latest values from each feeder stream into the predicate function.
+
+##### Arguments
+- `Stream streamOne`
+- `Stream streamTwo`
+- ...
+- `Stream streamNine`
+- `T predicate`
+- `bool asBroadcastStream` (optional, default: false)
+
+##### Returns: CombineLatestObservable
+##### [RxMarbles Diagram](http://rxmarbles.com/#combineLatest)
+
 –––
 
 #### <a id="zip"></a> zipTwo, zipThree, ..., zipNine
@@ -318,7 +318,7 @@ emitted by the source Observable that emits the fewest items.
 
 ##### Returns: ZipObservable
 
-### Methods
+### Operators
 
 #### <a id="asBroadcastStream"></a> asBroadcastStream
 
