@@ -71,7 +71,7 @@ var myObservable = Observable.combineTwoLatest(
 
 ##### Usage
 ```Dart
-myObservable
+var myObservable = Observable(myStream)
     .bufferWithCount(5)
     .distinct()
 ```
