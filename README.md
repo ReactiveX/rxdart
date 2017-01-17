@@ -24,7 +24,7 @@ On top of this, RxDart provides its own API:
 
 ### Factory Constructors
 - [amb](#amb)
-- [combineTwoLatest](#combineLatest)
+- [combineTwoLatest](#combineLatest)  
 [combineThreeLatest](#combineLatest)  
 [combineFourLatest](#combineLatest)  
 [combineFiveLatest](#combineLatest)  
@@ -49,27 +49,27 @@ On top of this, RxDart provides its own API:
 
 ### Methods and Operators
     
-- bufferWithCount
-- debounce
-- flatMapLatest
-- flatMap
-- groupBy
-- interval
-- max
-- min
-- pluck
-- repeat
-- retry
-- sample
-- scan
-- startWith
-- startWithMany
-- takeUntil
-- timeInterval
-- tap
-- throttle
-- windowWithCount
-- withLatestFrom
+- [bufferWithCount](#bufferWithCount)
+- [debounce](#debounce)
+- [flatMapLatest](#flatMapLatest)
+- [flatMap](#flatMap)
+- [groupBy](#groupBy)
+- [interval](#interval)
+- [max](#max)
+- [min](#min)
+- [pluck](#pluck)
+- [repeat](#repeat)
+- [retry](#retry)
+- [sample](#sample)
+- [scan](#scan)
+- [startWith](#startWith)
+- [startWithMany](#startWithMany)
+- [takeUntil](#takeUntil)
+- [timeInterval](#timeInterval)
+- [tap](#tap)
+- [throttle](#throttle)
+- [windowWithCount](#windowWithCount)
+- [withLatestFrom](#withLatestFrom)
 
 ### Objects
 
@@ -268,7 +268,7 @@ emitted by the source Observable that emits the fewest items.
 
 ### Methods
 
-#### asBroadcastStream
+#### <a id="asBroadcastStream"></a> asBroadcastStream
 
 Returns a multi-subscription stream that produces the same events as this.
 
@@ -296,7 +296,7 @@ subscription when there are no listeners.
 
 ##### Returns: Observable
 
-#### asyncExpand
+#### <a id="asyncExpand"></a> asyncExpand
 
 Creates an Observable with the events of a stream per original event.
 
@@ -314,7 +314,7 @@ The returned stream is a broadcast stream if this stream is.
 
 ##### Returns: Observable
 
-#### asyncMap
+#### <a id="asyncMap"></a> asyncMap
 
 Creates an Observable with each data event of this stream asynchronously mapped to a new event.
 
@@ -329,7 +329,7 @@ The returned stream is a broadcast stream if this stream is.
 
 ##### Returns: Observable
 
-#### bufferWithCount
+#### <a id="bufferWithCount"></a> bufferWithCount
 
 Creates an Observable where each item is a list containing the items
 from the source sequence, in batches of count.
@@ -342,7 +342,7 @@ If skip is provided, each group will start where the previous group ended minus 
 
 ##### Returns: Observable
 
-#### debounce
+#### <a id="debounce"></a> debounce
 
 Creates an Observable that will only emit items from the source sequence
 if a particular time span has passed without the source sequence emitting
@@ -358,7 +358,7 @@ that are rapidly followed by another emitted item.
 
 ##### [RxMarbles Diagram](http://rxmarbles.com/#debounce)
 
-#### distinct
+#### <a id="distinct"></a> distinct
 
 Creates an Observable where data events are skipped if they are equal to
 the previous data event.
@@ -380,7 +380,7 @@ individually perform the equals test.
 
 ##### [RxMarbles Diagram](http://rxmarbles.com/#distinct)
 
-#### expand
+#### <a id="expand"></a> expand
 
 Creates an Observable from this stream that converts each element into
 zero or more events.
@@ -397,7 +397,7 @@ individually call convert and expand the events.
 
 ##### Returns: Observable
 
-#### flatMap
+#### <a id="flatMap"></a> flatMap
 
 Creates an Observable by applying the predicate to each item emitted by
 the original Observable, where that function is itself an Observable that
@@ -409,7 +409,7 @@ item emitted by the original Observable, emitting these merged results.
 
 ##### Returns: Observable
 
-#### flatMapLatest
+#### <a id="flatMapLatest"></a> flatMapLatest
 
 Creates an Observable by transforming the items emitted by the source into
 Observables, and mirroring those items emitted by the most-recently
@@ -428,7 +428,7 @@ new one.
 
 ##### Returns: Observable
 
-#### groupBy
+#### <a id="groupBy"></a> groupBy
 
 ##### Arguments
 - `S keySelector(T value)`
@@ -436,7 +436,7 @@ new one.
 
 ##### Returns: Observable
 
-#### handleError
+#### <a id="handleError"></a> handleError
 
 Creates a wrapper Stream that intercepts some errors from this stream.
 
@@ -470,7 +470,7 @@ individually perform the test and handle the error.
 
 ##### Returns: Observable
 
-#### interval
+#### <a id="interval"></a> interval
 
 Creates an observable that produces a value after each duration.
 
@@ -479,7 +479,7 @@ Creates an observable that produces a value after each duration.
 
 ##### Returns: Observable
 
-#### map
+#### <a id="map"></a> map
 
 Maps values from a source sequence through a function and emits the
 returned values.
@@ -493,7 +493,7 @@ error.
 
 ##### Returns: Observable
 
-#### max
+#### <a id="max"></a> max
 
 Creates an Observable that returns the maximum value in the source
 sequence according to the specified compare function.
@@ -503,7 +503,7 @@ sequence according to the specified compare function.
 
 ##### Returns: Observable
 
-#### min
+#### <a id="min"></a> min
 
 Creates an Observable that returns the minimum value in the source
 sequence according to the specified compare function.
@@ -513,7 +513,7 @@ sequence according to the specified compare function.
 
 ##### Returns: Observable
 
-#### pluck
+#### <a id="pluck"></a> pluck
 
 Creates an Observable containing the value of a specified nested property
 from all elements in the Observable sequence. If a property can't be
@@ -525,7 +525,7 @@ resolved, it will return undefined for that value.
 
 ##### Returns: Observable
 
-#### repeat
+#### <a id="repeat"></a> repeat
 
 Creates an Observable that repeats the source's elements the specified
 number of times.
@@ -535,7 +535,7 @@ number of times.
 
 ##### Returns: Observable
 
-#### retry
+#### <a id="retry"></a> retry
 
 Creates an Observable that will repeat the source sequence the specified
 number of times until it successfully terminates. If the retry count is
@@ -546,7 +546,7 @@ not specified, it retries indefinitely.
 
 ##### Returns: Observable
 
-#### sample
+#### <a id="sample"></a> sample
 
 Creates an Observable that will emit the latest value from the source
 sequence whenever the sampleStream itself emits a value.
@@ -556,7 +556,7 @@ sequence whenever the sampleStream itself emits a value.
 
 ##### Returns: Observable
 
-#### withLatestFrom
+#### <a id="withLatestFrom"></a> withLatestFrom
 
 Creates an Observable that emits when the source stream emits,
 combining the latest values from the two streams using
@@ -573,7 +573,7 @@ emit either.
 
 ##### [RxMarbles Diagram](http://rxmarbles.com/#withLatestFrom)
 
-#### scan
+#### <a id="scan"></a> scan
 
 Applies an accumulator function over an observable sequence and returns
 each intermediate result. The optional seed value is used as the initial
@@ -585,7 +585,7 @@ accumulator value.
 
 ##### Returns: Observable
 
-#### skip
+#### <a id="skip"></a> skip
 
 Skips the first count data events from this stream.
  
@@ -598,7 +598,7 @@ stream is listened to.
 
 ##### Returns: Observable
 
-#### skipWhile
+#### <a id="skipWhile"></a> skipWhile
 
 Skip data events from this stream while they are matched by test.
 
@@ -616,7 +616,7 @@ stream is listened to.
 
 ##### Returns: Observable
 
-#### startWith
+#### <a id="startWith"></a> startWith
 
 Prepends a value to the source Observable.
 
@@ -625,7 +625,7 @@ Prepends a value to the source Observable.
 
 ##### Returns: Observable
 
-#### startWithMany
+#### <a id="startWithMany"></a> startWithMany
 
 Prepends a value to the source Observable.
 
@@ -634,7 +634,7 @@ Prepends a value to the source Observable.
 
 ##### Returns: Observable
 
-#### take
+#### <a id="take"></a> take
 
 Provides at most the first `n` values of this stream.
 Forwards the first n data events of this stream, and all error events, to
@@ -659,7 +659,7 @@ stream is listened to.
 
 ##### Returns: Observable
 
-#### takeUntil
+#### <a id="takeUntil"></a> takeUntil
 
 Returns the values from the source observable sequence until the other
 observable sequence produces a value.
@@ -669,7 +669,7 @@ observable sequence produces a value.
 
 ##### Returns: Observable
 
-#### takeWhile
+#### <a id="takeWhile"></a> takeWhile
 
 Forwards data events while test is successful.
 
@@ -693,7 +693,7 @@ stream is listened to.
 
 ##### Returns: Observable
 
-#### tap
+#### <a id="tap"></a> tap
 
 Invokes an action for each element in the observable sequence and invokes
 an action upon graceful or exceptional termination of the observable sequence.
@@ -707,7 +707,7 @@ the pipeline.
 
 ##### Returns: Observable
 
-#### throttle
+#### <a id="throttle"></a> throttle
 
 Returns an Observable that emits only the first item emitted by the source
 Observable during sequential time windows of a specified duration.
@@ -717,13 +717,13 @@ Observable during sequential time windows of a specified duration.
 
 ##### Returns: Observable
 
-#### timeInterval
+#### <a id="timeInterval"></a> timeInterval
 
 Records the time interval between consecutive values in an observable sequence.
 
 ##### Returns: Observable
 
-#### timeout
+#### <a id="timeout"></a> timeout
 
 The Timeout operator allows you to abort an Observable with an onError
 termination if that Observable fails to emit any items during a specified
@@ -736,7 +736,7 @@ timeout.
 
 ##### Returns: Observable
 
-#### where
+#### <a id="where"></a> where
 
 Filters the elements of an observable sequence based on the test.
 
@@ -745,7 +745,7 @@ Filters the elements of an observable sequence based on the test.
 
 ##### Returns: Observable
 
-#### windowWithCount
+#### <a id="windowWithCount"></a> windowWithCount
 
 Projects each element of an observable sequence into zero or more windows
 which are produced based on element count information.
