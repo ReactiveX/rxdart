@@ -932,3 +932,7 @@ Will send all past events, on listening to it
 - [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
 - [ReactiveX (Rx)](http://reactivex.io/)
+
+## Changelog
+
+Go to the [Changelog](https://github.com/frankpepermans/rxdart/blob/master/CHANGELOG.md) to get all release notes.
