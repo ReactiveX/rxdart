@@ -23,9 +23,10 @@ RxDart's Observables extend the Stream class, meaning all methods defined [here]
 On top of this, RxDart provides its own API:
 
 ### Factory Constructors
-
 ##### Usage
-`var myObservable = new Observable.amb([myFirstStream, mySecondStream])`
+```dart
+var myObservable = new Observable.amb([myFirstStream, mySecondStream])
+
 
 ##### Available Methods
 - [amb](#amb)
