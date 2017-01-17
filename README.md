@@ -101,9 +101,9 @@ var myObservable = observable(myStream)
 
 ### Objects
 
-- Observable
-- BehaviourSubject
-- ReplaySubject
+- [Observable](#Observable)
+- [BehaviourSubject](#BehaviourSubject)
+- [ReplaySubject](#ReplaySubject)
 
 ## API In Detail
 
