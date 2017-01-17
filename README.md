@@ -412,9 +412,9 @@ individually perform the equals test.
 
 ##### Returns: Observable
 
-–––
-
 ##### [RxMarbles Diagram](http://rxmarbles.com/#distinct)
+
+–––
 
 #### <a id="expand"></a> expand
 
