@@ -8,7 +8,7 @@
 ## About
 RxDart aims to provide an implementation of [ReactiveX](http://reactivex.io/) for the Dart language.  
 Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box.  
-This library is built on top of it as an enhancement.
+This library is built on top of it.
 
 ## How To Use RxDart
 Use the method `observable()` to wrap a native Dart Stream.
