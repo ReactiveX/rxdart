@@ -19,6 +19,8 @@ var myObservable = observable(myStream);
 ## Example
 
 ```dart
+import 'package:rxdart/rxdart.dart' as rx;
+
 void main() {
   var codes = <int>[
       38, // up
