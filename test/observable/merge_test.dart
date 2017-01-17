@@ -1,3 +1,4 @@
+import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -8,17 +9,6 @@ List<Stream<num>> _getStreams() {
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
 
   return <Stream<num>>[a, b];
-}
-
-Stream<num> _getErroneousStream() {
-  StreamController<num> controller = new StreamController<num>();
-
-  controller.add(1);
-  controller.add(2);
-  controller.add(100 / 0); // throw!!!
-  controller.close();
-
-  return controller.stream;
 }
 
 void main() {
@@ -45,10 +35,10 @@ void main() {
   });
 
   test('rx.Observable.merge.error.shouldThrow', () async {
-    Stream<num> observableWithError = new rx.Observable<num>.merge(_getStreams()..add(_getErroneousStream()));
+    Stream<num> observableWithError = new rx.Observable<num>.merge(_getStreams()..add(getErroneousStream()));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(true, true);
+      expect(e, isException);
     });
   });
 }

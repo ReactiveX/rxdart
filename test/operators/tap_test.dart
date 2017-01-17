@@ -1,3 +1,4 @@
+import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -11,20 +12,6 @@ Stream<int> _getStream() {
   new Timer(const Duration(milliseconds: 300), () => controller.add(3));
   new Timer(const Duration(milliseconds: 4000), () {
     controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
-}
-
-Stream<num> _getErroneousStream() {
-  StreamController<num> controller = new StreamController<num>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 500), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 700), () {
-    controller.add(100 / 0); // throw!!!
     controller.close();
   });
 
@@ -53,11 +40,11 @@ void main() {
   });
 
   test('rx.Observable.tap.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(_getErroneousStream())
+    Stream<num> observableWithError = rx.observable(getErroneousStream())
         .tap((_) {});
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(true, true);
+      expect(e, isException);
     });
   });
 }

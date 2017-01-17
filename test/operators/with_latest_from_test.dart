@@ -1,3 +1,4 @@
+import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:rxdart/src/observable/stream.dart';
@@ -9,20 +10,6 @@ Stream<int> _getStream() => new Stream<int>.periodic(
 
 Stream<int> _getLatestFromStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 50), (int count) => count);
-
-Stream<num> _getErroneousStream() {
-  StreamController<num> controller = new StreamController<num>();
-
-  new Timer(const Duration(milliseconds: 10), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 10), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 10), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 10), () {
-    controller.addError(new StateError("ouch"));
-    controller.close();
-  });
-
-  return controller.stream;
-}
 
 void main() {
   test('rx.Observable.withLatestFrom', () async {
@@ -60,14 +47,14 @@ void main() {
 
   test('rx.Observable.withLatestFrom.error.shouldThrow', () async {
     Stream<String> observableWithError = rx
-        .observable(_getErroneousStream())
+        .observable(getErroneousStream())
         .withLatestFrom(
             _getLatestFromStream(), (num first, int second) => "Hello");
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isStateError);
-        }, count: 1));
+        onError: (dynamic e, dynamic s) {
+          expect(e, isException);
+    });
   });
 }
 
