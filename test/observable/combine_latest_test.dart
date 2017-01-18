@@ -1,3 +1,4 @@
+import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -9,17 +10,6 @@ List<Stream<dynamic>> _getStreams() {
   StreamController<bool> c = new StreamController<bool>()..add(true)..close();
 
   return <Stream<dynamic>>[a, b, c.stream];
-}
-
-Stream<num> _getErroneousStream() {
-  StreamController<num> controller = new StreamController<num>();
-
-  controller.add(1);
-  controller.add(2);
-  controller.add(100 / 0); // throw!!!
-  controller.close();
-
-  return controller.stream;
 }
 
 void main() {
@@ -82,13 +72,13 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.B', () async {
-    Stream<String> observableWithError = new rx.Observable<String>.combineLatest(_getStreams()..add(_getErroneousStream()),
+    Stream<String> observableWithError = new rx.Observable<String>.combineLatest(_getStreams()..add(getErroneousStream()),
         (int a_value, int b_value, bool c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(true, true);
+      expect(e, isException);
     });
   });
 }

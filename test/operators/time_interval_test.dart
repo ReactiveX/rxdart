@@ -1,23 +1,10 @@
+import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
 Stream<int> _getStream() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-
-Stream<num> _getErroneousStream() {
-  StreamController<num> controller = new StreamController<num>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(100 / 0); // throw!!!
-    controller.close();
-  });
-
-  return controller.stream;
-}
 
 void main() {
   test('rx.Observable.timeInterval', () async {
@@ -47,12 +34,12 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
-    Stream<rx.TimeInterval<num>> observableWithError = rx.observable(_getErroneousStream())
+   Stream<rx.TimeInterval<num>> observableWithError = rx.observable(getErroneousStream())
         .interval(const Duration(milliseconds: 20))
         .timeInterval();
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(true, true);
-    });
+     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+       expect(e, isException);
+     });
   });
 }
