@@ -6,6 +6,8 @@ import 'package:rxdart/src/observable/combine_latest.dart'
     show CombineLatestObservable;
 import 'package:rxdart/src/observable/concat.dart'
     show ConcatObservable;
+import 'package:rxdart/src/observable/concat_eager.dart'
+    show ConcatEagerObservable;
 import 'package:rxdart/src/observable/defer.dart' show DeferObservable;
 import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
@@ -154,6 +156,14 @@ abstract class Observable<T> extends Stream<T> {
   factory Observable.concat(Iterable<Stream<T>> streams,
       {bool asBroadcastStream: false}) =>
       new ConcatObservable<T>(streams, asBroadcastStream);
+
+  /// Concatenates all of the specified observable sequences,
+  /// a backlog is being kept for events that emit on the waiting streams.
+  /// When a previous sequence is terminated, all backlog for the next stream is eagerly emitted at once.
+  ///
+  factory Observable.concatEager(Iterable<Stream<T>> streams,
+      {bool asBroadcastStream: false}) =>
+      new ConcatEagerObservable<T>(streams, asBroadcastStream);
 
   /// The defer factory waits until an observer subscribes to it, and then it
   /// generates an Observable with the given function.

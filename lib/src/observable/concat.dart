@@ -3,31 +3,31 @@ import 'package:rxdart/src/observable/stream.dart';
 class ConcatObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
   StreamController<T> _controller;
+  StreamSubscription<T> subscription;
 
   ConcatObservable(Iterable<Stream<T>> streams, bool asBroadcastStream) {
-    final List<StreamSubscription<T>> subscriptions = new List<StreamSubscription<T>>(streams.length);
-    final List<Completer<dynamic>> completeEvents = new List<Completer<dynamic>>(streams.length);
-
     _controller = new StreamController<T>(sync: true,
         onListen: () {
-          for (int i=0, len=streams.length; i<len; i++) {
-            completeEvents[i] = new Completer<dynamic>();
+          final int len = streams.length;
+          int index = 0;
 
-            subscriptions[i] = streams.elementAt(i).listen(_controller.add,
+          void moveNext() {
+            Stream<T> stream = streams.elementAt(index);
+            subscription?.cancel();
+
+            subscription = stream.listen(_controller.add,
                 onError: _controller.addError,
                 onDone: () {
-                  completeEvents[i].complete();
+                  index++;
 
-                  if (i == len - 1) _controller.close();
+                  if (index == len) _controller.close();
+                  else moveNext();
                 });
-
-            if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
           }
+
+          moveNext();
         },
-        onCancel: () => Future.wait(subscriptions
-            .map((StreamSubscription<T> subscription) => subscription.cancel())
-            .where((Future<dynamic> cancelFuture) => cancelFuture != null))
-    );
+        onCancel: () => subscription.cancel());
 
     setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
   }
