@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/observable.dart' show Observable;
 import 'package:rxdart/src/operators/debounce.dart' show DebounceObservable;
+import 'package:rxdart/src/operators/defaultIfEmpty.dart' show DefaultIfEmptyObservable;
 import 'package:rxdart/src/operators/retry.dart' show RetryObservable;
 import 'package:rxdart/src/operators/throttle.dart' show ThrottleObservable;
 import 'package:rxdart/src/operators/buffer_with_count.dart' show BufferWithCountObservable;
@@ -78,6 +79,8 @@ class StreamObservable<T> implements Observable<T> {
   @override Observable<T> retry([int count]) => new RetryObservable<T>(stream, count);
 
   @override Observable<T> debounce(Duration duration) => new DebounceObservable<T>(stream, duration);
+
+  @override Observable<T> defaultIfEmpty(T defaultValue) => new DefaultIfEmptyObservable<T>(stream, defaultValue);
 
   @override Observable<T> throttle(Duration duration) => new ThrottleObservable<T>(stream, duration);
 

@@ -19,6 +19,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
  oStream
     .bufferWithCount
     .debounce
+    .defaultIfEmpty
     .flatMapLatest
     .flatMap
     .groupBy

@@ -509,6 +509,9 @@ abstract class Observable<T> extends Stream<T> {
   /// http://rxmarbles.com/#debounce
   Observable<T> debounce(Duration duration);
 
+  /// emit items from the source Observable, or a default item if the source Observable emits nothing
+  Observable<T> defaultIfEmpty(T defaultValue);
+
   /// Creates an Observable where data events are skipped if they are equal to
   /// the previous data event.
   ///
