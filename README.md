@@ -26,6 +26,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .interval
     .max
     .min
+    .ofType
     .pluck
     .repeat
     .retry

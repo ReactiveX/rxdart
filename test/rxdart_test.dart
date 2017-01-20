@@ -24,6 +24,7 @@ import 'operators/start_with_many_test.dart' as start_with_many_test;
 import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/min_test.dart' as min_test;
 import 'operators/max_test.dart' as max_test;
+import 'operators/of_type_test.dart' as of_type_test;
 import 'operators/time_interval_test.dart' as time_interval_test;
 import 'operators/pluck_test.dart' as pluck_test;
 import 'operators/group_by_test.dart' as group_by_test;
@@ -62,6 +63,7 @@ void main() {
   time_interval_test.main();
   pluck_test.main();
   group_by_test.main();
+  of_type_test.main();
 
   tween_test.main();
 

@@ -610,6 +610,9 @@ abstract class Observable<T> extends Stream<T> {
   /// sequence according to the specified compare function.
   Observable<T> min([int compare(T a, T b)]);
 
+  /// Filters a sequence so that only events of type pass
+  Observable<S> ofType<S>(S predicate(T event));
+
   /// Creates an Observable containing the value of a specified nested property
   /// from all elements in the Observable sequence. If a property can't be
   /// resolved, it will return undefined for that value.
