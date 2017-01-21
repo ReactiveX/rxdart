@@ -29,7 +29,8 @@ void main() {
   });
 
   test('rx.Observable.tap.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream()).tap((_) {});
+    Stream<int> stream =
+        observable(_getStream().asBroadcastStream()).tap((_) {});
 
     // listen twice on same stream
     stream.listen((_) {});

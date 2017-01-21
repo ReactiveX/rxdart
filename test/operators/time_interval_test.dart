@@ -40,9 +40,10 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
-    Stream<TimeInterval<int>> stream = observable(_getStream().asBroadcastStream())
-        .interval(const Duration(milliseconds: 20))
-        .timeInterval();
+    Stream<TimeInterval<int>> stream =
+        observable(_getStream().asBroadcastStream())
+            .interval(const Duration(milliseconds: 20))
+            .timeInterval();
 
     // listen twice on same stream
     stream.listen((_) {});

@@ -18,7 +18,8 @@ void main() {
   });
 
   test('rx.Observable.startWith.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream()).startWith(5);
+    Stream<int> stream =
+        observable(_getStream().asBroadcastStream()).startWith(5);
 
     // listen twice on same stream
     stream.listen((_) {});
