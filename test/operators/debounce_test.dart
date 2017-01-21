@@ -20,15 +20,17 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.debounce', () async {
-    rx.observable(_getStream())
+    rx
+        .observable(_getStream())
         .debounce(const Duration(milliseconds: 200))
         .listen(expectAsync1((int result) {
-      expect(result, 4);
-    }, count: 1));
+          expect(result, 4);
+        }, count: 1));
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<int> observable = rx
+        .observable(_getStream().asBroadcastStream())
         .debounce(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -39,7 +41,8 @@ void main() {
   });
 
   test('rx.Observable.debounce.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
+    Stream<num> observableWithError = rx
+        .observable(getErroneousStream())
         .debounce(const Duration(milliseconds: 200));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

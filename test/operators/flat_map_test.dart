@@ -32,13 +32,30 @@ Stream<num> _getOtherStream(num value) {
   return controller.stream;
 }
 
-
 void main() {
   test('rx.Observable.flatMap', () async {
-    const List<int> expectedOutput = const <int>[2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 7, 7, 8];
+    const List<int> expectedOutput = const <int>[
+      2,
+      3,
+      3,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      7,
+      7,
+      8
+    ];
     int count = 0;
 
-    rx.observable(_getStream())
+    rx
+        .observable(_getStream())
         .flatMap(_getOtherStream)
         .listen(expectAsync1((num result) {
           expect(expectedOutput[count++], result);
@@ -46,7 +63,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {
-    Stream<num> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<num> observable = rx
+        .observable(_getStream().asBroadcastStream())
         .flatMap(_getOtherStream);
 
     // listen twice on same stream
@@ -57,8 +75,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
-        .flatMap(_getOtherStream);
+    Stream<num> observableWithError =
+        rx.observable(getErroneousStream()).flatMap(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

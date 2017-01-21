@@ -23,14 +23,15 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 2, 3, 4];
     int count = 0;
 
-    rx.observable(_getStream())
+    rx
+        .observable(_getStream())
         .tap((int value) => expect(expectedOutput[count++], value))
         .listen((_) {});
   });
 
   test('rx.Observable.tap.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .tap((_) {});
+    Stream<int> observable =
+        rx.observable(_getStream().asBroadcastStream()).tap((_) {});
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -40,8 +41,8 @@ void main() {
   });
 
   test('rx.Observable.tap.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
-        .tap((_) {});
+    Stream<num> observableWithError =
+        rx.observable(getErroneousStream()).tap((_) {});
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

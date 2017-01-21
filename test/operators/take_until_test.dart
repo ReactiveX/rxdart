@@ -34,15 +34,17 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 2];
     int count = 0;
 
-    rx.observable(_getStream())
+    rx
+        .observable(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<int> observable = rx
+        .observable(_getStream().asBroadcastStream())
         .takeUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -53,8 +55,8 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
-        .takeUntil(_getOtherStream());
+    Stream<num> observableWithError =
+        rx.observable(getErroneousStream()).takeUntil(_getOtherStream());
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

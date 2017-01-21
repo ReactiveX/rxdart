@@ -23,16 +23,22 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 3, 6, 10];
     int count = 0;
 
-    rx.observable(_getStream())
-        .scan((int acc, int value, int index) => ((acc == null) ? 0 : acc) + value)
+    rx
+        .observable(_getStream())
+        .scan((int acc, int value, int index) =>
+            ((acc == null) ? 0 : acc) + value)
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.scan.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .scan((int acc, int value, int index) => ((acc == null) ? 0 : acc) + value, 0);
+    Stream<int> observable = rx
+        .observable(_getStream().asBroadcastStream())
+        .scan(
+            (int acc, int value, int index) =>
+                ((acc == null) ? 0 : acc) + value,
+            0);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -42,10 +48,11 @@ void main() {
   });
 
   test('rx.Observable.scan.error.shouldThrow', () async {
-    Stream<int> observableWithError = rx.observable(getErroneousStream())
-      .scan((num acc, num value, int index) {
-        throw new Error();
-      });
+    Stream<int> observableWithError = rx
+        .observable(getErroneousStream())
+        .scan((num acc, num value, int index) {
+      throw new Error();
+    });
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

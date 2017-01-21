@@ -10,11 +10,14 @@ class _BehaviourSink<T> implements EventSink<T> {
     if (hasInitialValue) _outputSink.add(initialValue);
   }
 
-  @override void add(T data) => _outputSink.add(data);
+  @override
+  void add(T data) => _outputSink.add(data);
 
-  @override void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
+  @override
+  void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
 
-  @override void close() => _isClosed ? _outputSink.close() : null;
+  @override
+  void close() => _isClosed ? _outputSink.close() : null;
 }
 
 class BehaviourSubject<T> implements StreamController<T> {
@@ -24,8 +27,13 @@ class BehaviourSubject<T> implements StreamController<T> {
   bool _hasLastValue = false;
 
   @override
-  StreamObservable<T> get stream => new StreamObservable<T>()..setStream(new Stream<T>.eventTransformed(_controller.stream,
-          (EventSink<T> sink) => new _BehaviourSink<T>(sink, _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false, _lastValue)));
+  StreamObservable<T> get stream => new StreamObservable<T>()
+    ..setStream(new Stream<T>.eventTransformed(
+        _controller.stream,
+        (EventSink<T> sink) => new _BehaviourSink<T>(
+            sink,
+            _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false,
+            _lastValue)));
 
   @override
   StreamSink<T> get sink => _controller.sink;
@@ -95,10 +103,12 @@ class BehaviourSubject<T> implements StreamController<T> {
           onListen: onListen, onCancel: onCancel, sync: sync));
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) => _controller.addError(error, stackTrace);
+  void addError(Object error, [StackTrace stackTrace]) =>
+      _controller.addError(error, stackTrace);
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) => _controller.addStream(source, cancelOnError: cancelOnError);
+  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) =>
+      _controller.addStream(source, cancelOnError: cancelOnError);
 
   @override
   void add(T event) {

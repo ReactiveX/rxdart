@@ -20,10 +20,14 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.bufferWithCount.noSkip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[3, 4]];
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[3, 4]
+    ];
     int count = 0;
 
-    Stream<List<int>> observable = rx.observable(_getStream()).bufferWithCount(2);
+    Stream<List<int>> observable =
+        rx.observable(_getStream()).bufferWithCount(2);
 
     observable.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -34,23 +38,30 @@ void main() {
   });
 
   test('rx.Observable.bufferWithCount.skip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[2, 3], const <int>[3, 4], const <int>[4]];
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[2, 3],
+      const <int>[3, 4],
+      const <int>[4]
+    ];
     int count = 0;
 
-    Stream<List<int>> observable = rx.observable(_getStream()).bufferWithCount(2, 1);
+    Stream<List<int>> observable =
+        rx.observable(_getStream()).bufferWithCount(2, 1);
 
     observable.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
       expect(expectedOutput[count].length, result.length);
       expect(expectedOutput[count][0], result[0]);
-      if (expectedOutput[count].length > 1) expect(expectedOutput[count][1], result[1]);
+      if (expectedOutput[count].length > 1)
+        expect(expectedOutput[count][1], result[1]);
       count++;
     }, count: 4));
   });
 
   test('rx.Observable.bufferWithCount.asBroadcastStream', () async {
-    Stream<List<int>> observable = rx.observable(_getStream().asBroadcastStream())
-      .bufferWithCount(2);
+    Stream<List<int>> observable =
+        rx.observable(_getStream().asBroadcastStream()).bufferWithCount(2);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -60,8 +71,8 @@ void main() {
   });
 
   test('rx.Observable.bufferWithCount.error.shouldThrow', () async {
-    Stream<List<num>> observableWithError = rx.observable(getErroneousStream())
-      .bufferWithCount(2);
+    Stream<List<num>> observableWithError =
+        rx.observable(getErroneousStream()).bufferWithCount(2);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

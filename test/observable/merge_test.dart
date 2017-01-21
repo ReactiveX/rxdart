@@ -5,7 +5,8 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
 List<Stream<num>> _getStreams() {
-  Stream<num> a = new Stream<num>.periodic(const Duration(milliseconds: 20), (num count) => count).take(3);
+  Stream<num> a = new Stream<num>.periodic(
+      const Duration(milliseconds: 20), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
 
   return <Stream<num>>[a, b];
@@ -25,7 +26,8 @@ void main() {
   });
 
   test('rx.Observable.merge.asBroadcastStream', () async {
-    Stream<num> observable = new rx.Observable<num>.merge(_getStreams(), asBroadcastStream: true);
+    Stream<num> observable =
+        new rx.Observable<num>.merge(_getStreams(), asBroadcastStream: true);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -35,7 +37,8 @@ void main() {
   });
 
   test('rx.Observable.merge.error.shouldThrow', () async {
-    Stream<num> observableWithError = new rx.Observable<num>.merge(_getStreams()..add(getErroneousStream()));
+    Stream<num> observableWithError =
+        new rx.Observable<num>.merge(_getStreams()..add(getErroneousStream()));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

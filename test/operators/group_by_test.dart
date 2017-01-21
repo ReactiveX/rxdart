@@ -8,19 +8,21 @@ void main() {
   int index = 0;
 
   test('rx.Observable.groupBy', () async {
-    rx.observable(new Stream<Map<String, int>>.fromIterable(<Map<String, int>>[
-      <String, int>{'name': 1, 'value': 1},
-      <String, int>{'name': 2, 'value': 2},
-      <String, int>{'name': 3, 'value': 3},
-      <String, int>{'name': 1, 'value': 4},
-      <String, int>{'name': 2, 'value': 5}]))
+    rx
+        .observable(
+            new Stream<Map<String, int>>.fromIterable(<Map<String, int>>[
+          <String, int>{'name': 1, 'value': 1},
+          <String, int>{'name': 2, 'value': 2},
+          <String, int>{'name': 3, 'value': 3},
+          <String, int>{'name': 1, 'value': 4},
+          <String, int>{'name': 2, 'value': 5}
+        ]))
         .groupBy((Map<String, int> map) => map['name'])
         .flatMap((rx.GroupByMap<int, Map<String, int>> groupByMap) async* {
-          int len = await groupByMap.observable.length;
+      int len = await groupByMap.observable.length;
 
-          yield '${groupByMap.key}: $len';
-        })
-        .listen(expectAsync1((String result) {
+      yield '${groupByMap.key}: $len';
+    }).listen(expectAsync1((String result) {
       expect(result, expectedResults[index++]);
     }, count: 3));
   });

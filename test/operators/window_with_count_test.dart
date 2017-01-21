@@ -20,10 +20,14 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.windowWithCount.noSkip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[3, 4]];
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[3, 4]
+    ];
     int count = 0;
 
-    Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2);
+    Stream<Stream<int>> observable =
+        rx.observable(_getStream()).windowWithCount(2);
 
     observable.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -37,10 +41,16 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.skip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[const <int>[1, 2], const <int>[2, 3], const <int>[3, 4], const <int>[4]];
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[2, 3],
+      const <int>[3, 4],
+      const <int>[4]
+    ];
     int count = 0;
 
-    Stream<Stream<int>> observable = rx.observable(_getStream()).windowWithCount(2, 1);
+    Stream<Stream<int>> observable =
+        rx.observable(_getStream()).windowWithCount(2, 1);
 
     observable.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -54,8 +64,8 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.asBroadcastStream', () async {
-    Stream<Stream<int>> observable = rx.observable(_getStream().asBroadcastStream())
-        .windowWithCount(2);
+    Stream<Stream<int>> observable =
+        rx.observable(_getStream().asBroadcastStream()).windowWithCount(2);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -65,8 +75,8 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.error.shouldThrow', () async {
-    Stream<Stream<num>> observableWithError = rx.observable(getErroneousStream())
-        .windowWithCount(2);
+    Stream<Stream<num>> observableWithError =
+        rx.observable(getErroneousStream()).windowWithCount(2);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

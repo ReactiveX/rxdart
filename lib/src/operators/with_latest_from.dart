@@ -3,7 +3,6 @@ import 'package:rxdart/src/observable/stream.dart';
 class WithLatestFromObservable<T, S, R> extends StreamObservable<R> {
   WithLatestFromObservable(
       Stream<T> stream, Stream<S> latestFromStream, R fn(T t, S s)) {
-
     Stream<R> transformed = stream.transform(
         new StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
       StreamController<R> controller;

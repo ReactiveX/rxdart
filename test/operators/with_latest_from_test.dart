@@ -51,9 +51,8 @@ void main() {
         .withLatestFrom(
             _getLatestFromStream(), (num first, int second) => "Hello");
 
-    observableWithError.listen(null,
-        onError: (dynamic e, dynamic s) {
-          expect(e, isException);
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+      expect(e, isException);
     });
   });
 }
