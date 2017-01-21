@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/observable/stream.dart';
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 22), (int count) => count);
@@ -22,8 +22,7 @@ void main() {
     ];
     int count = 0;
 
-    rx
-        .observable(_getStream())
+    observable(_getStream())
         .withLatestFrom(_getLatestFromStream(),
             (int first, int second) => new Pair(first, second))
         .take(5)
@@ -33,21 +32,19 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.asBroadcastStream', () async {
-    Stream<int> observable = rx
-        .observable(_getStream().asBroadcastStream())
+    Stream<int> stream = observable(_getStream().asBroadcastStream())
         .withLatestFrom(_getLatestFromStream().asBroadcastStream(),
             (int first, int second) => 0);
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
 
-    expect(observable.isBroadcast, isTrue);
+    expect(stream.isBroadcast, isTrue);
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrow', () async {
-    Stream<String> observableWithError = rx
-        .observable(getErroneousStream())
+    Stream<String> observableWithError = observable(getErroneousStream())
         .withLatestFrom(
             _getLatestFromStream(), (num first, int second) => "Hello");
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.zip', () async {
@@ -21,7 +21,7 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = rx.Observable.zipThree(
+    Stream<List<dynamic>> observable = Observable.zipThree(
         new Stream<int>.periodic(
             const Duration(milliseconds: 20), (int count) => count).take(4),
         new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -58,8 +58,8 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = rx.Observable
-        .zipThree(a, b, c.stream, (int a, int b, bool c) => <dynamic>[a, b, c]);
+    Stream<List<dynamic>> observable = Observable.zipThree(
+        a, b, c.stream, (int a, int b, bool c) => <dynamic>[a, b, c]);
 
     observable.listen(expectAsync1((List<dynamic> result) {
       // test to see if the combined output matches
@@ -79,7 +79,7 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = rx.Observable.zipThree(
+    Stream<List<dynamic>> observable = Observable.zipThree(
         new Stream<int>.periodic(
             const Duration(milliseconds: 20), (int count) => count).take(4),
         new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -101,7 +101,7 @@ void main() {
     testStream.add(2);
     testStream.add(3);
 
-    Stream<List<dynamic>> observableWithError = rx.Observable.zipThree(
+    Stream<List<dynamic>> observableWithError = Observable.zipThree(
         new Stream<int>.periodic(
             const Duration(milliseconds: 20), (int count) => count).take(4),
         new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),

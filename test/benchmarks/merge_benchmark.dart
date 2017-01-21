@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
 
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 import 'benchmark_utils.dart';
 
@@ -15,6 +15,6 @@ class MergeBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    new rx.Observable<int>.merge(<Stream<int>>[range(), range()]).listen(null);
+    new Observable<int>.merge(<Stream<int>>[range(), range()]).listen(null);
   }
 }

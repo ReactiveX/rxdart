@@ -1,6 +1,6 @@
 import 'package:benchmark_harness/benchmark_harness.dart';
 
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 import 'benchmark_utils.dart';
 
@@ -13,7 +13,7 @@ class CombineLatestBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    rx.Observable
+    Observable
         .combineTwoLatest(range(), range(), (int x, int y) => x + y)
         .listen(null);
   }

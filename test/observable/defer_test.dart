@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.defer', () async {
@@ -30,7 +30,7 @@ void main() {
 
   test('rx.Observable.defer.error.shouldThrow', () async {
     Stream<int> observableWithError =
-        new rx.Observable<int>.defer(() => _getErroneousStream());
+        new Observable<int>.defer(() => _getErroneousStream());
 
     observableWithError.listen(null,
         onError: expectAsync1((dynamic e) {
@@ -40,7 +40,7 @@ void main() {
 }
 
 Stream<int> _getDeferStream() =>
-    new rx.Observable<int>.defer(() => new rx.Observable<int>.just(1));
+    new Observable<int>.defer(() => new Observable<int>.just(1));
 
 Stream<int> _getErroneousStream() {
   StreamController<int> controller = new StreamController<int>();

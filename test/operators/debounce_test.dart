@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
@@ -20,8 +20,7 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.debounce', () async {
-    rx
-        .observable(_getStream())
+    observable(_getStream())
         .debounce(const Duration(milliseconds: 200))
         .listen(expectAsync1((int result) {
           expect(result, 4);
@@ -29,20 +28,18 @@ void main() {
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
-    Stream<int> observable = rx
-        .observable(_getStream().asBroadcastStream())
+    Stream<int> stream = observable(_getStream().asBroadcastStream())
         .debounce(const Duration(milliseconds: 200));
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
     // code should reach here
     expect(true, true);
   });
 
   test('rx.Observable.debounce.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx
-        .observable(getErroneousStream())
+    Stream<num> observableWithError = observable(getErroneousStream())
         .debounce(const Duration(milliseconds: 200));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

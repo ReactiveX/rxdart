@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 List<Stream<dynamic>> _getStreams() {
   Stream<int> a = new Stream<int>.periodic(
@@ -24,7 +24,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<String> observable = new rx.Observable<String>.combineLatest(
+    Stream<String> observable = new Observable<String>.combineLatest(
         _getStreams(), (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
     });
@@ -50,7 +50,7 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<String> observable = rx.Observable.combineThreeLatest(
+    Stream<String> observable = Observable.combineThreeLatest(
         a,
         b,
         c.stream,
@@ -64,7 +64,7 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.asBroadcastStream', () async {
-    Stream<String> observable = new rx.Observable<String>.combineLatest(
+    Stream<String> observable = new Observable<String>.combineLatest(
         _getStreams(), (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
     }, asBroadcastStream: true);
@@ -78,7 +78,7 @@ void main() {
 
   test('rx.Observable.combineLatest.error.shouldThrow.A', () async {
     Stream<String> observableWithError =
-        new rx.Observable<String>.combineLatest(_getStreams(), (int a_value,
+        new Observable<String>.combineLatest(_getStreams(), (int a_value,
             int b_value, /* should be bool, not int, so throw */ int c_value) {
       return '$a_value $b_value $c_value';
     });
@@ -89,10 +89,9 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.B', () async {
-    Stream<String> observableWithError =
-        new rx.Observable<String>.combineLatest(
-            _getStreams()..add(getErroneousStream()),
-            (int a_value, int b_value, bool c_value, _) {
+    Stream<String> observableWithError = new Observable<String>.combineLatest(
+        _getStreams()..add(getErroneousStream()),
+        (int a_value, int b_value, bool c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
 

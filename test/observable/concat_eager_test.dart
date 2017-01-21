@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 List<Stream<num>> _getStreams() {
   Stream<num> a = new Stream<num>.periodic(
@@ -16,8 +16,7 @@ List<Stream<num>> _getStreamsIncludingEmpty() {
   Stream<num> a = new Stream<num>.periodic(
       const Duration(milliseconds: 20), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
-  Stream<num> c = rx
-      .observable(new Stream<num>.fromIterable(const []))
+  Stream<num> c = observable(new Stream<num>.fromIterable(const []))
       .map((_) => _)
       .flatMap((_) => new Stream<num>.fromIterable(<num>[_]))
       .flatMapLatest((_) => new Stream<num>.fromIterable(<num>[_]));
@@ -30,7 +29,7 @@ void main() {
     const List<num> expectedOutput = const <num>[0, 1, 2, 1, 2, 3, 4];
     int count = 0;
 
-    Stream<num> observable = new rx.Observable<num>.concatEager(_getStreams());
+    Stream<num> observable = new Observable<num>.concatEager(_getStreams());
 
     observable.listen(expectAsync1((num result) {
       // test to see if the combined output matches
@@ -43,7 +42,7 @@ void main() {
     int count = 0;
 
     Stream<num> observable =
-        new rx.Observable<num>.concatEager(_getStreamsIncludingEmpty());
+        new Observable<num>.concatEager(_getStreamsIncludingEmpty());
 
     observable.listen(expectAsync1((num result) {
       // test to see if the combined output matches
@@ -87,7 +86,7 @@ void main() {
       }
     });
 
-    Stream<int> observable = new rx.Observable<int>.concatEager(
+    Stream<int> observable = new Observable<int>.concatEager(
         <Stream<int>>[ctrlA.stream, ctrlB.stream, ctrlC.stream]);
 
     observable.listen(expectAsync1((num result) {
@@ -97,8 +96,8 @@ void main() {
   });
 
   test('rx.Observable.concatEager.asBroadcastStream', () async {
-    Stream<num> observable = new rx.Observable<num>.concatEager(_getStreams(),
-        asBroadcastStream: true);
+    Stream<num> observable =
+        new Observable<num>.concatEager(_getStreams(), asBroadcastStream: true);
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -108,7 +107,7 @@ void main() {
   });
 
   test('rx.Observable.concatEager.error.shouldThrow', () async {
-    Stream<num> observableWithError = new rx.Observable<num>.concatEager(
+    Stream<num> observableWithError = new Observable<num>.concatEager(
         _getStreams()..add(getErroneousStream()));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

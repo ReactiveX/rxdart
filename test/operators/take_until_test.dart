@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
@@ -34,8 +34,7 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 2];
     int count = 0;
 
-    rx
-        .observable(_getStream())
+    observable(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
@@ -43,20 +42,19 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
-    Stream<int> observable = rx
-        .observable(_getStream().asBroadcastStream())
+    Stream<int> stream = observable(_getStream().asBroadcastStream())
         .takeUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
     // code should reach here
     expect(true, true);
   });
 
   test('rx.Observable.takeUntil.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        rx.observable(getErroneousStream()).takeUntil(_getOtherStream());
+        observable(getErroneousStream()).takeUntil(_getOtherStream());
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

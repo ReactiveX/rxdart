@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
@@ -23,26 +23,24 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 2, 3, 4];
     int count = 0;
 
-    rx
-        .observable(_getStream())
+    observable(_getStream())
         .tap((int value) => expect(expectedOutput[count++], value))
         .listen((_) {});
   });
 
   test('rx.Observable.tap.asBroadcastStream', () async {
-    Stream<int> observable =
-        rx.observable(_getStream().asBroadcastStream()).tap((_) {});
+    Stream<int> stream = observable(_getStream().asBroadcastStream()).tap((_) {});
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
     // code should reach here
     expect(true, true);
   });
 
   test('rx.Observable.tap.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        rx.observable(getErroneousStream()).tap((_) {});
+        observable(getErroneousStream()).tap((_) {});
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
