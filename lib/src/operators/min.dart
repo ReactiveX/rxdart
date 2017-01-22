@@ -28,7 +28,7 @@ class MinObservable<T> extends StreamObservable<T> {
               sink.add(data);
             }
           } catch (error) {
-            sink.addError(error, error.stackTrace);
+            sink.addError(error);
           }
         }
       }

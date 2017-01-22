@@ -80,4 +80,31 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.windowWithCount.pause.resume', () async {
+    StreamSubscription<Stream<int>> subscription;
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[3, 4]
+    ];
+    int count = 0;
+    Stream<Stream<int>> stream = observable(_getStream()).windowWithCount(2);
+
+    subscription = stream.listen(expectAsync1((Stream<int> result) {
+      // test to see if the combined output matches
+      List<int> expected = expectedOutput[count++];
+      int innerCount = 0;
+
+      result.listen(expectAsync1((int value) {
+        expect(expected[innerCount++], value);
+
+        if (count == expectedOutput.length) {
+          subscription.cancel();
+        }
+      }, count: expected.length));
+    }, count: 2));
+
+    subscription.pause();
+    subscription.resume();
+  });
 }

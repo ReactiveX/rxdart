@@ -23,8 +23,6 @@ Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>()
   ..setStream(stream);
 
 abstract class Observable<T> extends Stream<T> {
-  Observable();
-
   /// Given two or more source Observables, emit all of the items from only
   /// the first of these Observables to emit an item or notification.
   ///
@@ -139,7 +137,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<E> streamFive,
           Stream<F> streamSix,
           Stream<G> streamSeven,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g),
           {bool asBroadcastStream: false}) =>
       new CombineLatestObservable<T>(<Stream<dynamic>>[
         streamOne,
@@ -164,7 +162,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<F> streamSix,
           Stream<G> streamSeven,
           Stream<H> streamEight,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g, H h),
           {bool asBroadcastStream: false}) =>
       new CombineLatestObservable<T>(<Stream<dynamic>>[
         streamOne,
@@ -191,7 +189,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<G> streamSeven,
           Stream<H> streamEight,
           Stream<I> streamNine,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g, H h, I i),
           {bool asBroadcastStream: false}) =>
       new CombineLatestObservable<T>(<Stream<dynamic>>[
         streamOne,
@@ -476,7 +474,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<E> streamFive,
           Stream<F> streamSix,
           Stream<G> streamSeven,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g),
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(<Stream<dynamic>>[
         streamOne,
@@ -510,7 +508,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<F> streamSix,
           Stream<G> streamSeven,
           Stream<H> streamEight,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g, H h),
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(<Stream<dynamic>>[
         streamOne,
@@ -546,7 +544,7 @@ abstract class Observable<T> extends Stream<T> {
           Stream<G> streamSeven,
           Stream<H> streamEight,
           Stream<I> streamNine,
-          T predicate(A a, B b, C c, D d, E e, F f),
+          T predicate(A a, B b, C c, D d, E e, F f, G g, H h, I i),
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(<Stream<dynamic>>[
         streamOne,

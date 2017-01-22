@@ -68,9 +68,6 @@ class ZipObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
       T result;
 
       switch (len) {
-        case 1:
-          result = predicate(values.elementAt(0));
-          break;
         case 2:
           result = predicate(values.elementAt(0), values.elementAt(1));
           break;

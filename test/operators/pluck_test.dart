@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/operators/pluck.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -40,7 +41,7 @@ void main() {
   test('rx.Observable.pluck.error.shouldThrow.B', () async {
     observable(_getStream()).pluck(<dynamic>['first', 2, false],
         throwOnNull: true).listen(null, onError: (dynamic e) {
-      expect(true, true);
+      expect(e is PluckError, isTrue);
     });
   });
 }

@@ -36,8 +36,7 @@ class TweenObservable<T> extends StreamObservable<T> {
               changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(_controller.add,
-              onError: (dynamic e, dynamic s) => _controller.addError(e, s),
-              onDone: _controller.close);
+              onError: _controller.addError, onDone: _controller.close);
         },
         onCancel: () => subscription.cancel());
 

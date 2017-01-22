@@ -46,4 +46,20 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.debounce.pause.resume', () async {
+    StreamSubscription<int> subscription;
+    Observable<int> stream =
+        observable(new Observable<int>.fromIterable(<int>[1, 2, 3]))
+            .debounce(new Duration(milliseconds: 10));
+
+    subscription = stream.listen(expectAsync1((int value) {
+      expect(value, 3);
+
+      subscription.cancel();
+    }, count: 1));
+
+    subscription.pause();
+    subscription.resume();
+  });
 }

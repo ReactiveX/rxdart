@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/operators/retry.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -35,7 +36,20 @@ void main() {
     Stream<int> observableWithError = observable(_getStream()).retry(2);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(true, true);
+      expect(e is RetryError, isTrue);
     });
+  });
+
+  test('rx.Observable.retry.pause.resume', () async {
+    StreamSubscription<int> subscription;
+    subscription =
+        observable(_getStream()).retry(3).listen(expectAsync1((int result) {
+              expect(result, 3);
+
+              subscription.cancel();
+            }, count: 1));
+
+    subscription.pause();
+    subscription.resume();
   });
 }

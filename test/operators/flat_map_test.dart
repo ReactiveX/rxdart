@@ -80,4 +80,19 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.flatMap.pause.resume', () async {
+    StreamSubscription<int> subscription;
+    Observable<int> stream = observable(new Observable<int>.just(0))
+        .flatMap((_) => new Observable<int>.just(1));
+
+    subscription = stream.listen(expectAsync1((int value) {
+      expect(value, 1);
+
+      subscription.cancel();
+    }, count: 1));
+
+    subscription.pause();
+    subscription.resume();
+  });
 }

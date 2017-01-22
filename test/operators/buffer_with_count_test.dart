@@ -76,4 +76,12 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.bufferWithCount.skip.shouldThrow', () async {
+    try {
+      observable(_getStream()).bufferWithCount(2, 100);
+    } catch (e) {
+      expect(e, isArgumentError);
+    }
+  });
 }
