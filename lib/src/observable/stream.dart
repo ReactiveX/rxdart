@@ -22,7 +22,8 @@ import 'package:rxdart/src/operators/start_with_many.dart'
 import 'package:rxdart/src/operators/repeat.dart' show RepeatObservable;
 import 'package:rxdart/src/operators/min.dart' show MinObservable;
 import 'package:rxdart/src/operators/max.dart' show MaxObservable;
-import 'package:rxdart/src/operators/of_type.dart' show OfTypeObservable;
+import 'package:rxdart/src/operators/of_type.dart'
+    show OfTypeObservable, TypeToken;
 import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart'
@@ -186,8 +187,9 @@ class StreamObservable<T> implements Observable<T> {
       new MaxObservable<T>(stream, compare);
 
   @override
-  Observable<S> ofType<S>(S predicate(T event)) => new OfTypeObservable<T, S>(
-      stream, predicate);
+  Observable<S> ofType<S>(TypeToken<S> typeToken) {
+    return new OfTypeObservable<T, S>(stream, typeToken);
+  }
 
   @override
   Observable<T> interval(Duration duration) =>

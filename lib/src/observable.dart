@@ -11,6 +11,7 @@ import 'package:rxdart/src/observable/merge.dart' show MergeObservable;
 import 'package:rxdart/src/observable/stream.dart' show StreamObservable;
 import 'package:rxdart/src/observable/tween.dart' show TweenObservable, Ease;
 import 'package:rxdart/src/observable/zip.dart' show ZipObservable;
+import 'package:rxdart/src/operators/of_type.dart' show TypeToken;
 import 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
 import 'package:rxdart/src/operators/group_by.dart' show GroupByMap;
 
@@ -727,8 +728,37 @@ abstract class Observable<T> extends Stream<T> {
   /// sequence according to the specified compare function.
   Observable<T> min([int compare(T a, T b)]);
 
-  /// Filters a sequence so that only events of type pass
-  Observable<S> ofType<S>(S predicate(T event));
+  /// Filters a sequence so that only events of a given type pass
+  ///
+  /// In order to capture the Type correctly, it needs to be wrapped
+  /// in a [TypeToken] as the generic parameter.
+  ///
+  /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
+  /// checks and castings within `OfTypeObservable` itself. Therefore, the
+  /// [TypeToken] class was introduced to capture the type of class you'd
+  /// like `ofType` to filter down to.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// myObservable.ofType(new TypeToken<num>);
+  /// ```
+  ///
+  /// As a shortcut, you can use some pre-defined constants to write the above
+  /// in the following way:
+  ///
+  /// ```dart
+  /// myObservable.ofType(kNum);
+  /// ```
+  ///
+  /// If you'd like to create your own shortcuts like the example above,
+  /// simply create a constant:
+  ///
+  /// ```dart
+  /// const TypeToken<Map<Int, String>> kMapIntString =
+  ///   const TypeToken<Map<Int, String>>();
+  /// ```
+  Observable<S> ofType<S>(TypeToken<S> typeToken);
 
   /// Creates an Observable containing the value of a specified nested property
   /// from all elements in the Observable sequence. If a property can't be
