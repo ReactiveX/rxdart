@@ -25,23 +25,21 @@ Stream<dynamic> _getStream() {
 void main() {
   test('rx.Observable.ofType', () async {
     observable(_getStream())
-        .ofType((event) => event as Map<String, int>)
+        .ofType(new TypeToken<Map<String, int>>())
         .listen(expectAsync1((Map<String, int> result) {
           expect(result, isMap);
         }, count: 1));
   });
 
   test('rx.Observable.ofType.polymorphism', () async {
-    observable(_getStream())
-        .ofType((event) => event as num)
-        .listen(expectAsync1((num result) {
+    observable(_getStream()).ofType(kNum).listen(expectAsync1((num result) {
           expect(result is num, true);
         }, count: 2));
   });
 
   test('rx.Observable.ofType.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
-        .ofType((event) => event as int);
+    Stream<int> stream =
+        observable(_getStream().asBroadcastStream()).ofType(kInt);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -52,7 +50,7 @@ void main() {
 
   test('rx.Observable.ofType.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        observable(getErroneousStream()).ofType((event) => event as num);
+        observable(getErroneousStream()).ofType(kNum);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
