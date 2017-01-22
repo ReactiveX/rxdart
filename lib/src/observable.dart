@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observable/amb.dart'
-    show AmbObservable;
+import 'package:rxdart/src/observable/amb.dart' show AmbObservable;
 import 'package:rxdart/src/observable/combine_latest.dart'
     show CombineLatestObservable;
-import 'package:rxdart/src/observable/concat.dart'
-    show ConcatObservable;
+import 'package:rxdart/src/observable/concat.dart' show ConcatObservable;
 import 'package:rxdart/src/observable/concat_eager.dart'
     show ConcatEagerObservable;
 import 'package:rxdart/src/observable/defer.dart' show DeferObservable;
@@ -26,17 +24,20 @@ Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>()
 abstract class Observable<T> extends Stream<T> {
   Observable();
 
-  /// given two or more source Observables, emit all of the items from only the first of these Observables to emit an item or notification.
+  /// Given two or more source Observables, emit all of the items from only
+  /// the first of these Observables to emit an item or notification.
   ///
   /// http://rxmarbles.com/#amb
   factory Observable.amb(Iterable<Stream<T>> streams,
-      {bool asBroadcastStream: false}) => new AmbObservable<T>(streams, asBroadcastStream);
+          {bool asBroadcastStream: false}) =>
+      new AmbObservable<T>(streams, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  @Deprecated('For better strong mode support, use combineTwoLatest, combineThreeLatest, ... instead')
+  @Deprecated(
+      'For better strong mode support, use combineTwoLatest, combineThreeLatest, ... instead')
   factory Observable.combineLatest(
           Iterable<Stream<dynamic>> streams, Function predicate,
           {bool asBroadcastStream: false}) =>
@@ -47,122 +48,177 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineTwoLatest<A, B, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      T predicate(A a, B b),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo], predicate, asBroadcastStream);
+          Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo],
+          predicate, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineThreeLatest<A, B, C, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      T predicate(A a, B b, C c),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          T predicate(A a, B b, C c),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(
+          <Stream<dynamic>>[streamOne, streamTwo, streamThree],
+          predicate,
+          asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineFourLatest<A, B, C, D, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      T predicate(A a, B b, C c, D d),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          T predicate(A a, B b, C c, D d),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(
+          <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
+          predicate,
+          asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineFiveLatest<A, B, C, D, E, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      T predicate(A a, B b, C c, D d, E e),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          T predicate(A a, B b, C c, D d, E e),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive
+      ], predicate, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineSixLatest<A, B, C, D, E, F, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix
+      ], predicate, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineSevenLatest<A, B, C, D, E, F, G, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven
+      ], predicate, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineEightLatest<A, B, C, D, E, F, G, H, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      Stream<H> streamEight,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          Stream<H> streamEight,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven,
+        streamEight
+      ], predicate, asBroadcastStream);
 
   /// Creates an Observable where each item is the result of passing the latest
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
   static Observable<T> combineNineLatest<A, B, C, D, E, F, G, H, I, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      Stream<H> streamEight,
-      Stream<I> streamNine,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight, streamNine], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          Stream<H> streamEight,
+          Stream<I> streamNine,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new CombineLatestObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven,
+        streamEight,
+        streamNine
+      ], predicate, asBroadcastStream);
 
-  /// Concatenates all of the specified observable sequences, as long as the previous observable sequence terminated successfully..
+  /// Concatenates all of the specified observable sequences, as long as the
+  /// previous observable sequence terminated successfully..
   ///
   /// http://rxmarbles.com/#concat
   factory Observable.concat(Iterable<Stream<T>> streams,
-      {bool asBroadcastStream: false}) =>
+          {bool asBroadcastStream: false}) =>
       new ConcatObservable<T>(streams, asBroadcastStream);
 
   /// Concatenates all of the specified observable sequences,
   /// a backlog is being kept for events that emit on the waiting streams.
-  /// When a previous sequence is terminated, all backlog for the next stream is eagerly emitted at once.
+  /// When a previous sequence is terminated, all backlog for the next stream
+  /// is eagerly emitted at once.
   ///
   factory Observable.concatEager(Iterable<Stream<T>> streams,
-      {bool asBroadcastStream: false}) =>
+          {bool asBroadcastStream: false}) =>
       new ConcatEagerObservable<T>(streams, asBroadcastStream);
 
   /// The defer factory waits until an observer subscribes to it, and then it
@@ -178,8 +234,8 @@ abstract class Observable<T> extends Stream<T> {
   factory Observable.defer(Stream<T> create()) =>
       new DeferObservable<T>(create);
 
-  ///  Creates an Observable where all events of an existing stream are piped through
-  ///  a sink-transformation.
+  ///  Creates an Observable where all events of an existing stream are piped
+  ///  through a sink-transformation.
   ///
   ///  The given [mapSink] closure is invoked when the returned stream is
   ///  listened to. All events from the [source] are added into the event sink
@@ -242,8 +298,8 @@ abstract class Observable<T> extends Stream<T> {
           [T computation(int computationCount)]) =>
       observable((new Stream<T>.periodic(period, computation)));
 
-  /// Creates an Observable that emits values starting from startValue and incrementing
-  /// according to the ease type over the duration.
+  /// Creates an Observable that emits values starting from startValue and
+  /// incrementing according to the ease type over the duration.
   /// todo : needs more detail
   factory Observable.tween(
           double startValue, double changeInTime, Duration duration,
@@ -266,10 +322,12 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  @Deprecated('For better strong mode support, use zipTwo, zipThree, ... instead')
+  @Deprecated(
+      'For better strong mode support, use zipTwo, zipThree, ... instead')
   factory Observable.zip(Iterable<Stream<dynamic>> streams, Function predicate,
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(streams, predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -284,10 +342,11 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipTwo<A, B, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      T predicate(A a, B b),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo], predicate, asBroadcastStream);
+          Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo], predicate,
+          asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -302,11 +361,14 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipThree<A, B, C, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      T predicate(A a, B b, C c),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          T predicate(A a, B b, C c),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree],
+          predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -321,12 +383,17 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipFour<A, B, C, D, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      T predicate(A a, B b, C c, D d),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          T predicate(A a, B b, C c, D d),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(
+          <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
+          predicate,
+          asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -341,13 +408,21 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipFive<A, B, C, D, E, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      T predicate(A a, B b, C c, D d, E e),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          T predicate(A a, B b, C c, D d, E e),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive
+      ], predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -362,14 +437,23 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipSix<A, B, C, D, E, F, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix
+      ], predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -384,15 +468,25 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipSeven<A, B, C, D, E, F, G, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven
+      ], predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -407,16 +501,27 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipEight<A, B, C, D, E, F, G, H, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      Stream<H> streamEight,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight], predicate, asBroadcastStream);
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          Stream<H> streamEight,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven,
+        streamEight
+      ], predicate, asBroadcastStream);
+
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other
   /// Observables, with the results of this function becoming the items emitted
@@ -431,18 +536,28 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   static Observable<T> zipNine<A, B, C, D, E, F, G, H, I, T>(
-      Stream<A> streamOne,
-      Stream<B> streamTwo,
-      Stream<C> streamThree,
-      Stream<D> streamFour,
-      Stream<E> streamFive,
-      Stream<F> streamSix,
-      Stream<G> streamSeven,
-      Stream<H> streamEight,
-      Stream<I> streamNine,
-      T predicate(A a, B b, C c, D d, E e, F f),
-      {bool asBroadcastStream: false}) => new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour, streamFive, streamSix, streamSeven, streamEight, streamNine], predicate, asBroadcastStream);
-
+          Stream<A> streamOne,
+          Stream<B> streamTwo,
+          Stream<C> streamThree,
+          Stream<D> streamFour,
+          Stream<E> streamFive,
+          Stream<F> streamSix,
+          Stream<G> streamSeven,
+          Stream<H> streamEight,
+          Stream<I> streamNine,
+          T predicate(A a, B b, C c, D d, E e, F f),
+          {bool asBroadcastStream: false}) =>
+      new ZipObservable<T>(<Stream<dynamic>>[
+        streamOne,
+        streamTwo,
+        streamThree,
+        streamFour,
+        streamFive,
+        streamSix,
+        streamSeven,
+        streamEight,
+        streamNine
+      ], predicate, asBroadcastStream);
 
   /// Returns a multi-subscription stream that produces the same events as this.
   ///
@@ -509,7 +624,8 @@ abstract class Observable<T> extends Stream<T> {
   /// http://rxmarbles.com/#debounce
   Observable<T> debounce(Duration duration);
 
-  /// emit items from the source Observable, or a default item if the source Observable emits nothing
+  /// emit items from the source Observable, or a default item if the source
+  /// Observable emits nothing
   Observable<T> defaultIfEmpty(T defaultValue);
 
   /// Creates an Observable where data events are skipped if they are equal to
@@ -560,7 +676,8 @@ abstract class Observable<T> extends Stream<T> {
   /// new one.
   Observable<S> flatMapLatest<S>(Stream<S> predicate(T value));
 
-  Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value), {int compareKeys(S keyA, S keyB)});
+  Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value),
+      {int compareKeys(S keyA, S keyB)});
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
@@ -639,7 +756,8 @@ abstract class Observable<T> extends Stream<T> {
   /// emit either.
   ///
   /// http://rxmarbles.com/#withLatestFrom
-  Observable<R> withLatestFrom<S, R>(Stream<S> latestFromStream, R fn(T t, S s));
+  Observable<R> withLatestFrom<S, R>(
+      Stream<S> latestFromStream, R fn(T t, S s));
 
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial

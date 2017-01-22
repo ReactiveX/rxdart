@@ -103,7 +103,7 @@ void main() {
   ];
   var result = querySelector('#result');
   var controller = new StreamController<KeyboardEvent>();
-  var stream = rx.observable(controller.stream);
+  var stream = observable(controller.stream);
 
   document.addEventListener('keyup', (event) => controller.add(event));
 

@@ -1,35 +1,37 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 void main() {
   List<int> codes = <int>[
-      38, // up
-      38, // up
-      40, // down
-      40, // down
-      37, // left
-      39, // right
-      37, // left
-      39, // right
-      66, // b
-      65  // a
+    38, // up
+    38, // up
+    40, // down
+    40, // down
+    37, // left
+    39, // right
+    37, // left
+    39, // right
+    66, // b
+    65 // a
   ];
   Element result = querySelector('#result');
 
-  StreamController<KeyboardEvent> controller = new StreamController<KeyboardEvent>();
-  rx.Observable<KeyboardEvent> stream = rx.observable(controller.stream);
+  StreamController<KeyboardEvent> controller =
+      new StreamController<KeyboardEvent>();
+  Observable<KeyboardEvent> stream = observable(controller.stream);
 
   document.addEventListener('keyup', (Event event) => controller.add(event));
 
   stream
-    .map((KeyboardEvent e) => e.keyCode )     // get the key code
-    .bufferWithCount(10, 1)                   // get the last 10 keys
-    .where((List<int> x) => _equal(x, codes)) // where we match
-    .listen((_) => result.innerHtml = 'KONAMI!');
+      .map((KeyboardEvent e) => e.keyCode) // get the key code
+      .bufferWithCount(10, 1) // get the last 10 keys
+      .where((List<int> x) => _equal(x, codes)) // where we match
+      .listen((_) => result.innerHtml = 'KONAMI!');
 }
 
 bool _equal(List<int> a, List<int> b) {
-  for (int i=0; i<10; i++) if (a[i] != b[i]) return false; return true;
+  for (int i = 0; i < 10; i++) if (a[i] != b[i]) return false;
+  return true;
 }

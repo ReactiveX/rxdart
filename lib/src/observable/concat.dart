@@ -1,12 +1,12 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class ConcatObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
-
   StreamController<T> _controller;
   StreamSubscription<T> subscription;
 
   ConcatObservable(Iterable<Stream<T>> streams, bool asBroadcastStream) {
-    _controller = new StreamController<T>(sync: true,
+    _controller = new StreamController<T>(
+        sync: true,
         onListen: () {
           final int len = streams.length;
           int index = 0;
@@ -16,20 +16,22 @@ class ConcatObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
             subscription?.cancel();
 
             subscription = stream.listen(_controller.add,
-                onError: _controller.addError,
-                onDone: () {
-                  index++;
+                onError: _controller.addError, onDone: () {
+              index++;
 
-                  if (index == len) _controller.close();
-                  else moveNext();
-                });
+              if (index == len)
+                _controller.close();
+              else
+                moveNext();
+            });
           }
 
           moveNext();
         },
         onCancel: () => subscription.cancel());
 
-    setStream(asBroadcastStream ? _controller.stream.asBroadcastStream() : _controller.stream);
+    setStream(asBroadcastStream
+        ? _controller.stream.asBroadcastStream()
+        : _controller.stream);
   }
-
 }

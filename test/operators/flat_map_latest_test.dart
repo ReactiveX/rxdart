@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
@@ -32,35 +32,35 @@ Stream<num> _getOtherStream(num value) {
   return controller.stream;
 }
 
-
-Stream<int> range() => new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+Stream<int> range() =>
+    new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 void main() {
   test('rx.Observable.flatMapLatest', () async {
     const List<int> expectedOutput = const <int>[5, 6, 7, 8];
     int count = 0;
 
-    rx.observable(_getStream())
+    observable(_getStream())
         .flatMapLatest(_getOtherStream)
         .listen(expectAsync1((num result) {
-      expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.flatMapLatest.asBroadcastStream', () async {
-    Stream<num> observable = rx.observable(_getStream().asBroadcastStream())
+    Stream<num> stream = observable(_getStream().asBroadcastStream())
         .flatMapLatest(_getOtherStream);
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
     // code should reach here
     expect(true, true);
   });
 
   test('rx.Observable.flatMapLatest.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
-        .flatMapLatest(_getOtherStream);
+    Stream<num> observableWithError =
+        observable(getErroneousStream()).flatMapLatest(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

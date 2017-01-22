@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
@@ -20,35 +20,35 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.defaultIfEmpty.whenEmpty', () async {
-    rx.observable(new Stream<bool>.empty())
+    observable(new Stream<bool>.empty())
         .defaultIfEmpty(true)
         .listen(expectAsync1((bool result) {
-      expect(result, true);
-    }, count: 1));
+          expect(result, true);
+        }, count: 1));
   });
 
   test('rx.Observable.defaultIfEmpty.whenNotEmpty', () async {
-    rx.observable(new Stream<bool>.fromIterable(const <bool>[false, false, false]))
+    observable(new Stream<bool>.fromIterable(const <bool>[false, false, false]))
         .defaultIfEmpty(true)
         .listen(expectAsync1((bool result) {
-      expect(result, false);
-    }, count: 3));
+          expect(result, false);
+        }, count: 3));
   });
 
   test('rx.Observable.defaultIfEmpty.asBroadcastStream', () async {
-    Stream<int> observable = rx.observable(_getStream().asBroadcastStream())
-        .defaultIfEmpty(-1);
+    Stream<int> stream =
+        observable(_getStream().asBroadcastStream()).defaultIfEmpty(-1);
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    stream.listen((_) {});
+    stream.listen((_) {});
     // code should reach here
     expect(true, true);
   });
 
   test('rx.Observable.defaultIfEmpty.error.shouldThrow', () async {
-    Stream<num> observableWithError = rx.observable(getErroneousStream())
-        .defaultIfEmpty(-1);
+    Stream<num> observableWithError =
+        observable(getErroneousStream()).defaultIfEmpty(-1);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

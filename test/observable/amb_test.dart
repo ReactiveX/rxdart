@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 Stream<num> getDelayedStream<T>(int delay, num value) async* {
   final Completer<dynamic> completer = new Completer<dynamic>();
@@ -22,11 +22,8 @@ void main() {
     final Stream<num> last = getDelayedStream(70, 3);
     int expected = 1;
 
-    new rx.Observable<num>.amb(<Stream<num>>[
-      first,
-      second,
-      last]
-    ).listen(expectAsync1((num result) {
+    new Observable<num>.amb(<Stream<num>>[first, second, last])
+        .listen(expectAsync1((num result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
@@ -37,12 +34,9 @@ void main() {
     final Stream<num> second = getDelayedStream(60, 2);
     final Stream<num> last = getDelayedStream(70, 3);
 
-    Stream<num> observable = new rx.Observable<num>.amb(<Stream<num>>[
-        first,
-        second,
-        last],
-        asBroadcastStream: true
-    );
+    Stream<num> observable = new Observable<num>.amb(
+        <Stream<num>>[first, second, last],
+        asBroadcastStream: true);
 
     // listen twice on same stream
     observable.listen((_) {});
