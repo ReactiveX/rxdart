@@ -13,6 +13,6 @@ class ZipBenchmark extends BenchmarkBase {
 
   @override
   void run() {
-    Observable.zipTwo(range(), range(), (int x, int y) => x + y).listen(null);
+    Observable.zip2(range(), range(), (int x, int y) => x + y).listen(null);
   }
 }
