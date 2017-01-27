@@ -48,7 +48,8 @@ void main() {
 
   setClientConfiguration();
 
-  react.render(react.registerComponent(() => renderer)(const {}),
+  react.render(
+      react.registerComponent(() => renderer)(const <dynamic, dynamic>{}),
       querySelector('#content'));
 
   // Rx
@@ -120,8 +121,8 @@ class _ListRenderer extends react.Component {
         (offset != null && ((offset ~/ rowHeight) % 2) == 0) ? 0 : 1;
 
     if (people == null)
-      return react
-          .div(<String, String>{'className': 'list-renderer'}, const []);
+      return react.div(
+          <String, String>{'className': 'list-renderer'}, const <dynamic>[]);
 
     for (int i = 0, len = people.length; i < len; i++)
       children.add(react.div(<String, dynamic>{

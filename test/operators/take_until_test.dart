@@ -60,4 +60,23 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.takeUntil.pause.resume', () async {
+    StreamSubscription<int> subscription;
+    const List<int> expectedOutput = const <int>[1, 2];
+    int count = 0;
+
+    subscription = observable(_getStream())
+        .takeUntil(_getOtherStream())
+        .listen(expectAsync1((int result) {
+          expect(result, expectedOutput[count++]);
+
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
+
+    subscription.pause();
+    subscription.resume();
+  });
 }

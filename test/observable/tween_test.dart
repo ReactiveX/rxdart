@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -111,16 +109,17 @@ void main() {
     ];
     int count = 0;
 
-    new Observable<List<double>>.zip(<Stream<double>>[
-      new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
-          intervalMs: 20),
-      new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
-          intervalMs: 20, ease: Ease.IN),
-      new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
-          intervalMs: 20, ease: Ease.OUT),
-      new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
-          intervalMs: 20, ease: Ease.IN_OUT)
-    ], (double a, double b, double c, double d) => <double>[a, b, c, d])
+    Observable
+        .zipFour(
+            new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
+                intervalMs: 20),
+            new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
+                intervalMs: 20, ease: Ease.IN),
+            new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
+                intervalMs: 20, ease: Ease.OUT),
+            new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
+                intervalMs: 20, ease: Ease.IN_OUT),
+            (double a, double b, double c, double d) => <double>[a, b, c, d])
         .map((List<double> values) =>
             values.map((double value) => (value * 100).round() / 100))
         .listen(expectAsync1((Iterable<double> result) {
@@ -130,5 +129,16 @@ void main() {
           for (int i = 0, len = result.length; i < len; i++)
             expect(expected[i], result.elementAt(i));
         }, count: expectedValues.length));
+  });
+
+  test('rx.Observable.tween.asBroadcast', () async {
+    Observable<double> observable = new Observable<double>.tween(
+        0.0, 100.0, const Duration(seconds: 2),
+        intervalMs: 20, asBroadcastStream: true);
+
+    observable.listen((_) {});
+    observable.listen((_) {});
+
+    expect(true, isTrue);
   });
 }

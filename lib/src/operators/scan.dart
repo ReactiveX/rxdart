@@ -9,13 +9,9 @@ class ScanObservable<T, S> extends StreamObservable<S> {
 
     setStream(stream.transform(new StreamTransformer<T, S>.fromHandlers(
         handleData: (T data, EventSink<S> sink) {
-      try {
-        acc = predicate(acc, data, index++);
+      acc = predicate(acc, data, index++);
 
-        sink.add(acc);
-      } catch (error) {
-        sink.addError(error, error.stackTrace);
-      }
+      sink.add(acc);
     })));
   }
 }

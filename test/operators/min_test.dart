@@ -8,7 +8,8 @@ Stream<int> _getStream() =>
     new Stream<int>.fromIterable(const <int>[10, 3, 3, 5, 2, 9, 1, 2, 0]);
 
 Stream<Map<String, int>> _getErroneousStream() {
-  StreamController<Map<String, int>> controller = new StreamController();
+  StreamController<Map<String, int>> controller =
+      new StreamController<Map<String, int>>();
 
   controller.add(const <String, int>{'value': 10});
   controller.add(const <String, int>{'value': 8});
@@ -54,9 +55,10 @@ void main() {
         .listen(
             expectAsync1((Map<String, int> result) {
               expect(expectedOutput[count++], result);
-            }, count: expectedOutput.length), onError: (dynamic e, dynamic s) {
+            }, count: expectedOutput.length),
+            onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
   test('rx.Observable.min.asBroadcastStream', () async {
@@ -76,4 +78,22 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.min.error.comparator', () async {
+    Stream<ErrorComparator> observableWithError =
+        new Observable<ErrorComparator>.fromIterable(
+                <ErrorComparator>[new ErrorComparator(), new ErrorComparator()])
+            .min();
+
+    observableWithError.listen((_) {}, onError: (dynamic e, dynamic s) {
+      expect(e, isException);
+    });
+  });
+}
+
+class ErrorComparator implements Comparable<ErrorComparator> {
+  @override
+  int compareTo(ErrorComparator other) {
+    throw new Exception();
+  }
 }

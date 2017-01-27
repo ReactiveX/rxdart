@@ -52,6 +52,27 @@ void main() {
       expect(e, isException);
     });
   });
+
+  test('rx.Observable.withLatestFrom.pause.resume', () async {
+    StreamSubscription<Pair> subscription;
+    const List<Pair> expectedOutput = const <Pair>[const Pair(2, 0)];
+    int count = 0;
+
+    subscription = observable(_getStream())
+        .withLatestFrom(_getLatestFromStream(),
+            (int first, int second) => new Pair(first, second))
+        .take(1)
+        .listen(expectAsync1((Pair result) {
+          expect(result, expectedOutput[count++]);
+
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
+
+    subscription.pause();
+    subscription.resume();
+  });
 }
 
 class Pair {

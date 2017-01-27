@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -45,12 +44,13 @@ void main() {
 
   test('rx.Observable.scan.error.shouldThrow', () async {
     Stream<int> observableWithError =
-        observable(getErroneousStream()).scan((num acc, num value, int index) {
-      throw new Error();
+        observable(_getStream()).scan((num acc, num value, int index) {
+      throw new StateError("oh noes!");
     });
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(e, isException);
-    });
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+          expect(e, isStateError);
+        }, count: 4));
   });
 }
