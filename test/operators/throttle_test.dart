@@ -1,6 +1,7 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,14 +21,18 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.throttle', () async {
-    const List<int> expectedOutput = const <int>[1, 4];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeaAsync) {
+      const List<int> expectedOutput = const <int>[1, 4];
+      int count = 0;
 
-    observable(_getStream())
-        .throttle(const Duration(milliseconds: 250))
-        .listen(expectAsync1((int result) {
-          expect(result, expectedOutput[count++]);
-        }, count: 2));
+      observable(_getStream())
+          .throttle(const Duration(milliseconds: 250))
+          .listen(expectAsync1((int result) {
+            expect(result, expectedOutput[count++]);
+          }, count: 2));
+
+      fakeaAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
@@ -51,21 +56,24 @@ void main() {
   });
 
   test('rx.Observable.throttle.pause.resume', () async {
-    StreamSubscription<int> subscription;
-    const List<int> expectedOutput = const <int>[1, 4];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeaAsync) {
+      StreamSubscription<int> subscription;
+      const List<int> expectedOutput = const <int>[1, 4];
+      int count = 0;
 
-    subscription = observable(_getStream())
-        .throttle(const Duration(milliseconds: 250))
-        .listen(expectAsync1((int result) {
-          expect(result, expectedOutput[count++]);
+      subscription = observable(_getStream())
+          .throttle(const Duration(milliseconds: 250))
+          .listen(expectAsync1((int result) {
+            expect(result, expectedOutput[count++]);
 
-          if (count == expectedOutput.length) {
-            subscription.cancel();
-          }
-        }, count: expectedOutput.length));
+            if (count == expectedOutput.length) {
+              subscription.cancel();
+            }
+          }, count: expectedOutput.length));
 
-    subscription.pause();
-    subscription.resume();
+      subscription.pause();
+      subscription.resume();
+      fakeaAsync.elapse(new Duration(minutes: 1));
+    });
   });
 }

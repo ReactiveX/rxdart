@@ -4,20 +4,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
-}
-
 void main() {
   test('rx.Observable.windowWithCount.noSkip', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
@@ -26,7 +12,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<Stream<int>> stream = observable(_getStream()).windowWithCount(2);
+    Stream<Stream<int>> stream = observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).windowWithCount(2);
 
     stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -48,7 +34,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<Stream<int>> stream = observable(_getStream()).windowWithCount(2, 1);
+    Stream<Stream<int>> stream = observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).windowWithCount(2, 1);
 
     stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -63,7 +49,7 @@ void main() {
 
   test('rx.Observable.windowWithCount.asBroadcastStream', () async {
     Stream<Stream<int>> stream =
-        observable(_getStream().asBroadcastStream()).windowWithCount(2);
+        observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream()).windowWithCount(2);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -88,7 +74,7 @@ void main() {
       const <int>[3, 4]
     ];
     int count = 0;
-    Stream<Stream<int>> stream = observable(_getStream()).windowWithCount(2);
+    Stream<Stream<int>> stream = observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).windowWithCount(2);
 
     subscription = stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches

@@ -1,16 +1,17 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
   StreamController<int> controller = new StreamController<int>();
 
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
+  new Timer(const Duration(milliseconds: 10), () => controller.add(1));
+  new Timer(const Duration(milliseconds: 20), () => controller.add(2));
+  new Timer(const Duration(milliseconds: 30), () => controller.add(3));
+  new Timer(const Duration(milliseconds: 40), () {
     controller.add(4);
     controller.close();
   });
@@ -21,10 +22,10 @@ Stream<int> _getStream() {
 Stream<num> _getOtherStream(num value) {
   StreamController<num> controller = new StreamController<num>();
 
-  new Timer(const Duration(milliseconds: 100), () => controller.add(value + 1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(value + 2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(value + 3));
-  new Timer(const Duration(milliseconds: 400), () {
+  new Timer(const Duration(milliseconds: 15), () => controller.add(value + 1));
+  new Timer(const Duration(milliseconds: 25), () => controller.add(value + 2));
+  new Timer(const Duration(milliseconds: 35), () => controller.add(value + 3));
+  new Timer(const Duration(milliseconds: 45), () {
     controller.add(value + 4);
     controller.close();
   });
@@ -37,14 +38,18 @@ Stream<int> range() =>
 
 void main() {
   test('rx.Observable.flatMapLatest', () async {
-    const List<int> expectedOutput = const <int>[5, 6, 7, 8];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      const List<int> expectedOutput = const <int>[5, 6, 7, 8];
+      int count = 0;
 
-    observable(_getStream())
-        .flatMapLatest(_getOtherStream)
-        .listen(expectAsync1((num result) {
-          expect(expectedOutput[count++], result);
-        }, count: expectedOutput.length));
+      observable(_getStream())
+          .flatMapLatest(_getOtherStream)
+          .listen(expectAsync1((num result) {
+        expect(result, expectedOutput[count++]);
+      }, count: expectedOutput.length));
+
+      fakeAsync.elapse(new Duration(milliseconds: 1000));
+    });
   });
 
   test('rx.Observable.flatMapLatest.asBroadcastStream', () async {

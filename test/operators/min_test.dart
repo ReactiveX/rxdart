@@ -13,7 +13,7 @@ Stream<Map<String, int>> _getErroneousStream() {
 
   controller.add(const <String, int>{'value': 10});
   controller.add(const <String, int>{'value': 8});
-  new Timer(new Duration(milliseconds: 20), () {
+  new Timer(new Duration(milliseconds: 1), () {
     controller.addError(new Exception());
     controller.close();
   });

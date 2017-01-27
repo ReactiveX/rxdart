@@ -4,20 +4,6 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
-}
-
 void main() {
   test('rx.Observable.defaultIfEmpty.whenEmpty', () async {
     observable(new Stream<bool>.empty())
@@ -37,7 +23,7 @@ void main() {
 
   test('rx.Observable.defaultIfEmpty.asBroadcastStream', () async {
     Stream<int> stream =
-        observable(_getStream().asBroadcastStream()).defaultIfEmpty(-1);
+        observable(new Observable<int>.just(1).asBroadcastStream()).defaultIfEmpty(-1);
 
     // listen twice on same stream
     stream.listen((_) {});

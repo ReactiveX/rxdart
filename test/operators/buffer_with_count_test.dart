@@ -1,39 +1,30 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
-}
-
 void main() {
   test('rx.Observable.bufferWithCount.noSkip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[
-      const <int>[1, 2],
-      const <int>[3, 4]
-    ];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      const List<List<int>> expectedOutput = const <List<int>>[
+        const <int>[1, 2],
+        const <int>[3, 4]
+      ];
+      int count = 0;
 
-    Stream<List<int>> stream = observable(_getStream()).bufferWithCount(2);
+      Stream<List<int>> stream = observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).bufferWithCount(2);
 
-    stream.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[count][0], result[0]);
-      expect(expectedOutput[count][1], result[1]);
-      count++;
-    }, count: 2));
+      stream.listen(expectAsync1((List<int> result) {
+        // test to see if the combined output matches
+        expect(expectedOutput[count][0], result[0]);
+        expect(expectedOutput[count][1], result[1]);
+        count++;
+      }, count: 2));
+
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.bufferWithCount.skip', () async {
@@ -45,7 +36,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream = observable(_getStream()).bufferWithCount(2, 1);
+    Stream<List<int>> stream = observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).bufferWithCount(2, 1);
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -59,7 +50,7 @@ void main() {
 
   test('rx.Observable.bufferWithCount.asBroadcastStream', () async {
     Stream<List<int>> stream =
-        observable(_getStream().asBroadcastStream()).bufferWithCount(2);
+        observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream()).bufferWithCount(2);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -79,7 +70,7 @@ void main() {
 
   test('rx.Observable.bufferWithCount.skip.shouldThrow', () async {
     try {
-      observable(_getStream()).bufferWithCount(2, 100);
+      observable(new Stream<int>.fromIterable(<int>[1, 2, 3, 4])).bufferWithCount(2, 100);
     } catch (e) {
       expect(e, isArgumentError);
     }

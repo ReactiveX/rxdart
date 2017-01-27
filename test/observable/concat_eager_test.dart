@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 
 List<Stream<num>> _getStreams() {
   Stream<num> a = new Stream<num>.periodic(
-      const Duration(milliseconds: 20), (num count) => count).take(3);
+      const Duration(milliseconds: 1), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
 
   return <Stream<num>>[a, b];
@@ -14,7 +14,7 @@ List<Stream<num>> _getStreams() {
 
 List<Stream<num>> _getStreamsIncludingEmpty() {
   Stream<num> a = new Stream<num>.periodic(
-      const Duration(milliseconds: 20), (num count) => count).take(3);
+      const Duration(milliseconds: 1), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
   Stream<num> c = observable(new Stream<num>.fromIterable(const <num>[]))
       .map((_) => _)
@@ -70,7 +70,7 @@ void main() {
     int x = 0, y = 100, z = 1000;
     int count = 0;
 
-    new Timer.periodic(const Duration(milliseconds: 20), (_) {
+    new Timer.periodic(const Duration(milliseconds: 10), (_) {
       ctrlA.add(++x);
       ctrlB.add(--y);
 

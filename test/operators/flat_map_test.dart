@@ -1,6 +1,7 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -34,31 +35,34 @@ Stream<num> _getOtherStream(num value) {
 
 void main() {
   test('rx.Observable.flatMap', () async {
-    const List<int> expectedOutput = const <int>[
-      2,
-      3,
-      3,
-      4,
-      4,
-      4,
-      5,
-      5,
-      5,
-      5,
-      6,
-      6,
-      6,
-      7,
-      7,
-      8
-    ];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      const List<int> expectedOutput = const <int>[
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        8
+      ];
+      int count = 0;
 
-    observable(_getStream())
-        .flatMap(_getOtherStream)
-        .listen(expectAsync1((num result) {
-          expect(expectedOutput[count++], result);
-        }, count: expectedOutput.length));
+      observable(_getStream())
+          .flatMap(_getOtherStream)
+          .listen(expectAsync1((num result) {
+            expect(expectedOutput[count++], result);
+          }, count: expectedOutput.length));
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {

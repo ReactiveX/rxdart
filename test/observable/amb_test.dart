@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -17,16 +18,20 @@ Stream<num> getDelayedStream<T>(int delay, num value) async* {
 
 void main() {
   test('rx.Observable.amb', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
-    int expected = 1;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      final Stream<num> first = getDelayedStream(50, 1);
+      final Stream<num> second = getDelayedStream(60, 2);
+      final Stream<num> last = getDelayedStream(70, 3);
+      int expected = 1;
 
-    new Observable<num>.amb(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num result) {
-      // test to see if the combined output matches
-      expect(result.compareTo(expected++), 0);
-    }, count: 3));
+      new Observable<num>.amb(<Stream<num>>[first, second, last])
+          .listen(expectAsync1((num result) {
+        // test to see if the combined output matches
+        expect(result.compareTo(expected++), 0);
+      }, count: 3));
+
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.amb.asBroadcastStream', () async {

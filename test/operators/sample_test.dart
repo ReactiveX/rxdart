@@ -1,6 +1,7 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,14 +12,18 @@ Stream<int> _getSampleStream() => new Stream<int>.periodic(
 
 void main() {
   test('rx.Observable.sample', () async {
-    const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
-    int count = 0;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
+      int count = 0;
 
-    observable(_getStream())
-        .sample(_getSampleStream())
-        .listen(expectAsync1((int result) {
-          expect(expectedOutput[count++], result);
-        }, count: expectedOutput.length));
+      observable(_getStream())
+          .sample(_getSampleStream())
+          .listen(expectAsync1((int result) {
+            expect(expectedOutput[count++], result);
+          }, count: expectedOutput.length));
+
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
@@ -42,21 +47,25 @@ void main() {
   });
 
   test('rx.Observable.sample.pause.resume', () async {
-    const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
-    int count = 0;
-    StreamSubscription<int> subscription;
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
+      int count = 0;
+      StreamSubscription<int> subscription;
 
-    subscription = observable(_getStream())
-        .sample(_getSampleStream())
-        .listen(expectAsync1((int result) {
-          expect(expectedOutput[count++], result);
+      subscription = observable(_getStream())
+          .sample(_getSampleStream())
+          .listen(expectAsync1((int result) {
+            expect(expectedOutput[count++], result);
 
-          if (count == expectedOutput.length) {
-            subscription.cancel();
-          }
-        }, count: expectedOutput.length));
+            if (count == expectedOutput.length) {
+              subscription.cancel();
+            }
+          }, count: expectedOutput.length));
 
-    subscription.pause();
-    subscription.resume();
+      subscription.pause();
+      subscription.resume();
+
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 }

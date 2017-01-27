@@ -1,6 +1,7 @@
 import '../test_utils.dart';
 import 'dart:async';
 
+import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -20,11 +21,15 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.debounce', () async {
-    observable(_getStream())
-        .debounce(const Duration(milliseconds: 200))
-        .listen(expectAsync1((int result) {
-          expect(result, 4);
-        }, count: 1));
+    new FakeAsync().run((FakeAsync fakeAsync) {
+      observable(_getStream())
+          .debounce(const Duration(milliseconds: 200))
+          .listen(expectAsync1((int result) {
+        expect(result, 4);
+      }, count: 1));
+
+      fakeAsync.elapse(new Duration(minutes: 1));
+    });
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
@@ -51,7 +56,7 @@ void main() {
     StreamSubscription<int> subscription;
     Observable<int> stream =
         observable(new Observable<int>.fromIterable(<int>[1, 2, 3]))
-            .debounce(new Duration(milliseconds: 10));
+            .debounce(new Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((int value) {
       expect(value, 3);

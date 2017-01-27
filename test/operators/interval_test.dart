@@ -12,12 +12,12 @@ void main() {
     int count = 0, lastInterval = -1;
     Stopwatch stopwatch = new Stopwatch()..start();
 
-    observable(_getStream()).interval(const Duration(milliseconds: 20)).listen(
+    observable(_getStream()).interval(const Duration(milliseconds: 1)).listen(
         expectAsync1((int result) {
           expect(expectedOutput[count++], result);
 
           if (lastInterval != -1)
-            expect(stopwatch.elapsedMilliseconds - lastInterval >= 20, true);
+            expect(stopwatch.elapsedMilliseconds - lastInterval >= 1, true);
 
           lastInterval = stopwatch.elapsedMilliseconds;
         }, count: expectedOutput.length),

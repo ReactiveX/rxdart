@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 
 List<Stream<dynamic>> _getStreams() {
   Stream<int> a = new Stream<int>.periodic(
-      const Duration(milliseconds: 20), (int count) => count).take(3);
+      const Duration(milliseconds: 1), (int count) => count).take(3);
   Stream<int> b = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
   StreamController<bool> c = new StreamController<bool>()
     ..add(true)

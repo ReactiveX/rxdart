@@ -5,44 +5,31 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.fromIterable(
-    <int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+    <int>[0, 1, 2]);
 
 void main() {
   test('rx.Observable.timeInterval', () async {
     const List<int> expectedOutput = const <int>[
       0,
       1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15
+      2
     ];
     int count = 0;
 
     observable(_getStream())
-        .interval(const Duration(milliseconds: 20))
+        .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((TimeInterval<int> result) {
           expect(expectedOutput[count++], result.value);
 
-          expect(result.interval >= 20000 /* microseconds! */, true);
+          expect(result.interval >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
     Stream<TimeInterval<int>> stream =
         observable(_getStream().asBroadcastStream())
-            .interval(const Duration(milliseconds: 20))
+            .interval(const Duration(milliseconds: 1))
             .timeInterval();
 
     // listen twice on same stream
@@ -55,7 +42,7 @@ void main() {
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
     Stream<TimeInterval<num>> observableWithError =
         observable(getErroneousStream())
-            .interval(const Duration(milliseconds: 20))
+            .interval(const Duration(milliseconds: 1))
             .timeInterval();
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
@@ -69,7 +56,7 @@ void main() {
     int count = 0;
 
     subscription = observable(_getStream())
-        .interval(const Duration(milliseconds: 20))
+        .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((TimeInterval<int> result) {
           expect(result.value, expectedOutput[count++]);
