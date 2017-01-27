@@ -39,7 +39,7 @@ class OfTypeObservable<T, S> extends StreamObservable<S> {
 /// Example:
 ///
 /// ```dart
-/// myObservable.ofType(new TypeToken<num>);
+/// myObservable.ofType(const TypeToken<num>);
 /// ```
 ///
 /// As a shortcut, you can use the pre-defined constants to write the above in
@@ -54,7 +54,7 @@ class OfTypeObservable<T, S> extends StreamObservable<S> {
 ///
 /// ```dart
 /// const TypeToken<Map<Int, String>> kMapIntString =
-///   new TypeToken<Map<Int, String>>();
+///   const TypeToken<Map<Int, String>>();
 /// ```
 class TypeToken<S> {
   const TypeToken();
