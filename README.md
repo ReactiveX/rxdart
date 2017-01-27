@@ -47,6 +47,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .concat
     .concatEager
     .defer
+    .empty
     .just
     .merge
     .zip (deprecated - see below)

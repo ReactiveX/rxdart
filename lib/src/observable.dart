@@ -277,6 +277,12 @@ class Observable<T> extends Stream<T> {
   factory Observable.just(T data) =>
       new Observable<T>((new Stream<T>.fromIterable(<T>[data])));
 
+  /// Creates an Observable that contains no values.
+  ///
+  /// No items are emitted from the stream, and done is called upon listening.
+  factory Observable.empty() =>
+      observable((new Stream<T>.empty()));
+
   /// Creates an Observable where each item is the interleaved output emitted by
   /// the feeder streams.
   ///
