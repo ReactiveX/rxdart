@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class DebounceObservable<T> extends StreamObservable<T> {
+class DebounceObservable<T> extends Observable<T> {
   DebounceObservable(Stream<T> stream, Duration duration)
       : super(buildStream<T>(stream, duration));
 

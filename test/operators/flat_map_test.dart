@@ -56,7 +56,7 @@ void main() {
       ];
       int count = 0;
 
-      observable(_getStream())
+      new Observable<int>(_getStream())
           .flatMap(_getOtherStream)
           .listen(expectAsync1((num result) {
             expect(expectedOutput[count++], result);
@@ -66,8 +66,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {
-    Stream<num> stream =
-        observable(_getStream().asBroadcastStream()).flatMap(_getOtherStream);
+    Stream<num> stream = new Observable<int>(_getStream().asBroadcastStream())
+        .flatMap(_getOtherStream);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -78,7 +78,7 @@ void main() {
 
   test('rx.Observable.flatMap.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        observable(getErroneousStream()).flatMap(_getOtherStream);
+        new Observable<num>(getErroneousStream()).flatMap(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
@@ -87,8 +87,8 @@ void main() {
 
   test('rx.Observable.flatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = observable(new Observable<int>.just(0))
-        .flatMap((_) => new Observable<int>.just(1));
+    Observable<int> stream =
+        new Observable<int>.just(0).flatMap((_) => new Observable<int>.just(1));
 
     subscription = stream.listen(expectAsync1((int value) {
       expect(value, 1);

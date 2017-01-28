@@ -10,16 +10,16 @@ void main() {
   test('rx.Observable.groupBy', () async {
     StreamSubscription<String> subscription;
 
-    subscription =
-        observable(new Stream<Map<String, int>>.fromIterable(<Map<String, int>>[
+    subscription = new Observable<Map<String, int>>(
+            new Stream<Map<String, int>>.fromIterable(<Map<String, int>>[
       <String, int>{'name': 1, 'value': 1},
       <String, int>{'name': 2, 'value': 2},
       <String, int>{'name': 3, 'value': 3},
       <String, int>{'name': 1, 'value': 4},
       <String, int>{'name': 2, 'value': 5}
     ]))
-            .groupBy((Map<String, int> map) => map['name'])
-            .flatMap((GroupByMap<int, Map<String, int>> groupByMap) async* {
+        .groupBy((Map<String, int> map) => map['name'])
+        .flatMap((GroupByMap<int, Map<String, int>> groupByMap) async* {
       int len = await groupByMap.observable.length;
 
       yield '${groupByMap.key}: $len';

@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
 import 'package:rxdart/src/observable.dart';
 
-class GroupByObservable<T, S> extends StreamObservable<GroupByMap<S, T>> {
+class GroupByObservable<T, S> extends Observable<GroupByMap<S, T>> {
   GroupByObservable(Stream<T> stream, S keySelector(T value),
       {int compareKeys(S keyA, S keyB): null})
       : super(buildStream<T, S>(stream, keySelector, compareKeys: compareKeys));
@@ -62,7 +61,7 @@ class GroupByMap<T, S> {
   final T key;
   final StreamController<S> _controller = new StreamController<S>();
 
-  Observable<S> get observable => new StreamObservable<S>(_controller.stream);
+  Observable<S> get observable => new Observable<S>(_controller.stream);
 
   GroupByMap(this.key);
 

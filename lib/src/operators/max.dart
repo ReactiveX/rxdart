@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class MaxObservable<T> extends StreamObservable<T> {
+class MaxObservable<T> extends Observable<T> {
   MaxObservable(Stream<T> stream, [int compare(T a, T b)])
       : super(buildStream<T>(stream, compare));
 

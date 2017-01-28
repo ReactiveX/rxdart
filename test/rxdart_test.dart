@@ -8,7 +8,6 @@ import 'observable/defer_test.dart' as defer_test;
 import 'observable/event_transformed_test.dart' as event_transformed_test;
 import 'observable/from_future_test.dart' as from_future_test;
 import 'observable/from_iterable_test.dart' as from_iterable_test;
-import 'observable/from_stream_test.dart' as from_stream_test;
 import 'observable/just_test.dart' as just_test;
 import 'observable/merge_test.dart' as merge_test;
 import 'observable/periodic_test.dart' as periodic_test;
@@ -81,7 +80,6 @@ void main() {
   event_transformed_test.main();
   from_future_test.main();
   from_iterable_test.main();
-  from_stream_test.main();
   just_test.main();
   merge_test.main();
   periodic_test.main();

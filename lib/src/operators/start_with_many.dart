@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class StartWithManyObservable<T> extends StreamObservable<T> {
+class StartWithManyObservable<T> extends Observable<T> {
   StartWithManyObservable(Stream<T> stream, List<T> startValues)
       : super(buildStream(stream, startValues));
 

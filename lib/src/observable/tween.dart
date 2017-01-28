@@ -1,22 +1,22 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
 enum Ease { LINEAR, IN, OUT, IN_OUT }
 
 typedef double Sampler(
     double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
-class TweenObservable<T> extends StreamObservable<T> {
+class TweenObservable extends Observable<double> {
   TweenObservable(double startValue, double changeInTime, Duration duration,
       int intervalMs, Ease ease, bool asBroadcastStream)
-      : super(buildStream<T>(startValue, changeInTime, duration, intervalMs,
-            ease, asBroadcastStream));
+      : super(buildStream(startValue, changeInTime, duration, intervalMs, ease,
+            asBroadcastStream));
 
-  static Stream<T> buildStream<T>(double startValue, double changeInTime,
+  static Stream<double> buildStream(double startValue, double changeInTime,
       Duration duration, int intervalMs, Ease ease, bool asBroadcastStream) {
-    StreamController<T> _controller;
-    StreamSubscription<T> subscription;
+    StreamController<double> _controller;
+    StreamSubscription<double> subscription;
 
-    _controller = new StreamController<T>(
+    _controller = new StreamController<double>(
         sync: true,
         onListen: () {
           Sampler sampler;
@@ -36,7 +36,7 @@ class TweenObservable<T> extends StreamObservable<T> {
               break;
           }
 
-          final Stream<T> stream = sampleFromValues(sampler, startValue,
+          final Stream<double> stream = sampleFromValues(sampler, startValue,
               changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(_controller.add,
@@ -44,7 +44,7 @@ class TweenObservable<T> extends StreamObservable<T> {
         },
         onCancel: () => subscription.cancel());
 
-    final StreamObservable<T> observable = new StreamObservable<T>(
+    final Observable<double> observable = new Observable<double>(
         asBroadcastStream
             ? _controller.stream.asBroadcastStream()
             : _controller.stream);
@@ -52,24 +52,24 @@ class TweenObservable<T> extends StreamObservable<T> {
     return observable.interval(new Duration(milliseconds: intervalMs));
   }
 
-  static Stream<T> sampleFromValues<T>(Sampler sampler, double startValue,
+  static Stream<double> sampleFromValues<T>(Sampler sampler, double startValue,
       double changeInTime, int durationMs, int intervalMs) async* {
     int currentTimeMs = 0;
     double result;
 
-    yield startValue as T;
+    yield startValue;
 
     while (currentTimeMs < durationMs) {
       currentTimeMs += intervalMs;
 
       result = sampler(startValue, changeInTime, currentTimeMs, durationMs);
 
-      yield result as T;
+      yield result;
     }
 
     result = startValue + changeInTime;
 
-    yield result as T;
+    yield result;
   }
 }
 

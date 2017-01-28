@@ -12,7 +12,6 @@ void main() {
     observable.listen((_) {},
         onError: expectAsync2((dynamic e, dynamic s) {
           expect(e is TimeoutException, isTrue);
-          expect(observable is Observable, isTrue);
         }, count: 1));
   });
 }

@@ -1,6 +1,7 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'dart:async';
+import 'package:rxdart/src/observable.dart';
 
-class AmbObservable<T> extends StreamObservable<T> {
+class AmbObservable<T> extends Observable<T> {
   AmbObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
       : super(buildStream<T>(streams, asBroadcastStream));
 

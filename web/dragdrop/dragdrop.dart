@@ -10,7 +10,7 @@ Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
   document.body
       .addEventListener(mouseEvent, (Event event) => controller.add(event));
 
-  return observable(controller.stream);
+  return new Observable<MouseEvent>(controller.stream);
 }
 
 void main() {

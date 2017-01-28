@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class ThrottleObservable<T> extends StreamObservable<T> {
+class ThrottleObservable<T> extends Observable<T> {
   ThrottleObservable(Stream<T> stream, Duration duration)
       : super(buildStream<T>(stream, duration));
 

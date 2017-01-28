@@ -12,14 +12,14 @@ void main() {
     const List<int> expectedOutput = const <int>[5, 6, 1, 2, 3, 4];
     int count = 0;
 
-    observable(_getStream())
+    new Observable<int>(_getStream())
         .startWithMany(const <int>[5, 6]).listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWithMany.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .startWithMany(const <int>[5, 6]);
 
     // listen twice on same stream
@@ -30,8 +30,8 @@ void main() {
   });
 
   test('rx.Observable.startWithMany.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        observable(getErroneousStream()).startWithMany(const <int>[5, 6]);
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
+        .startWithMany(const <int>[5, 6]);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
@@ -43,7 +43,7 @@ void main() {
     int count = 0;
 
     StreamSubscription<int> subscription;
-    subscription = observable(_getStream())
+    subscription = new Observable<int>(_getStream())
         .startWithMany(<int>[5, 6]).listen(expectAsync1((int result) {
       expect(expectedOutput[count++], result);
 

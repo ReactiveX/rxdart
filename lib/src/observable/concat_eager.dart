@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class ConcatEagerObservable<T> extends StreamObservable<T>
-    {
+class ConcatEagerObservable<T> extends Observable<T> {
   ConcatEagerObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
       : super(buildStream<T>(streams, asBroadcastStream));
 

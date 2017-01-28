@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class DefaultIfEmptyObservable<T> extends StreamObservable<T> {
+class DefaultIfEmptyObservable<T> extends Observable<T> {
   DefaultIfEmptyObservable(Stream<T> stream, T defaultValue)
       : super(buildStream(stream, defaultValue));
 

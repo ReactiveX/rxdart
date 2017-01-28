@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class TakeUntilObservable<T, S> extends StreamObservable<T> {
+class TakeUntilObservable<T, S> extends Observable<T> {
   TakeUntilObservable(Stream<T> stream, Stream<S> otherStream)
       : super(buildStream<T, S>(stream, otherStream));
 

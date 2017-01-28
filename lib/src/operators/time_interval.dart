@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
 class TimeIntervalObservable<T, S extends TimeInterval<T>>
-    extends StreamObservable<TimeInterval<T>> {
+    extends Observable<TimeInterval<T>> {
   TimeIntervalObservable(Stream<T> stream) : super(buildStream(stream));
 
   static Stream<TimeInterval<T>> buildStream<T, S extends TimeInterval<T>>(

@@ -12,7 +12,6 @@ void main() {
 
     observable.listen(expectAsync1((int actual) {
       expect(actual, expected);
-      expect(observable is Observable, isTrue);
     }));
   });
 }

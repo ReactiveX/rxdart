@@ -2,7 +2,7 @@ import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:quiver/testing/async.dart';
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -24,7 +24,7 @@ void main() {
       ];
       int count = 0;
 
-      observable(_getStream())
+      new Observable<int>(_getStream())
           .withLatestFrom(_getLatestFromStream(),
               (int first, int second) => new Pair(first, second))
           .take(5)
@@ -37,7 +37,7 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .withLatestFrom(_getLatestFromStream().asBroadcastStream(),
             (int first, int second) => 0);
 
@@ -49,8 +49,8 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrow', () async {
-    Stream<String> observableWithError = observable(getErroneousStream())
-        .withLatestFrom(
+    Stream<String> observableWithError =
+        new Observable<num>(getErroneousStream()).withLatestFrom(
             _getLatestFromStream(), (num first, int second) => "Hello");
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
@@ -64,7 +64,7 @@ void main() {
       const List<Pair> expectedOutput = const <Pair>[const Pair(2, 0)];
       int count = 0;
 
-      subscription = observable(_getStream())
+      subscription = new Observable<int>(_getStream())
           .withLatestFrom(_getLatestFromStream(),
               (int first, int second) => new Pair(first, second))
           .take(1)

@@ -10,7 +10,6 @@ void main() {
 
     observable.listen(expectAsync1((int actual) {
       expect(actual, 1);
-      expect(observable is Observable, isTrue);
     }, count: 1));
   });
 }

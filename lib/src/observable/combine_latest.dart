@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'dart:async';
+import 'package:rxdart/src/observable.dart';
 
-class CombineLatestObservable<T> extends StreamObservable<T>
-    {
+class CombineLatestObservable<T> extends Observable<T> {
   CombineLatestObservable(Iterable<Stream<dynamic>> streams, Function predicate,
       bool asBroadcastStream)
       : super(buildStream<T>(streams, predicate, asBroadcastStream));

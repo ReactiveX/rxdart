@@ -1,15 +1,15 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class WindowWithCountObservable<T, S extends StreamObservable<T>>
-    extends StreamObservable<S> {
+class WindowWithCountObservable<T, S extends Observable<T>>
+    extends Observable<S> {
   WindowWithCountObservable(Stream<T> stream, int count, [int skip])
       : super(buildStream(stream, count, skip));
 
-  static Stream<S> buildStream<T, S extends StreamObservable<T>>(
+  static Stream<S> buildStream<T, S extends Observable<T>>(
       Stream<T> stream, int count,
       [int skip]) {
-    StreamObservable<T> observable;
+    Observable<T> observable;
 
     return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
@@ -19,8 +19,7 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>>
       controller = new StreamController<S>(
           sync: true,
           onListen: () {
-            if (!(input is StreamObservable))
-              observable = new StreamObservable<T>(input);
+            if (!(input is Observable)) observable = new Observable<T>(input);
 
             subscription = observable.bufferWithCount(count, skip).listen(
                 (Iterable<T> value) {

@@ -12,20 +12,22 @@ void main() {
     int count = 0, lastInterval = -1;
     Stopwatch stopwatch = new Stopwatch()..start();
 
-    observable(_getStream()).interval(const Duration(milliseconds: 1)).listen(
-        expectAsync1((int result) {
-          expect(expectedOutput[count++], result);
+    new Observable<int>(_getStream())
+        .interval(const Duration(milliseconds: 1))
+        .listen(
+            expectAsync1((int result) {
+              expect(expectedOutput[count++], result);
 
-          if (lastInterval != -1)
-            expect(stopwatch.elapsedMilliseconds - lastInterval >= 1, true);
+              if (lastInterval != -1)
+                expect(stopwatch.elapsedMilliseconds - lastInterval >= 1, true);
 
-          lastInterval = stopwatch.elapsedMilliseconds;
-        }, count: expectedOutput.length),
-        onDone: stopwatch.stop);
+              lastInterval = stopwatch.elapsedMilliseconds;
+            }, count: expectedOutput.length),
+            onDone: stopwatch.stop);
   });
 
   test('rx.Observable.interval.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .interval(const Duration(milliseconds: 20));
 
     // listen twice on same stream
@@ -36,7 +38,7 @@ void main() {
   });
 
   test('rx.Observable.interval.error.shouldThrow', () async {
-    Stream<num> observableWithError = observable(getErroneousStream())
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
         .interval(const Duration(milliseconds: 20));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

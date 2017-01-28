@@ -15,7 +15,7 @@ void main() {
     const List<int> expectedOutput = const <int>[1, 2, 3, 4];
     int count = 0;
 
-    Stream<int> stream = observable(_getStream());
+    Stream<int> stream = new Observable<int>(_getStream());
 
     expect(stream is Stream<int>, true);
     expect(stream is Observable<int>, true);
@@ -27,7 +27,7 @@ void main() {
   });
 
   test('rx.Observable.stream.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream());
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream());
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -37,7 +37,7 @@ void main() {
   });
 
   test('rx.Observable.stream.error.shouldThrow', () async {
-    Stream<num> observableWithError = observable(getErroneousStream());
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream());
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class RepeatObservable<T> extends StreamObservable<T> {
+class RepeatObservable<T> extends Observable<T> {
   RepeatObservable(Stream<T> stream, int repeatCount)
       : super(buildStream(stream, repeatCount));
 

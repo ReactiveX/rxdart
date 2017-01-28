@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class TapObservable<T> extends StreamObservable<T> {
+class TapObservable<T> extends Observable<T> {
   TapObservable(Stream<T> stream, void action(T value))
       : super(buildStream(stream, action));
 

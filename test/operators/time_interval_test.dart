@@ -4,19 +4,14 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<int> _getStream() => new Stream<int>.fromIterable(
-    <int>[0, 1, 2]);
+Stream<int> _getStream() => new Stream<int>.fromIterable(<int>[0, 1, 2]);
 
 void main() {
   test('rx.Observable.timeInterval', () async {
-    const List<int> expectedOutput = const <int>[
-      0,
-      1,
-      2
-    ];
+    const List<int> expectedOutput = const <int>[0, 1, 2];
     int count = 0;
 
-    observable(_getStream())
+    new Observable<int>(_getStream())
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((TimeInterval<int> result) {
@@ -28,7 +23,7 @@ void main() {
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
     Stream<TimeInterval<int>> stream =
-        observable(_getStream().asBroadcastStream())
+        new Observable<int>(_getStream().asBroadcastStream())
             .interval(const Duration(milliseconds: 1))
             .timeInterval();
 
@@ -41,7 +36,7 @@ void main() {
 
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
     Stream<TimeInterval<num>> observableWithError =
-        observable(getErroneousStream())
+        new Observable<num>(getErroneousStream())
             .interval(const Duration(milliseconds: 1))
             .timeInterval();
 
@@ -55,7 +50,7 @@ void main() {
     const List<int> expectedOutput = const <int>[0, 1, 2];
     int count = 0;
 
-    subscription = observable(_getStream())
+    subscription = new Observable<int>(_getStream())
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((TimeInterval<int> result) {

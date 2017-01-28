@@ -17,13 +17,16 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.retry', () async {
-    observable(_getStream()).retry(3).listen(expectAsync1((int result) {
+    new Observable<int>(_getStream())
+        .retry(3)
+        .listen(expectAsync1((int result) {
           expect(result, 3);
         }, count: 1));
   });
 
   test('rx.Observable.retry.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream()).retry(3);
+    Stream<int> stream =
+        new Observable<int>(_getStream().asBroadcastStream()).retry(3);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -33,7 +36,8 @@ void main() {
   });
 
   test('rx.Observable.retry.error.shouldThrow', () async {
-    Stream<int> observableWithError = observable(_getStream()).retry(2);
+    Stream<int> observableWithError =
+        new Observable<int>(_getStream()).retry(2);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e is RetryError, isTrue);
@@ -42,12 +46,13 @@ void main() {
 
   test('rx.Observable.retry.pause.resume', () async {
     StreamSubscription<int> subscription;
-    subscription =
-        observable(_getStream()).retry(3).listen(expectAsync1((int result) {
-              expect(result, 3);
+    subscription = new Observable<int>(_getStream())
+        .retry(3)
+        .listen(expectAsync1((int result) {
+          expect(result, 3);
 
-              subscription.cancel();
-            }, count: 1));
+          subscription.cancel();
+        }, count: 1));
 
     subscription.pause();
     subscription.resume();

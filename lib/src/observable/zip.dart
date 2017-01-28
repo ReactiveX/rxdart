@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class ZipObservable<T> extends StreamObservable<T> {
+class ZipObservable<T> extends Observable<T> {
   ZipObservable(Iterable<Stream<dynamic>> streams, Function predicate,
       bool asBroadcastStream)
       : super(buildStream<T>(streams, predicate, asBroadcastStream));

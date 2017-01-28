@@ -26,7 +26,7 @@ void main() {
     const List<int> expectedOutput = const <int>[10, 3, 2, 1, 0];
     int count = 0;
 
-    observable(_getStream()).min().listen(expectAsync1((int result) {
+    new Observable<int>(_getStream()).min().listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
@@ -35,7 +35,7 @@ void main() {
     const List<int> expectedOutput = const <int>[10, 3, 3, 5, 2, 9, 1, 2, 0];
     int count = 0;
 
-    observable(_getStream())
+    new Observable<int>(_getStream())
         .min((int a, int b) => -1)
         .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
@@ -49,7 +49,7 @@ void main() {
     ];
     int count = 0;
 
-    observable(_getErroneousStream())
+    new Observable<Map<String, int>>(_getErroneousStream())
         .min((Map<String, int> a, Map<String, int> b) =>
             a['value'].compareTo(b['value']))
         .listen(
@@ -62,7 +62,8 @@ void main() {
   });
 
   test('rx.Observable.min.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream()).min();
+    Stream<int> stream =
+        new Observable<int>(_getStream().asBroadcastStream()).min();
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -72,7 +73,8 @@ void main() {
   });
 
   test('rx.Observable.min.error.shouldThrow', () async {
-    Stream<num> observableWithError = observable(getErroneousStream()).min();
+    Stream<num> observableWithError =
+        new Observable<num>(getErroneousStream()).min();
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

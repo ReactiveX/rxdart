@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class SampleObservable<T> extends StreamObservable<T> {
+class SampleObservable<T> extends Observable<T> {
   SampleObservable(Stream<T> stream, Stream<dynamic> sampleStream)
       : super(buildStream<T>(stream, sampleStream));
 

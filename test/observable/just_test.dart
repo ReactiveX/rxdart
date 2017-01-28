@@ -11,7 +11,6 @@ void main() {
 
     observable.listen(expectAsync1((int actual) {
       expect(actual, value);
-      expect(observable is Observable, isTrue);
     }, count: 1));
   });
 }

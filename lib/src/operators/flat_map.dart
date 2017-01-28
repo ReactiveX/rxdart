@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class FlatMapObservable<T, S> extends StreamObservable<S> {
+class FlatMapObservable<T, S> extends Observable<S> {
   FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value))
       : super(buildStream<T, S>(stream, predicate));
 

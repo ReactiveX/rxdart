@@ -19,7 +19,7 @@ Observable<Event> _getResizeObservable() {
 
   document.body.addEventListener('resize', controller.add);
 
-  return observable(controller.stream);
+  return new Observable<Event>(controller.stream);
 }
 
 Observable<Event> _getMouseObservable(String mouseEvent) {
@@ -28,7 +28,7 @@ Observable<Event> _getMouseObservable(String mouseEvent) {
 
   document.body.addEventListener(mouseEvent, controller.add);
 
-  return observable(controller.stream);
+  return new Observable<Event>(controller.stream);
 }
 
 /* VIRTUAL LIST
@@ -83,15 +83,14 @@ void main() {
   final Observable<num> displayedIndices =
       resize.map((_) => visibleRowCount()).startWith(visibleRowCount());
 
-  final Observable<Map<String, int>> displayedRange =
-      Observable.combineLatest2(
-          displayedIndices,
-          accumulatedOffset,
-          (num maxIndex, num offset) => <String, int>{
-                'from': offset ~/ rowHeight,
-                'to': maxIndex + offset ~/ rowHeight
-              },
-          asBroadcastStream: true);
+  final Observable<Map<String, int>> displayedRange = Observable.combineLatest2(
+      displayedIndices,
+      accumulatedOffset,
+      (num maxIndex, num offset) => <String, int>{
+            'from': offset ~/ rowHeight,
+            'to': maxIndex + offset ~/ rowHeight
+          },
+      asBroadcastStream: true);
 
   final Observable<List<Person>> displayedPeople = displayedRange
       .flatMap((Map<String, int> o) =>

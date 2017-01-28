@@ -12,14 +12,16 @@ void main() {
     const List<int> expectedOutput = const <int>[5, 1, 2, 3, 4];
     int count = 0;
 
-    observable(_getStream()).startWith(5).listen(expectAsync1((int result) {
+    new Observable<int>(_getStream())
+        .startWith(5)
+        .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWith.asBroadcastStream', () async {
     Stream<int> stream =
-        observable(_getStream().asBroadcastStream()).startWith(5);
+        new Observable<int>(_getStream().asBroadcastStream()).startWith(5);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -30,7 +32,7 @@ void main() {
 
   test('rx.Observable.startWith.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        observable(getErroneousStream()).startWith(5);
+        new Observable<num>(getErroneousStream()).startWith(5);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
@@ -42,14 +44,15 @@ void main() {
     int count = 0;
 
     StreamSubscription<int> subscription;
-    subscription =
-        observable(_getStream()).startWith(5).listen(expectAsync1((int result) {
-              expect(expectedOutput[count++], result);
+    subscription = new Observable<int>(_getStream())
+        .startWith(5)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[count++], result);
 
-              if (count == expectedOutput.length) {
-                subscription.cancel();
-              }
-            }, count: expectedOutput.length));
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

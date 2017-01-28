@@ -8,7 +8,8 @@ void main() {
   test('rx.Observable.handleError', () async {
     final ArgumentError expected = new ArgumentError();
 
-    Stream<num> obs = observable(getErroneousStream()).handleError((_) {
+    Stream<num> obs =
+        new Observable<num>(getErroneousStream()).handleError((_) {
       throw expected;
     });
 

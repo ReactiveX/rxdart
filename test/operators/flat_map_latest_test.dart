@@ -42,18 +42,18 @@ void main() {
       const List<int> expectedOutput = const <int>[5, 6, 7, 8];
       int count = 0;
 
-      observable(_getStream())
+      new Observable<int>(_getStream())
           .flatMapLatest(_getOtherStream)
           .listen(expectAsync1((num result) {
-        expect(result, expectedOutput[count++]);
-      }, count: expectedOutput.length));
+            expect(result, expectedOutput[count++]);
+          }, count: expectedOutput.length));
 
       fakeAsync.elapse(new Duration(milliseconds: 1000));
     });
   });
 
   test('rx.Observable.flatMapLatest.asBroadcastStream', () async {
-    Stream<num> stream = observable(_getStream().asBroadcastStream())
+    Stream<num> stream = new Observable<int>(_getStream().asBroadcastStream())
         .flatMapLatest(_getOtherStream);
 
     // listen twice on same stream
@@ -64,8 +64,8 @@ void main() {
   });
 
   test('rx.Observable.flatMapLatest.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        observable(getErroneousStream()).flatMapLatest(_getOtherStream);
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
+        .flatMapLatest(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
@@ -74,7 +74,7 @@ void main() {
 
   test('rx.Observable.flatMapLatest.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = observable(new Observable<int>.just(0))
+    Observable<int> stream = new Observable<int>.just(0)
         .flatMapLatest((_) => new Observable<int>.just(1));
 
     subscription = stream.listen(expectAsync1((int value) {

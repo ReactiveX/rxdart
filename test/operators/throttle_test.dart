@@ -25,7 +25,7 @@ void main() {
       const List<int> expectedOutput = const <int>[1, 4];
       int count = 0;
 
-      observable(_getStream())
+      new Observable<int>(_getStream())
           .throttle(const Duration(milliseconds: 250))
           .listen(expectAsync1((int result) {
             expect(result, expectedOutput[count++]);
@@ -36,7 +36,7 @@ void main() {
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .throttle(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -47,7 +47,7 @@ void main() {
   });
 
   test('rx.Observable.throttle.error.shouldThrow', () async {
-    Stream<num> observableWithError = observable(getErroneousStream())
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
         .throttle(const Duration(milliseconds: 200));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
@@ -61,7 +61,7 @@ void main() {
       const List<int> expectedOutput = const <int>[1, 4];
       int count = 0;
 
-      subscription = observable(_getStream())
+      subscription = new Observable<int>(_getStream())
           .throttle(const Duration(milliseconds: 250))
           .listen(expectAsync1((int result) {
             expect(result, expectedOutput[count++]);

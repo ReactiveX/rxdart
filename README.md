@@ -13,7 +13,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
 **Currently supported**
 ```dart
  /// Use the observable method to wrap a Dart stream and add Rx operators to it
- Observable oStream = observable(myStream);
+ Observable oStream = new Observable(myStream);
  
  /// Below operators are now available, next to the original Stream ones (map, where, ...)
  oStream
@@ -27,7 +27,6 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .max
     .min
     .ofType
-    .pluck
     .repeat
     .retry
     .sample
@@ -50,13 +49,14 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .defer
     .just
     .merge
-    .tween
     .zip (deprecated - see below)
     
  /// To better support strong mode, combineLatest and zip
  /// have now been pulled apart into fixed-length constructors.
  /// These methods are available as static methods, since class
  /// factory methods don't support generic method types.
+ Observable.tween
+
  Observable
     .combineLatest2
     .combineLatest3

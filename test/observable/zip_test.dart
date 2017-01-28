@@ -21,12 +21,13 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = new Observable.zip(<Stream>[
-        new Stream<int>.periodic(
-            const Duration(milliseconds: 1), (int count) => count).take(4),
-        new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
-        testStream.stream],
-        (int a, int b, bool c) => <dynamic>[a, b, c]);
+    Stream<List<dynamic>> observable =
+        new Observable<List<dynamic>>.zip(<Stream<dynamic>>[
+      new Stream<int>.periodic(
+          const Duration(milliseconds: 1), (int count) => count).take(4),
+      new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
+      testStream.stream
+    ], (int a, int b, bool c) => <dynamic>[a, b, c]);
 
     observable.listen(expectAsync1((List<dynamic> result) {
       // test to see if the combined output matches
@@ -44,8 +45,8 @@ void main() {
     Stream<int> a = new Observable<int>.fromIterable(<int>[1, 2]);
     Stream<int> b = new Observable<int>.just(2);
 
-    Stream<List<int>> observable = Observable.zip2(
-        a, b, (int first, int second) => <int>[first, second]);
+    Stream<List<int>> observable =
+        Observable.zip2(a, b, (int first, int second) => <int>[first, second]);
 
     // Explicitly adding count: 1. It's important here, and tests the difference
     // between zip and combineLatest. If this was combineLatest, the count would

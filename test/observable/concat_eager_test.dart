@@ -16,10 +16,11 @@ List<Stream<num>> _getStreamsIncludingEmpty() {
   Stream<num> a = new Stream<num>.periodic(
       const Duration(milliseconds: 1), (num count) => count).take(3);
   Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
-  Stream<num> c = observable(new Stream<num>.fromIterable(const <num>[]))
-      .map((_) => _)
-      .flatMap((_) => new Stream<num>.fromIterable(<num>[_]))
-      .flatMapLatest((_) => new Stream<num>.fromIterable(<num>[_]));
+  Stream<num> c =
+      new Observable<num>(new Stream<num>.fromIterable(const <num>[]))
+          .map((_) => _)
+          .flatMap((_) => new Stream<num>.fromIterable(<num>[_]))
+          .flatMapLatest((_) => new Stream<num>.fromIterable(<num>[_]));
 
   return <Stream<num>>[c, a, b];
 }

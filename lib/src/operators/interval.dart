@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class IntervalObservable<T> extends StreamObservable<T> {
+class IntervalObservable<T> extends Observable<T> {
   IntervalObservable(Stream<T> stream, Duration duration)
       : super(buildStream(stream, duration));
 

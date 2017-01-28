@@ -42,8 +42,8 @@ void main() {
 Stream<int> _getDeferStream() =>
     new Observable<int>.defer(() => new Observable<int>.just(1));
 
-Stream<int> _getBroadcastDeferStream() =>
-    new Observable<int>.defer(() => new Observable<int>.just(1).asBroadcastStream());
+Stream<int> _getBroadcastDeferStream() => new Observable<int>.defer(
+    () => new Observable<int>.just(1).asBroadcastStream());
 
 Stream<int> _getErroneousStream() {
   StreamController<int> controller = new StreamController<int>();

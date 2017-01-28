@@ -22,18 +22,18 @@ Stream<int> _getStream() {
 void main() {
   test('rx.Observable.debounce', () async {
     new FakeAsync().run((FakeAsync fakeAsync) {
-      observable(_getStream())
+      new Observable<int>(_getStream())
           .debounce(const Duration(milliseconds: 200))
           .listen(expectAsync1((int result) {
-        expect(result, 4);
-      }, count: 1));
+            expect(result, 4);
+          }, count: 1));
 
       fakeAsync.elapse(new Duration(minutes: 1));
     });
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
-    Stream<int> stream = observable(_getStream().asBroadcastStream())
+    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .debounce(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -44,7 +44,7 @@ void main() {
   });
 
   test('rx.Observable.debounce.error.shouldThrow', () async {
-    Stream<num> observableWithError = observable(getErroneousStream())
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
         .debounce(const Duration(milliseconds: 200));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
@@ -54,9 +54,8 @@ void main() {
 
   test('rx.Observable.debounce.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream =
-        observable(new Observable<int>.fromIterable(<int>[1, 2, 3]))
-            .debounce(new Duration(milliseconds: 1));
+    Observable<int> stream = new Observable<int>.fromIterable(<int>[1, 2, 3])
+        .debounce(new Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((int value) {
       expect(value, 3);

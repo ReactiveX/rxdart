@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class WithLatestFromObservable<T, S, R> extends StreamObservable<R> {
+class WithLatestFromObservable<T, S, R> extends Observable<R> {
   WithLatestFromObservable(
       Stream<T> stream, Stream<S> latestFromStream, R fn(T t, S s))
       : super(buildStream(stream, latestFromStream, fn));

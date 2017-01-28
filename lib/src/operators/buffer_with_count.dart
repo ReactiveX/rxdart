@@ -1,11 +1,12 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class BufferWithCountObservable<T, S extends List<T>>
-    extends StreamObservable<S> {
+class BufferWithCountObservable<T, S extends List<T>> extends Observable<S> {
   BufferWithCountObservable(Stream<T> stream, int count, [int skip])
       : super(buildStream<T, S>(stream, count, skip));
 
-  static Stream<S> buildStream<T, S extends List<T>>(Stream<T> stream, int count, [int skip]) {
+  static Stream<S> buildStream<T, S extends List<T>>(
+      Stream<T> stream, int count,
+      [int skip]) {
     final int skipAmount = ((skip == null) ? count : skip);
 
     if (skipAmount <= 0 || skipAmount > count) {

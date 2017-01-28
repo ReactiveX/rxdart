@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class ScanObservable<T, S> extends StreamObservable<S> {
+class ScanObservable<T, S> extends Observable<S> {
   ScanObservable(
       Stream<T> stream, S predicate(S accumulated, T value, int index),
       [S seed])

@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
-class OfTypeObservable<T, S> extends StreamObservable<S> {
+class OfTypeObservable<T, S> extends Observable<S> {
   OfTypeObservable(Stream<T> stream, TypeToken<S> typeToken)
       : super(buildStream(stream, typeToken));
 
