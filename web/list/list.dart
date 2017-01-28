@@ -19,6 +19,10 @@ Observable<Event> _getResizeObservable() {
 
   document.body.addEventListener('resize', controller.add);
 
+  controller.onCancel = () {
+    controller.close();
+  };
+
   return new Observable<Event>(controller.stream);
 }
 
@@ -27,6 +31,10 @@ Observable<Event> _getMouseObservable(String mouseEvent) {
       new StreamController<Event>.broadcast();
 
   document.body.addEventListener(mouseEvent, controller.add);
+
+  controller.onCancel = () {
+    controller.close();
+  };
 
   return new Observable<Event>(controller.stream);
 }

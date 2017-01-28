@@ -11,7 +11,7 @@ import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
-import 'package:rxdart/src/transformers/defaultIfEmpty.dart';
+import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
 import 'package:rxdart/src/transformers/group_by.dart';
@@ -25,6 +25,7 @@ import 'package:rxdart/src/transformers/sample.dart';
 import 'package:rxdart/src/transformers/scan.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
+import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
 import 'package:rxdart/src/transformers/tap.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
@@ -886,6 +887,35 @@ class Observable<T> extends Stream<T> {
   /// Prepends a sequence of values to the source Observable.
   Observable<T> startWithMany(List<T> startValues) =>
       transform(startWithManyTransformer(startValues));
+
+  /// When the original observable emits no items, this operator subscribes to
+  /// the given fallback stream and emits items from that observable instead.
+  ///
+  /// This can be particularly useful when consuming data from multiple sources.
+  /// For example, when using the Repository Pattern. Assuming you have some
+  /// data you need to load, you might want to start with the fastest access
+  /// point and keep falling back to the slowest point. For example, first query
+  /// an in-memory database, then a database on the file system, then a network
+  /// call if the data isn't on the local machine.
+  ///
+  /// This can be achieved quite simply with switchIfEmpty!
+  ///
+  /// ### Example:
+  ///
+  /// ```
+  /// // Let's pretend we have some Data sources that complete without emitting
+  /// // any items if they don't contain the data we're looking for
+  /// Observable<Data> memory;
+  /// Observable<Data> disk;
+  /// Observable<Data> network;
+  ///
+  /// // Start with memory, fallback to disk, then fallback to network.
+  /// // Simple as that!
+  /// Observable<Data> getThatData =
+  ///     memory.switchIfEmpty(disk).switchIfEmpty(network);
+  /// ```
+  Observable<T> switchIfEmpty(Stream<T> fallbackStream) =>
+      transform(switchIfEmptyTransformer(fallbackStream));
 
   /// Provides at most the first `n` values of this stream.
   /// Forwards the first n data events of this stream, and all error events, to

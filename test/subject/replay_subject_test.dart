@@ -27,6 +27,8 @@ void main() {
     subject.stream.listen(expectAsync1((int result) {
       countC++;
       expect(result, countC);
+
+      if (countC == 4) subject.close();
     }, count: 4));
 
     subject.add(4);

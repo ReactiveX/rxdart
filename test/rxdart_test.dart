@@ -55,6 +55,7 @@ import 'transformers/skip_test.dart' as skip_test;
 import 'transformers/skip_while_test.dart' as skip_while_test;
 import 'transformers/start_with_many_test.dart' as start_with_many_test;
 import 'transformers/start_with_test.dart' as start_with_test;
+import 'transformers/switch_if_empty_test.dart' as switch_if_empty_test;
 import 'transformers/take_until_test.dart' as take_until_test;
 import 'transformers/take_while_test.dart' as take_while_test;
 import 'transformers/tap_test.dart' as tap_test;
@@ -128,6 +129,7 @@ void main() {
   skip_while_test.main();
   start_with_many_test.main();
   start_with_test.main();
+  switch_if_empty_test.main();
   take_until_test.main();
   take_while_test.main();
   tap_test.main();
