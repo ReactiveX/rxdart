@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:rxdart/src/observable.dart';
 
 class AmbObservable<T> extends Observable<T> {

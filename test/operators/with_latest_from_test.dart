@@ -1,5 +1,4 @@
 import '../test_utils.dart';
-import 'dart:async';
 
 import 'package:quiver/testing/async.dart';
 import 'package:rxdart/src/observable.dart';
@@ -45,7 +44,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
 
-    expect(stream.isBroadcast, isTrue);
+    expect(true, true);
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrow', () async {

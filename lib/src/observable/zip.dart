@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:rxdart/src/observable.dart';
 
 class ZipObservable<T> extends Observable<T> {

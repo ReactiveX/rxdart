@@ -1,41 +1,36 @@
 import 'package:rxdart/src/observable.dart';
 
-class OfTypeObservable<T, S> extends Observable<S> {
-  OfTypeObservable(Stream<T> stream, TypeToken<S> typeToken)
-      : super(buildStream(stream, typeToken));
+StreamTransformer<T, S> ofTypeTransformer<T, S>(
+    Stream<T> stream, TypeToken<S> typeToken) {
+  return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+    StreamController<S> controller;
+    StreamSubscription<T> subscription;
 
-  static Stream<S> buildStream<T, S>(Stream<T> stream, TypeToken<S> typeToken) {
-    return stream.transform(
-        new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
-
-      controller = new StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((T value) {
-              if (typeToken.isType(value)) {
-                controller.add(typeToken.toType(value));
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
+    controller = new StreamController<S>(
+        sync: true,
+        onListen: () {
+          subscription = input.listen((T value) {
+            if (typeToken.isType(value)) {
+              controller.add(typeToken.toType(value));
+            }
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+              onError: controller.addError,
+              onDone: controller.close,
+              cancelOnError: cancelOnError);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
 
-      return controller.stream.listen(null);
-    }));
-  }
+    return controller.stream.listen(null);
+  });
 }
 
 /// A class that captures the Type to filter down to using `ofType`.
 ///
 /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
-/// checks and castings within [OfTypeObservable] itself. Therefore, this class
+/// checks and castings within an ofTypeObservable itself. Therefore, this class
 /// was introduced to capture the type of class you'd like `ofType` to filter
 /// down to.
 ///

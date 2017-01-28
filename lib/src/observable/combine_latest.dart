@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:rxdart/src/observable.dart';
 
 class CombineLatestObservable<T> extends Observable<T> {

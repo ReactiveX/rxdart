@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/operators/retry.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
