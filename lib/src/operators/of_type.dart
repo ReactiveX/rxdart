@@ -1,8 +1,11 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class OfTypeObservable<T, S> extends StreamObservable<S> {
-  OfTypeObservable(Stream<T> stream, TypeToken<S> typeToken) {
-    setStream(stream.transform(
+  OfTypeObservable(Stream<T> stream, TypeToken<S> typeToken)
+      : super(buildStream(stream, typeToken));
+
+  static Stream<S> buildStream<T, S>(Stream<T> stream, TypeToken<S> typeToken) {
+    return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
@@ -25,7 +28,7 @@ class OfTypeObservable<T, S> extends StreamObservable<S> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }
 

@@ -1,17 +1,23 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/observable/stream.dart';
 
-class DeferObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
-  final Create<T> create;
+class DeferObservable<T> extends StreamObservable<T> {
+  DeferObservable(StreamProvider<T> streamProvider)
+      : super(buildStream(streamProvider));
 
-  DeferObservable(this.create);
+  static Stream<T> buildStream<T>(StreamProvider<T> streamProvider) {
+    StreamController<T> controller;
+    Stream<T> stream = streamProvider();
 
-  @override
-  StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return observable(create()).listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    controller = new StreamController<T>(onListen: () {
+      stream.listen(controller.add,
+          onError: controller.addError, onDone: controller.close);
+    });
+
+    return stream.isBroadcast
+        ? controller.stream.asBroadcastStream()
+        : controller.stream;
   }
 }
 
-typedef Stream<T> Create<T>();
+typedef Stream<T> StreamProvider<T>();

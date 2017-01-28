@@ -2,6 +2,10 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class WithLatestFromObservable<T, S, R> extends StreamObservable<R> {
   WithLatestFromObservable(
+      Stream<T> stream, Stream<S> latestFromStream, R fn(T t, S s))
+      : super(buildStream(stream, latestFromStream, fn));
+
+  static Stream<R> buildStream<T, S, R>(
       Stream<T> stream, Stream<S> latestFromStream, R fn(T t, S s)) {
     Stream<R> transformed = stream.transform(
         new StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
@@ -40,9 +44,9 @@ class WithLatestFromObservable<T, S, R> extends StreamObservable<R> {
     }));
 
     if (stream.isBroadcast) {
-      setStream(transformed.asBroadcastStream());
+      return transformed.asBroadcastStream();
     } else {
-      setStream(transformed);
+      return transformed;
     }
   }
 }

@@ -1,10 +1,13 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class MaxObservable<T> extends StreamObservable<T> {
-  MaxObservable(Stream<T> stream, [int compare(T a, T b)]) {
+  MaxObservable(Stream<T> stream, [int compare(T a, T b)])
+      : super(buildStream<T>(stream, compare));
+
+  static Stream<T> buildStream<T>(Stream<T> stream, [int compare(T a, T b)]) {
     T _currentMax;
 
-    setStream(stream.transform(new StreamTransformer<T, T>.fromHandlers(
+    return stream.transform(new StreamTransformer<T, T>.fromHandlers(
         handleData: (T data, EventSink<T> sink) {
       if (_currentMax == null) {
         _currentMax = data;
@@ -32,6 +35,6 @@ class MaxObservable<T> extends StreamObservable<T> {
           }
         }
       }
-    })));
+    }));
   }
 }

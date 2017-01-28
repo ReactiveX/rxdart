@@ -1,14 +1,17 @@
 import 'package:rxdart/src/observable/stream.dart';
 
-class AmbObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
-  StreamController<T> _controller;
+class AmbObservable<T> extends StreamObservable<T> {
+  AmbObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
+      : super(buildStream<T>(streams, asBroadcastStream));
 
-  AmbObservable(Iterable<Stream<T>> streams, bool asBroadcastStream) {
+  static Stream<T> buildStream<T>(
+      Iterable<Stream<T>> streams, bool asBroadcastStream) {
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
+    StreamController<T> controller;
     bool isDisambiguated = false;
 
-    _controller = new StreamController<T>(
+    controller = new StreamController<T>(
         sync: true,
         onListen: () {
           void doUpdate(int i, T value) {
@@ -22,15 +25,14 @@ class AmbObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
 
             isDisambiguated = true;
 
-            _controller.add(value);
+            controller.add(value);
           }
 
           for (int i = 0, len = streams.length; i < len; i++) {
             Stream<T> stream = streams.elementAt(i);
 
             subscriptions[i] = stream.listen((T value) => doUpdate(i, value),
-                onError: _controller.addError,
-                onDone: () => _controller.close());
+                onError: controller.addError, onDone: () => controller.close());
           }
         },
         onCancel: () =>
@@ -40,8 +42,8 @@ class AmbObservable<T> extends StreamObservable<T> with ControllerMixin<T> {
               return new Future<dynamic>.value();
             }).where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    setStream(asBroadcastStream
-        ? _controller.stream.asBroadcastStream()
-        : _controller.stream);
+    return asBroadcastStream
+        ? controller.stream.asBroadcastStream()
+        : controller.stream;
   }
 }

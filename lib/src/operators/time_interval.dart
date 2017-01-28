@@ -2,8 +2,11 @@ import 'package:rxdart/src/observable/stream.dart';
 
 class TimeIntervalObservable<T, S extends TimeInterval<T>>
     extends StreamObservable<TimeInterval<T>> {
-  TimeIntervalObservable(Stream<T> stream) {
-    setStream(stream.transform(
+  TimeIntervalObservable(Stream<T> stream) : super(buildStream(stream));
+
+  static Stream<TimeInterval<T>> buildStream<T, S extends TimeInterval<T>>(
+      Stream<T> stream) {
+    return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<TimeInterval<T>> controller;
       StreamSubscription<T> subscription;
@@ -37,7 +40,7 @@ class TimeIntervalObservable<T, S extends TimeInterval<T>>
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }
 

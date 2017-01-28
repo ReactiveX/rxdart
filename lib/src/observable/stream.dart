@@ -28,7 +28,6 @@ import 'package:rxdart/src/operators/interval.dart' show IntervalObservable;
 import 'package:rxdart/src/operators/sample.dart' show SampleObservable;
 import 'package:rxdart/src/operators/time_interval.dart'
     show TimeIntervalObservable, TimeInterval;
-import 'package:rxdart/src/operators/pluck.dart' show PluckObservable;
 import 'package:rxdart/src/operators/group_by.dart'
     show GroupByObservable, GroupByMap;
 import 'package:rxdart/src/operators/with_latest_from.dart'
@@ -37,18 +36,14 @@ import 'package:rxdart/src/operators/with_latest_from.dart'
 export 'dart:async';
 
 class StreamObservable<T> implements Observable<T> {
-  Stream<T> stream;
+  final Stream<T> stream;
 
   @override
   bool get isBroadcast {
     return (stream != null) ? stream.isBroadcast : false;
   }
 
-  StreamObservable();
-
-  void setStream(Stream<T> stream) {
-    this.stream = stream;
-  }
+  StreamObservable(this.stream);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
@@ -60,9 +55,8 @@ class StreamObservable<T> implements Observable<T> {
   Observable<T> asBroadcastStream(
           {void onListen(StreamSubscription<T> subscription),
           void onCancel(StreamSubscription<T> subscription)}) =>
-      new StreamObservable<T>()
-        ..setStream(
-            stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+      new StreamObservable<T>(
+          stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
   @override
   Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value),
@@ -71,55 +65,51 @@ class StreamObservable<T> implements Observable<T> {
           compareKeys: compareKeys);
 
   @override
-  Observable<S> map<S>(S convert(T event)) => new StreamObservable<S>()
-    ..setStream(stream.map(convert));
+  Observable<S> map<S>(S convert(T event)) =>
+      new StreamObservable<S>(stream.map(convert));
 
   @override
   Observable<S> asyncMap<S>(dynamic convert(T value)) =>
-      new StreamObservable<S>()..setStream(stream.asyncMap(convert));
+      new StreamObservable<S>(stream.asyncMap(convert));
 
   @override
   Observable<T> where(bool test(T event)) =>
-      new StreamObservable<T>()..setStream(stream.where(test));
+      new StreamObservable<T>(stream.where(test));
 
   @override
   Observable<S> expand<S>(Iterable<S> convert(T value)) =>
-      new StreamObservable<S>()..setStream(stream.expand(convert));
+      new StreamObservable<S>(stream.expand(convert));
 
   @override
   Observable<S> asyncExpand<S>(Stream<S> convert(T value)) =>
-      new StreamObservable<S>()..setStream(stream.asyncExpand(convert));
+      new StreamObservable<S>(stream.asyncExpand(convert));
 
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
-      new StreamObservable<T>()..setStream(stream.distinct(equals));
+      new StreamObservable<T>(stream.distinct(equals));
 
   @override
   Observable<T> handleError(Function onError, {bool test(dynamic error)}) =>
-      new StreamObservable<T>()
-        ..setStream(stream.handleError(onError, test: test));
+      new StreamObservable<T>(stream.handleError(onError, test: test));
 
   @override
-  Observable<T> skip(int count) =>
-      new StreamObservable<T>()..setStream(stream.skip(count));
-
+  Observable<T> skip(int count) => new StreamObservable<T>(stream.skip(count));
   @override
   Observable<T> skipWhile(bool test(T element)) =>
-      new StreamObservable<T>()..setStream(stream.skipWhile(test));
+      new StreamObservable<T>(stream.skipWhile(test));
 
   @override
   Observable<T> take(int count) =>
-      new StreamObservable<T>()..setStream(stream.take(count));
+      new StreamObservable<T>(stream.take(count));
 
   @override
   Observable<T> takeWhile(bool test(T element)) =>
-      new StreamObservable<T>()..setStream(stream.takeWhile(test));
+      new StreamObservable<T>(stream.takeWhile(test));
 
   @override
   Observable<T> timeout(Duration timeLimit,
           {void onTimeout(EventSink<T> sink)}) =>
-      new StreamObservable<T>()
-        ..setStream(stream.timeout(timeLimit, onTimeout: onTimeout));
+      new StreamObservable<T>(stream.timeout(timeLimit, onTimeout: onTimeout));
 
   @override
   Observable<T> retry([int count]) => new RetryObservable<T>(stream, count);
@@ -209,12 +199,6 @@ class StreamObservable<T> implements Observable<T> {
       new TimeIntervalObservable<T, TimeInterval<T>>(stream);
 
   @override
-  Observable<dynamic> pluck(List<dynamic> sequence,
-          {bool throwOnNull: false}) =>
-      new PluckObservable<T, dynamic>(stream, sequence,
-          throwOnNull: throwOnNull);
-
-  @override
   Future<bool> any(bool test(T element)) => stream.any(test);
 
   @override
@@ -282,5 +266,3 @@ class StreamObservable<T> implements Observable<T> {
   @override
   Future<int> get length => stream.length;
 }
-
-abstract class ControllerMixin<T> {}

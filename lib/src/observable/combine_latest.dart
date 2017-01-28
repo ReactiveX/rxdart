@@ -1,15 +1,18 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class CombineLatestObservable<T> extends StreamObservable<T>
-    with ControllerMixin<T> {
-  StreamController<T> _controller;
-
+    {
   CombineLatestObservable(Iterable<Stream<dynamic>> streams, Function predicate,
-      bool asBroadcastStream) {
+      bool asBroadcastStream)
+      : super(buildStream<T>(streams, predicate, asBroadcastStream));
+
+  static Stream<T> buildStream<T>(
+      Iterable<Stream<T>> streams, Function predicate, bool asBroadcastStream) {
     final List<StreamSubscription<dynamic>> subscriptions =
         new List<StreamSubscription<dynamic>>(streams.length);
+    StreamController<T> controller;
 
-    _controller = new StreamController<T>(
+    controller = new StreamController<T>(
         sync: true,
         onListen: () {
           final List<dynamic> values = new List<dynamic>(streams.length);
@@ -31,14 +34,15 @@ class CombineLatestObservable<T> extends StreamObservable<T>
                     allStreamsHaveEvents =
                         triggered.reduce((bool a, bool b) => a && b);
 
-                  if (allStreamsHaveEvents) updateWithValues(predicate, values);
+                  if (allStreamsHaveEvents)
+                    updateWithValues(predicate, values, controller);
                 },
-                onError: _controller.addError,
+                onError: controller.addError,
                 onDone: () {
                   completedStatus[i] = true;
 
                   if (completedStatus.reduce((bool a, bool b) => a && b))
-                    _controller.close();
+                    controller.close();
                 });
           }
         },
@@ -47,12 +51,13 @@ class CombineLatestObservable<T> extends StreamObservable<T>
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    setStream(asBroadcastStream
-        ? _controller.stream.asBroadcastStream()
-        : _controller.stream);
+    return asBroadcastStream
+        ? controller.stream.asBroadcastStream()
+        : controller.stream;
   }
 
-  void updateWithValues(Function predicate, Iterable<dynamic> values) {
+  static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,
+      StreamController<T> controller) {
     try {
       final int len = values.length;
       T result;
@@ -117,9 +122,9 @@ class CombineLatestObservable<T> extends StreamObservable<T>
           break;
       }
 
-      _controller.add(result);
+      controller.add(result);
     } catch (e, s) {
-      _controller.addError(e, s);
+      controller.addError(e, s);
     }
   }
 }

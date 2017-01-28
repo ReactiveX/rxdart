@@ -17,7 +17,7 @@ void main() {
   test('rx.Observable.defer.multiple.listeners', () async {
     const int value = 1;
 
-    Stream<int> observable = _getDeferStream();
+    Stream<int> observable = _getBroadcastDeferStream();
 
     observable.listen(expectAsync1((int actual) {
       expect(actual, value);
@@ -41,6 +41,9 @@ void main() {
 
 Stream<int> _getDeferStream() =>
     new Observable<int>.defer(() => new Observable<int>.just(1));
+
+Stream<int> _getBroadcastDeferStream() =>
+    new Observable<int>.defer(() => new Observable<int>.just(1).asBroadcastStream());
 
 Stream<int> _getErroneousStream() {
   StreamController<int> controller = new StreamController<int>();

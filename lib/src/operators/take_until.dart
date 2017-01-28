@@ -1,8 +1,11 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class TakeUntilObservable<T, S> extends StreamObservable<T> {
-  TakeUntilObservable(Stream<T> stream, Stream<S> otherStream) {
-    setStream(stream.transform(
+  TakeUntilObservable(Stream<T> stream, Stream<S> otherStream)
+      : super(buildStream<T, S>(stream, otherStream));
+
+  static Stream<T> buildStream<T, S>(Stream<T> stream, Stream<S> otherStream) {
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -32,6 +35,6 @@ class TakeUntilObservable<T, S> extends StreamObservable<T> {
           });
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

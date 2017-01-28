@@ -6,10 +6,14 @@ typedef double Sampler(
     double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
 class TweenObservable<T> extends StreamObservable<T> {
-  StreamController<T> _controller;
-
   TweenObservable(double startValue, double changeInTime, Duration duration,
-      int intervalMs, Ease ease, bool asBroadcastStream) {
+      int intervalMs, Ease ease, bool asBroadcastStream)
+      : super(buildStream<T>(startValue, changeInTime, duration, intervalMs,
+            ease, asBroadcastStream));
+
+  static Stream<T> buildStream<T>(double startValue, double changeInTime,
+      Duration duration, int intervalMs, Ease ease, bool asBroadcastStream) {
+    StreamController<T> _controller;
     StreamSubscription<T> subscription;
 
     _controller = new StreamController<T>(
@@ -40,15 +44,15 @@ class TweenObservable<T> extends StreamObservable<T> {
         },
         onCancel: () => subscription.cancel());
 
-    final StreamObservable<T> observable = new StreamObservable<T>()
-      ..setStream(asBroadcastStream
-          ? _controller.stream.asBroadcastStream()
-          : _controller.stream);
+    final StreamObservable<T> observable = new StreamObservable<T>(
+        asBroadcastStream
+            ? _controller.stream.asBroadcastStream()
+            : _controller.stream);
 
-    setStream(observable.interval(new Duration(milliseconds: intervalMs)));
+    return observable.interval(new Duration(milliseconds: intervalMs));
   }
 
-  Stream<T> sampleFromValues(Sampler sampler, double startValue,
+  static Stream<T> sampleFromValues<T>(Sampler sampler, double startValue,
       double changeInTime, int durationMs, int intervalMs) async* {
     int currentTimeMs = 0;
     double result;

@@ -1,11 +1,14 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class DebounceObservable<T> extends StreamObservable<T> {
-  DebounceObservable(Stream<T> stream, Duration duration) {
+  DebounceObservable(Stream<T> stream, Duration duration)
+      : super(buildStream<T>(stream, duration));
+
+  static Stream<T> buildStream<T>(Stream<T> stream, Duration duration) {
     bool _closeAfterNextEvent = false;
     Timer _timer;
 
-    setStream(stream.transform(
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -41,6 +44,6 @@ class DebounceObservable<T> extends StreamObservable<T> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

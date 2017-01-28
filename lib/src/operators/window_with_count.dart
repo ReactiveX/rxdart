@@ -1,11 +1,17 @@
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/observable/stream.dart';
 
 class WindowWithCountObservable<T, S extends StreamObservable<T>>
     extends StreamObservable<S> {
-  StreamObservable<T> observable;
+  WindowWithCountObservable(Stream<T> stream, int count, [int skip])
+      : super(buildStream(stream, count, skip));
 
-  WindowWithCountObservable(Stream<T> stream, int count, [int skip]) {
-    setStream(stream.transform(
+  static Stream<S> buildStream<T, S extends StreamObservable<T>>(
+      Stream<T> stream, int count,
+      [int skip]) {
+    StreamObservable<T> observable;
+
+    return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<Iterable<T>> subscription;
@@ -14,12 +20,11 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>>
           sync: true,
           onListen: () {
             if (!(input is StreamObservable))
-              observable = new StreamObservable<T>()..setStream(input);
+              observable = new StreamObservable<T>(input);
 
             subscription = observable.bufferWithCount(count, skip).listen(
                 (Iterable<T> value) {
-              controller.add(new StreamObservable<T>()
-                ..setStream(new Stream<T>.fromIterable(value)));
+              controller.add(new Observable<T>.fromIterable(value));
             },
                 cancelOnError: cancelOnError,
                 onError: controller.addError,
@@ -31,6 +36,6 @@ class WindowWithCountObservable<T, S extends StreamObservable<T>>
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

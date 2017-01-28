@@ -1,11 +1,14 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class ThrottleObservable<T> extends StreamObservable<T> {
-  ThrottleObservable(Stream<T> stream, Duration duration) {
+  ThrottleObservable(Stream<T> stream, Duration duration)
+      : super(buildStream<T>(stream, duration));
+
+  static Stream<T> buildStream<T>(Stream<T> stream, Duration duration) {
     Timer _timer;
     bool _closeAfterNextEvent = false;
 
-    setStream(stream.transform(
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -39,6 +42,6 @@ class ThrottleObservable<T> extends StreamObservable<T> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

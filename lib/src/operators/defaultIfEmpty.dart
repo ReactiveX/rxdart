@@ -1,8 +1,11 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class DefaultIfEmptyObservable<T> extends StreamObservable<T> {
-  DefaultIfEmptyObservable(Stream<T> stream, T defaultValue) {
-    setStream(stream.transform(
+  DefaultIfEmptyObservable(Stream<T> stream, T defaultValue)
+      : super(buildStream(stream, defaultValue));
+
+  static Stream<T> buildStream<T>(Stream<T> stream, T defaultValue) {
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -29,6 +32,6 @@ class DefaultIfEmptyObservable<T> extends StreamObservable<T> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

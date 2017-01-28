@@ -1,8 +1,12 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
-  FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    setStream(stream.transform(
+  FlatMapLatestObservable(Stream<T> stream, Stream<S> predicate(T value))
+      : super(buildStream<T, S>(stream, predicate));
+
+  static Stream<S> buildStream<T, S>(
+      Stream<T> stream, Stream<S> predicate(T value)) {
+    return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
@@ -49,6 +53,6 @@ class FlatMapLatestObservable<T, S> extends StreamObservable<S> {
           });
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

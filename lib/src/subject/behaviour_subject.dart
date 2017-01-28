@@ -27,13 +27,15 @@ class BehaviourSubject<T> implements StreamController<T> {
   bool _hasLastValue = false;
 
   @override
-  StreamObservable<T> get stream => new StreamObservable<T>()
-    ..setStream(new Stream<T>.eventTransformed(
-        _controller.stream,
-        (EventSink<T> sink) => new _BehaviourSink<T>(
-            sink,
-            _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false,
-            _lastValue)));
+  StreamObservable<T> get stream =>
+      new StreamObservable<T>(new Stream<T>.eventTransformed(
+          _controller.stream,
+          (EventSink<T> sink) => new _BehaviourSink<T>(
+              sink,
+              _controller.stream.isBroadcast && !isClosed
+                  ? _hasLastValue
+                  : false,
+              _lastValue)));
 
   @override
   StreamSink<T> get sink => _controller.sink;

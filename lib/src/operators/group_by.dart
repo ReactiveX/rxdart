@@ -3,8 +3,13 @@ import 'package:rxdart/src/observable.dart';
 
 class GroupByObservable<T, S> extends StreamObservable<GroupByMap<S, T>> {
   GroupByObservable(Stream<T> stream, S keySelector(T value),
+      {int compareKeys(S keyA, S keyB): null})
+      : super(buildStream<T, S>(stream, keySelector, compareKeys: compareKeys));
+
+  static Stream<GroupByMap<S, T>> buildStream<T, S>(
+      Stream<T> stream, S keySelector(T value),
       {int compareKeys(S keyA, S keyB): null}) {
-    setStream(stream.transform(new StreamTransformer<T, GroupByMap<S, T>>(
+    return stream.transform(new StreamTransformer<T, GroupByMap<S, T>>(
         (Stream<T> input, bool cancelOnError) {
       final List<GroupByMap<S, T>> allMaps = <GroupByMap<S, T>>[];
       StreamController<GroupByMap<S, T>> controller;
@@ -49,7 +54,7 @@ class GroupByObservable<T, S> extends StreamObservable<GroupByMap<S, T>> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }
 
@@ -57,8 +62,7 @@ class GroupByMap<T, S> {
   final T key;
   final StreamController<S> _controller = new StreamController<S>();
 
-  Observable<S> get observable =>
-      new StreamObservable<S>()..setStream(_controller.stream);
+  Observable<S> get observable => new StreamObservable<S>(_controller.stream);
 
   GroupByMap(this.key);
 

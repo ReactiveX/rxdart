@@ -1,8 +1,12 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class FlatMapObservable<T, S> extends StreamObservable<S> {
-  FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value)) {
-    setStream(stream.transform(
+  FlatMapObservable(Stream<T> stream, Stream<S> predicate(T value))
+      : super(buildStream<T, S>(stream, predicate));
+
+  static Stream<S> buildStream<T, S>(
+      Stream<T> stream, Stream<S> predicate(T value)) {
+    return stream.transform(
         new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       final List<Stream<S>> streams = <Stream<S>>[];
       final List<StreamSubscription<S>> subscriptions =
@@ -68,6 +72,6 @@ class FlatMapObservable<T, S> extends StreamObservable<S> {
           });
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

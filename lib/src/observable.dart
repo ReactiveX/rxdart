@@ -19,8 +19,7 @@ export 'package:rxdart/src/observable/tween.dart' show Ease;
 export 'package:rxdart/src/operators/time_interval.dart' show TimeInterval;
 export 'package:rxdart/src/operators/group_by.dart' show GroupByMap;
 
-Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>()
-  ..setStream(stream);
+Observable<S> observable<S>(Stream<S> stream) => new StreamObservable<S>(stream);
 
 abstract class Observable<T> extends Stream<T> {
   /// Given two or more source Observables, emit all of the items from only
@@ -757,11 +756,6 @@ abstract class Observable<T> extends Stream<T> {
   ///   const TypeToken<Map<Int, String>>();
   /// ```
   Observable<S> ofType<S>(TypeToken<S> typeToken);
-
-  /// Creates an Observable containing the value of a specified nested property
-  /// from all elements in the Observable sequence. If a property can't be
-  /// resolved, it will return undefined for that value.
-  Observable<dynamic> pluck(List<dynamic> sequence, {bool throwOnNull: false});
 
   /// Creates an Observable that repeats the source's elements the specified
   /// number of times.

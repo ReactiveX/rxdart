@@ -26,11 +26,11 @@ class ReplaySubject<T> implements StreamController<T> {
   final Queue<T> _queue = new Queue<T>();
 
   @override
-  StreamObservable<T> get stream => new StreamObservable<T>()
-    ..setStream(new Stream<T>.eventTransformed(
-        _controller.stream,
-        (EventSink<T> sink) => new _ReplaySink<T>(sink,
-            _controller.stream.isBroadcast && !isClosed ? _queue : null)));
+  StreamObservable<T> get stream =>
+      new StreamObservable<T>(new Stream<T>.eventTransformed(
+          _controller.stream,
+          (EventSink<T> sink) => new _ReplaySink<T>(sink,
+              _controller.stream.isBroadcast && !isClosed ? _queue : null)));
 
   @override
   StreamSink<T> get sink => _controller.sink;

@@ -1,8 +1,12 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class SampleObservable<T> extends StreamObservable<T> {
-  SampleObservable(Stream<T> stream, Stream<dynamic> sampleStream) {
-    setStream(stream.transform(
+  SampleObservable(Stream<T> stream, Stream<dynamic> sampleStream)
+      : super(buildStream<T>(stream, sampleStream));
+
+  static Stream<T> buildStream<T>(
+      Stream<T> stream, Stream<dynamic> sampleStream) {
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -34,6 +38,6 @@ class SampleObservable<T> extends StreamObservable<T> {
           });
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }

@@ -45,7 +45,6 @@ import 'operators/last_where_test.dart' as last_where_test;
 import 'operators/max_test.dart' as max_test;
 import 'operators/min_test.dart' as min_test;
 import 'operators/of_type_test.dart' as of_type_test;
-import 'operators/pluck_test.dart' as pluck_test;
 import 'operators/reduce_test.dart' as reduce_test;
 import 'operators/repeat_test.dart' as repeat_test;
 import 'operators/retry_test.dart' as retry_test;
@@ -120,7 +119,6 @@ void main() {
   max_test.main();
   min_test.main();
   of_type_test.main();
-  pluck_test.main();
   reduce_test.main();
   repeat_test.main();
   retry_test.main();

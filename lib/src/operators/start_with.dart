@@ -1,8 +1,11 @@
 import 'package:rxdart/src/observable/stream.dart';
 
 class StartWithObservable<T> extends StreamObservable<T> {
-  StartWithObservable(Stream<T> stream, T startValue) {
-    setStream(stream.transform(
+  StartWithObservable(Stream<T> stream, T startValue)
+      : super(buildStream(stream, startValue));
+
+  static Stream<T> buildStream<T>(Stream<T> stream, T startValue) {
+    return stream.transform(
         new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -23,6 +26,6 @@ class StartWithObservable<T> extends StreamObservable<T> {
           onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
-    })));
+    }));
   }
 }
