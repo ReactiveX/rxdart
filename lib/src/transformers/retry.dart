@@ -1,6 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> retryTransformer<T>(Stream<T> stream, int count) {
+StreamTransformer<T, T> retryTransformer<T>(int count) {
   return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
     StreamController<T> controller;
     StreamSubscription<T> subscription;

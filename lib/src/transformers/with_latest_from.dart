@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 StreamTransformer<T, R> withLatestFromTransformer<T, S, R>(
-    Stream<T> stream, Stream<S> latestFromStream, R fn(T t, S s)) {
+    Stream<S> latestFromStream, R fn(T t, S s)) {
   return new StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
     StreamController<R> controller;
     StreamSubscription<T> subscription;

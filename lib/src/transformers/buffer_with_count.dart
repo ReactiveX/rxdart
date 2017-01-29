@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 StreamTransformer<T, S> bufferWithCountTransformer<T, S extends List<T>>(
-    Stream<T> stream, int count,
+    int count,
     [int skip]) {
   final int skipAmount = ((skip == null) ? count : skip);
 

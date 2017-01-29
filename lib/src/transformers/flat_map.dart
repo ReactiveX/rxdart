@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, S> flatMapTransformer<T, S>(
-    Stream<T> stream, Stream<S> predicate(T value)) {
+StreamTransformer<T, S> flatMapTransformer<T, S>(Stream<S> predicate(T value)) {
   return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
     final List<Stream<S>> streams = <Stream<S>>[];
     final List<StreamSubscription<S>> subscriptions = <StreamSubscription<S>>[];

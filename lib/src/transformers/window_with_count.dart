@@ -1,11 +1,10 @@
-import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, S> windowWithCountTransformer<T, S extends Observable<T>>(
-    Stream<T> stream, int count,
+import 'package:rxdart/src/transformers/buffer_with_count.dart';
+
+StreamTransformer<T, S> windowWithCountTransformer<T, S extends Stream<T>>(
+    int count,
     [int skip]) {
-  Observable<T> observable;
-
   return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
     StreamController<S> controller;
     StreamSubscription<Iterable<T>> subscription;
@@ -13,18 +12,14 @@ StreamTransformer<T, S> windowWithCountTransformer<T, S extends Observable<T>>(
     controller = new StreamController<S>(
         sync: true,
         onListen: () {
-          if (!(input is Observable))
-            observable = new Observable<T>(input);
-          else
-            observable = input;
-
-          subscription = observable.bufferWithCount(count, skip).listen(
-              (Iterable<T> value) {
-            controller.add(new Observable<T>.fromIterable(value));
+          subscription = input
+              .transform(bufferWithCountTransformer(count, skip))
+              .listen((Iterable<T> value) {
+            controller.add(new Stream<T>.fromIterable(value));
           },
-              cancelOnError: cancelOnError,
-              onError: controller.addError,
-              onDone: controller.close);
+                  cancelOnError: cancelOnError,
+                  onError: controller.addError,
+                  onDone: controller.close);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),

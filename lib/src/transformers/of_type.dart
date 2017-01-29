@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, S> ofTypeTransformer<T, S>(
-    Stream<T> stream, TypeToken<S> typeToken) {
+StreamTransformer<T, S> ofTypeTransformer<T, S>(TypeToken<S> typeToken) {
   return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
     StreamController<S> controller;
     StreamSubscription<T> subscription;

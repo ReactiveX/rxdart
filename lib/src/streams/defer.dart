@@ -1,4 +1,4 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 class DeferStream<T> extends Stream<T> {
   final StreamProvider<T> streamProvider;

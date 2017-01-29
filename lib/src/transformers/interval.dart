@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> intervalTransformer<T>(
-    Stream<T> stream, Duration duration) {
+StreamTransformer<T, T> intervalTransformer<T>(Duration duration) {
   return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
     StreamController<T> controller;
     StreamSubscription<T> subscription;

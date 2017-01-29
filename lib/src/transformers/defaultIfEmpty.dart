@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> defaultIfEmptyTransformer<T>(
-    Stream<T> stream, T defaultValue) {
+StreamTransformer<T, T> defaultIfEmptyTransformer<T>(T defaultValue) {
   return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
     StreamController<T> controller;
     StreamSubscription<T> subscription;

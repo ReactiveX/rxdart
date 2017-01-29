@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> maxTransformer<T>(Stream<T> stream,
-    [int compare(T a, T b)]) {
+StreamTransformer<T, T> maxTransformer<T>([int compare(T a, T b)]) {
   T _currentMax;
 
   return new StreamTransformer<T, T>.fromHandlers(

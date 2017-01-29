@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 StreamTransformer<T, GroupByMap<S, T>> groupByTransformer<T, S>(
-    Stream<T> stream, S keySelector(T value),
+    S keySelector(T value),
     {int compareKeys(S keyA, S keyB): null}) {
   return new StreamTransformer<T, GroupByMap<S, T>>(
       (Stream<T> input, bool cancelOnError) {
@@ -55,7 +55,7 @@ class GroupByMap<T, S> {
   final T key;
   final StreamController<S> _controller = new StreamController<S>();
 
-  Observable<S> get observable => new Observable<S>(_controller.stream);
+  Stream<S> get stream => _controller.stream;
 
   GroupByMap(this.key);
 

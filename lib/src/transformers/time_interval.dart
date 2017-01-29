@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, S> timeIntervalTransformer<T, S extends TimeInterval<T>>(
-    Stream<T> stream) {
+StreamTransformer<T, S>
+    timeIntervalTransformer<T, S extends TimeInterval<T>>() {
   return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
     StreamController<TimeInterval<T>> controller;
     StreamSubscription<T> subscription;

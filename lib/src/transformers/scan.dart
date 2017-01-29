@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 StreamTransformer<T, S> scanTransformer<T, S>(
-    Stream<T> stream, S predicate(S accumulated, T value, int index),
+    S predicate(S accumulated, T value, int index),
     [S seed]) {
   int index = 0;
   S acc = seed;

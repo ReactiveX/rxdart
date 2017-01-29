@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:rxdart/src/observable.dart';
 
 class _BehaviourSink<T> implements EventSink<T> {

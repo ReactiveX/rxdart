@@ -1,5 +1,6 @@
 import '../test_utils.dart';
 
+import 'dart:async';
 import 'package:quiver/testing/async.dart';
 import 'package:rxdart/src/observable.dart';
 import 'package:test/test.dart';

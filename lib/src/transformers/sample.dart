@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> sampleTransformer<T>(
-    Stream<T> stream, Stream<dynamic> sampleStream) {
+StreamTransformer<T, T> sampleTransformer<T>(Stream<dynamic> sampleStream) {
   return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
     StreamController<T> controller;
     StreamSubscription<T> subscription;

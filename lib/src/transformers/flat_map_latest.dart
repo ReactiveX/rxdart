@@ -1,7 +1,7 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 StreamTransformer<T, S> flatMapLatestTransformer<T, S>(
-    Stream<T> stream, Stream<S> predicate(T value)) {
+    Stream<S> predicate(T value)) {
   return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
     StreamController<S> controller;
     StreamSubscription<T> subscription;

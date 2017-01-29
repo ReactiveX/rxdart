@@ -1,4 +1,4 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
 class MergeStream<T> extends Stream<T> {
   final Iterable<Stream<T>> streams;

@@ -1,4 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
+
+import 'package:rxdart/src/transformers/interval.dart';
 
 enum Ease { LINEAR, IN, OUT, IN_OUT }
 
@@ -49,8 +51,8 @@ class TweenStream extends Stream<double> {
         },
         onCancel: () => subscription.cancel());
 
-    return new Observable<double>(_controller.stream)
-        .interval(new Duration(milliseconds: intervalMs))
+    return _controller.stream
+        .transform(intervalTransformer(new Duration(milliseconds: intervalMs)))
         .listen(onData,
             onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

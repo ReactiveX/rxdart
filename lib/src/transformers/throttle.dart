@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> throttleTransformer<T>(
-    Stream<T> stream, Duration duration) {
+StreamTransformer<T, T> throttleTransformer<T>(Duration duration) {
   Timer _timer;
   bool _closeAfterNextEvent = false;
 

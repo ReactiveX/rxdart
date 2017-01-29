@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> debounceTransformer<T>(
-    Stream<T> stream, Duration duration) {
+StreamTransformer<T, T> debounceTransformer<T>(Duration duration) {
   bool _closeAfterNextEvent = false;
   Timer _timer;
 

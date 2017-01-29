@@ -20,7 +20,7 @@ void main() {
     ]))
         .groupBy((Map<String, int> map) => map['name'])
         .flatMap((GroupByMap<int, Map<String, int>> groupByMap) async* {
-      int len = await groupByMap.observable.length;
+      int len = await groupByMap.stream.length;
 
       yield '${groupByMap.key}: $len';
     }).listen(expectAsync1((String result) {

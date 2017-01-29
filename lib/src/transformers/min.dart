@@ -1,7 +1,6 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-StreamTransformer<T, T> minTransformer<T>(Stream<T> stream,
-    [int compare(T a, T b)]) {
+StreamTransformer<T, T> minTransformer<T>([int compare(T a, T b)]) {
   T _currentMin;
 
   return new StreamTransformer<T, T>.fromHandlers(
