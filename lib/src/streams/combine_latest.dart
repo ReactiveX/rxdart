@@ -1,12 +1,14 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-class CombineLatestObservable<T> extends Observable<T> {
-  CombineLatestObservable(Iterable<Stream<dynamic>> streams, Function predicate,
-      bool asBroadcastStream)
-      : super(buildStream<T>(streams, predicate, asBroadcastStream));
+class CombineLatestStream<T> extends Stream<T> {
+  final Iterable<Stream<dynamic>> streams;
+  final Function predicate;
 
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, Function predicate, bool asBroadcastStream) {
+  CombineLatestStream(this.streams, this.predicate);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     final List<StreamSubscription<dynamic>> subscriptions =
         new List<StreamSubscription<dynamic>>(streams.length);
     StreamController<T> controller;
@@ -50,9 +52,8 @@ class CombineLatestObservable<T> extends Observable<T> {
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return asBroadcastStream
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,

@@ -259,13 +259,13 @@ void main() {
     Stream<String> observable = new Observable<String>.combineLatest(
         _getStreams(), (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
-    }, asBroadcastStream: true);
+    }).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(true, true);
+    expect(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.A', () async {

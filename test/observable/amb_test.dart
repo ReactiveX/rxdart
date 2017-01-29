@@ -39,14 +39,14 @@ void main() {
     final Stream<num> second = getDelayedStream(60, 2);
     final Stream<num> last = getDelayedStream(70, 3);
 
-    Stream<num> observable = new Observable<num>.amb(
-        <Stream<num>>[first, second, last],
-        asBroadcastStream: true);
+    Stream<num> observable =
+        new Observable<num>.amb(<Stream<num>>[first, second, last])
+            .asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(true, true);
+    expect(observable.isBroadcast, isTrue);
   });
 }

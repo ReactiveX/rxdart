@@ -5,14 +5,19 @@ enum Ease { LINEAR, IN, OUT, IN_OUT }
 typedef double Sampler(
     double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
-class TweenObservable extends Observable<double> {
-  TweenObservable(double startValue, double changeInTime, Duration duration,
-      int intervalMs, Ease ease, bool asBroadcastStream)
-      : super(buildStream(startValue, changeInTime, duration, intervalMs, ease,
-            asBroadcastStream));
+class TweenStream extends Stream<double> {
+  final double startValue;
+  final double changeInTime;
+  final Duration duration;
+  final int intervalMs;
+  final Ease ease;
 
-  static Stream<double> buildStream(double startValue, double changeInTime,
-      Duration duration, int intervalMs, Ease ease, bool asBroadcastStream) {
+  TweenStream(this.startValue, this.changeInTime, this.duration,
+      this.intervalMs, this.ease);
+
+  @override
+  StreamSubscription<double> listen(void onData(double event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     StreamController<double> _controller;
     StreamSubscription<double> subscription;
 
@@ -44,12 +49,10 @@ class TweenObservable extends Observable<double> {
         },
         onCancel: () => subscription.cancel());
 
-    final Observable<double> observable = new Observable<double>(
-        asBroadcastStream
-            ? _controller.stream.asBroadcastStream()
-            : _controller.stream);
-
-    return observable.interval(new Duration(milliseconds: intervalMs));
+    return new Observable<double>(_controller.stream)
+        .interval(new Duration(milliseconds: intervalMs))
+        .listen(onData,
+            onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   static Stream<double> sampleFromValues<T>(Sampler sampler, double startValue,

@@ -1,11 +1,13 @@
 import 'package:rxdart/src/observable.dart';
 
-class ConcatObservable<T> extends Observable<T> {
-  ConcatObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
-      : super(buildStream<T>(streams, asBroadcastStream));
+class ConcatStream<T> extends Stream<T> {
+  final Iterable<Stream<T>> streams;
 
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, bool asBroadcastStream) {
+  ConcatStream(this.streams);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     StreamController<T> controller;
     StreamSubscription<T> subscription;
 
@@ -34,8 +36,7 @@ class ConcatObservable<T> extends Observable<T> {
         },
         onCancel: () => subscription.cancel());
 
-    return asBroadcastStream
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

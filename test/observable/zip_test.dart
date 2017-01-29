@@ -254,19 +254,21 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = Observable.zip3(
-        new Stream<int>.periodic(
-            const Duration(milliseconds: 1), (int count) => count).take(4),
-        new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
-        testStream.stream,
-        (int a, int b, bool c) => <dynamic>[a, b, c],
-        asBroadcastStream: true);
+    Stream<List<dynamic>> observable = Observable
+        .zip3(
+            new Stream<int>.periodic(
+                const Duration(milliseconds: 1), (int count) => count).take(4),
+            new Stream<int>.fromIterable(
+                const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
+            testStream.stream,
+            (int a, int b, bool c) => <dynamic>[a, b, c])
+        .asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(true, true);
+    expect(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.zip.error.shouldThrow', () async {

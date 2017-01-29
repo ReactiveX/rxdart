@@ -137,13 +137,13 @@ void main() {
   });
 
   test('rx.Observable.tween.asBroadcast', () async {
-    Observable<double> observable = Observable.tween(
-        0.0, 100.0, const Duration(seconds: 2),
-        intervalMs: 20, asBroadcastStream: true);
+    Observable<double> observable = Observable
+        .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)
+        .asBroadcastStream();
 
     observable.listen((_) {});
     observable.listen((_) {});
 
-    expect(true, isTrue);
+    expect(observable.isBroadcast, isTrue);
   });
 }

@@ -1,10 +1,13 @@
 import 'package:rxdart/src/observable.dart';
 
-class DeferObservable<T> extends Observable<T> {
-  DeferObservable(StreamProvider<T> streamProvider)
-      : super(buildStream(streamProvider));
+class DeferStream<T> extends Stream<T> {
+  final StreamProvider<T> streamProvider;
 
-  static Stream<T> buildStream<T>(StreamProvider<T> streamProvider) {
+  DeferStream(this.streamProvider);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     StreamController<T> controller;
     Stream<T> stream = streamProvider();
     bool hasListened = false;
@@ -16,9 +19,8 @@ class DeferObservable<T> extends Observable<T> {
       }
     });
 
-    return stream.isBroadcast
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }
 

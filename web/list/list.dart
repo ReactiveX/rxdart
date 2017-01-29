@@ -68,8 +68,7 @@ void main() {
         .tap((WheelEvent e) => e.preventDefault())
         .map((WheelEvent e) => (e.deltaY * -.075).toInt()),
     resize.map((_) => 0)
-  ], asBroadcastStream: true)
-      .startWith(0);
+  ]).asBroadcastStream().startWith(0);
 
   final Observable<num> accumulatedOffset =
       dragOffset.scan((num a, num c, num index) {
@@ -83,14 +82,15 @@ void main() {
   final Observable<num> displayedIndices =
       resize.map((_) => visibleRowCount()).startWith(visibleRowCount());
 
-  final Observable<Map<String, int>> displayedRange = Observable.combineLatest2(
-      displayedIndices,
-      accumulatedOffset,
-      (num maxIndex, num offset) => <String, int>{
-            'from': offset ~/ rowHeight,
-            'to': maxIndex + offset ~/ rowHeight
-          },
-      asBroadcastStream: true);
+  final Observable<Map<String, int>> displayedRange = Observable
+      .combineLatest2(
+          displayedIndices,
+          accumulatedOffset,
+          (num maxIndex, num offset) => <String, int>{
+                'from': offset ~/ rowHeight,
+                'to': maxIndex + offset ~/ rowHeight
+              })
+      .asBroadcastStream();
 
   final Observable<List<Person>> displayedPeople = displayedRange
       .flatMap((Map<String, int> o) =>

@@ -1,11 +1,13 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-class AmbObservable<T> extends Observable<T> {
-  AmbObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
-      : super(buildStream<T>(streams, asBroadcastStream));
+class AmbStream<T> extends Stream<T> {
+  final Iterable<Stream<T>> streams;
 
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, bool asBroadcastStream) {
+  AmbStream(this.streams);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
@@ -42,8 +44,7 @@ class AmbObservable<T> extends Observable<T> {
               return new Future<dynamic>.value();
             }).where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return asBroadcastStream
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

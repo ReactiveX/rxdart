@@ -1,11 +1,13 @@
 import 'package:rxdart/src/observable.dart';
 
-class MergeObservable<T> extends Observable<T> {
-  MergeObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
-      : super(buildStream<T>(streams, asBroadcastStream));
+class MergeStream<T> extends Stream<T> {
+  final Iterable<Stream<T>> streams;
 
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, bool asBroadcastStream) {
+  MergeStream(this.streams);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
@@ -30,8 +32,7 @@ class MergeObservable<T> extends Observable<T> {
             .map((StreamSubscription<T> subscription) => subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return asBroadcastStream
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

@@ -98,13 +98,13 @@ void main() {
 
   test('rx.Observable.concatEager.asBroadcastStream', () async {
     Stream<num> observable =
-        new Observable<num>.concatEager(_getStreams(), asBroadcastStream: true);
+        new Observable<num>.concatEager(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(true, true);
+    expect(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.concatEager.error.shouldThrow', () async {

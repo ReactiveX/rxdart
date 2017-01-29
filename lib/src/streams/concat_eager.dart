@@ -1,11 +1,13 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-class ConcatEagerObservable<T> extends Observable<T> {
-  ConcatEagerObservable(Iterable<Stream<T>> streams, bool asBroadcastStream)
-      : super(buildStream<T>(streams, asBroadcastStream));
+class ConcatEagerStream<T> extends Stream<T> {
+  final Iterable<Stream<T>> streams;
 
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, bool asBroadcastStream) {
+  ConcatEagerStream(this.streams);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     final List<Completer<dynamic>> completeEvents =
@@ -32,8 +34,7 @@ class ConcatEagerObservable<T> extends Observable<T> {
             .map((StreamSubscription<T> subscription) => subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return asBroadcastStream
-        ? controller.stream.asBroadcastStream()
-        : controller.stream;
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

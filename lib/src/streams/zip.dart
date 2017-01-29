@@ -1,9 +1,68 @@
-import 'package:rxdart/src/observable.dart';
+import 'dart:async';
 
-class ZipObservable<T> extends Observable<T> {
-  ZipObservable(Iterable<Stream<dynamic>> streams, Function predicate,
-      bool asBroadcastStream)
-      : super(buildStream<T>(streams, predicate, asBroadcastStream));
+class ZipStream<T> extends Stream<T> {
+  final Iterable<Stream<dynamic>> streams;
+  final Function predicate;
+
+  ZipStream(this.streams, this.predicate);
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
+    StreamController<T> controller;
+    final List<bool> pausedStates =
+        new List<bool>.generate(streams.length, (_) => false, growable: false);
+    final List<StreamSubscription<dynamic>> subscriptions =
+        new List<StreamSubscription<dynamic>>(streams.length);
+
+    controller = new StreamController<T>(
+        sync: true,
+        onListen: () {
+          final List<dynamic> values = new List<dynamic>(streams.length);
+          final List<bool> completedStatus =
+              new List<bool>.generate(streams.length, (_) => false);
+
+          void doUpdate(int index, dynamic value) {
+            values[index] = value;
+            pausedStates[index] = true;
+
+            // subscriptions[i] might be null if doUpdate triggers
+            // instantly (i.e. BehaviourSubject)
+            if (subscriptions[index] != null) subscriptions[index].pause();
+
+            if (_areAllPaused(pausedStates)) {
+              updateWithValues(predicate, values, controller);
+
+              _resumeAll(subscriptions, pausedStates);
+            }
+          }
+
+          void markDone(int i) {
+            completedStatus[i] = true;
+
+            if (completedStatus.reduce((bool a, bool b) => a && b))
+              controller.close();
+          }
+
+          for (int i = 0, len = streams.length; i < len; i++) {
+            subscriptions[i] = streams.elementAt(i).listen(
+                (dynamic value) => doUpdate(i, value),
+                onError: controller.addError,
+                onDone: () => markDone(i));
+
+            // updating the above subscription if doUpdate triggered too soon
+            if (pausedStates[i] && !subscriptions[i].isPaused)
+              subscriptions[i].pause();
+          }
+        },
+        onCancel: () => Future.wait(subscriptions
+            .map((StreamSubscription<dynamic> subscription) =>
+                subscription.cancel())
+            .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
 
   static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,
       StreamController<T> controller) {
@@ -90,67 +149,6 @@ class ZipObservable<T> extends Observable<T> {
     for (int i = 0, len = subscriptions.length; i < len; i++) {
       pausedStates[i] = false;
       subscriptions[i].resume();
-    }
-  }
-
-  static Stream<T> buildStream<T>(
-      Iterable<Stream<T>> streams, Function predicate, bool asBroadcastStream) {
-    {
-      StreamController<T> controller;
-      final List<bool> pausedStates = new List<bool>.generate(
-          streams.length, (_) => false,
-          growable: false);
-      final List<StreamSubscription<dynamic>> subscriptions =
-          new List<StreamSubscription<dynamic>>(streams.length);
-
-      controller = new StreamController<T>(
-          sync: true,
-          onListen: () {
-            final List<dynamic> values = new List<dynamic>(streams.length);
-            final List<bool> completedStatus =
-                new List<bool>.generate(streams.length, (_) => false);
-
-            void doUpdate(int index, dynamic value) {
-              values[index] = value;
-              pausedStates[index] = true;
-
-              // subscriptions[i] might be null if doUpdate triggers
-              // instantly (i.e. BehaviourSubject)
-              if (subscriptions[index] != null) subscriptions[index].pause();
-
-              if (_areAllPaused(pausedStates)) {
-                updateWithValues(predicate, values, controller);
-
-                _resumeAll(subscriptions, pausedStates);
-              }
-            }
-
-            void markDone(int i) {
-              completedStatus[i] = true;
-
-              if (completedStatus.reduce((bool a, bool b) => a && b))
-                controller.close();
-            }
-
-            for (int i = 0, len = streams.length; i < len; i++) {
-              subscriptions[i] = streams.elementAt(i).listen(
-                  (dynamic value) => doUpdate(i, value),
-                  onError: controller.addError,
-                  onDone: () => markDone(i));
-
-              // updating the above subscription if doUpdate triggered too soon
-              if (pausedStates[i] && !subscriptions[i].isPaused)
-                subscriptions[i].pause();
-            }
-          },
-          onCancel: () => Future.wait(subscriptions
-              .map((StreamSubscription<dynamic> subscription) =>
-                  subscription.cancel())
-              .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
-
-      return asBroadcastStream
-          ? controller.stream.asBroadcastStream()
-          : controller.stream;
     }
   }
 }

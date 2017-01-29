@@ -86,13 +86,13 @@ void main() {
 
   test('rx.Observable.concat.asBroadcastStream', () async {
     Stream<num> observable =
-        new Observable<num>.concat(_getStreams(), asBroadcastStream: true);
+        new Observable<num>.concat(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(true, true);
+    expect(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.concat.error.shouldThrow', () async {
