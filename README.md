@@ -58,24 +58,24 @@ allowing usage of this library in server side (or Flutter) projects as well.
  /// These methods are available as static methods, since class
  /// factory methods don't support generic method types.
  Observable
-    .combineTwoLatest
-    .combineThreeLatest
-    .combineFourLatest
-    .combineFiveLatest
-    .combineSixLatest
-    .combineSevenLatest
-    .combineEightLatest
-    .combineNineLatest
+    .combineLatest2
+    .combineLatest3
+    .combineLatest4
+    .combineLatest5
+    .combineLatest6
+    .combineLatest7
+    .combineLatest8
+    .combineLatest9
  
  Observable
-    .zipTwo
-    .zipThree
-    .zipFour
-    .zipFive
-    .zipSix
-    .zipSeven
-    .zipEight
-    .zipNine
+    .zip2
+    .zip3
+    .zip4
+    .zip5
+    .zip6
+    .zip7
+    .zip8
+    .zip9
     
  /// BehaviourSubject and ReplaySubject are available
  /// The default StreamController functions as a PublishSubject

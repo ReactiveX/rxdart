@@ -110,7 +110,7 @@ void main() {
     int count = 0;
 
     Observable
-        .zipFour(
+        .zip4(
             new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),
                 intervalMs: 20),
             new Observable<double>.tween(0.0, 100.0, const Duration(seconds: 2),

@@ -14,7 +14,7 @@ class CombineLatestBenchmark extends BenchmarkBase {
   @override
   void run() {
     Observable
-        .combineTwoLatest(range(), range(), (int x, int y) => x + y)
+        .combineLatest2(range(), range(), (int x, int y) => x + y)
         .listen(null);
   }
 }
