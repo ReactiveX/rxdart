@@ -1,12 +1,6 @@
 library rx;
 
-export 'package:rxdart/src/observable.dart'
-    show Observable, observable, Ease, TimeInterval, GroupByMap;
-
-export 'package:rxdart/src/operators/of_type.dart'
-    show TypeToken, kBool, kDouble, kInt, kNum, kString, kSymbol;
-
-export 'package:rxdart/src/subject/behaviour_subject.dart'
-    show BehaviourSubject;
-
-export 'package:rxdart/src/subject/replay_subject.dart' show ReplaySubject;
+export 'package:rxdart/src/observable.dart';
+export 'package:rxdart/streams.dart';
+export 'package:rxdart/subjects.dart';
+export 'package:rxdart/transformers.dart';

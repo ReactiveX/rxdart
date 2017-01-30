@@ -20,7 +20,8 @@ void main() {
 
   StreamController<KeyboardEvent> controller =
       new StreamController<KeyboardEvent>();
-  Observable<KeyboardEvent> stream = observable(controller.stream);
+  Observable<KeyboardEvent> stream =
+      new Observable<KeyboardEvent>(controller.stream);
 
   document.addEventListener('keyup', (Event event) => controller.add(event));
 

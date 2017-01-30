@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
 class _BehaviourSink<T> implements EventSink<T> {
   final EventSink<T> _outputSink;
@@ -27,13 +26,12 @@ class BehaviourSubject<T> implements StreamController<T> {
   bool _hasLastValue = false;
 
   @override
-  StreamObservable<T> get stream => new StreamObservable<T>()
-    ..setStream(new Stream<T>.eventTransformed(
-        _controller.stream,
-        (EventSink<T> sink) => new _BehaviourSink<T>(
-            sink,
-            _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false,
-            _lastValue)));
+  Observable<T> get stream => new Observable<T>(new Stream<T>.eventTransformed(
+      _controller.stream,
+      (EventSink<T> sink) => new _BehaviourSink<T>(
+          sink,
+          _controller.stream.isBroadcast && !isClosed ? _hasLastValue : false,
+          _lastValue)));
 
   @override
   StreamSink<T> get sink => _controller.sink;
