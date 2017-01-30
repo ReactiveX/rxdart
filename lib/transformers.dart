@@ -10,6 +10,7 @@ export 'package:rxdart/src/transformers/interval.dart';
 export 'package:rxdart/src/transformers/max.dart';
 export 'package:rxdart/src/transformers/min.dart';
 export 'package:rxdart/src/transformers/of_type.dart';
+export 'package:rxdart/src/transformers/on_error_resume_next.dart';
 export 'package:rxdart/src/transformers/repeat.dart';
 export 'package:rxdart/src/transformers/retry.dart';
 export 'package:rxdart/src/transformers/sample.dart';
