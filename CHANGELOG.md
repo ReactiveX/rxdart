@@ -1,3 +1,20 @@
+## 0.7.0
+* BREAKING: rename combineXXXLatest and zipXXX to a numbered equivalent,
+for example: combineThreeLatest becomes combineLatest3
+* internal refactoring, expose streams/stream transformers as a separate library
+
+## 0.6.3+4
+* changed ofType to use TypeToken
+
+## 0.6.3+3
+* added ofType
+
+## 0.6.3+2
+* added defaultIfEmpty
+
+## 0.6.3+1
+* changed concat, old concat is now concatEager, new concat behaves as expected
+
 ## 0.6.3
 * Added withLatestFrom 
 * Added defer ctr
