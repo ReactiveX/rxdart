@@ -4,15 +4,15 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-List<Stream<dynamic>> _getStreams() {
-  Stream<int> a = new Stream<int>.periodic(
-      const Duration(milliseconds: 1), (int count) => count).take(3);
-  Stream<int> b = new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
-  StreamController<bool> c = new StreamController<bool>()
+Stream<int> get streamA => new Stream<int>.periodic(
+    const Duration(milliseconds: 1), (int count) => count).take(3);
+Stream<int> get streamB => new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+Stream<bool> get streamC {
+  final StreamController<bool> controller = new StreamController<bool>()
     ..add(true)
     ..close();
 
-  return <Stream<dynamic>>[a, b, c.stream];
+  return controller.stream;
 }
 
 void main() {
@@ -24,8 +24,8 @@ void main() {
     ];
     int count = 0;
 
-    Stream<String> observable = new Observable<String>.combineLatest(
-        _getStreams(), (int a_value, int b_value, bool c_value) {
+    Stream<String> observable = Observable.combineLatest3(
+        streamA, streamB, streamC, (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
     });
 
@@ -256,8 +256,8 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.asBroadcastStream', () async {
-    Stream<String> observable = new Observable<String>.combineLatest(
-        _getStreams(), (int a_value, int b_value, bool c_value) {
+    Stream<String> observable = Observable.combineLatest3(
+        streamA, streamB, streamC, (int a_value, int b_value, bool c_value) {
       return '$a_value $b_value $c_value';
     }).asBroadcastStream();
 
@@ -269,21 +269,8 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.A', () async {
-    Stream<String> observableWithError =
-        new Observable<String>.combineLatest(_getStreams(), (int a_value,
-            int b_value, /* should be bool, not int, so throw */ int c_value) {
-      return '$a_value $b_value $c_value';
-    });
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e.toString(), contains("bool"));
-        }, count: 3));
-  });
-
-  test('rx.Observable.combineLatest.error.shouldThrow.B', () async {
-    Stream<String> observableWithError = new Observable<String>.combineLatest(
-        _getStreams()..add(getErroneousStream()),
+    Stream<String> observableWithError = Observable.combineLatest4(
+        streamA, streamB, streamC, getErroneousStream(),
         (int a_value, int b_value, bool c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
