@@ -44,7 +44,7 @@ void main() {
     Stream<int> a = new Observable<int>.fromIterable(<int>[1, 2]);
     Stream<int> b = new Observable<int>.just(2);
 
-    Stream<List<int>> observable = Observable.zipTwo(
+    Stream<List<int>> observable = Observable.zip2(
         a, b, (int first, int second) => <int>[first, second]);
 
     // Explicitly adding count: 1. It's important here, and tests the difference
@@ -55,7 +55,7 @@ void main() {
     }, count: 1));
   });
 
-  test('rx.Observable.zipThree', () async {
+  test('rx.Observable.zip3', () async {
     // Verify the ability to pass through various types with safety
     const List<dynamic> expected = const <dynamic>[1, "2", 3.0];
 
@@ -63,7 +63,7 @@ void main() {
     Stream<String> b = new Observable<String>.just("2");
     Stream<double> c = new Observable<double>.just(3.0);
 
-    Stream<List<dynamic>> observable = Observable.zipThree(
+    Stream<List<dynamic>> observable = Observable.zip3(
         a,
         b,
         c,
@@ -75,7 +75,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipFour', () async {
+  test('rx.Observable.zip4', () async {
     const List<int> expected = const <int>[1, 2, 3, 4];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -83,7 +83,7 @@ void main() {
     Stream<int> c = new Observable<int>.just(3);
     Stream<int> d = new Observable<int>.just(4);
 
-    Stream<List<int>> observable = Observable.zipFour(
+    Stream<List<int>> observable = Observable.zip4(
         a,
         b,
         c,
@@ -96,7 +96,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipFive', () async {
+  test('rx.Observable.zip5', () async {
     const List<int> expected = const <int>[1, 2, 3, 4, 5];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -105,7 +105,7 @@ void main() {
     Stream<int> d = new Observable<int>.just(4);
     Stream<int> e = new Observable<int>.just(5);
 
-    Stream<List<int>> observable = Observable.zipFive(
+    Stream<List<int>> observable = Observable.zip5(
         a,
         b,
         c,
@@ -119,7 +119,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipSix', () async {
+  test('rx.Observable.zip6', () async {
     const List<int> expected = const <int>[1, 2, 3, 4, 5, 6];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -129,7 +129,7 @@ void main() {
     Stream<int> e = new Observable<int>.just(5);
     Stream<int> f = new Observable<int>.just(6);
 
-    Stream<List<int>> observable = Observable.zipSix(
+    Stream<List<int>> observable = Observable.zip6(
         a,
         b,
         c,
@@ -144,7 +144,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipSeven', () async {
+  test('rx.Observable.zip7', () async {
     const List<int> expected = const <int>[1, 2, 3, 4, 5, 6, 7];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -155,7 +155,7 @@ void main() {
     Stream<int> f = new Observable<int>.just(6);
     Stream<int> g = new Observable<int>.just(7);
 
-    Stream<List<int>> observable = Observable.zipSeven(
+    Stream<List<int>> observable = Observable.zip7(
         a,
         b,
         c,
@@ -172,7 +172,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipEight', () async {
+  test('rx.Observable.zip8', () async {
     const List<int> expected = const <int>[1, 2, 3, 4, 5, 6, 7, 8];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -184,7 +184,7 @@ void main() {
     Stream<int> g = new Observable<int>.just(7);
     Stream<int> h = new Observable<int>.just(8);
 
-    Stream<List<int>> observable = Observable.zipEight(
+    Stream<List<int>> observable = Observable.zip8(
         a,
         b,
         c,
@@ -202,7 +202,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zipNine', () async {
+  test('rx.Observable.zip9', () async {
     const List<int> expected = const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     Stream<int> a = new Observable<int>.just(1);
@@ -215,7 +215,7 @@ void main() {
     Stream<int> h = new Observable<int>.just(8);
     Stream<int> i = new Observable<int>.just(9);
 
-    Stream<List<int>> observable = Observable.zipNine(
+    Stream<List<int>> observable = Observable.zip9(
         a,
         b,
         c,
@@ -253,7 +253,7 @@ void main() {
       ..add(true)
       ..close();
 
-    Stream<List<dynamic>> observable = Observable.zipThree(
+    Stream<List<dynamic>> observable = Observable.zip3(
         new Stream<int>.periodic(
             const Duration(milliseconds: 20), (int count) => count).take(4),
         new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -269,7 +269,7 @@ void main() {
   });
 
   test('rx.Observable.zip.error.shouldThrow', () async {
-    Stream<int> observableWithError = Observable.zipTwo(
+    Stream<int> observableWithError = Observable.zip2(
         new Observable<int>.just(1),
         new Observable<int>.just(2),
         (int a, int b) => throw new Exception());
@@ -282,7 +282,7 @@ void main() {
 
   test('rx.Observable.zip.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Stream<int> observableWithError = Observable.zipTwo(
+    Stream<int> observableWithError = Observable.zip2(
         new Observable<int>.just(1),
         new Observable<int>.just(2),
         (int a, int b) => a + b);

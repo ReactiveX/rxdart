@@ -36,7 +36,7 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#combineLatest
   @Deprecated(
-      'For better strong mode support, use combineTwoLatest, combineThreeLatest, ... instead')
+      'For better strong mode support, use combineLatest2, combineLatest3, ... instead')
   factory Observable.combineLatest(
           Iterable<Stream<dynamic>> streams, Function predicate,
           {bool asBroadcastStream: false}) =>
@@ -46,7 +46,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineTwoLatest<A, B, T>(
+  static Observable<T> combineLatest2<A, B, T>(
           Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b),
           {bool asBroadcastStream: false}) =>
       new CombineLatestObservable<T>(<Stream<dynamic>>[streamOne, streamTwo],
@@ -56,7 +56,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineThreeLatest<A, B, C, T>(
+  static Observable<T> combineLatest3<A, B, C, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -71,7 +71,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineFourLatest<A, B, C, D, T>(
+  static Observable<T> combineLatest4<A, B, C, D, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -87,7 +87,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineFiveLatest<A, B, C, D, E, T>(
+  static Observable<T> combineLatest5<A, B, C, D, E, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -107,7 +107,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineSixLatest<A, B, C, D, E, F, T>(
+  static Observable<T> combineLatest6<A, B, C, D, E, F, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -129,7 +129,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineSevenLatest<A, B, C, D, E, F, G, T>(
+  static Observable<T> combineLatest7<A, B, C, D, E, F, G, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -153,7 +153,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineEightLatest<A, B, C, D, E, F, G, H, T>(
+  static Observable<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -179,7 +179,7 @@ abstract class Observable<T> extends Stream<T> {
   /// values from each feeder stream into the predicate function.
   ///
   /// http://rxmarbles.com/#combineLatest
-  static Observable<T> combineNineLatest<A, B, C, D, E, F, G, H, I, T>(
+  static Observable<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -322,7 +322,7 @@ abstract class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#zip
   @Deprecated(
-      'For better strong mode support, use zipTwo, zipThree, ... instead')
+      'For better strong mode support, use zip2, zip3, ... instead')
   factory Observable.zip(Iterable<Stream<dynamic>> streams, Function predicate,
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(streams, predicate, asBroadcastStream);
@@ -340,7 +340,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipTwo<A, B, T>(
+  static Observable<T> zip2<A, B, T>(
           Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b),
           {bool asBroadcastStream: false}) =>
       new ZipObservable<T>(<Stream<dynamic>>[streamOne, streamTwo], predicate,
@@ -359,7 +359,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipThree<A, B, C, T>(
+  static Observable<T> zip3<A, B, C, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -381,7 +381,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipFour<A, B, C, D, T>(
+  static Observable<T> zip4<A, B, C, D, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -406,7 +406,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipFive<A, B, C, D, E, T>(
+  static Observable<T> zip5<A, B, C, D, E, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -435,7 +435,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipSix<A, B, C, D, E, F, T>(
+  static Observable<T> zip6<A, B, C, D, E, F, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -466,7 +466,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipSeven<A, B, C, D, E, F, G, T>(
+  static Observable<T> zip7<A, B, C, D, E, F, G, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -499,7 +499,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipEight<A, B, C, D, E, F, G, H, T>(
+  static Observable<T> zip8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
@@ -534,7 +534,7 @@ abstract class Observable<T> extends Stream<T> {
   /// emitted by the source Observable that emits the fewest items.
   ///
   /// http://rxmarbles.com/#zip
-  static Observable<T> zipNine<A, B, C, D, E, F, G, H, I, T>(
+  static Observable<T> zip9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,

@@ -84,7 +84,7 @@ void main() {
       resize.map((_) => visibleRowCount()).startWith(visibleRowCount());
 
   final Observable<Map<String, int>> displayedRange =
-      Observable.combineTwoLatest(
+      Observable.combineLatest2(
           displayedIndices,
           accumulatedOffset,
           (num maxIndex, num offset) => <String, int>{
@@ -103,7 +103,7 @@ void main() {
   displayedIndices.listen(print);
 
   Observable
-      .combineTwoLatest(
+      .combineLatest2(
           displayedPeople,
           accumulatedOffset,
           (List<Person> people, num offset) =>
