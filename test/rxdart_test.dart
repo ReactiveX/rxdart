@@ -5,6 +5,7 @@ import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
 import 'streams/defer_test.dart' as defer_test;
+import 'streams/empty_test.dart' as empty_test;
 import 'streams/event_transformed_test.dart' as event_transformed_test;
 import 'streams/from_future_test.dart' as from_future_test;
 import 'streams/from_iterable_test.dart' as from_iterable_test;
@@ -77,6 +78,7 @@ void main() {
   concat_eager_test.main();
   concat_test.main();
   defer_test.main();
+  empty_test.main();
   event_transformed_test.main();
   from_future_test.main();
   from_iterable_test.main();
