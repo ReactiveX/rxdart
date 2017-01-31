@@ -37,6 +37,7 @@ import 'transformers/fold_test.dart' as fold_test;
 import 'transformers/for_each_test.dart' as for_each_test;
 import 'transformers/group_by_test.dart' as group_by_test;
 import 'transformers/handle_error_test.dart' as handle_error_test;
+import 'transformers/ignore_elements_test.dart' as ignore_elements_test;
 import 'transformers/interval_test.dart' as interval_test;
 import 'transformers/is_empty_test.dart' as is_empty_test;
 import 'transformers/join_test.dart' as join_test;
@@ -112,6 +113,7 @@ void main() {
   for_each_test.main();
   group_by_test.main();
   handle_error_test.main();
+  ignore_elements_test.main();
   interval_test.main();
   is_empty_test.main();
   join_test.main();

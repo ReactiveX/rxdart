@@ -6,6 +6,7 @@ export 'package:rxdart/src/transformers/default_if_empty.dart';
 export 'package:rxdart/src/transformers/flat_map.dart';
 export 'package:rxdart/src/transformers/flat_map_latest.dart';
 export 'package:rxdart/src/transformers/group_by.dart';
+export 'package:rxdart/src/transformers/ignore_elements.dart';
 export 'package:rxdart/src/transformers/interval.dart';
 export 'package:rxdart/src/transformers/max.dart';
 export 'package:rxdart/src/transformers/min.dart';
