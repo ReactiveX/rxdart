@@ -15,6 +15,7 @@ import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
 import 'package:rxdart/src/transformers/group_by.dart';
+import 'package:rxdart/src/transformers/ignore_elements.dart';
 import 'package:rxdart/src/transformers/interval.dart';
 import 'package:rxdart/src/transformers/max.dart';
 import 'package:rxdart/src/transformers/min.dart';
@@ -745,6 +746,10 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> handleError(Function onError, {bool test(dynamic error)}) =>
       new Observable<T>(stream.handleError(onError, test: test));
+
+  /// Creates an observable where all incoming events are ignored, only the error/completed notifications are passed
+  Observable<T> ignoreElements() =>
+      transform(ignoreElementsTransformer());
 
   /// Creates an observable that produces a value after each duration.
   Observable<T> interval(Duration duration) =>
