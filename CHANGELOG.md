@@ -1,3 +1,10 @@
+## 0.7.1
+* added ignoreElements
+* added onErrorResumeNext
+* added onErrorReturn
+* added switchIfEmpty
+* added empty factory constructor
+
 ## 0.7.0
 * BREAKING: rename combineXXXLatest and zipXXX to a numbered equivalent,
 for example: combineThreeLatest becomes combineLatest3

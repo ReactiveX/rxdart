@@ -23,6 +23,7 @@ allowing usage of this library in server side (or Flutter) projects as well.
     .flatMapLatest
     .flatMap
     .groupBy
+    .ignoreElements
     .interval
     .max
     .min
