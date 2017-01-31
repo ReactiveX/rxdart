@@ -19,6 +19,7 @@ import 'package:rxdart/src/transformers/interval.dart';
 import 'package:rxdart/src/transformers/max.dart';
 import 'package:rxdart/src/transformers/min.dart';
 import 'package:rxdart/src/transformers/of_type.dart';
+import 'package:rxdart/src/transformers/on_error_resume_next.dart';
 import 'package:rxdart/src/transformers/repeat.dart';
 import 'package:rxdart/src/transformers/retry.dart';
 import 'package:rxdart/src/transformers/sample.dart';
@@ -828,6 +829,23 @@ class Observable<T> extends Stream<T> {
   /// ```
   Observable<S> ofType<S>(TypeToken<S> typeToken) =>
       transform(ofTypeTransformer(typeToken));
+
+  /// Intercepts error events and switches to the given stream in that case
+  ///
+  /// The onErrorResumeNext operator intercepts an onError notification from
+  /// the source Observable. Instead of passing it through to any observers, it
+  /// replaces it with another Stream of items.
+  Observable<T> onErrorResumeNext(Stream<T> recoveryStream) =>
+      transform(onErrorResumeNextTransformer(recoveryStream));
+
+  /// instructs an Observable to emit a particular item when it encounters an
+  /// error, and then terminate normally
+  ///
+  /// The onErrorReturn operator intercepts an onError notification from
+  /// the source Observable. Instead of passing it through to any observers, it
+  /// replaces it with a given item, and then terminates normally.
+  Observable<T> onErrorReturn(T returnValue) => transform(
+      onErrorResumeNextTransformer(new Observable<T>.just(returnValue)));
 
   @override
   Future<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
