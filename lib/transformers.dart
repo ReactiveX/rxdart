@@ -2,7 +2,7 @@ library rx_transformers;
 
 export 'package:rxdart/src/transformers/buffer_with_count.dart';
 export 'package:rxdart/src/transformers/debounce.dart';
-export 'package:rxdart/src/transformers/defaultIfEmpty.dart';
+export 'package:rxdart/src/transformers/default_if_empty.dart';
 export 'package:rxdart/src/transformers/flat_map.dart';
 export 'package:rxdart/src/transformers/flat_map_latest.dart';
 export 'package:rxdart/src/transformers/group_by.dart';
@@ -16,6 +16,7 @@ export 'package:rxdart/src/transformers/sample.dart';
 export 'package:rxdart/src/transformers/scan.dart';
 export 'package:rxdart/src/transformers/start_with.dart';
 export 'package:rxdart/src/transformers/start_with_many.dart';
+export 'package:rxdart/src/transformers/switch_if_empty.dart';
 export 'package:rxdart/src/transformers/take_until.dart';
 export 'package:rxdart/src/transformers/tap.dart';
 export 'package:rxdart/src/transformers/throttle.dart';

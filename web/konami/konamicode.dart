@@ -18,6 +18,7 @@ void main() {
   ];
   Element result = querySelector('#result');
 
+  // ignore: close_sinks
   StreamController<KeyboardEvent> controller =
       new StreamController<KeyboardEvent>();
   Observable<KeyboardEvent> stream =

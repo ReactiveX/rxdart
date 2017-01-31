@@ -11,6 +11,8 @@ void main() {
 
     subject.stream.listen(expectAsync1((int result) {
       expect(result, 1);
+
+      subject.close();
     }));
   });
 
@@ -31,6 +33,8 @@ void main() {
 
     subject.stream.listen(expectAsync1((int result) {
       expect(result, 3);
+
+      subject.close();
     }));
   });
 }

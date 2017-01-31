@@ -5,26 +5,25 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  test('rx.Observable.defaultIfEmpty.whenEmpty', () async {
+  test('rx.Observable.switchIfEmpty.whenEmpty', () async {
     new Observable<bool>(new Stream<bool>.empty())
-        .defaultIfEmpty(true)
+        .switchIfEmpty(new Observable<bool>.just(true))
         .listen(expectAsync1((bool result) {
           expect(result, true);
         }, count: 1));
   });
 
-  test('rx.Observable.defaultIfEmpty.whenNotEmpty', () async {
-    new Observable<bool>(
-            new Stream<bool>.fromIterable(const <bool>[false, false, false]))
-        .defaultIfEmpty(true)
+  test('rx.Observable.switchIfEmpty.whenNotEmpty', () async {
+    new Observable<bool>.just(false)
+        .switchIfEmpty(new Observable<bool>.just(true))
         .listen(expectAsync1((bool result) {
           expect(result, false);
-        }, count: 3));
+        }, count: 1));
   });
 
-  test('rx.Observable.defaultIfEmpty.asBroadcastStream', () async {
-    Stream<int> stream = new Observable<int>.fromIterable(<int>[])
-        .defaultIfEmpty(-1)
+  test('rx.Observable.switchIfEmpty.asBroadcastStream', () async {
+    Observable<int> stream = new Observable<int>(new Stream<int>.empty())
+        .switchIfEmpty(new Observable<int>.just(1))
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -35,19 +34,19 @@ void main() {
     expect(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.defaultIfEmpty.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(getErroneousStream()).defaultIfEmpty(-1);
+  test('rx.Observable.switchIfEmpty.error.shouldThrow', () async {
+    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
+        .switchIfEmpty(new Observable<int>.just(1));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
     });
   });
 
-  test('rx.Observable.defaultIfEmpty.pause.resume', () async {
+  test('rx.Observable.switchIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream =
-        new Observable<int>.fromIterable(<int>[]).defaultIfEmpty(1);
+    Observable<int> stream = new Observable<int>(new Stream<int>.empty())
+        .switchIfEmpty(new Observable<int>.just(1));
 
     subscription = stream.listen(expectAsync1((int value) {
       expect(value, 1);

@@ -10,6 +10,10 @@ Observable<MouseEvent> _getMouseObservable(String mouseEvent) {
   document.body
       .addEventListener(mouseEvent, (Event event) => controller.add(event));
 
+  controller.onCancel = () {
+    controller.close();
+  };
+
   return new Observable<MouseEvent>(controller.stream);
 }
 
