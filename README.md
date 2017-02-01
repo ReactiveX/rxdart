@@ -7,8 +7,7 @@
 
 ## About
 RxDart is a reactive functional programming library for Google Dart, based on [ReactiveX](http://reactivex.io/).  
-Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box.  
-Rather than attempting to provide an alternative to this API, RxDart adds functionality on top of it.
+Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box; rather than attempting to provide an alternative to this API, RxDart adds functionality on top of it.
 
 ## How To Use RxDart
 Use the method `observable()` to wrap a native Dart Stream.
