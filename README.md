@@ -72,31 +72,16 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream])
 ```
 
 ##### Available Static Methods
-- combineLatest  
-combineLatest2    
-combineLatest3  
-combineLatest4  
-combineLatest5  
-combineLatest6  
-combineLatest7  
-combineLatest8  
-combineLatest9  
-- zip  
-zip2   
-zip3   
-zip4   
-zip5   
-zip6   
-zip7   
-zip8   
-zip9   
+- combineLatest (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
+- zip (zip2, zip3, zip4, ..., zip
 
 ##### Usage
 ```dart
-var myObservable = Observable.combineLatest(
+var myObservable = Observable.combineLatest3(
     myFirstStream, 
     mySecondStream, 
-    (firstData, secondData) => print(firstData + ' ' + secondData));
+    myThirdStream, 
+    (firstData, secondData, thirdData) => print(firstData + ' ' + secondData + ' ' + thirdData));
 ```
 
 ### Transformations
