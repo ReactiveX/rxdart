@@ -49,7 +49,7 @@ bool _areTwoListsEqual(List<int> a, List<int> b) {
 ## API Overview
 
 RxDart's Observables extend the Stream class, meaning all methods defined [here](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on RxDart's Observables as well.
-But on top of these, RxDart provides its own API:
+But on top of these, RxDart provides its own API.
 
 ### Instantiation
 
