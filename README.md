@@ -77,7 +77,7 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 - combineLatest (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
 - zip (zip2, zip3, zip4, ..., zip
 
-##### Usage
+###### Usage
 ```dart
 var myObservable = Observable.combineLatest3(
     myFirstStream, 
@@ -111,7 +111,7 @@ var myObservable = Observable.combineLatest3(
 - windowWithCount
 - withLatestFrom  
 
-##### Usage
+###### Usage
 ```Dart
 var myObservable = observable(myStream)
     .bufferWithCount(5)
