@@ -1,3 +1,6 @@
+## 0.7.1+1
+* improved the README file
+
 ## 0.7.1
 * added ignoreElements
 * added onErrorResumeNext
