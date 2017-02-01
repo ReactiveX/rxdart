@@ -47,11 +47,11 @@ But on top of these, RxDart provides its own API.
 
 ### Instantiation
 
-Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level function `observable()`, or by calling a factory method on the Observable class.  
+Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level method `observable()`, or by calling a factory method on the Observable class.  
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
-##### Top-level Function
+##### Available Top-level Method
 - observable
 
 ###### Usage
