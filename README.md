@@ -6,9 +6,9 @@
 [![Gitter](https://img.shields.io/gitter/room/rxdart/Lobby.svg)](https://gitter.im/rxdart/Lobby)
 
 ## About
-RxDart aims to provide an implementation of [ReactiveX](http://reactivex.io/) for the Dart language.  
-Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box.  
-This library is built on top of it.
+RxDart is a reactive functional programming library for Google Dart, based on [ReactiveX](http://reactivex.io/).  
+Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box.  
+Rather than attempting to provide an alternative to this API, RxDart adds functionality on top of it.
 
 ## How To Use RxDart
 Use the method `observable()` to wrap a native Dart Stream.
@@ -16,34 +16,27 @@ Use the method `observable()` to wrap a native Dart Stream.
 var myObservable = observable(myStream);
 ```
 
-## Example
+### Example
+
+##### Reading the Konami Code 
 
 ```dart
-import 'package:rxdart/rxdart.dart' as rx;
+import 'package:rxdart/rxdart.dart';
 
 void main() {
-  var codes = <int>[
-      38, // up
-      38, // up
-      40, // down
-      40, // down
-      37, // left
-      39, // right
-      37, // left
-      39, // right
-      66, // b
-      65  // a
-  ];
+
+  // KONAMI CODE: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
+  var codes = <int>[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
   var result = querySelector('#result');
   var controller = new StreamController<KeyboardEvent>();
-  var stream = rx.observable(controller.stream);
+  var stream = observable(controller.stream);
 
   document.addEventListener('keyup', (event) => controller.add(event));
 
   stream
-    .map((event) => event.keyCode )           // get the key code
-    .bufferWithCount(10, 1)                   // get the last 10 keys
-    .where((list) => _areTwoListsEqual(list, codes))
+    .map((event) => event.keyCode ) // Get the key code
+    .bufferWithCount(10, 1) // Get the last 10 keys
+    .where((list) => _areTwoListsEqual(list, codes)) // Check for matching values
     .listen((_) => result.innerHtml = 'KONAMI!');
 }
 
@@ -56,7 +49,7 @@ bool _areTwoListsEqual(List<int> a, List<int> b) {
 
 ## API Overview
 
-RxDart's Observables extend the Stream class, meaning all methods defined [here](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on Observables as well.
+RxDart's Observables extend the Stream class, meaning all methods defined [here](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on RxDart's Observables as well.
 But on top of these, RxDart provides its own API:
 
 ### Factory Constructors
