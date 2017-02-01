@@ -10,14 +10,8 @@ RxDart is a reactive functional programming library for Google Dart, based on [R
 Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box; rather than attempting to provide an alternative to this API, RxDart adds functionality on top of it.
 
 ## How To Use RxDart
-Use the method `observable()` to wrap a native Dart Stream.
-```dart
-var myObservable = observable(myStream);
-```
 
-### Example
-
-##### Reading the Konami Code 
+### For Example: Reading the Konami Code 
 
 ```dart
 import 'package:rxdart/rxdart.dart';
@@ -53,9 +47,17 @@ But on top of these, RxDart provides its own API.
 
 ### Instantiation
 
-Generally speaking, creating a new Observable is done by calling a factory method on the Observable class.
+Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level function `observable()`, or by calling a factory method on the Observable class.
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
+
+##### Top-level Function
+- observable
+
+###### Usage
+```dart
+var myObservable = observable(myStream);
+```
 
 ##### Available Factory Methods
 - amb
@@ -68,7 +70,7 @@ These methods are supplied as static methods, since Dart's factory methods don't
 
 ###### Usage
 ```dart
-var myObservable = new Observable.merge([myFirstStream, mySecondStream])
+var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 ```
 
 ##### Available Static Methods
