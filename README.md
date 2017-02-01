@@ -91,7 +91,8 @@ var myObservable = Observable.combineLatest3(
 ### Transformations
     
 ##### Available Methods
-- bufferWithCount  
+- bufferWithCount
+- call
 - debounce  
 - flatMapLatest  
 - flatMap  

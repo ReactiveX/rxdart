@@ -5,29 +5,23 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 List<Stream<num>> _getStreams() {
-  Stream<num> a = new Stream<num>.periodic(
-      const Duration(milliseconds: 1), (num count) => count).take(3);
-  Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
+  Stream<num> a = new Stream<num>.fromIterable(const <num>[0, 1, 2]);
+  Stream<num> b = new Stream<num>.fromIterable(const <num>[3, 4, 5]);
 
   return <Stream<num>>[a, b];
 }
 
 List<Stream<num>> _getStreamsIncludingEmpty() {
-  Stream<num> a = new Stream<num>.periodic(
-      const Duration(milliseconds: 1), (num count) => count).take(3);
-  Stream<num> b = new Stream<num>.fromIterable(const <num>[1, 2, 3, 4]);
-  Stream<num> c =
-      new Observable<num>(new Stream<num>.fromIterable(const <num>[]))
-          .map((_) => _)
-          .flatMap((_) => new Stream<num>.fromIterable(<num>[_]))
-          .flatMapLatest((_) => new Stream<num>.fromIterable(<num>[_]));
+  Stream<num> a = new Stream<num>.fromIterable(const <num>[0, 1, 2]);
+  Stream<num> b = new Stream<num>.fromIterable(const <num>[3, 4, 5]);
+  Stream<num> c = new Observable<num>.empty();
 
   return <Stream<num>>[c, a, b];
 }
 
 void main() {
   test('rx.Observable.concatEager', () async {
-    const List<num> expectedOutput = const <num>[0, 1, 2, 1, 2, 3, 4];
+    const List<num> expectedOutput = const <num>[0, 1, 2, 3, 4, 5];
     int count = 0;
 
     Stream<num> observable = new Observable<num>.concatEager(_getStreams());
@@ -39,7 +33,7 @@ void main() {
   });
 
   test('rx.Observable.concatEager.withEmptyStream', () async {
-    const List<num> expectedOutput = const <num>[0, 1, 2, 1, 2, 3, 4];
+    const List<num> expectedOutput = const <num>[0, 1, 2, 3, 4, 5];
     int count = 0;
 
     Stream<num> observable =

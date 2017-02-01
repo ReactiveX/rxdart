@@ -10,6 +10,7 @@ import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
+import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
@@ -29,7 +30,6 @@ import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
 import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
-import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
 import 'package:rxdart/src/transformers/time_interval.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
@@ -612,6 +612,53 @@ class Observable<T> extends Stream<T> {
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(bufferWithCountTransformer(count, skip));
 
+  /// Invokes each callback at the given point in the stream lifecycle
+  ///
+  /// This method can be used for debugging, logging, etc. by intercepting the
+  /// stream at different points to run arbitrary actions.
+  ///
+  /// It is possible to hook onto the following parts of the stream lifecycle:
+  ///
+  ///   - onCancel
+  ///   - onData
+  ///   - onDone
+  ///   - onError
+  ///   - onListen
+  ///   - onPause
+  ///   - onResume
+  ///
+  /// In addition, the `onEach` argument is called at `onData`, `onDone`, and
+  /// `onError` with a [Notification] passed in. The [Notification] argument
+  /// contains the [Kind] of event (OnData, OnDone, OnError), and the item or
+  /// error that was emitted. In the case of onDone, no data is emitted as part
+  /// of the [Notification].
+  ///
+  /// If no callbacks are passed in, a runtime error will be thrown in dev mode
+  /// in order to "fail fast" and alert the developer that the operator should
+  /// be used or safely removed.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1).call(onData: (i) => print(i)); // Prints: 1
+  Observable<T> call(
+          {void onCancel(),
+          void onData(T event),
+          void onDone(),
+          void onEach(Notification<T> notification),
+          Function onError,
+          void onListen(),
+          void onPause(Future<dynamic> resumeSignal),
+          void onResume()}) =>
+      transform(callTransformer(
+          onCancel: onCancel,
+          onData: onData,
+          onDone: onDone,
+          onEach: onEach,
+          onError: onError,
+          onListen: onListen,
+          onPause: onPause,
+          onResume: onResume));
+
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
 
@@ -648,75 +695,6 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
       new Observable<T>(stream.distinct(equals));
-
-  /// Invokes an action when the stream is cancelled.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnCancel(void onCancel()) =>
-      transform(doTransformer(onCancel: onCancel));
-
-  /// Invokes an action for each element of the observable sequence.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnData(void onData(T value)) =>
-      transform(doTransformer(onData: onData));
-
-  /// Invokes an action when the stream is completed.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnDone(void onDone()) =>
-      transform(doTransformer(onDone: onDone));
-
-  /// Invokes a callback onData, onError, and onDone with a Notification object
-  /// that contains information about the event.
-  ///
-  /// The Notification object specifies the type of event (onData, onError, or
-  /// onDone). It also optionally contains the item emitted for onData events,
-  /// or the error and stack trace information if it's an onError event.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnEach(void onEach(Notification<T> notification)) =>
-      transform(doTransformer(onEach: onEach));
-
-  /// Invokes an action when the stream encounters an error.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnError(Function onError) =>
-      transform(doTransformer(onError: onError));
-
-  /// Invokes an action when the stream begins being listened to.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnListen(void onListen()) =>
-      transform(doTransformer(onListen: onListen));
-
-  /// Invokes an action when the stream is paused.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnPause(void onPause([Future<dynamic> resumeSignal])) =>
-      transform(doTransformer(onPause: onPause));
-
-  /// Invokes an action when the stream is resumed.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> doOnResume(void onResume()) =>
-      transform(doTransformer(onResume: onResume));
 
   @override
   Future<S> drain<S>([S futureValue]) => stream.drain(futureValue);
@@ -816,8 +794,7 @@ class Observable<T> extends Stream<T> {
       new Observable<T>(stream.handleError(onError, test: test));
 
   /// Creates an observable where all incoming events are ignored, only the error/completed notifications are passed
-  Observable<T> ignoreElements() =>
-      transform(ignoreElementsTransformer());
+  Observable<T> ignoreElements() => transform(ignoreElementsTransformer());
 
   /// Creates an observable that produces a value after each duration.
   Observable<T> interval(Duration duration) =>
