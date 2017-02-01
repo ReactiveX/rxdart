@@ -29,7 +29,7 @@ import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
 import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
-import 'package:rxdart/src/transformers/tap.dart';
+import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
 import 'package:rxdart/src/transformers/time_interval.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
@@ -283,8 +283,7 @@ class Observable<T> extends Stream<T> {
   /// Creates an Observable that contains no values.
   ///
   /// No items are emitted from the stream, and done is called upon listening.
-  factory Observable.empty() =>
-      observable((new Stream<T>.empty()));
+  factory Observable.empty() => observable((new Stream<T>.empty()));
 
   /// Creates an Observable where each item is the interleaved output emitted by
   /// the feeder streams.
@@ -650,6 +649,75 @@ class Observable<T> extends Stream<T> {
   Observable<T> distinct([bool equals(T previous, T next)]) =>
       new Observable<T>(stream.distinct(equals));
 
+  /// Invokes an action when the stream is cancelled.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnCancel(void onCancel()) =>
+      transform(doTransformer(onCancel: onCancel));
+
+  /// Invokes an action for each element of the observable sequence.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnData(void onData(T value)) =>
+      transform(doTransformer(onData: onData));
+
+  /// Invokes an action when the stream is completed.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnDone(void onDone()) =>
+      transform(doTransformer(onDone: onDone));
+
+  /// Invokes a callback onData, onError, and onDone with a Notification object
+  /// that contains information about the event.
+  ///
+  /// The Notification object specifies the type of event (onData, onError, or
+  /// onDone). It also optionally contains the item emitted for onData events,
+  /// or the error and stack trace information if it's an onError event.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnEach(void onEach(Notification<T> notification)) =>
+      transform(doTransformer(onEach: onEach));
+
+  /// Invokes an action when the stream encounters an error.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnError(Function onError) =>
+      transform(doTransformer(onError: onError));
+
+  /// Invokes an action when the stream begins being listened to.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnListen(void onListen()) =>
+      transform(doTransformer(onListen: onListen));
+
+  /// Invokes an action when the stream is paused.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnPause(void onPause([Future<dynamic> resumeSignal])) =>
+      transform(doTransformer(onPause: onPause));
+
+  /// Invokes an action when the stream is resumed.
+  ///
+  /// This method can be used for debugging, logging, etc. of query behavior by
+  /// intercepting the message stream to run arbitrary actions for messages on
+  /// the pipeline.
+  Observable<T> doOnResume(void onResume()) =>
+      transform(doTransformer(onResume: onResume));
+
   @override
   Future<S> drain<S>([S futureValue]) => stream.drain(futureValue);
 
@@ -990,15 +1058,6 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> takeWhile(bool test(T element)) =>
       new Observable<T>(stream.takeWhile(test));
-
-  /// Invokes an action for each element in the observable sequence and invokes
-  /// an action upon graceful or exceptional termination of the observable
-  /// sequence.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> tap(void action(T value)) => transform(tapTransformer(action));
 
   /// Returns an Observable that emits only the first item emitted by the source
   /// Observable during sequential time windows of a specified duration.
