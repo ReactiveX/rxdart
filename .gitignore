@@ -12,7 +12,7 @@ web/experimental
 *.js_
 *.js.deps
 *.js.map
-.packages
 
 # Include when developing application packages.
 pubspec.lock
+coverage*

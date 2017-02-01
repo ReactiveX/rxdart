@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/observable/stream.dart';
+import 'package:rxdart/src/observable.dart';
 
 class _ReplaySink<T> implements EventSink<T> {
   final EventSink<T> _outputSink;
@@ -11,11 +11,14 @@ class _ReplaySink<T> implements EventSink<T> {
     queue?.forEach(_outputSink.add);
   }
 
-  @override void add(T data) => _outputSink.add(data);
+  @override
+  void add(T data) => _outputSink.add(data);
 
-  @override void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
+  @override
+  void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
 
-  @override void close() => _isClosed ? _outputSink.close() : null;
+  @override
+  void close() => _isClosed ? _outputSink.close() : null;
 }
 
 class ReplaySubject<T> implements StreamController<T> {
@@ -23,8 +26,10 @@ class ReplaySubject<T> implements StreamController<T> {
   final Queue<T> _queue = new Queue<T>();
 
   @override
-  StreamObservable<T> get stream => new StreamObservable<T>()..setStream(new Stream<T>.eventTransformed(_controller.stream,
-          (EventSink<T> sink) => new _ReplaySink<T>(sink, _controller.stream.isBroadcast && !isClosed ? _queue : null)));
+  Observable<T> get stream => new Observable<T>(new Stream<T>.eventTransformed(
+      _controller.stream,
+      (EventSink<T> sink) => new _ReplaySink<T>(
+          sink, _controller.stream.isBroadcast && !isClosed ? _queue : null)));
 
   @override
   StreamSink<T> get sink => _controller.sink;
@@ -76,11 +81,11 @@ class ReplaySubject<T> implements StreamController<T> {
   ReplaySubject._(StreamController<T> controller) : _controller = controller;
 
   factory ReplaySubject(
-      {void onListen(),
-      void onPause(),
-      void onResume(),
-      onCancel(),
-      bool sync: false}) =>
+          {void onListen(),
+          void onPause(),
+          void onResume(),
+          onCancel(),
+          bool sync: false}) =>
       new ReplaySubject<T>._(new StreamController<T>(
           onListen: onListen,
           onPause: onPause,
@@ -89,15 +94,17 @@ class ReplaySubject<T> implements StreamController<T> {
           sync: sync));
 
   factory ReplaySubject.broadcast(
-      {void onListen(), onCancel(), bool sync: false}) =>
+          {void onListen(), onCancel(), bool sync: false}) =>
       new ReplaySubject<T>._(new StreamController<T>.broadcast(
           onListen: onListen, onCancel: onCancel, sync: sync));
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) => _controller.addError(error, stackTrace);
+  void addError(Object error, [StackTrace stackTrace]) =>
+      _controller.addError(error, stackTrace);
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) => _controller.addStream(source, cancelOnError: cancelOnError);
+  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) =>
+      _controller.addStream(source, cancelOnError: cancelOnError);
 
   @override
   void add(T event) {

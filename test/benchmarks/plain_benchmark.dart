@@ -5,13 +5,12 @@ import 'benchmark_utils.dart';
 void main() => PlainBenchmark.main();
 
 class PlainBenchmark extends BenchmarkBase {
-
   const PlainBenchmark() : super("plain");
 
   static void main() => new PlainBenchmark().report();
 
-  @override void run() {
-    range()
-        .listen(null);
+  @override
+  void run() {
+    range().listen(null);
   }
 }

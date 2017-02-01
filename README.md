@@ -82,7 +82,7 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 ###### Usage
 ```dart
 var myObservable = Observable.combineLatest3(
-    myFirstStream, 
+    myFirstStream, 
     mySecondStream, 
     myThirdStream, 
     (firstData, secondData, thirdData) => print(firstData + ' ' + secondData + ' ' + thirdData));
@@ -117,7 +117,7 @@ var myObservable = Observable.combineLatest3(
 ```Dart
 var myObservable = observable(myStream)
     .bufferWithCount(5)
-    .distinct()
+    .distinct()
 ```
 
 ### Objects
