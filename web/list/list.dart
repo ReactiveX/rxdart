@@ -73,7 +73,7 @@ void main() {
         .map((Iterable<MouseEvent> f) => f.first.client.y - f.last.client.y)
         .takeUntil(mouseUp)),
     mouseWheel
-        .tap((WheelEvent e) => e.preventDefault())
+        .call(onData: (WheelEvent e) => e.preventDefault())
         .map((WheelEvent e) => (e.deltaY * -.075).toInt()),
     resize.map((_) => 0)
   ]).asBroadcastStream().startWith(0);
@@ -105,7 +105,7 @@ void main() {
           new Observable<List<Person>>.fromIterable(<List<Person>>[
             fakePeople.sublist(o['from'], min(o['to'], fakePeople.length))
           ]))
-      .tap((List<Person> list) {});
+      .call(onData: (List<Person> list) {});
 
   displayedIndices.listen(print);
 

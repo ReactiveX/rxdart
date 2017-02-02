@@ -20,7 +20,7 @@ export 'package:rxdart/src/transformers/start_with.dart';
 export 'package:rxdart/src/transformers/start_with_many.dart';
 export 'package:rxdart/src/transformers/switch_if_empty.dart';
 export 'package:rxdart/src/transformers/take_until.dart';
-export 'package:rxdart/src/transformers/tap.dart';
+export 'package:rxdart/src/transformers/call.dart';
 export 'package:rxdart/src/transformers/throttle.dart';
 export 'package:rxdart/src/transformers/time_interval.dart';
 export 'package:rxdart/src/transformers/window_with_count.dart';

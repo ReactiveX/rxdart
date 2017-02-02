@@ -10,6 +10,7 @@ import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
+import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
@@ -29,7 +30,6 @@ import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
 import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
-import 'package:rxdart/src/transformers/tap.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
 import 'package:rxdart/src/transformers/time_interval.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
@@ -283,8 +283,7 @@ class Observable<T> extends Stream<T> {
   /// Creates an Observable that contains no values.
   ///
   /// No items are emitted from the stream, and done is called upon listening.
-  factory Observable.empty() =>
-      observable((new Stream<T>.empty()));
+  factory Observable.empty() => observable((new Stream<T>.empty()));
 
   /// Creates an Observable where each item is the interleaved output emitted by
   /// the feeder streams.
@@ -613,6 +612,53 @@ class Observable<T> extends Stream<T> {
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(bufferWithCountTransformer(count, skip));
 
+  /// Invokes each callback at the given point in the stream lifecycle
+  ///
+  /// This method can be used for debugging, logging, etc. by intercepting the
+  /// stream at different points to run arbitrary actions.
+  ///
+  /// It is possible to hook onto the following parts of the stream lifecycle:
+  ///
+  ///   - onCancel
+  ///   - onData
+  ///   - onDone
+  ///   - onError
+  ///   - onListen
+  ///   - onPause
+  ///   - onResume
+  ///
+  /// In addition, the `onEach` argument is called at `onData`, `onDone`, and
+  /// `onError` with a [Notification] passed in. The [Notification] argument
+  /// contains the [Kind] of event (OnData, OnDone, OnError), and the item or
+  /// error that was emitted. In the case of onDone, no data is emitted as part
+  /// of the [Notification].
+  ///
+  /// If no callbacks are passed in, a runtime error will be thrown in dev mode
+  /// in order to "fail fast" and alert the developer that the operator should
+  /// be used or safely removed.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1).call(onData: (i) => print(i)); // Prints: 1
+  Observable<T> call(
+          {void onCancel(),
+          void onData(T event),
+          void onDone(),
+          void onEach(Notification<T> notification),
+          Function onError,
+          void onListen(),
+          void onPause(Future<dynamic> resumeSignal),
+          void onResume()}) =>
+      transform(callTransformer(
+          onCancel: onCancel,
+          onData: onData,
+          onDone: onDone,
+          onEach: onEach,
+          onError: onError,
+          onListen: onListen,
+          onPause: onPause,
+          onResume: onResume));
+
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
 
@@ -748,8 +794,7 @@ class Observable<T> extends Stream<T> {
       new Observable<T>(stream.handleError(onError, test: test));
 
   /// Creates an observable where all incoming events are ignored, only the error/completed notifications are passed
-  Observable<T> ignoreElements() =>
-      transform(ignoreElementsTransformer());
+  Observable<T> ignoreElements() => transform(ignoreElementsTransformer());
 
   /// Creates an observable that produces a value after each duration.
   Observable<T> interval(Duration duration) =>
@@ -990,15 +1035,6 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> takeWhile(bool test(T element)) =>
       new Observable<T>(stream.takeWhile(test));
-
-  /// Invokes an action for each element in the observable sequence and invokes
-  /// an action upon graceful or exceptional termination of the observable
-  /// sequence.
-  ///
-  /// This method can be used for debugging, logging, etc. of query behavior by
-  /// intercepting the message stream to run arbitrary actions for messages on
-  /// the pipeline.
-  Observable<T> tap(void action(T value)) => transform(tapTransformer(action));
 
   /// Returns an Observable that emits only the first item emitted by the source
   /// Observable during sequential time windows of a specified duration.
