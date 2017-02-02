@@ -57,8 +57,8 @@ void main() {
     new Observable<int>(_getStream())
         .flatMap(_getOtherStream)
         .listen(expectAsync1((num result) {
-      expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {

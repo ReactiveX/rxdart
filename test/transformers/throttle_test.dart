@@ -26,8 +26,8 @@ void main() {
     new Observable<int>(_getStream())
         .throttle(const Duration(milliseconds: 250))
         .listen(expectAsync1((int result) {
-      expect(result, expectedOutput[count++]);
-    }, count: 2));
+          expect(result, expectedOutput[count++]);
+        }, count: 2));
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
@@ -58,12 +58,12 @@ void main() {
     subscription = new Observable<int>(_getStream())
         .throttle(const Duration(milliseconds: 250))
         .listen(expectAsync1((int result) {
-      expect(result, expectedOutput[count++]);
+          expect(result, expectedOutput[count++]);
 
-      if (count == expectedOutput.length) {
-        subscription.cancel();
-      }
-    }, count: expectedOutput.length));
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

@@ -47,7 +47,8 @@ import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/max_test.dart' as max_test;
 import 'transformers/min_test.dart' as min_test;
 import 'transformers/of_type_test.dart' as of_type_test;
-import 'transformers/on_error_resume_next_test.dart' as on_error_resume_next_test;
+import 'transformers/on_error_resume_next_test.dart'
+    as on_error_resume_next_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/reduce_test.dart' as reduce_test;
 import 'transformers/repeat_test.dart' as repeat_test;

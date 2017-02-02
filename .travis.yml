@@ -10,4 +10,5 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 script:
   - set -e
+  - sh tool/check_format.sh
   - pub run test test/rxdart_test.dart

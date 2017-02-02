@@ -6,12 +6,10 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 22), (int count) => count)
-  .take(7);
+    const Duration(milliseconds: 22), (int count) => count).take(7);
 
 Stream<int> _getLatestFromStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 50), (int count) => count)
-  .take(4);
+    const Duration(milliseconds: 50), (int count) => count).take(4);
 
 void main() {
   test('rx.Observable.withLatestFrom', () async {
@@ -29,8 +27,8 @@ void main() {
             (int first, int second) => new Pair(first, second))
         .take(5)
         .listen(expectAsync1((Pair result) {
-      expect(result, expectedOutput[count++]);
-    }, count: expectedOutput.length));
+          expect(result, expectedOutput[count++]);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.withLatestFrom.asBroadcastStream', () async {
@@ -65,12 +63,12 @@ void main() {
             (int first, int second) => new Pair(first, second))
         .take(1)
         .listen(expectAsync1((Pair result) {
-      expect(result, expectedOutput[count++]);
+          expect(result, expectedOutput[count++]);
 
-      if (count == expectedOutput.length) {
-        subscription.cancel();
-      }
-    }, count: expectedOutput.length));
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

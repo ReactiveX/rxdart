@@ -6,7 +6,8 @@ import 'package:rxdart/rxdart.dart';
 
 Stream<int> get streamA => new Stream<int>.periodic(
     const Duration(milliseconds: 1), (int count) => count).take(3);
-Stream<int> get streamB => new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+Stream<int> get streamB =>
+    new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 Stream<bool> get streamC {
   final StreamController<bool> controller = new StreamController<bool>()
     ..add(true)
@@ -269,9 +270,9 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.A', () async {
-    Stream<String> observableWithError = Observable.combineLatest4(
-        streamA, streamB, streamC, getErroneousStream(),
-        (int a_value, int b_value, bool c_value, _) {
+    Stream<String> observableWithError = Observable
+        .combineLatest4(streamA, streamB, streamC, getErroneousStream(),
+            (int a_value, int b_value, bool c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
 

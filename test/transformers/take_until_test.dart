@@ -37,8 +37,8 @@ void main() {
     new Observable<int>(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[count++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
@@ -69,12 +69,12 @@ void main() {
     subscription = new Observable<int>(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((int result) {
-      expect(result, expectedOutput[count++]);
+          expect(result, expectedOutput[count++]);
 
-      if (count == expectedOutput.length) {
-        subscription.cancel();
-      }
-    }, count: expectedOutput.length));
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

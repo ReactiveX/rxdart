@@ -56,7 +56,7 @@ void main() {
 
   test('rx.Observable.ignoreElements.error.shouldThrow', () async {
     Stream<num> observableWithError =
-    new Observable<num>(getErroneousStream()).ignoreElements();
+        new Observable<num>(getErroneousStream()).ignoreElements();
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {

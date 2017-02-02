@@ -23,8 +23,8 @@ void main() {
     new Observable<int>(_getStream())
         .debounce(const Duration(milliseconds: 200))
         .listen(expectAsync1((int result) {
-      expect(result, 4);
-    }, count: 1));
+          expect(result, 4);
+        }, count: 1));
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
