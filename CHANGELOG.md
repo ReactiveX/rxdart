@@ -1,3 +1,8 @@
+## 0.8.1
+* added never constructor
+* added error constructor
+* moved code coverage to [codecov.io](https://codecov.io/gh/frankpepermans/rxdart)
+
 ## 0.8.0
 * BREAKING: tap is replaced by call(onData)
 * added call, which can take any combination of the following event methods: 
