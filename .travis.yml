@@ -5,6 +5,9 @@ dart:
 - stable
 - dev
 with_content_shell: false
+install:
+  - apt-get install -y lcov
+  - gem install coveralls-lcov
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
@@ -12,3 +15,9 @@ script:
   - set -e
   - sh tool/check_format.sh
   - pub run test test/rxdart_test.dart
+  - pub global activate coverage
+  - dart --observe=8111 test/rxdart_test.dart &
+  - sleep 20
+  - pub global run coverage:collect_coverage --port=8111 -o coverage.json --resume-isolates
+  - pub global run coverage:format_coverage -l --packages=.packages --report-on=lib/ -i coverage.json -o coverage.info
+  - coveralls-lcov coverage.info
