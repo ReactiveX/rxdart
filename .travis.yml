@@ -1,12 +1,12 @@
 language: dart
 # Speed up builds by using containerization.
-sudo: false
+sudo: true
 dart:
 - stable
 - dev
 with_content_shell: false
 install:
-  - apt-get install -y lcov
+  - sudo apt-get install -y lcov
   - gem install coveralls-lcov
 before_install:
   - export DISPLAY=:99.0
