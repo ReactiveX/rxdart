@@ -12,6 +12,7 @@ script:
   - set -e
   - sh tool/check_format.sh
   - pub run test test/rxdart_test.dart
+  - pub get --packages-dir
   - pub global activate coverage
   - dart --observe=8111 test/rxdart_test.dart &
   - sleep 1
