@@ -67,6 +67,7 @@ var myObservable = observable(myStream);
 - defer
 - just
 - merge
+- never
 - periodic
 - tween
 
@@ -99,7 +100,7 @@ var myObservable = Observable.combineLatest3(
 - groupBy  
 - interval  
 - max  
-- min  
+- min
 - pluck  
 - repeat  
 - retry  
