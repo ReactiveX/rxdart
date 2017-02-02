@@ -1,5 +1,4 @@
 import '../test_utils.dart';
-import 'dart:async';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
@@ -143,7 +142,7 @@ void main() {
       // in order to "fail fast" and alert the developer that the operator
       // can be used or safely removed.
       observable.call();
-    } catch (e, s) {
+    } catch (e) {
       expect(e is AssertionError, isTrue);
     }
   });

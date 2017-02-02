@@ -6,6 +6,7 @@ import 'package:rxdart/src/streams/concat.dart';
 import 'package:rxdart/src/streams/concat_eager.dart';
 import 'package:rxdart/src/streams/defer.dart';
 import 'package:rxdart/src/streams/merge.dart';
+import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
@@ -291,6 +292,16 @@ class Observable<T> extends Stream<T> {
   /// http://rxmarbles.com/#merge
   factory Observable.merge(Iterable<Stream<T>> streams) =>
       new Observable<T>(new MergeStream<T>(streams));
+
+  /// Returns a non-terminating observable sequence, which can be used to denote
+  /// an infinite duration.
+  ///
+  /// The never operator is one with very specific and limited behavior. These
+  /// are useful for testing purposes, and sometimes also for combining with
+  /// other Observables or as parameters to operators that expect other
+  /// Observables as parameters.
+  factory Observable.never() =>
+      new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
   ///
