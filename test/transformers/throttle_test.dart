@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -42,8 +41,9 @@ void main() {
   });
 
   test('rx.Observable.throttle.error.shouldThrow', () async {
-    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
-        .throttle(const Duration(milliseconds: 200));
+    Stream<num> observableWithError =
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .throttle(const Duration(milliseconds: 200));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

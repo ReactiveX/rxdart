@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -35,8 +34,9 @@ void main() {
   });
 
   test('rx.Observable.switchIfEmpty.error.shouldThrow', () async {
-    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
-        .switchIfEmpty(new Observable<int>.just(1));
+    Stream<num> observableWithError =
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .switchIfEmpty(new Observable<int>.just(1));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

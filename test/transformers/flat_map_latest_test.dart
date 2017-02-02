@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -59,8 +58,9 @@ void main() {
   });
 
   test('rx.Observable.flatMapLatest.error.shouldThrow', () async {
-    Stream<num> observableWithError = new Observable<num>(getErroneousStream())
-        .flatMapLatest(_getOtherStream);
+    Stream<num> observableWithError =
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .flatMapLatest(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

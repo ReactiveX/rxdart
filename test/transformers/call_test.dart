@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
@@ -18,7 +17,8 @@ void main() {
 
   test('rx.Observable.call.error', () async {
     final Observable<int> observable =
-        new Observable<num>(getErroneousStream()).call(onData: (_) {});
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .call(onData: (_) {});
 
     observable.listen((_) {}, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
@@ -66,7 +66,7 @@ void main() {
 
   test('rx.Observable.call.onError', () async {
     final Observable<num> observable =
-        new Observable<num>(getErroneousStream());
+        new Observable<num>(new ErrorStream<num>(new Exception()));
     bool onErrorCalled = false;
 
     observable.call(onError: (_, __) {
@@ -92,7 +92,7 @@ void main() {
 
   test('rx.Observable.call.onEach.sadPath', () async {
     final Observable<num> observable =
-        new Observable<num>(getErroneousStream());
+        new Observable<num>(new ErrorStream<num>(new Exception()));
     List<Notification<num>> notifications = <Notification<num>>[];
 
     observable.call(onEach: (Notification<num> notification) {

@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -56,7 +55,8 @@ void main() {
 
   test('rx.Observable.ignoreElements.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        new Observable<num>(getErroneousStream()).ignoreElements();
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .ignoreElements();
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {

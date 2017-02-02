@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -74,7 +73,7 @@ void main() {
 
   test('rx.Observable.max.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        new Observable<num>(getErroneousStream()).max();
+        new Observable<num>(new ErrorStream<num>(new Exception())).max();
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -37,8 +36,8 @@ void main() {
   });
 
   test('rx.Observable.merge.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>.merge(_getStreams()..add(getErroneousStream()));
+    Stream<num> observableWithError = new Observable<num>.merge(
+        _getStreams()..add(new ErrorStream<num>(new Exception())));
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
