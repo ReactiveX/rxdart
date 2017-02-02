@@ -19,6 +19,5 @@ script:
   - pub run --mode=release test/benchmarks/debounce_benchmark.dart
   - pub run --mode=release test/benchmarks/start_with_benchmark.dart
 after_success:
-  - pub global activate dart_coveralls
   - pub get --packages-dir
   - dart dart_coveralls.dart.snapshot report --package-root=packages --exclude-test-files --token=$REPO_TOKEN --print-json test/rxdart_test.dart
