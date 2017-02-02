@@ -1,7 +1,7 @@
 # RxDart
 
 [![Build Status](https://travis-ci.org/frankpepermans/rxdart.svg)](https://travis-ci.org/frankpepermans/rxdart)
-[![Coverage Status](https://coveralls.io/repos/frankpepermans/rxdart/badge.svg?branch=master&service=github)](https://coveralls.io/github/frankpepermans/rxdart?branch=master)
+[![codecov.io](https://codecov.io/github/frankpepermans/rxdart/coverage.svg?branch=master)](https://codecov.io/github/frankpepermans/rxdart/coverage.svg?branch=master)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 [![Gitter](https://img.shields.io/gitter/room/rxdart/Lobby.svg)](https://gitter.im/rxdart/Lobby)
 
