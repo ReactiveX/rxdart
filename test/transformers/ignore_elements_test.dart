@@ -68,6 +68,8 @@ void main() {
       subscription.cancel();
     }, onDone: expectAsync0(() {
       expect(hasReceivedEvent, isFalse);
+
+      subscription.cancel();
     }));
 
     subscription.pause();

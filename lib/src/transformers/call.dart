@@ -110,7 +110,7 @@ StreamTransformer<T, T> callTransformer<T>(
             onCancel();
           }
 
-          subscription.cancel();
+          return subscription.cancel();
         });
 
     return controller.stream.listen(null);
