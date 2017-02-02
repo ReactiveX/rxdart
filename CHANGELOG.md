@@ -1,3 +1,8 @@
+## 0.8.0
+* BREAKING: tap is replaced by call(onData)
+* added call, which can take any combination of the following event methods: 
+onCancel, onData, onDone, onError, onListen, onPause, onResume
+
 ## 0.7.1+1
 * improved the README file
 
