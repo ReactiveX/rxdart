@@ -1,3 +1,6 @@
+# Ensure the source is formatted
+$(dirname -- "$0")/ensure_dartfmt.sh
+
 # Fast fail the script on failures.
 set -e
 

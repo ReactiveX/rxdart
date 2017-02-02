@@ -17,8 +17,8 @@ void main() {
     observable(getErroneousStream())
         .onErrorResumeNext(_getStream())
         .listen(expectAsync1((num result) {
-      expect(result, expected[count++]);
-    }, count: expected.length));
+          expect(result, expected[count++]);
+        }, count: expected.length));
   });
 
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
@@ -44,8 +44,8 @@ void main() {
 
     observableWithError.listen((_) {},
         onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isException);
-        }));
+      expect(e, isException);
+    }));
   });
 
   test('rx.Observable.onErrorResumeNext.pause.resume', () async {
@@ -55,12 +55,12 @@ void main() {
     subscription = observable(getErroneousStream())
         .onErrorResumeNext(_getStream())
         .listen(expectAsync1((num result) {
-      expect(result, expected[count++]);
+          expect(result, expected[count++]);
 
-      if (count == expected.length) {
-        subscription.cancel();
-      }
-    }, count: expected.length));
+          if (count == expected.length) {
+            subscription.cancel();
+          }
+        }, count: expected.length));
 
     subscription.pause();
     subscription.resume();
@@ -69,13 +69,13 @@ void main() {
   test('rx.Observable.onErrorResumeNext.close', () async {
     int count = 0;
 
-    observable(getErroneousStream())
-        .onErrorResumeNext(_getStream())
-        .listen(expectAsync1((num result) {
-      expect(result, expected[count++]);
-    }, count: expected.length), onDone: expectAsync0(() {
-      // The code should reach this point
-      expect(true, true);
-    }, count: 1));
+    observable(getErroneousStream()).onErrorResumeNext(_getStream()).listen(
+        expectAsync1((num result) {
+          expect(result, expected[count++]);
+        }, count: expected.length),
+        onDone: expectAsync0(() {
+          // The code should reach this point
+          expect(true, true);
+        }, count: 1));
   });
 }

@@ -27,16 +27,16 @@ void main() {
     new Observable<dynamic>(_getStream())
         .ofType(new TypeToken<Map<String, int>>())
         .listen(expectAsync1((Map<String, int> result) {
-      expect(result, isMap);
-    }, count: 1));
+          expect(result, isMap);
+        }, count: 1));
   });
 
   test('rx.Observable.ofType.polymorphism', () async {
     new Observable<dynamic>(_getStream())
         .ofType(kNum)
         .listen(expectAsync1((num result) {
-      expect(result is num, true);
-    }, count: 2));
+          expect(result is num, true);
+        }, count: 2));
   });
 
   test('rx.Observable.ofType.asBroadcastStream', () async {

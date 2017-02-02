@@ -17,7 +17,7 @@ void main() {
 
   test('rx.Observable.onErrorReturn.asBroadcastStream', () async {
     Stream<num> stream =
-    observable(getErroneousStream()).onErrorReturn(0).asBroadcastStream();
+        observable(getErroneousStream()).onErrorReturn(0).asBroadcastStream();
 
     expect(stream.isBroadcast, isTrue);
 
