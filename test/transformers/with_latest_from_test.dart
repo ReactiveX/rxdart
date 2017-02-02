@@ -6,10 +6,12 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 22), (int count) => count);
+    const Duration(milliseconds: 22), (int count) => count)
+  .take(7);
 
 Stream<int> _getLatestFromStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 50), (int count) => count);
+    const Duration(milliseconds: 50), (int count) => count)
+  .take(4);
 
 void main() {
   test('rx.Observable.withLatestFrom', () async {
@@ -37,8 +39,8 @@ void main() {
             (int first, int second) => 0);
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
 
     expect(true, true);
   });
