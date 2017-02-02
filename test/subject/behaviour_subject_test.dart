@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.BehaviourSubject', () async {
-    final StreamController<int> subject = new BehaviourSubject<int>.broadcast();
+    final StreamController<int> subject = new BehaviourSubject<int>();
 
     subject.add(1);
 
@@ -36,5 +36,14 @@ void main() {
 
       subject.close();
     }));
+  });
+
+  test('rx.BehaviourSubject.error', () async {
+    final StreamController<int> subject = new BehaviourSubject<int>();
+
+    subject.addError(new Exception());
+
+    subject.stream
+        .listen(null, onError: expectAsync1((_) => expect(_, isException)));
   });
 }
