@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -270,9 +269,9 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrow.A', () async {
-    Stream<String> observableWithError = Observable
-        .combineLatest4(streamA, streamB, streamC, getErroneousStream(),
-            (int a_value, int b_value, bool c_value, _) {
+    Stream<String> observableWithError = Observable.combineLatest4(
+        streamA, streamB, streamC, new ErrorStream<num>(new Exception()),
+        (int a_value, int b_value, bool c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
 

@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -34,7 +33,8 @@ void main() {
 
   test('rx.Observable.sample.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        new Observable<num>(getErroneousStream()).sample(_getSampleStream());
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .sample(_getSampleStream());
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

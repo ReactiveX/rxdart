@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -36,7 +35,7 @@ void main() {
 
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
     Stream<TimeInterval<num>> observableWithError =
-        new Observable<num>(getErroneousStream())
+        new Observable<num>(new ErrorStream<num>(new Exception()))
             .interval(const Duration(milliseconds: 1))
             .timeInterval();
 

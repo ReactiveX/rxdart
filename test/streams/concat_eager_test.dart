@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -103,7 +102,7 @@ void main() {
 
   test('rx.Observable.concatEager.error.shouldThrow', () async {
     Stream<num> observableWithError = new Observable<num>.concatEager(
-        _getStreams()..add(getErroneousStream()));
+        _getStreams()..add(new ErrorStream<num>(new Exception())));
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {

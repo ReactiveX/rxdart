@@ -65,6 +65,7 @@ var myObservable = observable(myStream);
 - amb
 - concat
 - defer
+- error
 - just
 - merge
 - never

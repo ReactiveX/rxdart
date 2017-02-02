@@ -1,5 +1,3 @@
-import '../test_utils.dart';
-
 import 'dart:async';
 import 'package:rxdart/src/observable.dart';
 import 'package:test/test.dart';
@@ -45,8 +43,9 @@ void main() {
 
   test('rx.Observable.withLatestFrom.error.shouldThrow', () async {
     Stream<String> observableWithError =
-        new Observable<num>(getErroneousStream()).withLatestFrom(
-            _getLatestFromStream(), (num first, int second) => "Hello");
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .withLatestFrom(
+                _getLatestFromStream(), (num first, int second) => "Hello");
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);

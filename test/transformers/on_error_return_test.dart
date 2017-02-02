@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -8,7 +7,7 @@ void main() {
   const num expected = 0;
 
   test('rx.Observable.onErrorReturn', () async {
-    observable(getErroneousStream())
+    observable(new ErrorStream<num>(new Exception()))
         .onErrorReturn(0)
         .listen(expectAsync1((num result) {
       expect(result, expected);
@@ -16,8 +15,9 @@ void main() {
   });
 
   test('rx.Observable.onErrorReturn.asBroadcastStream', () async {
-    Stream<num> stream =
-        observable(getErroneousStream()).onErrorReturn(0).asBroadcastStream();
+    Stream<num> stream = observable(new ErrorStream<num>(new Exception()))
+        .onErrorReturn(0)
+        .asBroadcastStream();
 
     expect(stream.isBroadcast, isTrue);
 
@@ -33,7 +33,7 @@ void main() {
   test('rx.Observable.onErrorReturn.pause.resume', () async {
     StreamSubscription<num> subscription;
 
-    subscription = observable(getErroneousStream())
+    subscription = observable(new ErrorStream<num>(new Exception()))
         .onErrorReturn(0)
         .listen(expectAsync1((num result) {
       expect(result, expected);

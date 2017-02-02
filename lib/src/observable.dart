@@ -5,6 +5,7 @@ import 'package:rxdart/src/streams/combine_latest.dart';
 import 'package:rxdart/src/streams/concat.dart';
 import 'package:rxdart/src/streams/concat_eager.dart';
 import 'package:rxdart/src/streams/defer.dart';
+import 'package:rxdart/src/streams/error.dart';
 import 'package:rxdart/src/streams/merge.dart';
 import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/streams/tween.dart';
@@ -241,6 +242,18 @@ class Observable<T> extends Stream<T> {
   /// Observable contains the freshest data.
   factory Observable.defer(Stream<T> createStream()) =>
       new Observable<T>(new DeferStream<T>(createStream));
+
+  /// Returns an observable sequence that terminates with an exception, then
+  /// immediately completes.
+  ///
+  /// The error operator is one with very specific and limited behavior. It is
+  /// mostly useful for testing purposes.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.error(new ArgumentError());
+  factory Observable.error(Object error) =>
+      new Observable<T>(new ErrorStream<T>(error));
 
   ///  Creates an Observable where all events of an existing stream are piped
   ///  through a sink-transformation.
@@ -985,7 +998,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// This can be achieved quite simply with switchIfEmpty!
   ///
-  /// ### Example:
+  /// ### Example
   ///
   /// ```
   /// // Let's pretend we have some Data sources that complete without emitting

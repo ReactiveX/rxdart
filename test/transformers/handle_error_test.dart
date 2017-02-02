@@ -1,4 +1,3 @@
-import '../test_utils.dart';
 import 'dart:async';
 
 import 'package:test/test.dart';
@@ -8,8 +7,8 @@ void main() {
   test('rx.Observable.handleError', () async {
     final ArgumentError expected = new ArgumentError();
 
-    Stream<num> obs =
-        new Observable<num>(getErroneousStream()).handleError((_) {
+    Stream<num> obs = new Observable<num>(new ErrorStream<num>(new Exception()))
+        .handleError((_) {
       throw expected;
     });
 
