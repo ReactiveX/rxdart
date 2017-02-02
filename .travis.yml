@@ -21,4 +21,4 @@ script:
 after_success:
   - pub global activate dart_coveralls
   - pub get --packages-dir
-  - pub global run dart_coveralls report --package-root=packages --exclude-test-files --print-json --token=$REPO_TOKEN test/rxdart_test.dart
+  - dart dart_coveralls.dart.snapshot report --package-root=packages --exclude-test-files --token=$REPO_TOKEN --print-json test/rxdart_test.dart
