@@ -35,7 +35,7 @@ void main() {
         .call(onCancel: () {
           onCancelCalled = true;
         })
-        .listen((_) {})
+        .listen(null)
         .cancel();
 
     expect(onCancelCalled, isTrue);

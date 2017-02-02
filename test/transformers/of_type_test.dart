@@ -1,7 +1,6 @@
 import '../test_utils.dart';
 import 'dart:async';
 
-import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -25,27 +24,19 @@ Stream<dynamic> _getStream() {
 
 void main() {
   test('rx.Observable.ofType', () async {
-    new FakeAsync().run((FakeAsync fakeAsync) {
-      new Observable<dynamic>(_getStream())
-          .ofType(new TypeToken<Map<String, int>>())
-          .listen(expectAsync1((Map<String, int> result) {
-            expect(result, isMap);
-          }, count: 1));
-
-      fakeAsync.elapse(new Duration(minutes: 1));
-    });
+    new Observable<dynamic>(_getStream())
+        .ofType(new TypeToken<Map<String, int>>())
+        .listen(expectAsync1((Map<String, int> result) {
+      expect(result, isMap);
+    }, count: 1));
   });
 
   test('rx.Observable.ofType.polymorphism', () async {
-    new FakeAsync().run((FakeAsync fakeAsync) {
-      new Observable<dynamic>(_getStream())
-          .ofType(kNum)
-          .listen(expectAsync1((num result) {
-            expect(result is num, true);
-          }, count: 2));
-
-      fakeAsync.elapse(new Duration(minutes: 1));
-    });
+    new Observable<dynamic>(_getStream())
+        .ofType(kNum)
+        .listen(expectAsync1((num result) {
+      expect(result is num, true);
+    }, count: 2));
   });
 
   test('rx.Observable.ofType.asBroadcastStream', () async {

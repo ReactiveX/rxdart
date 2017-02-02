@@ -1,7 +1,6 @@
 import '../test_utils.dart';
 import 'dart:async';
 
-import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -23,16 +22,12 @@ void main() {
   test('rx.Observable.ignoreElements', () async {
     bool hasReceivedEvent = false;
 
-    new FakeAsync().run((FakeAsync fakeAsync) {
-      new Observable<int>(_getStream()).ignoreElements().listen((_) {
-        hasReceivedEvent = true;
-      },
-          onDone: expectAsync0(() {
-            expect(hasReceivedEvent, isFalse);
-          }, count: 1));
-
-      fakeAsync.elapse(new Duration(minutes: 1));
-    });
+    new Observable<int>(_getStream()).ignoreElements().listen((_) {
+      hasReceivedEvent = true;
+    },
+        onDone: expectAsync0(() {
+          expect(hasReceivedEvent, isFalse);
+        }, count: 1));
   });
 
   test('rx.Observable.ignoreElements.asBroadcastStream', () async {
@@ -46,33 +41,26 @@ void main() {
     expect(true, true);
   });
 
+  test('rx.Observable.ignoreElements.pause.resume', () async {
+    bool hasReceivedEvent = false;
+
+    new Observable<int>(_getStream()).ignoreElements().listen((_) {
+      hasReceivedEvent = true;
+    },
+        onDone: expectAsync0(() {
+          expect(hasReceivedEvent, isFalse);
+        }, count: 1))
+      ..pause()
+      ..resume();
+  });
+
   test('rx.Observable.ignoreElements.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        new Observable<num>(getErroneousStream()).ignoreElements();
+    new Observable<num>(getErroneousStream()).ignoreElements();
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {
           expect(e, isException);
         }, count: 1));
-  });
-
-  test('rx.Observable.ignoreElements.pause.resume', () async {
-    bool hasReceivedEvent = false;
-    StreamSubscription<int> subscription;
-    Observable<int> stream =
-        new Observable<int>.fromIterable(<int>[1, 2, 3]).ignoreElements();
-
-    subscription = stream.listen((int value) {
-      hasReceivedEvent = true;
-
-      subscription.cancel();
-    }, onDone: expectAsync0(() {
-      expect(hasReceivedEvent, isFalse);
-
-      subscription.cancel();
-    }));
-
-    subscription.pause();
-    subscription.resume();
   });
 }

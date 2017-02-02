@@ -1,7 +1,6 @@
 import '../test_utils.dart';
 import 'dart:async';
 
-import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -38,18 +37,14 @@ Stream<int> range() =>
 
 void main() {
   test('rx.Observable.flatMapLatest', () async {
-    new FakeAsync().run((FakeAsync fakeAsync) {
-      const List<int> expectedOutput = const <int>[5, 6, 7, 8];
-      int count = 0;
+    const List<int> expectedOutput = const <int>[5, 6, 7, 8];
+    int count = 0;
 
-      new Observable<int>(_getStream())
-          .flatMapLatest(_getOtherStream)
-          .listen(expectAsync1((num result) {
-            expect(result, expectedOutput[count++]);
-          }, count: expectedOutput.length));
-
-      fakeAsync.elapse(new Duration(milliseconds: 1000));
-    });
+    new Observable<int>(_getStream())
+        .flatMapLatest(_getOtherStream)
+        .listen(expectAsync1((num result) {
+      expect(result, expectedOutput[count++]);
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.flatMapLatest.asBroadcastStream', () async {

@@ -1,32 +1,27 @@
 import '../test_utils.dart';
 import 'dart:async';
 
-import 'package:quiver/testing/async.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.bufferWithCount.noSkip', () async {
-    new FakeAsync().run((FakeAsync fakeAsync) {
-      const List<List<int>> expectedOutput = const <List<int>>[
-        const <int>[1, 2],
-        const <int>[3, 4]
-      ];
-      int count = 0;
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[3, 4]
+    ];
+    int count = 0;
 
-      Stream<List<int>> stream =
-          new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-              .bufferWithCount(2);
+    Stream<List<int>> stream =
+    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+        .bufferWithCount(2);
 
-      stream.listen(expectAsync1((List<int> result) {
-        // test to see if the combined output matches
-        expect(expectedOutput[count][0], result[0]);
-        expect(expectedOutput[count][1], result[1]);
-        count++;
-      }, count: 2));
-
-      fakeAsync.elapse(new Duration(minutes: 1));
-    });
+    stream.listen(expectAsync1((List<int> result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[count][0], result[0]);
+      expect(expectedOutput[count][1], result[1]);
+      count++;
+    }, count: 2));
   });
 
   test('rx.Observable.bufferWithCount.skip', () async {
