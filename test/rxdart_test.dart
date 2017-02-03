@@ -22,6 +22,7 @@ import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'transformers/call_test.dart' as call_test;
+import 'transformers/count_test.dart' as count_test;
 import 'transformers/contains_test.dart' as contains_test;
 import 'transformers/debounce_test.dart' as debounce_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
@@ -100,6 +101,7 @@ void main() {
   async_map_test.main();
   buffer_with_count_test.main();
   call_test.main();
+  count_test.main();
   contains_test.main();
   debounce_test.main();
   default_if_empty_test.main();
