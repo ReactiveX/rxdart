@@ -13,6 +13,7 @@ import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
+import 'package:rxdart/src/transformers/count.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
@@ -313,8 +314,7 @@ class Observable<T> extends Stream<T> {
   /// are useful for testing purposes, and sometimes also for combining with
   /// other Observables or as parameters to operators that expect other
   /// Observables as parameters.
-  factory Observable.never() =>
-      new Observable<T>(new NeverStream<T>());
+  factory Observable.never() => new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
   ///
@@ -682,6 +682,17 @@ class Observable<T> extends Stream<T> {
           onListen: onListen,
           onPause: onPause,
           onResume: onResume));
+
+  /// Returns an observable sequence containing a value that represents
+  /// how many elements in the specified observable sequence satisfy
+  /// a condition if provided, else the count of items.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable(['a', 'b', 'c']).count(); // Prints: 3
+  ///     new Observable.fromIterable(['a', 'b', 'c']).count((char) => char == 'a'); // Prints: 1
+  Observable<int> count([bool predicate(T event)]) =>
+      transform(countTransformer(predicate));
 
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
