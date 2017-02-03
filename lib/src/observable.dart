@@ -8,6 +8,7 @@ import 'package:rxdart/src/streams/defer.dart';
 import 'package:rxdart/src/streams/error.dart';
 import 'package:rxdart/src/streams/merge.dart';
 import 'package:rxdart/src/streams/never.dart';
+import 'package:rxdart/src/streams/range.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
@@ -313,8 +314,7 @@ class Observable<T> extends Stream<T> {
   /// are useful for testing purposes, and sometimes also for combining with
   /// other Observables or as parameters to operators that expect other
   /// Observables as parameters.
-  factory Observable.never() =>
-      new Observable<T>(new NeverStream<T>());
+  factory Observable.never() => new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
   ///
@@ -326,6 +326,17 @@ class Observable<T> extends Stream<T> {
   factory Observable.periodic(Duration period,
           [T computation(int computationCount)]) =>
       new Observable<T>((new Stream<T>.periodic(period, computation)));
+
+  /// Returns an Observable that emits a sequence of Integers within a specified
+  /// range.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
+  ///
+  ///     Observable.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
+  static Observable<int> range(int startInclusive, int endInclusive) =>
+      new Observable<int>(new RangeStream(startInclusive, endInclusive));
 
   /// Creates an Observable that emits values starting from startValue and
   /// incrementing according to the ease type over the duration.
