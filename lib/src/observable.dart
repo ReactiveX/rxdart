@@ -9,6 +9,7 @@ import 'package:rxdart/src/streams/error.dart';
 import 'package:rxdart/src/streams/merge.dart';
 import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/streams/range.dart';
+import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
@@ -341,6 +342,15 @@ class Observable<T> extends Stream<T> {
   ///     Observable.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
   static Observable<int> range(int startInclusive, int endInclusive) =>
       new Observable<int>(new RangeStream(startInclusive, endInclusive));
+
+  /// Emits the given value after a specified amount of time.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.timer("hi", new Duration(minutes: 1))
+  ///         .listen((i) => print(i)); // print "hi" after 1 minute
+  factory Observable.timer(T value, Duration duration) =>
+      new Observable<T>((new TimerStream<T>(value, duration)));
 
   /// Creates an Observable that emits values starting from startValue and
   /// incrementing according to the ease type over the duration.

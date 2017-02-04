@@ -16,6 +16,7 @@ import 'streams/never_test.dart' as never_test;
 import 'streams/periodic_test.dart' as periodic_test;
 import 'streams/range_test.dart' as range_test;
 import 'streams/stream_test.dart' as stream_test;
+import 'streams/timer_test.dart' as timer_test;
 import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
 
@@ -162,6 +163,7 @@ void main() {
   to_list_test.main();
   to_set_test.main();
   transform_test.main();
+  timer_test.main();
   tween_test.main();
   where_test.main();
   window_with_count_test.main();

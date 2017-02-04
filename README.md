@@ -71,6 +71,7 @@ var myObservable = observable(myStream);
 - never
 - periodic
 - range (static)
+- timer
 - tween (static)
 
 ###### Usage
@@ -95,7 +96,7 @@ var myObservable = Observable.combineLatest3(
     
 ##### Available Methods
 - bufferWithCount
-- call   
+- call
 - concatMap
 - debounce
 - dematerialize
