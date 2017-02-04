@@ -70,7 +70,8 @@ var myObservable = observable(myStream);
 - merge
 - never
 - periodic
-- tween
+- range (static)
+- tween (static)
 
 ###### Usage
 ```dart

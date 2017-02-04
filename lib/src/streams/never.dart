@@ -13,7 +13,6 @@ class NeverStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-
     // ignore: close_sinks
     StreamController<T> controller = new StreamController<T>();
 

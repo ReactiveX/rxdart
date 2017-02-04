@@ -12,6 +12,7 @@ import 'streams/from_iterable_test.dart' as from_iterable_test;
 import 'streams/just_test.dart' as just_test;
 import 'streams/merge_test.dart' as merge_test;
 import 'streams/periodic_test.dart' as periodic_test;
+import 'streams/range_test.dart' as range_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -90,6 +91,7 @@ void main() {
   just_test.main();
   merge_test.main();
   periodic_test.main();
+  range_test.main();
   stream_test.main();
   zip_test.main();
 
