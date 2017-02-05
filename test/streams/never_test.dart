@@ -18,9 +18,10 @@ void main() {
         }, count: 0),
         onError: expectAsync2((dynamic e, dynamic s) {
           onErrorCalled = false;
-        }, count: 0), onDone: expectAsync0(() {
-      onDataCalled = true;
-    }, count: 0));
+        }, count: 0),
+        onDone: expectAsync0(() {
+          onDataCalled = true;
+        }, count: 0));
 
     await new Future<int>.delayed(new Duration(milliseconds: 10));
 
@@ -46,9 +47,10 @@ void main() {
         }, count: 0),
         onError: expectAsync2((dynamic e, dynamic s) {
           onErrorCalled = false;
-        }, count: 0), onDone: expectAsync0(() {
-      onDataCalled = true;
-    }, count: 0));
+        }, count: 0),
+        onDone: expectAsync0(() {
+          onDataCalled = true;
+        }, count: 0));
 
     await new Future<int>.delayed(new Duration(milliseconds: 10));
 

@@ -51,7 +51,9 @@ void main() {
 
     subject.addError(new Exception());
 
-    subject.stream
-        .listen(null, onError: expectAsync1((_) => expect(_, isException)));
+    subject.stream.listen(null, onError: expectAsync1((_) {
+      expect(_, isException);
+      subject.close();
+    }));
   });
 }

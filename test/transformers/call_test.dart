@@ -1,4 +1,3 @@
-import 'package:stack_trace/stack_trace.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -84,24 +83,22 @@ void main() {
       notifications.add(notification);
     }).listen((_) {}, cancelOnError: false, onDone: expectAsync0(() {
       expect(notifications, <Notification<int>>[
-        new Notification<int>(Kind.OnData, 1, null),
-        new Notification<int>(Kind.OnDone, null, null)
+        new Notification<int>.onData(1),
+        new Notification<int>.onDone()
       ]);
     }));
   });
 
   test('rx.Observable.call.onEach.sadPath', () async {
     final Observable<num> observable =
-        new Observable<num>(new ErrorStream<num>(new Exception()));
+        new Observable<num>.error(new Exception());
     List<Notification<num>> notifications = <Notification<num>>[];
 
     observable.call(onEach: (Notification<num> notification) {
       notifications.add(notification);
     }).listen((_) {}, onError: expectAsync2((dynamic e, dynamic s) {
       expect(notifications.length, 1);
-      expect(notifications[0].kind, Kind.OnError);
-      expect(notifications[0].errorAndStackTrace.error, isException);
-      expect(notifications[0].errorAndStackTrace.stacktrace is Chain, isTrue);
+      expect(notifications[0].isOnError, isTrue);
     }));
   });
 

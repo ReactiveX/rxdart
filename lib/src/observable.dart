@@ -15,11 +15,13 @@ import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
+import 'package:rxdart/src/transformers/dematerialize.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
 import 'package:rxdart/src/transformers/group_by.dart';
 import 'package:rxdart/src/transformers/ignore_elements.dart';
 import 'package:rxdart/src/transformers/interval.dart';
+import 'package:rxdart/src/transformers/materialize.dart';
 import 'package:rxdart/src/transformers/max.dart';
 import 'package:rxdart/src/transformers/min.dart';
 import 'package:rxdart/src/transformers/of_type.dart';
@@ -313,8 +315,7 @@ class Observable<T> extends Stream<T> {
   /// are useful for testing purposes, and sometimes also for combining with
   /// other Observables or as parameters to operators that expect other
   /// Observables as parameters.
-  factory Observable.never() =>
-      new Observable<T>(new NeverStream<T>());
+  factory Observable.never() => new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
   ///
@@ -702,6 +703,32 @@ class Observable<T> extends Stream<T> {
   Observable<T> defaultIfEmpty(T defaultValue) =>
       transform(defaultIfEmptyTransformer(defaultValue));
 
+  /// Converts the onData, onDone, and onError [Notification] objects from a
+  /// materialized stream into normal onData, onDone, and onError events.
+  ///
+  /// When a stream has been materialized, it emits onData, onDone, and onError
+  /// events as [Notification] objects. Dematerialize simply reverses this by
+  /// transforming [Notification] objects back to a normal stream of events.
+  ///
+  /// Example:
+  ///     new Observable<Notification<int>>
+  ///         .fromIterable([new Notification.onData(1), new Notification.onDone()])
+  ///         .dematerialize()
+  ///         .listen((i) => print(i)); // Prints 1
+  ///
+  ///     new Observable<Notification<int>>
+  ///         .just(new Notification.onError(new Exception(), null))
+  ///         .dematerialize()
+  ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
+  Observable<S> dematerialize<S>() {
+    // Since `dematerialize` can operate on any Observable<T>, we must
+    // ignore the type and pass it to the streamTransformer, where it
+    // will throw an Error if the stream is not a Stream<Notification<S>>
+
+    // ignore: argument_type_not_assignable
+    return transform(dematerializeTransformer<S>());
+  }
+
   /// Creates an Observable where data events are skipped if they are equal to
   /// the previous data event.
   ///
@@ -860,6 +887,24 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<S>
       map<S>(S convert(T event)) => new Observable<S>(stream.map(convert));
+
+  /// Converts the onData, on Done, and onError events into [Notification]
+  /// objects that are passed into the downstream onData listener.
+  ///
+  /// The [Notification] object contains the [Kind] of event (OnData, onDone, or
+  /// OnError), and the item or error that was emitted. In the case of onDone,
+  /// no data is emitted as part of the [Notification].
+  ///
+  /// Example:
+  ///     new Observable<int>.just(1)
+  ///         .materialize()
+  ///         .listen((i) => print(i)); // Prints onData & onDone Notification
+  ///
+  ///     new Observable<int>.error(new Exception())
+  ///         .materialize()
+  ///         .listen((i) => print(i)); // Prints onError Notification
+  Observable<Notification<T>> materialize() =>
+      transform(materializeTransformer());
 
   /// Creates an Observable that returns the maximum value in the source
   /// sequence according to the specified compare function.
