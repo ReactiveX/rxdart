@@ -123,6 +123,8 @@ var myObservable = observable(myStream)
     .distinct()
 ```
 
+test
+
 ### Objects
 
 - Observable
