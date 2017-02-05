@@ -34,6 +34,7 @@ import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
 import 'package:rxdart/src/transformers/time_interval.dart';
+import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
@@ -313,8 +314,7 @@ class Observable<T> extends Stream<T> {
   /// are useful for testing purposes, and sometimes also for combining with
   /// other Observables or as parameters to operators that expect other
   /// Observables as parameters.
-  factory Observable.never() =>
-      new Observable<T>(new NeverStream<T>());
+  factory Observable.never() => new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
   ///
@@ -1078,6 +1078,18 @@ class Observable<T> extends Stream<T> {
   Observable<T> timeout(Duration timeLimit,
           {void onTimeout(EventSink<T> sink)}) =>
       new Observable<T>(stream.timeout(timeLimit, onTimeout: onTimeout));
+
+  /// Wraps each item emitted by the source Observable in a [Timestamped] object
+  /// that includes the emitted item and the time when the item was emitted.
+  ///
+  /// Example
+  ///
+  ///     new Observable.just(1)
+  ///        .timestamp()
+  ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
+  Observable<Timestamped<T>> timestamp() {
+    return transform(timestampTransformer());
+  }
 
   @override
   Observable<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>

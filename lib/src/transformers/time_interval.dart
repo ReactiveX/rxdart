@@ -43,4 +43,24 @@ class TimeInterval<T> {
   final T value;
 
   TimeInterval(this.value, this.interval);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is TimeInterval &&
+        this.interval == other.interval &&
+        this.value == other.value;
+  }
+
+  @override
+  int get hashCode {
+    return interval.hashCode ^ value.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'TimeInterval{interval: $interval, value: $value}';
+  }
 }

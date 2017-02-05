@@ -111,7 +111,8 @@ var myObservable = Observable.combineLatest3(
 - startWithMany  
 - takeUntil  
 - timeInterval  
-- tap  
+- timestamp
+- tap
 - throttle  
 - windowWithCount
 - withLatestFrom  
