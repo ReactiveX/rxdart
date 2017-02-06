@@ -71,6 +71,7 @@ import 'transformers/take_while_test.dart' as take_while_test;
 import 'transformers/throttle_test.dart' as throttle_test;
 import 'transformers/time_interval_test.dart' as time_interval_test;
 import 'transformers/timeout_test.dart' as timeout_test;
+import 'transformers/timestamp_test.dart' as timestamp_test;
 import 'transformers/to_list_test.dart' as to_list_test;
 import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
@@ -153,6 +154,7 @@ void main() {
   throttle_test.main();
   time_interval_test.main();
   timeout_test.main();
+  timestamp_test.main();
   to_list_test.main();
   to_set_test.main();
   transform_test.main();
