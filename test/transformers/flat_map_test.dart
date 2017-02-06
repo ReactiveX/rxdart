@@ -4,27 +4,17 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
+  return new Stream<int>.fromIterable(<int>[1, 2, 3]);
 }
 
 Stream<num> _getOtherStream(num value) {
   StreamController<num> controller = new StreamController<num>();
 
-  new Timer(const Duration(milliseconds: 100), () => controller.add(value + 1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(value + 2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(value + 3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(value + 4);
+  new Timer(
+      // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
+      // than they delay 3
+      new Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
+    controller.add(value);
     controller.close();
   });
 
@@ -33,30 +23,13 @@ Stream<num> _getOtherStream(num value) {
 
 void main() {
   test('rx.Observable.flatMap', () async {
-    const List<int> expectedOutput = const <int>[
-      2,
-      3,
-      3,
-      4,
-      4,
-      4,
-      5,
-      5,
-      5,
-      5,
-      6,
-      6,
-      6,
-      7,
-      7,
-      8
-    ];
+    const List<int> expectedOutput = const <int>[3, 2, 1];
     int count = 0;
 
     new Observable<int>(_getStream())
         .flatMap(_getOtherStream)
         .listen(expectAsync1((num result) {
-          expect(expectedOutput[count++], result);
+          expect(result, expectedOutput[count++]);
         }, count: expectedOutput.length));
   });
 

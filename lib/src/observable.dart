@@ -14,6 +14,7 @@ import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
+import 'package:rxdart/src/transformers/concat_map.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
@@ -693,6 +694,17 @@ class Observable<T> extends Stream<T> {
           onListen: onListen,
           onPause: onPause,
           onResume: onResume));
+
+  /// Maps each emitted item to a new [Stream] using the given predicate, then
+  /// subscribes to each new stream one after the next until all values are
+  /// emitted.
+  ///
+  /// ConcatMap is similar to flatMap, but ensures order by guaranteeing that
+  /// all items from the created stream will be emitted before moving to the
+  /// next created stream. This process continues until all created streams have
+  /// completed.
+  Observable<S> concatMap<S>(Stream<S> predicate(T value)) =>
+      transform(concatMapTransformer(predicate));
 
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
