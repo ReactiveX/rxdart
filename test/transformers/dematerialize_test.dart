@@ -1,0 +1,67 @@
+import 'dart:async';
+import 'package:stack_trace/stack_trace.dart';
+import 'package:test/test.dart';
+import 'package:rxdart/rxdart.dart';
+
+void main() {
+  test('rx.Observable.dematerialize.happyPath', () async {
+    final int expectedValue = 1;
+    final Observable<Notification<int>> observable =
+        new Observable<int>.just(1).materialize();
+
+    observable.dematerialize().listen(expectAsync1((int value) {
+      expect(value, expectedValue);
+    }), onDone: expectAsync0(() {
+      // Should call onDone
+      expect(true, isTrue);
+    }));
+  });
+
+  test('dematerializeTransformer.happyPath', () async {
+    final int expectedValue = 1;
+    final Stream<Notification<int>> stream =
+        new Stream<Notification<int>>.fromIterable(<Notification<int>>[
+      new Notification<int>.onData(expectedValue),
+      new Notification<int>.onDone()
+    ]);
+
+    stream.transform(dematerializeTransformer()).listen(
+        expectAsync1((int value) {
+      expect(value, expectedValue);
+    }), onDone: expectAsync0(() {
+      // Should call onDone
+      expect(true, isTrue);
+    }));
+  });
+
+  test('dematerializeTransformer.sadPath', () async {
+    final Stream<Notification<int>> stream =
+        new Stream<Notification<int>>.fromIterable(<Notification<int>>[
+      new Notification<int>.onError(new Exception(), new Chain.current())
+    ]);
+
+    stream.transform(dematerializeTransformer()).listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isException);
+    }));
+  });
+
+  test('dematerializeTransformer.onPause.onResume', () async {
+    final int expectedValue = 1;
+    final Stream<Notification<int>> stream =
+        new Stream<Notification<int>>.fromIterable(<Notification<int>>[
+      new Notification<int>.onData(expectedValue),
+      new Notification<int>.onDone()
+    ]);
+
+    stream.transform(dematerializeTransformer()).listen(
+        expectAsync1((int value) {
+      expect(value, expectedValue);
+    }), onDone: expectAsync0(() {
+      // Should call onDone
+      expect(true, isTrue);
+    }))
+      ..pause()
+      ..resume();
+  });
+}

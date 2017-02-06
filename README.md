@@ -95,14 +95,16 @@ var myObservable = Observable.combineLatest3(
     
 ##### Available Methods
 - bufferWithCount
-- call
+- call   
 - concatMap
 - debounce
+- dematerialize
 - flatMapLatest
 - flatMap
 - groupBy
 - interval  
-- max  
+- materialize
+- max
 - min
 - pluck  
 - repeat  

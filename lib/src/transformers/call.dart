@@ -64,7 +64,7 @@ StreamTransformer<T, T> callTransformer<T>(
             }
 
             if (onEach != null) {
-              onEach(new Notification<T>(Kind.OnData, value, null));
+              onEach(new Notification<T>.onData(value));
             }
 
             controller.add(value);
@@ -74,8 +74,7 @@ StreamTransformer<T, T> callTransformer<T>(
             }
 
             if (onEach != null) {
-              onEach(new Notification<T>(
-                  Kind.OnError, null, new ErrorAndStackTrace(e, s)));
+              onEach(new Notification<T>.onError(e, s));
             }
 
             controller.addError(e);
@@ -85,7 +84,7 @@ StreamTransformer<T, T> callTransformer<T>(
             }
 
             if (onEach != null) {
-              onEach(new Notification<T>(Kind.OnDone, null, null));
+              onEach(new Notification<T>.onDone());
             }
 
             controller.close();
@@ -126,6 +125,14 @@ class Notification<T> {
 
   Notification(this.kind, this.value, this.errorAndStackTrace);
 
+  factory Notification.onData(T value) =>
+      new Notification<T>(Kind.OnData, value, null);
+
+  factory Notification.onDone() => new Notification<T>(Kind.OnDone, null, null);
+
+  factory Notification.onError(dynamic e, dynamic s) =>
+      new Notification<T>(Kind.OnError, null, new ErrorAndStackTrace(e, s));
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) {
@@ -144,8 +151,14 @@ class Notification<T> {
 
   @override
   String toString() {
-    return 'Notification{kind: $kind, _throwable: $errorAndStackTrace, value: $value}';
+    return 'Notification{kind: $kind, value: $value, errorAndStackTrace: $errorAndStackTrace}';
   }
+
+  bool get isOnData => kind == Kind.OnData;
+
+  bool get isOnDone => kind == Kind.OnDone;
+
+  bool get isOnError => kind == Kind.OnError;
 }
 
 class ErrorAndStackTrace {
