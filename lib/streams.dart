@@ -8,5 +8,6 @@ export 'package:rxdart/src/streams/defer.dart';
 export 'package:rxdart/src/streams/error.dart';
 export 'package:rxdart/src/streams/merge.dart';
 export 'package:rxdart/src/streams/never.dart';
+export 'package:rxdart/src/streams/range.dart';
 export 'package:rxdart/src/streams/tween.dart';
 export 'package:rxdart/src/streams/zip.dart';

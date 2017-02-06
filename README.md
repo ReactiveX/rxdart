@@ -70,7 +70,8 @@ var myObservable = observable(myStream);
 - merge
 - never
 - periodic
-- tween
+- range (static)
+- tween (static)
 
 ###### Usage
 ```dart
@@ -94,12 +95,13 @@ var myObservable = Observable.combineLatest3(
     
 ##### Available Methods
 - bufferWithCount
-- call
-- debounce  
+- call   
+- concatMap
+- debounce
 - dematerialize
 - flatMapLatest
-- flatMap  
-- groupBy  
+- flatMap
+- groupBy
 - interval  
 - materialize
 - max
@@ -113,7 +115,8 @@ var myObservable = Observable.combineLatest3(
 - startWithMany  
 - takeUntil  
 - timeInterval  
-- tap  
+- timestamp
+- tap
 - throttle  
 - windowWithCount
 - withLatestFrom  

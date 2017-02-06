@@ -8,11 +8,13 @@ import 'package:rxdart/src/streams/defer.dart';
 import 'package:rxdart/src/streams/error.dart';
 import 'package:rxdart/src/streams/merge.dart';
 import 'package:rxdart/src/streams/never.dart';
+import 'package:rxdart/src/streams/range.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
+import 'package:rxdart/src/transformers/concat_map.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
@@ -36,6 +38,7 @@ import 'package:rxdart/src/transformers/switch_if_empty.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
 import 'package:rxdart/src/transformers/throttle.dart';
 import 'package:rxdart/src/transformers/time_interval.dart';
+import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
@@ -327,6 +330,17 @@ class Observable<T> extends Stream<T> {
   factory Observable.periodic(Duration period,
           [T computation(int computationCount)]) =>
       new Observable<T>((new Stream<T>.periodic(period, computation)));
+
+  /// Returns an Observable that emits a sequence of Integers within a specified
+  /// range.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
+  ///
+  ///     Observable.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
+  static Observable<int> range(int startInclusive, int endInclusive) =>
+      new Observable<int>(new RangeStream(startInclusive, endInclusive));
 
   /// Creates an Observable that emits values starting from startValue and
   /// incrementing according to the ease type over the duration.
@@ -683,6 +697,17 @@ class Observable<T> extends Stream<T> {
           onListen: onListen,
           onPause: onPause,
           onResume: onResume));
+
+  /// Maps each emitted item to a new [Stream] using the given predicate, then
+  /// subscribes to each new stream one after the next until all values are
+  /// emitted.
+  ///
+  /// ConcatMap is similar to flatMap, but ensures order by guaranteeing that
+  /// all items from the created stream will be emitted before moving to the
+  /// next created stream. This process continues until all created streams have
+  /// completed.
+  Observable<S> concatMap<S>(Stream<S> predicate(T value)) =>
+      transform(concatMapTransformer(predicate));
 
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
@@ -1123,6 +1148,18 @@ class Observable<T> extends Stream<T> {
   Observable<T> timeout(Duration timeLimit,
           {void onTimeout(EventSink<T> sink)}) =>
       new Observable<T>(stream.timeout(timeLimit, onTimeout: onTimeout));
+
+  /// Wraps each item emitted by the source Observable in a [Timestamped] object
+  /// that includes the emitted item and the time when the item was emitted.
+  ///
+  /// Example
+  ///
+  ///     new Observable.just(1)
+  ///        .timestamp()
+  ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
+  Observable<Timestamped<T>> timestamp() {
+    return transform(timestampTransformer());
+  }
 
   @override
   Observable<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>
