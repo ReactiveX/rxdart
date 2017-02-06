@@ -1,3 +1,10 @@
+## 0.8.2
+* added materialize/dematerialize
+* added range (factory)
+* added timer (factory)
+* added timestamp
+* added concatMap
+
 ## 0.8.1
 * added never constructor
 * added error constructor
