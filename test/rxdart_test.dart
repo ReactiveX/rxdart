@@ -18,6 +18,7 @@ import 'streams/range_test.dart' as range_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/tween_test.dart' as tween_test;
+import 'streams/using_test.dart' as using_test;
 import 'streams/zip_test.dart' as zip_test;
 
 import 'transformers/any_test.dart' as any_test;
@@ -165,6 +166,7 @@ void main() {
   transform_test.main();
   timer_test.main();
   tween_test.main();
+  using_test.main();
   where_test.main();
   window_with_count_test.main();
   with_latest_from_test.main();
