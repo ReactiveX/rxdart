@@ -1,39 +1,28 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:collection/collection.dart';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  List<int> codes = <int>[
-    38, // up
-    38, // up
-    40, // down
-    40, // down
-    37, // left
-    39, // right
-    37, // left
-    39, // right
-    66, // b
-    65 // a
-  ];
-  Element result = querySelector('#result');
 
-  // ignore: close_sinks
-  StreamController<KeyboardEvent> controller =
-      new StreamController<KeyboardEvent>();
-  Observable<KeyboardEvent> stream =
-      new Observable<KeyboardEvent>(controller.stream);
+  // The Konami Code: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
+  const codes = const <int>[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+  final result = querySelector('#result');
+  final keyboardInput$ctrl = new StreamController<KeyboardEvent>();
+  final keyboardInput$ = new Observable(keyboardInput$ctrl.stream);
 
-  document.addEventListener('keyup', (Event event) => controller.add(event));
+  // Listen to the DOM for the 'keyup' event
+  // and it to the streamController each time it occurs
+  document.addEventListener('keyup', (event) => keyboardInput$ctrl.add(event));
 
-  stream
-      .map((KeyboardEvent e) => e.keyCode) // get the key code
-      .bufferWithCount(10, 1) // get the last 10 keys
-      .where((List<int> x) => _equal(x, codes)) // where we match
-      .listen((_) => result.innerHtml = 'KONAMI!');
-}
-
-bool _equal(List<int> a, List<int> b) {
-  for (int i = 0; i < 10; i++) if (a[i] != b[i]) return false;
-  return true;
+  keyboardInput$
+    // Use map() to get the keyCode
+    .map((event) => event.keyCode)
+    // Use bufferWithCount() to remember the last 10 keyCodes
+    .bufferWithCount(10, 1)
+    // Use where() to check for matching values
+    .where((list) => const IterableEquality<int>().equals(list, codes))
+    // Use listen() to display the result
+    .listen((_) => result.innerHtml = 'KONAMI!');
 }
