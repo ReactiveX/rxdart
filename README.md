@@ -1,106 +1,37 @@
-# rxdart
+# RxDart
+
+[![Join the chat at https://gitter.im/ReactiveX/rxdart](https://badges.gitter.im/ReactiveX/rxdart.svg)](https://gitter.im/ReactiveX/rxdart?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build Status](https://travis-ci.org/frankpepermans/rxdart.svg)](https://travis-ci.org/frankpepermans/rxdart)
-[![Coverage Status](https://coveralls.io/repos/frankpepermans/rxdart/badge.svg?branch=master&service=github)](https://coveralls.io/github/frankpepermans/rxdart?branch=master)
+[![codecov.io](https://codecov.io/github/frankpepermans/rxdart/coverage.svg?branch=master)](https://codecov.io/github/frankpepermans/rxdart/coverage.svg?branch=master)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
+[![Gitter](https://img.shields.io/gitter/room/rxdart/Lobby.svg)](https://gitter.im/rxdart/Lobby)
 
-**Update**
-This library no longer depends on RxJs and JS interop,
-instead it now aims to provide a native Dart implementation of Rx,
-allowing usage of this library in server side (or Flutter) projects as well.
+## About
+RxDart is a reactive functional programming library for Google Dart, based on [ReactiveX](http://reactivex.io/).  
+Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html) API out-of-the-box; rather than attempting to provide an alternative to this API, RxDart adds functionality on top of it.
 
-**Currently supported**
+## How To Use RxDart
+
+### For Example: Reading the Konami Code 
+
 ```dart
- /// Use the observable method to wrap a Dart stream and add Rx operators to it
- Observable oStream = observable(myStream);
- 
- /// Below operators are now available, next to the original Stream ones (map, where, ...)
- oStream
-    .bufferWithCount
-    .debounce
-    .flatMapLatest
-    .flatMap
-    .interval
-    .max
-    .min
-    .pluck
-    .repeat
-    .retry
-    .sample
-    .scan
-    .startWith
-    .takeUntil
-    .timeInterval
-    .tap
-    .throttle
-    .windowWithCount
-    
- /// the following are contructors
- new Observable
-    .combineLatest (deprecated - see below)
-    .concat
-    .merge
-    .tween
-    .zip (deprecated - see below)
-    
- /// To better support strong mode, combineLatest and zip
- /// have now been pulled apart into fixed-length constructors.
- /// These methods are available as static methods, since class
- /// factory methods don't support generic method types.
- Observable
-    .combineTwoLatest
-    .combineThreeLatest
-    .combineFourLatest
-    .combineFiveLatest
-    .combineSixLatest
-    .combineSevenLatest
-    .combineEightLatest
-    .combineNineLatest
- 
- Observable
-    .zipTwo
-    .zipThree
-    .zipFour
-    .zipFive
-    .zipSix
-    .zipSeven
-    .zipEight
-    .zipNine
-    
- /// BehaviourSubject and ReplaySubject are available
- /// The default StreamController functions as a PublishSubject
- 
- /// On listen, receive the last added event
- StreamController controllerA = new BehaviourSubject();
- /// On listen, receive all past events
- StreamController controllerB = new ReplaySubject();
-```
+import 'package:rxdart/rxdart.dart';
 
-**Example:**
-```dart
 void main() {
-  var codes = <int>[
-      38, // up
-      38, // up
-      40, // down
-      40, // down
-      37, // left
-      39, // right
-      37, // left
-      39, // right
-      66, // b
-      65  // a
-  ];
+
+  // KONAMI CODE: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
+  var codes = <int>[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
   var result = querySelector('#result');
   var controller = new StreamController<KeyboardEvent>();
-  var stream = rx.observable(controller.stream);
+  var stream = observable(controller.stream);
 
   document.addEventListener('keyup', (event) => controller.add(event));
 
   stream
-    .map((event) => event.keyCode )           // get the key code
-    .bufferWithCount(10, 1)                   // get the last 10 keys
-    .where((list) => _areTwoListsEqual(list, codes))
+    .map((event) => event.keyCode ) // Get the key code
+    .bufferWithCount(10, 1) // Get the last 10 keys
+    .where((list) => _areTwoListsEqual(list, codes)) // Check for matching values
     .listen((_) => result.innerHtml = 'KONAMI!');
 }
 
@@ -110,3 +41,107 @@ bool _areTwoListsEqual(List<int> a, List<int> b) {
   return true;
 }
 ```
+
+## API Overview
+
+RxDart's Observables extend the Stream class.
+This has two major implications:  
+- All [methods defined on the Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on RxDart's Observables as well.
+- All Observables can be passed to any API that expects a Dart Stream as an input.
+
+### Instantiation
+
+Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level method `observable()`, or by calling a factory method on the Observable class.  
+But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
+These methods are supplied as static methods, since Dart's factory methods don't support generic types.
+
+##### Available Top-level Method
+- observable
+
+###### Usage
+```dart
+var myObservable = observable(myStream);
+```
+
+##### Available Factory Methods
+- amb
+- concat
+- defer
+- error
+- just
+- merge
+- never
+- periodic
+- range (static)
+- timer
+- tween (static)
+
+###### Usage
+```dart
+var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
+```
+
+##### Available Static Methods
+- combineLatest (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
+- zip (zip2, zip3, zip4, ..., zip9)
+
+###### Usage
+```dart
+var myObservable = Observable.combineLatest3(
+    myFirstStream, 
+    mySecondStream, 
+    myThirdStream, 
+    (firstData, secondData, thirdData) => print(firstData + ' ' + secondData + ' ' + thirdData));
+```
+
+### Transformations
+    
+##### Available Methods
+- bufferWithCount
+- call
+- concatMap
+- debounce
+- dematerialize
+- flatMapLatest
+- flatMap
+- groupBy
+- interval  
+- materialize
+- max
+- min
+- pluck  
+- repeat  
+- retry  
+- sample  
+- scan  
+- startWith  
+- startWithMany  
+- takeUntil  
+- timeInterval  
+- timestamp
+- tap
+- throttle  
+- windowWithCount
+- withLatestFrom  
+
+###### Usage
+```Dart
+var myObservable = observable(myStream)
+    .bufferWithCount(5)
+    .distinct()
+```
+
+### Objects
+
+- Observable
+- BehaviourSubject
+- ReplaySubject
+
+## Notable References
+- [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
+- [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
+- [ReactiveX (Rx)](http://reactivex.io/)
+
+## Changelog
+
+Refer to the [Changelog](https://github.com/frankpepermans/rxdart/blob/master/CHANGELOG.md) to get all release notes.
