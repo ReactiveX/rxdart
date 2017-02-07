@@ -11,6 +11,7 @@ import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/streams/range.dart';
 import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/streams/tween.dart';
+import 'package:rxdart/src/streams/using.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
@@ -360,6 +361,12 @@ class Observable<T> extends Stream<T> {
           {int intervalMs: 20, Ease ease: Ease.LINEAR}) =>
       new Observable<double>(new TweenStream(
           startValue, changeInTime, duration, intervalMs, ease));
+
+  /// The Using operator is a way you can instruct an Observable
+  /// to create a resource that exists only during the lifespan
+  /// of the Observable and is disposed of when the Observable terminates.
+  factory Observable.using(Disposable<T> disposable) =>
+      new Observable<T>(new UsingStream<T>(disposable));
 
   /// Creates an Observable that applies a function of your choosing to the
   /// combination of items emitted, in sequence, by two (or more) other

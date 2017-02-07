@@ -73,6 +73,7 @@ var myObservable = observable(myStream);
 - range (static)
 - timer
 - tween (static)
+- using
 
 ###### Usage
 ```dart
