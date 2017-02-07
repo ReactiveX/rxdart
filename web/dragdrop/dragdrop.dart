@@ -44,7 +44,7 @@ void main() {
           'left': pos.client.x - startPos['left'],
           'top': pos.client.y - startPos['top']
         })
-        // Use taleUntil() to stop calculations when a mouseUp occurs
+        // Use takeUntil() to stop calculations when a mouseUp occurs
         .takeUntil(mouseUp);
     })
     // Use listen() to update the position of the dragTarget
