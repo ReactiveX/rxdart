@@ -33,9 +33,9 @@ void main(List<String> arguments) {
   Observable
       .range(0, m)
       .skip(1)
-      .scan((IndexedPair seq, _, __) => new IndexedPair.next(seq), seq2)
+      .scan((seq, _, __) => new IndexedPair.next(seq), seq2)
       .startWithMany(start)
-      .map((IndexedPair seq) => seq.stringify())
+      .map((seq) => seq.stringify())
       .listen(print, onDone: () => print('done!'));
 }
 
