@@ -20,18 +20,7 @@ import 'package:rxdart/rxdart.dart';
 void main() {
   var result = querySelector('#output');
   // Konami Code
-  var kcodes = [
-    KeyCode.UP,
-    KeyCode.UP,
-    KeyCode.DOWN,
-    KeyCode.DOWN,
-    KeyCode.LEFT,
-    KeyCode.RIGHT,
-    KeyCode.LEFT,
-    KeyCode.RIGHT,
-    KeyCode.B,
-    KeyCode.A
-  ];
+  var kcodes = [KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.B, KeyCode.A];
 
   var stream = new Observable(document.onKeyUp);
   stream
