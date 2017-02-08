@@ -16,26 +16,21 @@ Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1
 ```dart
 import 'dart:html';
 import 'package:rxdart/rxdart.dart';
+import 'package:collection/collection.dart';
 
 void main() {
-  var result = querySelector('#output');
+  var result = querySelector('#result');
   // Konami Code
   var kcodes = [KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.B, KeyCode.A];
+
+  var eq = const ListEquality().equals;
 
   var stream = new Observable(document.onKeyUp);
   stream
       .map((k) => k.keyCode)
       .bufferWithCount(10, 1)
-      .where((codes) => _isEqual<int>(codes, kcodes))
+      .where((codes) => eq(codes, kcodes))
       .listen((c) => result.text = "KONAMI!");
-}
-
-bool _isEqual<T>(List<T> a, List<T> b) {
-  var len = a.length < b.length ? a.length : b.length;
-  for (int i = 0; i < len; i++) {
-    if (a[i] != b[i]) return false;
-  }
-  return a.length == b.length;
 }
 ```
 
