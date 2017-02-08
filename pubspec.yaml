@@ -2,7 +2,7 @@ name: rxdart
 version: 0.8.2+1
 author: Frank Pepermans <frank@igindo.com>
 description: Native Dart rx implementation
-homepage: https://github.com/frankpepermans/rxdart
+homepage: https://github.com/ReactiveX/rxdart
 environment:
   sdk: '>=1.21.0'
 dependencies:
