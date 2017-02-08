@@ -17,24 +17,25 @@ import 'package:rxdart/rxdart.dart';
 /// done!
 void main(List<String> arguments) {
   /// read the command line argument, if none provided, default to 10
-  int n = (arguments.length == 1) ? int.parse(arguments.first) : 10;
+  var n = (arguments.length == 1) ? int.parse(arguments.first) : 10;
+
+  /// the first 2 fibonacci numbers
+  const seq1 = const IndexedPair(1, 1, 1);
+  const seq2 = const IndexedPair(1, 1, 2);
 
   /// initial n[1,2] values
-  final Iterable<String> start = n == 0
-      ? const <String>[]
-      : n == 1 ? const <String>['1: 1'] : const <String>['1: 1', '2: 1'];
+  Iterable<IndexedPair> start =
+      n == 0 ? const [] : n == 1 ? const [seq1] : const [seq1, seq2];
 
   /// given that the first 2 numbers in the sequence don't need calculation...
-  final int m = n >= 2 ? n - 2 : 0;
-
-  IndexedPair accumulator(IndexedPair seq, _, __) => new IndexedPair.next(seq);
+  var m = n >= 2 ? n - 2 : 0;
 
   Observable
       .range(0, m)
       .skip(1)
-      .scan(accumulator, const IndexedPair(1, 1, 2))
-      .map((IndexedPair seq) => seq.stringify())
+      .scan((IndexedPair seq, _, __) => new IndexedPair.next(seq), seq2)
       .startWithMany(start)
+      .map((IndexedPair seq) => seq.stringify())
       .listen(print, onDone: () => print('done!'));
 }
 
