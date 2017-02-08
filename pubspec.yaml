@@ -1,5 +1,5 @@
 name: rxdart
-version: 0.8.2
+version: 0.8.2+1
 author: Frank Pepermans <frank@igindo.com>
 description: Native Dart rx implementation
 homepage: https://github.com/frankpepermans/rxdart

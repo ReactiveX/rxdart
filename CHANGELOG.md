@@ -1,3 +1,7 @@
+## 0.8.2+1
+* moved repo into ReactiveX
+* update readme badges accordingly
+
 ## 0.8.2
 * added materialize/dematerialize
 * added range (factory)
