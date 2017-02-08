@@ -20,7 +20,7 @@ void main() {
 
   final result = querySelector('#result');
 
-  /// Wrap the `document.onKeyUp` stream so we can use the methods on `Observable
+  /// Wrap the `document.onKeyUp` stream so we can use the methods on `Observable`
   new Observable(document.onKeyUp)
     /// Use map() to get the keyCode
     .map((event) => event.keyCode)
