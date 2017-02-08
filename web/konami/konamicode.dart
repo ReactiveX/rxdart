@@ -5,15 +5,19 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
 
-  const up = 38;
-  const down = 40;
-  const left = 37;
-  const right = 39;
-  const a = 65;
-  const b = 66;
+  const konamiKeyCodes = const <int>[
+    KeyCode.UP,
+    KeyCode.UP,
+    KeyCode.DOWN,
+    KeyCode.DOWN,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.B,
+    KeyCode.A
+  ];
 
-  /// The Konami Code: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
-  const konamiKeyCodes = const <int>[up, up, down, down, left, right, left, right, b, a];
   final result = querySelector('#result');
 
   /// Wrap the `document.onKeyUp` stream so we can use the methods on `Observable
