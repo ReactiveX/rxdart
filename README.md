@@ -47,7 +47,7 @@ This has two major implications:
 
 ### Instantiation
 
-Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level method `observable()`, or by calling a factory method on the Observable class.  
+Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level constructor `new Observable()`, or by calling a factory method on the Observable class.
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
@@ -56,7 +56,7 @@ These methods are supplied as static methods, since Dart's factory methods don't
 
 ###### Usage
 ```dart
-var myObservable = observable(myStream);
+var myObservable = new Observable(myStream);
 ```
 
 ##### Available Factory Methods
@@ -87,7 +87,7 @@ var myObservable = Observable.combineLatest3(
     myFirstStream, 
     mySecondStream, 
     myThirdStream, 
-    (firstData, secondData, thirdData) => print(firstData + ' ' + secondData + ' ' + thirdData));
+    (firstData, secondData, thirdData) => print("$firstData $secondData $thirdData"));
 ```
 
 ### Transformations
@@ -96,6 +96,7 @@ var myObservable = Observable.combineLatest3(
 - bufferWithCount
 - call
 - concatMap
+- concatWith
 - debounce
 - dematerialize
 - flatMapLatest
@@ -103,6 +104,7 @@ var myObservable = Observable.combineLatest3(
 - groupBy
 - interval  
 - materialize
+- mergeWith
 - max
 - min
 - pluck  
@@ -115,16 +117,16 @@ var myObservable = Observable.combineLatest3(
 - takeUntil  
 - timeInterval  
 - timestamp
-- tap
-- throttle  
+- throttle
 - windowWithCount
-- withLatestFrom  
+- withLatestFrom
+- zipWith
 
 ###### Usage
 ```Dart
 var myObservable = observable(myStream)
     .bufferWithCount(5)
-    .distinct()
+    .distinct();
 ```
 
 ### Objects

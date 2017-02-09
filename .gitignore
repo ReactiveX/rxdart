@@ -6,6 +6,7 @@ packages
 *.packages
 .idea/
 web/experimental
+doc
 
 # Or the files created by dart2js.
 *.dart.js

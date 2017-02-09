@@ -40,7 +40,7 @@ void main() {
     })
     .listen((result) {
       result.forEach((item) => resultsField.innerHtml +=
-        '<li>' + item['fullName'] + " (" + item['url'] + ")" + '</li>');
+        "<li>${item['fullName']} (${item['url']})</li>");
     });
 }
 
