@@ -16,25 +16,25 @@ import 'package:rxdart/rxdart.dart';
 /// 10: 55
 /// done!
 void main(List<String> arguments) {
-  /// read the command line argument, if none provided, default to 10
+  // read the command line argument, if none provided, default to 10
   var n = (arguments.length == 1) ? int.parse(arguments.first) : 10;
 
-  /// seed value: this value will be used as the
-  /// starting value for the [scan] method
+  // seed value: this value will be used as the
+  // starting value for the [scan] method
   const seed = const IndexedPair(1, 1, 0);
 
   Observable
 
-      /// amount of numbers to compute
+      // amount of numbers to compute
       .range(1, n)
 
-      /// accumulator: computes a new accumulated
-      /// value each time a [Stream] event occurs
-      /// in this case, the accumulated value is always
-      /// the latest Fibonacci number
+      // accumulator: computes a new accumulated
+      // value each time a [Stream] event occurs
+      // in this case, the accumulated value is always
+      // the latest Fibonacci number
       .scan((seq, _, __) => new IndexedPair.next(seq), seed)
 
-      /// finally, print the output
+      // finally, print the output
       .listen(print, onDone: () => print('done!'));
 }
 
