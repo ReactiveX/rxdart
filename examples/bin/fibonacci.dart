@@ -46,5 +46,6 @@ class IndexedPair {
   factory IndexedPair.next(IndexedPair prev) => new IndexedPair(
       prev.n2, prev.index <= 1 ? prev.n1 : prev.n1 + prev.n2, prev.index + 1);
 
+  @override
   String toString() => '$index: $n2';
 }
