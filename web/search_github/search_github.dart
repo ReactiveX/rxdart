@@ -31,9 +31,10 @@ void main() {
         .where((response) => response != null)
         .map((response) => JSON.decode(response.body))
         .map((body) => body['items'])
-        .map((items) => items.map((item) => {"fullName": item['full_name'].toString(),
-        "url": item["html_url"].toString()
-      }));
+        .map((items) => items.map((item) => {
+          "fullName": item['full_name'].toString(),
+          "url": item["html_url"].toString()
+        }));
     })
     .listen((result) {
       result.forEach((item) => resultsField.innerHtml +=
