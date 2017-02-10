@@ -1,39 +1,34 @@
-import 'dart:async';
 import 'dart:html';
 
+import 'package:collection/collection.dart';
 import 'package:rxdart/rxdart.dart';
 
+// Side note: To maintain readability, this example was not formatted using dart_fmt.
+
 void main() {
-  List<int> codes = <int>[
-    38, // up
-    38, // up
-    40, // down
-    40, // down
-    37, // left
-    39, // right
-    37, // left
-    39, // right
-    66, // b
-    65 // a
+  const konamiKeyCodes = const <int>[
+    KeyCode.UP,
+    KeyCode.UP,
+    KeyCode.DOWN,
+    KeyCode.DOWN,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.B,
+    KeyCode.A
   ];
-  Element result = querySelector('#result');
 
-  // ignore: close_sinks
-  StreamController<KeyboardEvent> controller =
-      new StreamController<KeyboardEvent>();
-  Observable<KeyboardEvent> stream =
-      new Observable<KeyboardEvent>(controller.stream);
+  final result = querySelector('#result');
+  final keyUp = new Observable<KeyboardEvent>(document.onKeyUp);
 
-  document.addEventListener('keyup', (Event event) => controller.add(event));
-
-  stream
-      .map((KeyboardEvent e) => e.keyCode) // get the key code
-      .bufferWithCount(10, 1) // get the last 10 keys
-      .where((List<int> x) => _equal(x, codes)) // where we match
-      .listen((_) => result.innerHtml = 'KONAMI!');
-}
-
-bool _equal(List<int> a, List<int> b) {
-  for (int i = 0; i < 10; i++) if (a[i] != b[i]) return false;
-  return true;
+  keyUp
+    // Use map() to get the keyCode
+    .map((event) => event.keyCode)
+    // Use bufferWithCount() to remember the last 10 keyCodes
+    .bufferWithCount(10, 1)
+    // Use where() to check for matching values
+    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
+    // Use listen() to display the result
+    .listen((_) => result.innerHtml = 'KONAMI!');
 }
