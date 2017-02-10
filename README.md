@@ -14,29 +14,27 @@ Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1
 ### For Example: Reading the Konami Code 
 
 ```dart
-import 'package:rxdart/rxdart.dart';
-
 void main() {
+  const konamiKeyCodes = const <int>[
+    KeyCode.UP,
+    KeyCode.UP,
+    KeyCode.DOWN,
+    KeyCode.DOWN,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.LEFT,
+    KeyCode.RIGHT,
+    KeyCode.B,
+    KeyCode.A];
 
-  // KONAMI CODE: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
-  var codes = <int>[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
-  var result = querySelector('#result');
-  var controller = new StreamController<KeyboardEvent>();
-  var stream = observable(controller.stream);
+  final result = querySelector('#result');
+  final keyUp = new Observable<KeyboardEvent>(document.onKeyUp);
 
-  document.addEventListener('keyup', (event) => controller.add(event));
-
-  stream
-    .map((event) => event.keyCode ) // Get the key code
-    .bufferWithCount(10, 1) // Get the last 10 keys
-    .where((list) => _areTwoListsEqual(list, codes)) // Check for matching values
+  keyUp
+    .map((event) => event.keyCode)
+    .bufferWithCount(10, 1)
+    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
     .listen((_) => result.innerHtml = 'KONAMI!');
-}
-
-bool _areTwoListsEqual(List<int> a, List<int> b) {
-  for (int i=0; i<10; i++) if (a[i] != b[i]) return false;
-  
-  return true;
 }
 ```
 
