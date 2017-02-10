@@ -14,29 +14,23 @@ Google Dart comes with a very decent [Streams](https://api.dartlang.org/stable/1
 ### For Example: Reading the Konami Code 
 
 ```dart
+import 'dart:html';
 import 'package:rxdart/rxdart.dart';
+import 'package:collection/collection.dart';
 
 void main() {
-
-  // KONAMI CODE: UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, B, A
-  var codes = <int>[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
   var result = querySelector('#result');
-  var controller = new StreamController<KeyboardEvent>();
-  var stream = observable(controller.stream);
+  // Konami Code
+  var kcodes = [KeyCode.UP, KeyCode.UP, KeyCode.DOWN, KeyCode.DOWN, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.LEFT, KeyCode.RIGHT, KeyCode.B, KeyCode.A];
 
-  document.addEventListener('keyup', (event) => controller.add(event));
+  var eq = const ListEquality().equals;
 
+  var stream = new Observable(document.onKeyUp);
   stream
-    .map((event) => event.keyCode ) // Get the key code
-    .bufferWithCount(10, 1) // Get the last 10 keys
-    .where((list) => _areTwoListsEqual(list, codes)) // Check for matching values
-    .listen((_) => result.innerHtml = 'KONAMI!');
-}
-
-bool _areTwoListsEqual(List<int> a, List<int> b) {
-  for (int i=0; i<10; i++) if (a[i] != b[i]) return false;
-  
-  return true;
+      .map((k) => k.keyCode)
+      .bufferWithCount(10, 1)
+      .where((codes) => eq(codes, kcodes))
+      .listen((c) => result.text = "KONAMI!");
 }
 ```
 
