@@ -19,7 +19,7 @@ void main() {
     // Use distinct() to ignore all keystrokes that don't have an impact on the input field's value (brake, ctrl, shift, ..)
     .distinct()
     // Use debounce() to prevent calling the server on fast following keystrokes
-    .debounce(new Duration(milliseconds: 250))
+    .debounce(const Duration(milliseconds: 250))
     // Use call(onData) to clear resultsField
     .call(onData: (_) => resultsField.innerHtml = '')
     // Use flatMapLatest() to call the gitHub API
@@ -46,7 +46,7 @@ void main() {
 
 Future<Response> _searchGithubFor(String term) {
   if (term.isEmpty) {
-    return new Future.value(null);
+    return new Future.value();
   }
 
   final client = new BrowserClient();
