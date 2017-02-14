@@ -1,3 +1,6 @@
+## 0.8.3+1
+* rename examples map to example
+
 ## 0.8.3
 * added concatWith, zipWith, mergeWith, skipUntil
 * cleanup of the examples folder
