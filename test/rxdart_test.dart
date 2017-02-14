@@ -67,6 +67,7 @@ import 'transformers/scan_test.dart' as scan_test;
 import 'transformers/single_test.dart' as single_test;
 import 'transformers/single_where_test.dart' as single_where_test;
 import 'transformers/skip_test.dart' as skip_test;
+import 'transformers/skip_until_test.dart' as skip_until_test;
 import 'transformers/skip_while_test.dart' as skip_while_test;
 import 'transformers/start_with_many_test.dart' as start_with_many_test;
 import 'transformers/start_with_test.dart' as start_with_test;
@@ -155,6 +156,7 @@ void main() {
   single_test.main();
   single_where_test.main();
   skip_test.main();
+  skip_until_test.main();
   skip_while_test.main();
   start_with_many_test.main();
   start_with_test.main();
