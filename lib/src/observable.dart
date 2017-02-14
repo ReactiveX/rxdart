@@ -719,6 +719,17 @@ class Observable<T> extends Stream<T> {
   Observable<S> concatMap<S>(Stream<S> predicate(T value)) =>
       transform(concatMapTransformer(predicate));
 
+  /// Returns an Observable that emits all items from the current Observable,
+  /// then emits all items from the given observable, one after the next.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.timer(1, new Duration(seconds: 10))
+  ///         .concatWith([new Observable.just(2)])
+  ///         .listen(print); // prints 1, 2
+  Observable<T> concatWith(Iterable<Stream<T>> other) =>
+      new Observable<T>(new ConcatStream<T>(<Stream<T>>[stream]..addAll(other)));
+
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
 
@@ -945,6 +956,18 @@ class Observable<T> extends Stream<T> {
   /// sequence according to the specified compare function.
   Observable<T> max([int compare(T a, T b)]) =>
       transform(maxTransformer(compare));
+
+  /// Combines the items emitted by multiple streams into a single stream of
+  /// items. The items are emitted in the order they are emitted by their
+  /// sources.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.timer(1, new Duration(seconds: 10))
+  ///         .mergeWith([new Observable.just(2)])
+  ///         .listen(print); // prints 2, 1
+  Observable<T> mergeWith(Iterable<Stream<T>> streams) =>
+      new Observable<T>(new MergeStream<T>(<Stream<T>>[stream]..addAll(streams)));
 
   /// Creates an Observable that returns the minimum value in the source
   /// sequence according to the specified compare function.
@@ -1202,4 +1225,16 @@ class Observable<T> extends Stream<T> {
   Observable<R> withLatestFrom<S, R>(
           Stream<S> latestFromStream, R fn(T t, S s)) =>
       transform(withLatestFromTransformer(latestFromStream, fn));
+
+  /// Returns an Observable that combines the current stream together with
+  /// another stream using a given function.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1)
+  ///         .zipWith(new Observable.just(2), (one, two) => one + two)
+  ///         .listen(print); // prints 3
+  Observable<R> zipWith<S, R>(Stream<S> other, R predicate(T t, S s)) =>
+      new Observable<R>(
+          new ZipStream<R>(<Stream<dynamic>>[stream, other], predicate));
 }

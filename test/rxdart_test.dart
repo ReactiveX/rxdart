@@ -27,6 +27,7 @@ import 'transformers/async_map_test.dart' as async_map_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'transformers/call_test.dart' as call_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
+import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
 import 'transformers/debounce_test.dart' as debounce_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
@@ -52,6 +53,7 @@ import 'transformers/last_test.dart' as last_test;
 import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/max_test.dart' as max_test;
+import 'transformers/merge_with_test.dart' as merge_with_test;
 import 'transformers/min_test.dart' as min_test;
 import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_resume_next_test.dart'
@@ -81,6 +83,7 @@ import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
 import 'transformers/window_with_count_test.dart' as window_with_count_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
+import 'transformers/zip_with_test.dart' as zip_with_test;
 
 import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
@@ -112,6 +115,7 @@ void main() {
   buffer_with_count_test.main();
   call_test.main();
   concat_map_test.main();
+  concat_with_test.main();
   contains_test.main();
   debounce_test.main();
   default_if_empty_test.main();
@@ -138,6 +142,7 @@ void main() {
   last_where_test.main();
   materialize_test.main();
   max_test.main();
+  merge_with_test.main();
   min_test.main();
   of_type_test.main();
   on_error_resume_next_test.main();
@@ -168,6 +173,7 @@ void main() {
   where_test.main();
   window_with_count_test.main();
   with_latest_from_test.main();
+  zip_with_test.main();
 
   behaviour_subject_test.main();
   replay_subject_test.main();
