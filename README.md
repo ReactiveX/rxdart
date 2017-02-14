@@ -51,9 +51,6 @@ Generally speaking, creating a new Observable is either done by wrapping a Dart 
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
-##### Available Top-level Method
-- observable
-
 ###### Usage
 ```dart
 var myObservable = new Observable(myStream);
@@ -68,9 +65,7 @@ var myObservable = new Observable(myStream);
 - merge
 - never
 - periodic
-- range (static)
 - timer
-- tween (static)
 
 ###### Usage
 ```dart
@@ -79,6 +74,8 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 
 ##### Available Static Methods
 - combineLatest (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
+- range
+- tween
 - zip (zip2, zip3, zip4, ..., zip9)
 
 ###### Usage
@@ -125,7 +122,7 @@ var myObservable = Observable.combineLatest3(
 
 ###### Usage
 ```Dart
-var myObservable = observable(myStream)
+var myObservable = new Observable(myStream)
     .bufferWithCount(5)
     .distinct();
 ```
