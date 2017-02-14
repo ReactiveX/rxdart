@@ -1,3 +1,10 @@
+## 0.8.3
+* added concatWith, zipWith, mergeWith, skipUntil
+* cleanup of the examples folder
+* cleanup of examples code
+* added fibonacci example
+* added search GitHub example
+
 ## 0.8.2+1
 * moved repo into ReactiveX
 * update readme badges accordingly

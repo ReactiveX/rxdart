@@ -1,6 +1,6 @@
 import 'package:rxdart/rxdart.dart';
 
-/// generate [n] fibonacci numbers
+/// generate n-amount of fibonacci numbers
 ///
 /// for example: dart fibonacci.dart 10
 /// outputs:

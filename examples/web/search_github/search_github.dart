@@ -14,8 +14,12 @@ void main() {
   final keyUp = new Observable(searchInput.onKeyUp);
 
   keyUp
+    // return the event target
+    .map((event) => event.target)
+    // cast the event target as InputElement
+    .ofType(const TypeToken<InputElement>())
     // Use map() to take the value from the input field
-    .map((event) => (event.target as InputElement).value)
+    .map((inputElement) => (inputElement.value))
     // Use distinct() to ignore all keystrokes that don't have an impact on the input field's value (brake, ctrl, shift, ..)
     .distinct()
     // Use debounce() to prevent calling the server on fast following keystrokes
