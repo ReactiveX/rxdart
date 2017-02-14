@@ -110,6 +110,7 @@ var myObservable = Observable.combineLatest3(
 - retry  
 - sample  
 - scan  
+- skipUntil
 - startWith  
 - startWithMany  
 - takeUntil  

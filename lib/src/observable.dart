@@ -33,6 +33,7 @@ import 'package:rxdart/src/transformers/repeat.dart';
 import 'package:rxdart/src/transformers/retry.dart';
 import 'package:rxdart/src/transformers/sample.dart';
 import 'package:rxdart/src/transformers/scan.dart';
+import 'package:rxdart/src/transformers/skip_until.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
 import 'package:rxdart/src/transformers/switch_if_empty.dart';
@@ -1043,6 +1044,18 @@ class Observable<T> extends Stream<T> {
   /// stream is listened to.
   @override
   Observable<T> skip(int count) => new Observable<T>(stream.skip(count));
+
+  /// Starts emitting items only after the given stream emits an item.
+  ///
+  /// Example:
+  ///
+  ///     new Observable.merge([
+  ///       new Observable.just(1),
+  ///       new Observable.timer(2, new Duration(minutes: 2))
+  ///     ])
+  ///     .skipUntil(new Observable.timer(true, new Duration(minutes: 1)))
+  ///     .listen(print); // prints 2;
+  Observable<T> skipUntil(Stream<dynamic> otherStream) => transform(skipUntilTransformer(otherStream));
 
   /// Skip data events from this stream while they are matched by test.
   ///
