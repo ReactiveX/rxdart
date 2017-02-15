@@ -133,6 +133,27 @@ var myObservable = new Observable(myStream)
 - BehaviourSubject
 - ReplaySubject
 
+## Examples
+
+Web and command-line examples can be found in the `example` folder.
+
+### Web Examples
+ 
+In order to run the web examples, please:
+
+  1. Clone this repo and enter the directory
+  2. Run `pub get`
+  3. Run `pub serve example/web`
+  4. Navigate to [http://localhost:8080](http://localhost:8080) in your browser
+  
+### Command Line Examples
+
+In order to run the command line example, please:
+
+  1. Clone this repo and enter the directory
+  2. Run `pub get`
+  3. Run `dart example/bin/fibonacci.dart 10`
+
 ## Notable References
 - [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
