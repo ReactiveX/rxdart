@@ -133,6 +133,45 @@ var myObservable = new Observable(myStream)
 - BehaviourSubject
 - ReplaySubject
 
+## Examples
+
+Web and command-line examples can be found in the `example` folder.
+
+### Web Examples
+ 
+In order to run the web examples, please follow these steps:
+
+  1. Clone this repo and enter the directory
+  2. Run `pub get`
+  3. Run `pub serve example/web`
+  4. Navigate to [http://localhost:8080](http://localhost:8080) in your browser
+
+### Command Line Examples
+
+In order to run the command line example, please follow these steps:
+
+  1. Clone this repo and enter the directory
+  2. Run `pub get`
+  3. Run `dart example/bin/fibonacci.dart 10`
+  
+### Flutter Example
+  
+#### Install Flutter
+
+In order to run this repo, you must have Flutter installed. For help getting started with Flutter, view the online
+[documentation](http://flutter.io/).
+
+#### Run the app
+
+  1. Open up an Android Emulator, the iOS Simulator, or connect an appropriate mobile device for debugging.
+  2. Open up a terminal
+  3. `cd` into the `example/flutter/github_search` directory
+  4. Run `flutter doctor` to ensure you have all Flutter dependencies working.
+  5. Run `flutter packages get`
+  6. Run `flutter run`
+ 
+  
+
 ## Notable References
 - [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)

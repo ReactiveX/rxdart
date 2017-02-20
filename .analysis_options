@@ -1,5 +1,7 @@
 analyzer:
- strong-mode: true
+  strong-mode: true
+  exclude:
+    - 'example/**'
 linter:
   rules:
     - always_declare_return_types
