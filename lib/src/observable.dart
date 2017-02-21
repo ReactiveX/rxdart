@@ -956,7 +956,7 @@ class Observable<T> extends Stream<T> {
   /// Creates an Observable that returns the maximum value in the source
   /// sequence according to the specified compare function.
   Observable<T> max([int compare(T a, T b)]) =>
-      transform(maxTransformer(compare));
+      transform(new MaxStreamTransformer<T>(compare));
 
   /// Combines the items emitted by multiple streams into a single stream of
   /// items. The items are emitted in the order they are emitted by their

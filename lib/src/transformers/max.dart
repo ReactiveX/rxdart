@@ -1,35 +1,47 @@
 import 'dart:async';
 
-StreamTransformer<T, T> maxTransformer<T>([int compare(T a, T b)]) {
-  T _currentMax;
+class MaxStreamTransformer<T> implements StreamTransformer<T, T> {
+  final StreamTransformer<T, T> maxTransformer;
 
-  return new StreamTransformer<T, T>.fromHandlers(
-      handleData: (T data, EventSink<T> sink) {
-    if (_currentMax == null) {
-      _currentMax = data;
+  MaxStreamTransformer([int compare(T a, T b)])
+      : maxTransformer = _buildTransformer(compare);
 
-      sink.add(data);
-    } else {
-      if (compare != null) {
-        if (compare(data, _currentMax) > 0) {
-          _currentMax = data;
+  @override
+  Stream<T> bind(Stream<T> stream) {
+    return maxTransformer.bind(stream);
+  }
 
-          sink.add(data);
-        }
+  static StreamTransformer<T, T> _buildTransformer<T>([int compare(T a, T b)]) {
+    T _currentMax;
+
+    return new StreamTransformer<T, T>.fromHandlers(
+        handleData: (T data, EventSink<T> sink) {
+      if (_currentMax == null) {
+        _currentMax = data;
+
+        sink.add(data);
       } else {
-        try {
-          T currMax = _currentMax, testMax = data;
-
-          if (testMax is Comparable<dynamic> &&
-              testMax.compareTo(currMax) > 0) {
+        if (compare != null) {
+          if (compare(data, _currentMax) > 0) {
             _currentMax = data;
 
             sink.add(data);
           }
-        } catch (error) {
-          sink.addError(error);
+        } else {
+          try {
+            T currMax = _currentMax, testMax = data;
+
+            if (testMax is Comparable<dynamic> &&
+                testMax.compareTo(currMax) > 0) {
+              _currentMax = data;
+
+              sink.add(data);
+            }
+          } catch (error) {
+            sink.addError(error);
+          }
         }
       }
-    }
-  });
+    });
+  }
 }
