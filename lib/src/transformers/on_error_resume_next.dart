@@ -43,7 +43,7 @@ StreamTransformer<T, T> onErrorResumeNextTransformer<T>(
           return Future.wait(<Future<dynamic>>[
             inputSubscription?.cancel(),
             recoverySubscription?.cancel()
-          ]);
+          ].where((Future<dynamic> future) => future != null));
         });
 
     return controller.stream.listen(null);
