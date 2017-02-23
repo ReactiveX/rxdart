@@ -15,28 +15,42 @@ Stream<int> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.retry', () async {
-    new Observable<int>(_getStream())
-        .retry(3)
-        .listen(expectAsync1((int result) {
-          expect(result, 3);
-        }, count: 1));
+  test('rx.Observable.retry.assertWhenSingleSubscription', () async {
+    try {
+      // If call contains no arguments, throw a runtime error in dev mode
+      // in order to "fail fast" and alert the developer that the operator
+      // can be used or safely removed.
+      new Observable<int>(_getStream())
+          .retry()
+          .listen(null);
+    } catch (e) {
+      await expect(e is AssertionError, isTrue);
+    }
   });
 
-  test('rx.Observable.retry.asBroadcastStream', () async {
+
+  test('rx.Observable.retry.asBroadcastStream.1', () async {
     Stream<int> stream =
-        new Observable<int>(_getStream().asBroadcastStream()).retry(3);
+        new Observable<int>(_getStream().asBroadcastStream()).retry(count: 3);
 
     // listen twice on same stream
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    expect(true, true);
+    await expect(true, true);
+  });
+
+  test('rx.Observable.retry.asBroadcastStream.2', () async {
+    new Observable<int>(_getStream().asBroadcastStream())
+        .retry(count: 3)
+        .listen(expectAsync1((int result) {
+      expect(result, 3);
+    }, count: 1));
   });
 
   test('rx.Observable.retry.error.shouldThrow', () async {
     Stream<int> observableWithError =
-        new Observable<int>(_getStream()).retry(2);
+        new Observable<int>(_getStream().asBroadcastStream()).retry(count: 2);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e is RetryError, isTrue);
@@ -45,8 +59,8 @@ void main() {
 
   test('rx.Observable.retry.pause.resume', () async {
     StreamSubscription<int> subscription;
-    subscription = new Observable<int>(_getStream())
-        .retry(3)
+    subscription = new Observable<int>(_getStream().asBroadcastStream())
+        .retry(count: 3)
         .listen(expectAsync1((int result) {
           expect(result, 3);
 

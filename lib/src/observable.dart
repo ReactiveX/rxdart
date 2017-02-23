@@ -1040,7 +1040,7 @@ class Observable<T> extends Stream<T> {
   /// Creates an Observable that will repeat the source sequence the specified
   /// number of times until it successfully terminates. If the retry count is
   /// not specified, it retries indefinitely.
-  Observable<T> retry([int count]) => transform(retryTransformer(count));
+  Observable<T> retry({int count: 0}) => transform(retryTransformer(count: count));
 
   /// Creates an Observable that will emit the latest value from the source
   /// sequence whenever the sampleStream itself emits a value.
