@@ -65,6 +65,7 @@ var myObservable = new Observable(myStream);
 - merge
 - never
 - periodic
+- retry
 - timer
 
 ###### Usage
@@ -106,7 +107,6 @@ var myObservable = Observable.combineLatest3(
 - min
 - pluck  
 - repeat  
-- retry  
 - sample  
 - scan  
 - skipUntil
