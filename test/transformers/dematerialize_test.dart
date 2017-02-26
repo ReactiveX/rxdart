@@ -25,7 +25,7 @@ void main() {
       new Notification<int>.onDone()
     ]);
 
-    stream.transform(dematerializeTransformer()).listen(
+    stream.transform(new DematerializeStreamTransformer<int>()).listen(
         expectAsync1((int value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
@@ -40,7 +40,7 @@ void main() {
       new Notification<int>.onError(new Exception(), new Chain.current())
     ]);
 
-    stream.transform(dematerializeTransformer()).listen(null,
+    stream.transform(new DematerializeStreamTransformer<int>()).listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
     }));
@@ -54,7 +54,7 @@ void main() {
       new Notification<int>.onDone()
     ]);
 
-    stream.transform(dematerializeTransformer()).listen(
+    stream.transform(new DematerializeStreamTransformer<int>()).listen(
         expectAsync1((int value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {

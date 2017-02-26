@@ -1,14 +1,14 @@
 import 'dart:async';
 
 class MaxStreamTransformer<T> implements StreamTransformer<T, T> {
-  final StreamTransformer<T, T> maxTransformer;
+  final StreamTransformer<T, T> transformer;
 
-  MaxStreamTransformer([int compare(T a, T b)])
-      : maxTransformer = _buildTransformer(compare);
+  MaxStreamTransformer([int compare(T a, T b), bool sync])
+      : transformer = _buildTransformer(compare);
 
   @override
   Stream<T> bind(Stream<T> stream) {
-    return maxTransformer.bind(stream);
+    return transformer.bind(stream);
   }
 
   static StreamTransformer<T, T> _buildTransformer<T>([int compare(T a, T b)]) {

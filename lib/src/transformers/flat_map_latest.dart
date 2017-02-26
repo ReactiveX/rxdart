@@ -1,52 +1,62 @@
 import 'dart:async';
 
-StreamTransformer<T, S> flatMapLatestTransformer<T, S>(
-    Stream<S> predicate(T value)) {
-  return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-    StreamController<S> controller;
-    StreamSubscription<T> subscription;
-    StreamSubscription<S> otherSubscription;
-    bool leftClosed = false, rightClosed = false;
-    bool hasMainEvent = false;
+class FlatMapLatestStreamTransformer<T, S> implements StreamTransformer<T, S> {
+  final StreamTransformer<T, S> transformer;
 
-    controller = new StreamController<S>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen(
-              (T value) {
-                otherSubscription?.cancel();
+  FlatMapLatestStreamTransformer(Stream<S> predicate(T value))
+      : transformer = _buildTransformer(predicate);
 
-                hasMainEvent = true;
+  @override
+  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
 
-                otherSubscription = predicate(value).listen(controller.add,
-                    onError: controller.addError, onDone: () {
-                  rightClosed = true;
+  static StreamTransformer<T, S> _buildTransformer<T, S>(
+      Stream<S> predicate(T value)) {
+    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+      StreamController<S> controller;
+      StreamSubscription<T> subscription;
+      StreamSubscription<S> otherSubscription;
+      bool leftClosed = false, rightClosed = false;
+      bool hasMainEvent = false;
 
-                  if (leftClosed) controller.close();
-                });
-              },
-              onError: controller.addError,
-              onDone: () {
-                leftClosed = true;
+      controller = new StreamController<S>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen(
+                (T value) {
+                  otherSubscription?.cancel();
 
-                if (rightClosed || !hasMainEvent) controller.close();
-              },
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
-          otherSubscription?.pause(resumeSignal);
-        },
-        onResume: () {
-          subscription.resume();
-          otherSubscription?.resume();
-        },
-        onCancel: () async {
-          await subscription.cancel();
+                  hasMainEvent = true;
 
-          if (hasMainEvent) await otherSubscription.cancel();
-        });
+                  otherSubscription = predicate(value).listen(controller.add,
+                      onError: controller.addError, onDone: () {
+                    rightClosed = true;
 
-    return controller.stream.listen(null);
-  });
+                    if (leftClosed) controller.close();
+                  });
+                },
+                onError: controller.addError,
+                onDone: () {
+                  leftClosed = true;
+
+                  if (rightClosed || !hasMainEvent) controller.close();
+                },
+                cancelOnError: cancelOnError);
+          },
+          onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
+            otherSubscription?.pause(resumeSignal);
+          },
+          onResume: () {
+            subscription.resume();
+            otherSubscription?.resume();
+          },
+          onCancel: () async {
+            await subscription.cancel();
+
+            if (hasMainEvent) await otherSubscription.cancel();
+          });
+
+      return controller.stream.listen(null);
+    });
+  }
 }

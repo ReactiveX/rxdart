@@ -52,7 +52,8 @@ class TweenStream extends Stream<double> {
         onCancel: () => subscription.cancel());
 
     return _controller.stream
-        .transform(intervalTransformer(new Duration(milliseconds: intervalMs)))
+        .transform(new IntervalStreamTransformer<double>(
+            new Duration(milliseconds: intervalMs)))
         .listen(onData,
             onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

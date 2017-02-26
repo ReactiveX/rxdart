@@ -1,36 +1,57 @@
 import 'dart:async';
 
-StreamTransformer<T, T> sampleTransformer<T>(Stream<dynamic> sampleStream) {
-  return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-    StreamSubscription<dynamic> sampleSubscription;
-    T currentValue;
+class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
+  final StreamTransformer<T, T> transformer;
 
-    controller = new StreamController<T>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen((T value) {
-            currentValue = value;
-          }, onError: controller.addError);
+  SampleStreamTransformer(Stream<dynamic> sampleStream)
+      : transformer = _buildTransformer(sampleStream);
 
-          sampleSubscription = sampleStream.listen((_) {
-            if (currentValue != null) controller.add(currentValue);
+  @override
+  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+
+  static StreamTransformer<T, T> _buildTransformer<T>(
+      Stream<dynamic> sampleStream) {
+    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+      StreamSubscription<dynamic> sampleSubscription;
+      T currentValue;
+
+      controller = new StreamController<T>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen((T value) {
+              currentValue = value;
+            }, onError: controller.addError);
+
+            sampleSubscription = sampleStream.listen(
+                (_) {
+                  if (currentValue != null) {
+                    controller.add(currentValue);
+                    currentValue = null;
+                  }
+                },
+                onError: controller.addError,
+                onDone: () {
+                  if (currentValue != null) {
+                    controller.add(currentValue);
+                  }
+
+                  controller.close();
+                },
+                cancelOnError: cancelOnError);
           },
-              onError: controller.addError,
-              onDone: controller.close,
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () {
-          return Future.wait(<Future<dynamic>>[
-            subscription.cancel(),
-            sampleSubscription.cancel()
-          ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
-        });
+          onPause: ([Future<dynamic> resumeSignal]) =>
+              subscription.pause(resumeSignal),
+          onResume: () => subscription.resume(),
+          onCancel: () {
+            return Future.wait(<Future<dynamic>>[
+              subscription.cancel(),
+              sampleSubscription.cancel()
+            ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
+          });
 
-    return controller.stream.listen(null);
-  });
+      return controller.stream.listen(null);
+    });
+  }
 }

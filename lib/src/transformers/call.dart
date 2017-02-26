@@ -29,91 +29,117 @@ import 'dart:async';
 ///
 ///     new Stream.fromIterable([1])
 ///         .transform(callTransformer(onData: (i) => print(i))); // Prints: 1
-StreamTransformer<T, T> callTransformer<T>(
-    {void onCancel(),
-    void onData(T event),
-    void onDone(),
-    void onEach(Notification<T> notification),
-    Function onError,
-    void onListen(),
-    void onPause(Future<dynamic> resumeSignal),
-    void onResume()}) {
-  assert(onCancel != null ||
-      onData != null ||
-      onDone != null ||
-      onEach != null ||
-      onError != null ||
-      onListen != null ||
-      onPause != null ||
-      onResume != null);
+class CallStreamTransformer<T> implements StreamTransformer<T, T> {
+  final StreamTransformer<T, T> transformer;
 
-  return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
+  CallStreamTransformer(
+      {void onCancel(),
+      void onData(T event),
+      void onDone(),
+      void onEach(Notification<T> notification),
+      Function onError,
+      void onListen(),
+      void onPause(Future<dynamic> resumeSignal),
+      void onResume()})
+      : transformer = _buildTransformer(
+            onCancel: onCancel,
+            onData: onData,
+            onDone: onDone,
+            onEach: onEach,
+            onError: onError,
+            onListen: onListen,
+            onPause: onPause,
+            onResume: onResume);
 
-    controller = new StreamController<T>(
-        sync: true,
-        onListen: () {
-          if (onListen != null) {
-            onListen();
-          }
+  @override
+  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-          subscription = input.listen((T value) {
-            if (onData != null) {
-              onData(value);
+  static StreamTransformer<T, T> _buildTransformer<T>(
+      {void onCancel(),
+      void onData(T event),
+      void onDone(),
+      void onEach(Notification<T> notification),
+      Function onError,
+      void onListen(),
+      void onPause(Future<dynamic> resumeSignal),
+      void onResume()}) {
+    assert(onCancel != null ||
+        onData != null ||
+        onDone != null ||
+        onEach != null ||
+        onError != null ||
+        onListen != null ||
+        onPause != null ||
+        onResume != null);
+
+    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+
+      controller = new StreamController<T>(
+          sync: true,
+          onListen: () {
+            if (onListen != null) {
+              onListen();
             }
 
-            if (onEach != null) {
-              onEach(new Notification<T>.onData(value));
+            subscription = input.listen((T value) {
+              if (onData != null) {
+                onData(value);
+              }
+
+              if (onEach != null) {
+                onEach(new Notification<T>.onData(value));
+              }
+
+              controller.add(value);
+            }, onError: (dynamic e, dynamic s) {
+              if (onError != null) {
+                onError(e, s);
+              }
+
+              if (onEach != null) {
+                onEach(new Notification<T>.onError(e, s));
+              }
+
+              controller.addError(e);
+            }, onDone: () {
+              if (onDone != null) {
+                onDone();
+              }
+
+              if (onEach != null) {
+                onEach(new Notification<T>.onDone());
+              }
+
+              controller.close();
+            }, cancelOnError: cancelOnError);
+          },
+          onPause: ([Future<dynamic> resumeSignal]) {
+            if (onPause != null) {
+              onPause(resumeSignal);
             }
 
-            controller.add(value);
-          }, onError: (dynamic e, dynamic s) {
-            if (onError != null) {
-              onError(e, s);
+            subscription.pause(resumeSignal);
+          },
+          onResume: () {
+            if (onResume != null) {
+              onResume();
             }
 
-            if (onEach != null) {
-              onEach(new Notification<T>.onError(e, s));
+            subscription.resume();
+          },
+          onCancel: () {
+            if (onCancel != null) {
+              onCancel();
             }
 
-            controller.addError(e);
-          }, onDone: () {
-            if (onDone != null) {
-              onDone();
-            }
+            return subscription.cancel();
+          });
 
-            if (onEach != null) {
-              onEach(new Notification<T>.onDone());
-            }
-
-            controller.close();
-          }, cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          if (onPause != null) {
-            onPause(resumeSignal);
-          }
-
-          subscription.pause(resumeSignal);
-        },
-        onResume: () {
-          if (onResume != null) {
-            onResume();
-          }
-
-          subscription.resume();
-        },
-        onCancel: () {
-          if (onCancel != null) {
-            onCancel();
-          }
-
-          return subscription.cancel();
-        });
-
-    return controller.stream.listen(null);
-  });
+      return controller.stream.listen(null);
+    });
+  }
 }
 
 enum Kind { OnData, OnDone, OnError }

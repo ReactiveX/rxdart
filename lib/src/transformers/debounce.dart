@@ -1,43 +1,53 @@
 import 'dart:async';
 
-StreamTransformer<T, T> debounceTransformer<T>(Duration duration) {
-  bool _closeAfterNextEvent = false;
-  Timer _timer;
+class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
+  final StreamTransformer<T, T> transformer;
 
-  return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-    bool streamHasEvent = false;
+  DebounceStreamTransformer(Duration duration)
+      : transformer = _buildTransformer(duration);
 
-    controller = new StreamController<T>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen(
-              (T value) {
-                streamHasEvent = true;
+  @override
+  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-                if (_timer != null && _timer.isActive) _timer.cancel();
+  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
+    bool _closeAfterNextEvent = false;
+    Timer _timer;
 
-                _timer = new Timer(duration, () {
-                  controller.add(value);
+    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<T> subscription;
+      bool streamHasEvent = false;
 
-                  if (_closeAfterNextEvent) controller.close();
-                });
-              },
-              onError: controller.addError,
-              onDone: () {
-                if (!streamHasEvent)
-                  controller.close();
-                else
-                  _closeAfterNextEvent = true;
-              },
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
+      controller = new StreamController<T>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen(
+                (T value) {
+                  streamHasEvent = true;
 
-    return controller.stream.listen(null);
-  });
+                  if (_timer != null && _timer.isActive) _timer.cancel();
+
+                  _timer = new Timer(duration, () {
+                    controller.add(value);
+
+                    if (_closeAfterNextEvent) controller.close();
+                  });
+                },
+                onError: controller.addError,
+                onDone: () {
+                  if (!streamHasEvent)
+                    controller.close();
+                  else
+                    _closeAfterNextEvent = true;
+                },
+                cancelOnError: cancelOnError);
+          },
+          onPause: ([Future<dynamic> resumeSignal]) =>
+              subscription.pause(resumeSignal),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
+
+      return controller.stream.listen(null);
+    });
+  }
 }

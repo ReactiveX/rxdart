@@ -1,29 +1,40 @@
 import 'dart:async';
 
-StreamTransformer<T, S> ofTypeTransformer<T, S>(TypeToken<S> typeToken) {
-  return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-    StreamController<S> controller;
-    StreamSubscription<T> subscription;
+class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
+  final StreamTransformer<T, S> transformer;
 
-    controller = new StreamController<S>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen((T value) {
-            if (typeToken.isType(value)) {
-              controller.add(typeToken.toType(value));
-            }
+  OfTypeStreamTransformer(TypeToken<S> typeToken)
+      : transformer = _buildTransformer(typeToken);
+
+  @override
+  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+
+  static StreamTransformer<T, S> _buildTransformer<T, S>(
+      TypeToken<S> typeToken) {
+    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+      StreamController<S> controller;
+      StreamSubscription<T> subscription;
+
+      controller = new StreamController<S>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen((T value) {
+              if (typeToken.isType(value)) {
+                controller.add(typeToken.toType(value));
+              }
+            },
+                onError: controller.addError,
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
           },
-              onError: controller.addError,
-              onDone: controller.close,
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
+          onPause: ([Future<dynamic> resumeSignal]) =>
+              subscription.pause(resumeSignal),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
 
-    return controller.stream.listen(null);
-  });
+      return controller.stream.listen(null);
+    });
+  }
 }
 
 /// A class that captures the Type to filter down to using `ofType`.
