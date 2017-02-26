@@ -95,8 +95,13 @@ StreamFactory<int> _getStreamWithExtras(int failCount) {
   return () {
     if (count < failCount) {
       count++;
+
+      // Emit first item
       return new Observable<int>.just(1)
-          .concatWith(<Stream<int>>[new Observable<int>.error(new Error())]);
+          // Emit the error
+          .concatWith(<Stream<int>>[new Observable<int>.error(new Error())])
+          // Emit an extra item, testing that it is not included
+          .concatWith(<Stream<int>>[new Observable<int>.just(1)]);
     } else {
       return new Observable<int>.just(2);
     }
