@@ -6,6 +6,6 @@ void main() {
     final int actual = await new Observable<int>.fromIterable(<int>[1, 2, 3])
         .fold(4, (int prev, int val) => prev + val);
 
-    expect(actual, 10);
+    await expect(actual, 10);
   });
 }

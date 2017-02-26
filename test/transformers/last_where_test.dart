@@ -7,6 +7,6 @@ void main() {
         await new Observable<String>.fromIterable(<String>['h', 'i'])
             .lastWhere((String element) => element.length == 1);
 
-    expect(last, 'i');
+    await expect(last, 'i');
   });
 }

@@ -7,6 +7,6 @@ void main() {
         await new Observable<int>.fromIterable(<int>[1, 2, 3, 4, 5])
             .elementAt(0);
 
-    expect(actual, 1);
+    await expect(actual, 1);
   });
 }

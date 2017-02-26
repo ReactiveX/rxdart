@@ -6,6 +6,6 @@ void main() {
     final bool actual =
         await new Observable<int>.just(1).any((int val) => val == 1);
 
-    expect(actual, true);
+    await expect(actual, true);
   });
 }

@@ -267,7 +267,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    expect(observable.isBroadcast, isTrue);
+    await expect(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.zip.error.shouldThrow', () async {

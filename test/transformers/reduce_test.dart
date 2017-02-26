@@ -6,6 +6,6 @@ void main() {
     final int actual = await new Observable<int>.fromIterable(<int>[1, 2, 3])
         .reduce((int prev, int val) => prev + val);
 
-    expect(actual, 6);
+    await expect(actual, 6);
   });
 }

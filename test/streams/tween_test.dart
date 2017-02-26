@@ -139,6 +139,6 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
 
-    expect(observable.isBroadcast, isTrue);
+    await expect(observable.isBroadcast, isTrue);
   });
 }

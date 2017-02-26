@@ -19,7 +19,7 @@ void main() {
         .onErrorReturn(0)
         .asBroadcastStream();
 
-    expect(stream.isBroadcast, isTrue);
+    await expect(stream.isBroadcast, isTrue);
 
     stream.listen(expectAsync1((num result) {
       expect(result, expected);

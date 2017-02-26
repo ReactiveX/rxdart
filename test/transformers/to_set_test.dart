@@ -7,6 +7,6 @@ void main() {
         await new Observable<int>.fromIterable(<int>[1, 2, 2]).toSet();
     final Set<int> expected = new Set<int>()..add(1)..add(2);
 
-    expect(actual, expected);
+    await expect(actual, expected);
   });
 }

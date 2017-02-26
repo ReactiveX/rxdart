@@ -9,6 +9,6 @@ void main() {
     Stream<int> observable = new Observable<int>.eventTransformed(
         source, (EventSink<int> sink) => sink);
 
-    expect(observable is Observable, isTrue);
+    await expect(observable is Observable, isTrue);
   });
 }

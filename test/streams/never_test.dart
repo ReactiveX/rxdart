@@ -29,9 +29,9 @@ void main() {
 
     // We do not expect onData, onDone, nor onError to be called, as [never]
     // streams emit no items or errors, and they do not terminate
-    expect(onDataCalled, isFalse);
-    expect(onDoneCalled, isFalse);
-    expect(onErrorCalled, isFalse);
+    await expect(onDataCalled, isFalse);
+    await expect(onDoneCalled, isFalse);
+    await expect(onErrorCalled, isFalse);
   });
 
   test('rx.Observable.never', () async {
@@ -58,8 +58,8 @@ void main() {
 
     // We do not expect onData, onDone, nor onError to be called, as [never]
     // streams emit no items or errors, and they do not terminate
-    expect(onDataCalled, isFalse);
-    expect(onDoneCalled, isFalse);
-    expect(onErrorCalled, isFalse);
+    await expect(onDataCalled, isFalse);
+    await expect(onDoneCalled, isFalse);
+    await expect(onErrorCalled, isFalse);
   });
 }
