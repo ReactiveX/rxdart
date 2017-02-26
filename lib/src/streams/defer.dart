@@ -1,15 +1,17 @@
 import 'dart:async';
 
-class DeferStream<T> extends Stream<T> {
-  final StreamProvider<T> streamProvider;
+import 'package:rxdart/src/streams/utils.dart';
 
-  DeferStream(this.streamProvider);
+class DeferStream<T> extends Stream<T> {
+  final StreamFactory<T> streamFactory;
+
+  DeferStream(this.streamFactory);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
     StreamController<T> controller;
-    Stream<T> stream = streamProvider();
+    Stream<T> stream = streamFactory();
     bool hasListened = false;
 
     controller = new StreamController<T>(onListen: () {
@@ -23,5 +25,3 @@ class DeferStream<T> extends Stream<T> {
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }
-
-typedef Stream<T> StreamProvider<T>();

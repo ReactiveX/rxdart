@@ -15,6 +15,7 @@ import 'streams/merge_test.dart' as merge_test;
 import 'streams/never_test.dart' as never_test;
 import 'streams/periodic_test.dart' as periodic_test;
 import 'streams/range_test.dart' as range_test;
+import 'streams/retry_test.dart' as retry_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/tween_test.dart' as tween_test;
@@ -104,6 +105,7 @@ void main() {
   never_test.main();
   periodic_test.main();
   range_test.main();
+  retry_test.main();
   stream_test.main();
   zip_test.main();
 
