@@ -27,7 +27,7 @@ void main() {
     int countA = 0;
     int countB = 0;
 
-    expect(stream.isBroadcast, isTrue);
+    await expect(stream.isBroadcast, isTrue);
 
     stream.listen(expectAsync1((num result) {
       expect(result, expected[countA++]);

@@ -7,6 +7,6 @@ void main() {
   test('rx.Observable.asBroadcastStream', () async {
     Stream<int> observable = new Observable<int>.just(1).asBroadcastStream();
 
-    expect(observable.isBroadcast, isTrue);
+    await expect(observable.isBroadcast, isTrue);
   });
 }

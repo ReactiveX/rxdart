@@ -6,7 +6,7 @@ void main() {
     final int actual = await new Observable<int>.fromIterable(<int>[1, 2, 3])
         .singleWhere((int val) => val == 2);
 
-    expect(actual, 2);
+    await expect(actual, 2);
   });
 
   test('rx.Observable.singleWhere.throws', () async {
@@ -14,7 +14,7 @@ void main() {
       await new Observable<int>.fromIterable(<int>[1, 2, 2])
           .singleWhere((int val) => val == 2);
     } catch (e) {
-      expect(e, isStateError);
+      await expect(e, isStateError);
     }
   });
 }

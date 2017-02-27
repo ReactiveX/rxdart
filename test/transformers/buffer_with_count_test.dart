@@ -55,7 +55,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    expect(true, true);
+    await expect(true, true);
   });
 
   test('rx.Observable.bufferWithCount.error.shouldThrow', () async {
@@ -73,7 +73,7 @@ void main() {
       new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
           .bufferWithCount(2, 100);
     } catch (e) {
-      expect(e, isArgumentError);
+      await expect(e, isArgumentError);
     }
   });
 }

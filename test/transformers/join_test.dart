@@ -6,6 +6,6 @@ void main() {
     final String joined =
         await new Observable<String>.fromIterable(<String>['h', 'i']).join('+');
 
-    expect(joined, 'h+i');
+    await expect(joined, 'h+i');
   });
 }

@@ -7,6 +7,6 @@ void main() {
         await new Observable<int>.fromIterable(<int>[1, 2, 3]).toList();
     final List<int> expected = <int>[1, 2, 3];
 
-    expect(actual, expected);
+    await expect(actual, expected);
   });
 }

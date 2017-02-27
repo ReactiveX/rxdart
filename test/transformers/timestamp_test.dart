@@ -20,7 +20,7 @@ void main() {
     int count = 0;
 
     new Stream<int>.fromIterable(<int>[1, 2, 3])
-        .transform(timestampTransformer())
+        .transform(new TimestampStreamTransformer<int>())
         .listen(expectAsync1((Timestamped<int> result) {
           expect(result.value, expected[count++]);
         }, count: expected.length));
@@ -29,19 +29,19 @@ void main() {
   test('timestampTransformer.asBroadcastStream', () async {
     Stream<Timestamped<int>> stream =
         new Stream<int>.fromIterable(<int>[1, 2, 3])
-            .transform(timestampTransformer())
+            .transform(new TimestampStreamTransformer<int>())
             .asBroadcastStream();
 
     // listen twice on same stream
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    expect(stream.isBroadcast, isTrue);
+    await expect(stream.isBroadcast, isTrue);
   });
 
   test('timestampTransformer.error.shouldThrow', () async {
     Stream<Timestamped<int>> streamWithError =
-        new ErrorStream<int>(new Exception()).transform(timestampTransformer());
+        new ErrorStream<int>(new Exception()).transform(new TimestampStreamTransformer<int>());
 
     streamWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
@@ -51,7 +51,7 @@ void main() {
   test('timestampTransformer.pause.resume', () async {
     final Stream<Timestamped<int>> stream =
         new Stream<int>.fromIterable(<int>[1, 2, 3])
-            .transform(timestampTransformer());
+            .transform(new TimestampStreamTransformer<int>());
     final List<int> expected = <int>[1, 2, 3];
     StreamSubscription<Timestamped<int>> subscription;
     int count = 0;

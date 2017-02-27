@@ -30,7 +30,7 @@ void main() {
     stream.listen((_) {});
 
     // code should reach here
-    expect(stream.isBroadcast, isTrue);
+    await expect(stream.isBroadcast, isTrue);
   });
 
   test('rx.Observable.switchIfEmpty.error.shouldThrow', () async {

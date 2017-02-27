@@ -46,7 +46,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    expect(true, true);
+    await expect(true, true);
   });
 
   test('rx.Observable.ofType.error.shouldThrow', () async {

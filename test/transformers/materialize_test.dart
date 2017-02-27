@@ -21,7 +21,7 @@ void main() {
     final Stream<int> stream = new Stream<int>.fromIterable(<int>[1]);
     List<Notification<int>> notifications = <Notification<int>>[];
 
-    stream.transform(materializeTransformer()).listen(
+    stream.transform(new MaterializeStreamTransformer<int>()).listen(
         (Notification<int> notification) {
       notifications.add(notification);
     }, onDone: expectAsync0(() {
@@ -33,11 +33,11 @@ void main() {
   });
 
   test('materializeTransformer.sadPath', () async {
-    final Stream<num> stream = new ErrorStream<num>(new Exception());
-    List<Notification<num>> notifications = <Notification<num>>[];
+    final Stream<num> stream = new ErrorStream<int>(new Exception());
+    List<Notification<int>> notifications = <Notification<int>>[];
 
-    stream.transform(materializeTransformer()).listen(
-        (Notification<num> notification) {
+    stream.transform(new MaterializeStreamTransformer<int>()).listen(
+        (Notification<int> notification) {
           notifications.add(notification);
         },
         onError: expectAsync2((dynamic e, dynamic s) {
@@ -55,7 +55,7 @@ void main() {
     final Stream<int> stream = new Stream<int>.fromIterable(<int>[1]);
     List<Notification<int>> notifications = <Notification<int>>[];
 
-    stream.transform(materializeTransformer()).listen(
+    stream.transform(new MaterializeStreamTransformer<int>()).listen(
         (Notification<int> notification) {
       notifications.add(notification);
     }, onDone: expectAsync0(() {

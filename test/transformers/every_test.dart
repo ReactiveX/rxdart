@@ -6,6 +6,6 @@ void main() {
     final bool actual = await new Observable<int>.fromIterable(<int>[1, 2, 3])
         .every((int val) => val == 1);
 
-    expect(actual, isFalse);
+    await expect(actual, isFalse);
   });
 }

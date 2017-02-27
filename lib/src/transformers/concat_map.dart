@@ -8,82 +8,92 @@ import 'dart:async';
 /// all items from the created stream will be emitted before moving to the
 /// next created stream. This process continues until all created streams have
 /// completed.
-StreamTransformer<T, S> concatMapTransformer<T, S>(
-    Stream<S> predicate(T value)) {
-  return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-    final List<Stream<S>> streams = <Stream<S>>[];
-    final List<bool> completionStatuses = <bool>[];
-    StreamSubscription<S> currentSubscription;
-    StreamController<S> controller;
-    StreamSubscription<T> subscription;
-    bool isParentSubscriptionDone = false;
-    int index = 0;
+class ConcatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
+  final StreamTransformer<T, S> transformer;
 
-    void moveNext() {
-      final int currentIndex = index;
+  ConcatMapStreamTransformer(Stream<S> predicate(T value))
+      : transformer = _buildTransformer(predicate);
 
-      if (currentSubscription == null && streams[currentIndex] != null) {
-        currentSubscription = streams[currentIndex].listen(
-            (S value) {
-              controller.add(value);
-            },
-            onError: controller.addError,
-            onDone: () {
-              completionStatuses[currentIndex] = true;
-              currentSubscription.cancel();
-              currentSubscription = null;
+  @override
+  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
 
-              if (completionStatuses.every((bool isComplete) => isComplete) &&
-                  isParentSubscriptionDone) {
-                controller.close();
-              } else {
-                moveNext();
-              }
-            });
+  static StreamTransformer<T, S> _buildTransformer<T, S>(
+      Stream<S> predicate(T value)) {
+    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+      final List<Stream<S>> streams = <Stream<S>>[];
+      final List<bool> completionStatuses = <bool>[];
+      StreamSubscription<S> currentSubscription;
+      StreamController<S> controller;
+      StreamSubscription<T> subscription;
+      bool isParentSubscriptionDone = false;
+      int index = 0;
 
-        index += 1;
-      }
-    }
+      void moveNext() {
+        final int currentIndex = index;
 
-    controller = new StreamController<S>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen(
-              (T value) {
-                streams.add(predicate(value));
-                completionStatuses.add(false);
-
-                moveNext();
+        if (currentSubscription == null && streams[currentIndex] != null) {
+          currentSubscription = streams[currentIndex].listen(
+              (S value) {
+                controller.add(value);
               },
               onError: controller.addError,
               onDone: () {
-                isParentSubscriptionDone = true;
-              },
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
+                completionStatuses[currentIndex] = true;
+                currentSubscription.cancel();
+                currentSubscription = null;
 
-          currentSubscription?.pause(resumeSignal);
-        },
-        onResume: () {
-          subscription.resume();
+                if (completionStatuses.every((bool isComplete) => isComplete) &&
+                    isParentSubscriptionDone) {
+                  controller.close();
+                } else {
+                  moveNext();
+                }
+              });
 
-          currentSubscription?.resume();
-        },
-        onCancel: () {
-          final List<Future<dynamic>> list = <Future<dynamic>>[
-            subscription.cancel()
-          ];
+          index += 1;
+        }
+      }
 
-          if (currentSubscription != null) {
-            list.add(currentSubscription.cancel());
-          }
+      controller = new StreamController<S>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen(
+                (T value) {
+                  streams.add(predicate(value));
+                  completionStatuses.add(false);
 
-          return Future.wait(list
-              .where((Future<dynamic> cancelFuture) => cancelFuture != null));
-        });
+                  moveNext();
+                },
+                onError: controller.addError,
+                onDone: () {
+                  isParentSubscriptionDone = true;
+                },
+                cancelOnError: cancelOnError);
+          },
+          onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
 
-    return controller.stream.listen(null);
-  });
+            currentSubscription?.pause(resumeSignal);
+          },
+          onResume: () {
+            subscription.resume();
+
+            currentSubscription?.resume();
+          },
+          onCancel: () {
+            final List<Future<dynamic>> list = <Future<dynamic>>[
+              subscription.cancel()
+            ];
+
+            if (currentSubscription != null) {
+              list.add(currentSubscription.cancel());
+            }
+
+            return Future.wait(list
+                .where((Future<dynamic> cancelFuture) => cancelFuture != null));
+          });
+
+      return controller.stream.listen(null);
+    });
+  }
 }

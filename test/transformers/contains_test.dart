@@ -5,6 +5,6 @@ void main() {
   test('rx.Observable.contains', () async {
     final bool actual = await new Observable<int>.just(1).contains(1);
 
-    expect(actual, true);
+    await expect(actual, true);
   });
 }

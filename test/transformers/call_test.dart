@@ -36,7 +36,7 @@ void main() {
         .listen(null)
         .cancel();
 
-    expect(onCancelCalled, isTrue);
+    await expect(onCancelCalled, isTrue);
   });
 
   test('rx.Observable.call.onData', () async {
@@ -110,7 +110,7 @@ void main() {
       onListenCalled = true;
     }).listen((_) {});
 
-    expect(onListenCalled, isTrue);
+    await expect(onListenCalled, isTrue);
   });
 
   test('rx.Observable.call.onPause.onResume', () async {
@@ -140,7 +140,7 @@ void main() {
       // can be used or safely removed.
       observable.call();
     } catch (e) {
-      expect(e is AssertionError, isTrue);
+      await expect(e is AssertionError, isTrue);
     }
   });
 }

@@ -10,14 +10,17 @@ Stream<int> _getSampleStream() => new Stream<int>.periodic(
 
 void main() {
   test('rx.Observable.sample', () async {
-    const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
-    int count = 0;
+    Observable<int> observable =
+        new Observable<int>(_getStream()).sample(_getSampleStream());
 
-    new Observable<int>(_getStream())
-        .sample(_getSampleStream())
-        .listen(expectAsync1((int result) {
-          expect(expectedOutput[count++], result);
-        }, count: expectedOutput.length));
+    await expect(observable, emitsInOrder(const <int>[0, 2, 4]));
+  });
+
+  test('rx.Observable.sample.onDone', () async {
+    Observable<int> observable = new Observable<int>(new Observable<int>.just(1))
+        .sample(new Observable<int>.empty());
+
+    await expect(observable, emits(1));
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
@@ -28,7 +31,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    expect(true, true);
+    await expect(true, true);
   });
 
   test('rx.Observable.sample.error.shouldThrow', () async {
@@ -42,7 +45,7 @@ void main() {
   });
 
   test('rx.Observable.sample.pause.resume', () async {
-    const List<int> expectedOutput = const <int>[0, 2, 4, 4, 4];
+    const List<int> expectedOutput = const <int>[0, 2, 4];
     int count = 0;
     StreamSubscription<int> subscription;
 

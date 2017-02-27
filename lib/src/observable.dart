@@ -30,7 +30,6 @@ import 'package:rxdart/src/transformers/min.dart';
 import 'package:rxdart/src/transformers/of_type.dart';
 import 'package:rxdart/src/transformers/on_error_resume_next.dart';
 import 'package:rxdart/src/transformers/repeat.dart';
-import 'package:rxdart/src/transformers/retry.dart';
 import 'package:rxdart/src/transformers/sample.dart';
 import 'package:rxdart/src/transformers/scan.dart';
 import 'package:rxdart/src/transformers/skip_until.dart';
@@ -660,7 +659,7 @@ class Observable<T> extends Stream<T> {
   /// If skip is provided, each group will start where the previous group
   /// ended minus count.
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
-      transform(bufferWithCountTransformer(count, skip));
+      transform(new BufferWithCountStreamTransformer<T, List<T>>(count, skip));
 
   /// Invokes each callback at the given point in the stream lifecycle
   ///
@@ -699,7 +698,7 @@ class Observable<T> extends Stream<T> {
           void onListen(),
           void onPause(Future<dynamic> resumeSignal),
           void onResume()}) =>
-      transform(callTransformer(
+      transform(new CallStreamTransformer<T>(
           onCancel: onCancel,
           onData: onData,
           onDone: onDone,
@@ -718,7 +717,7 @@ class Observable<T> extends Stream<T> {
   /// next created stream. This process continues until all created streams have
   /// completed.
   Observable<S> concatMap<S>(Stream<S> predicate(T value)) =>
-      transform(concatMapTransformer(predicate));
+      transform(new ConcatMapStreamTransformer<T, S>(predicate));
 
   /// Returns an Observable that emits all items from the current Observable,
   /// then emits all items from the given observable, one after the next.
@@ -728,8 +727,8 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.timer(1, new Duration(seconds: 10))
   ///         .concatWith([new Observable.just(2)])
   ///         .listen(print); // prints 1, 2
-  Observable<T> concatWith(Iterable<Stream<T>> other) =>
-      new Observable<T>(new ConcatStream<T>(<Stream<T>>[stream]..addAll(other)));
+  Observable<T> concatWith(Iterable<Stream<T>> other) => new Observable<T>(
+      new ConcatStream<T>(<Stream<T>>[stream]..addAll(other)));
 
   @override
   Future<bool> contains(Object needle) => stream.contains(needle);
@@ -743,12 +742,12 @@ class Observable<T> extends Stream<T> {
   ///
   /// http://rxmarbles.com/#debounce
   Observable<T> debounce(Duration duration) =>
-      transform(debounceTransformer(duration));
+      transform(new DebounceStreamTransformer<T>(duration));
 
   /// emit items from the source Observable, or a default item if the source
   /// Observable emits nothing
   Observable<T> defaultIfEmpty(T defaultValue) =>
-      transform(defaultIfEmptyTransformer(defaultValue));
+      transform(new DefaultIfEmptyStreamTransformer<T>(defaultValue));
 
   /// Converts the onData, onDone, and onError [Notification] objects from a
   /// materialized stream into normal onData, onDone, and onError events.
@@ -773,7 +772,7 @@ class Observable<T> extends Stream<T> {
     // will throw an Error if the stream is not a Stream<Notification<S>>
 
     // ignore: argument_type_not_assignable
-    return transform(dematerializeTransformer<S>());
+    return transform(new DematerializeStreamTransformer<T>());
   }
 
   /// Creates an Observable where data events are skipped if they are equal to
@@ -828,7 +827,7 @@ class Observable<T> extends Stream<T> {
   /// emits items, and then merges the results of that function applied to every
   /// item emitted by the original Observable, emitting these merged results.
   Observable<S> flatMap<S>(Stream<S> predicate(T value)) =>
-      transform(flatMapTransformer(predicate));
+      transform(new FlatMapStreamTransformer<T, S>(predicate));
 
   /// Creates an Observable by transforming the items emitted by the source into
   /// Observables, and mirroring those items emitted by the most-recently
@@ -842,7 +841,7 @@ class Observable<T> extends Stream<T> {
   /// then it ignores the previous one and begins emitting items emitted by the
   /// new one.
   Observable<S> flatMapLatest<S>(Stream<S> predicate(T value)) =>
-      transform(flatMapLatestTransformer(predicate));
+      transform(new FlatMapLatestStreamTransformer<T, S>(predicate));
 
   @override
   Future<S> fold<S>(S initialValue, S combine(S previous, T element)) => stream
@@ -860,7 +859,8 @@ class Observable<T> extends Stream<T> {
   ///  key. All items with the same key are emitted by the same Observable.
   Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value),
           {int compareKeys(S keyA, S keyB): null}) =>
-      transform(groupByTransformer(keySelector, compareKeys: compareKeys));
+      transform(new GroupByStreamTransformer<T, S>(keySelector,
+          compareKeys: compareKeys));
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
@@ -892,11 +892,12 @@ class Observable<T> extends Stream<T> {
       new Observable<T>(stream.handleError(onError, test: test));
 
   /// Creates an observable where all incoming events are ignored, only the error/completed notifications are passed
-  Observable<T> ignoreElements() => transform(ignoreElementsTransformer());
+  Observable<T> ignoreElements() =>
+      transform(new IgnoreElementsStreamTransformer<T>());
 
   /// Creates an observable that produces a value after each duration.
   Observable<T> interval(Duration duration) =>
-      transform(intervalTransformer(duration));
+      transform(new IntervalStreamTransformer<T>(duration));
 
   @override
   bool get isBroadcast {
@@ -951,12 +952,12 @@ class Observable<T> extends Stream<T> {
   ///         .materialize()
   ///         .listen((i) => print(i)); // Prints onError Notification
   Observable<Notification<T>> materialize() =>
-      transform(materializeTransformer());
+      transform(new MaterializeStreamTransformer<T>());
 
   /// Creates an Observable that returns the maximum value in the source
   /// sequence according to the specified compare function.
   Observable<T> max([int compare(T a, T b)]) =>
-      transform(maxTransformer(compare));
+      transform(new MaxStreamTransformer<T>(compare));
 
   /// Combines the items emitted by multiple streams into a single stream of
   /// items. The items are emitted in the order they are emitted by their
@@ -967,13 +968,13 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.timer(1, new Duration(seconds: 10))
   ///         .mergeWith([new Observable.just(2)])
   ///         .listen(print); // prints 2, 1
-  Observable<T> mergeWith(Iterable<Stream<T>> streams) =>
-      new Observable<T>(new MergeStream<T>(<Stream<T>>[stream]..addAll(streams)));
+  Observable<T> mergeWith(Iterable<Stream<T>> streams) => new Observable<T>(
+      new MergeStream<T>(<Stream<T>>[stream]..addAll(streams)));
 
   /// Creates an Observable that returns the minimum value in the source
   /// sequence according to the specified compare function.
   Observable<T> min([int compare(T a, T b)]) =>
-      transform(minTransformer(compare));
+      transform(new MinStreamTransformer<T>(compare));
 
   /// Filters a sequence so that only events of a given type pass
   ///
@@ -1006,7 +1007,7 @@ class Observable<T> extends Stream<T> {
   ///   const TypeToken<Map<Int, String>>();
   /// ```
   Observable<S> ofType<S>(TypeToken<S> typeToken) =>
-      transform(ofTypeTransformer(typeToken));
+      transform(new OfTypeStreamTransformer<T, S>(typeToken));
 
   /// Intercepts error events and switches to the given stream in that case
   ///
@@ -1014,7 +1015,7 @@ class Observable<T> extends Stream<T> {
   /// the source Observable. Instead of passing it through to any observers, it
   /// replaces it with another Stream of items.
   Observable<T> onErrorResumeNext(Stream<T> recoveryStream) =>
-      transform(onErrorResumeNextTransformer(recoveryStream));
+      transform(new OnErrorResumeNextStreamTransformer<T>(recoveryStream));
 
   /// instructs an Observable to emit a particular item when it encounters an
   /// error, and then terminate normally
@@ -1022,8 +1023,9 @@ class Observable<T> extends Stream<T> {
   /// The onErrorReturn operator intercepts an onError notification from
   /// the source Observable. Instead of passing it through to any observers, it
   /// replaces it with a given item, and then terminates normally.
-  Observable<T> onErrorReturn(T returnValue) => transform(
-      onErrorResumeNextTransformer(new Observable<T>.just(returnValue)));
+  Observable<T> onErrorReturn(T returnValue) =>
+      transform(new OnErrorResumeNextStreamTransformer<T>(
+          new Observable<T>.just(returnValue)));
 
   @override
   Future<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
@@ -1035,24 +1037,21 @@ class Observable<T> extends Stream<T> {
   /// Creates an Observable that repeats the source's elements the specified
   /// number of times.
   Observable<T> repeat(int repeatCount) =>
-      transform(repeatTransformer(repeatCount));
+      transform(new RepeatStreamTransformer<T>(repeatCount));
 
-  /// Creates an Observable that will repeat the source sequence the specified
-  /// number of times until it successfully terminates. If the retry count is
-  /// not specified, it retries indefinitely.
-  Observable<T> retry([int count]) => transform(retryTransformer(count));
-
-  /// Creates an Observable that will emit the latest value from the source
-  /// sequence whenever the sampleStream itself emits a value.
+  /// Returns an Observable that, when the specified sample stream emits
+  /// an item or completes, emits the most recently emitted item (if any)
+  /// emitted by the source stream since the previous emission from
+  /// the sample stream.
   Observable<T> sample(Stream<dynamic> sampleStream) =>
-      transform(sampleTransformer(sampleStream));
+      transform(new SampleStreamTransformer<T>(sampleStream));
 
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial
   /// accumulator value.
   Observable<S> scan<S>(S predicate(S accumulated, T value, int index),
           [S seed]) =>
-      transform(scanTransformer(predicate, seed));
+      transform(new ScanStreamTransformer<T, S>(predicate, seed));
 
   @override
   Future<T> get single => stream.single;
@@ -1078,7 +1077,8 @@ class Observable<T> extends Stream<T> {
   ///     ])
   ///     .skipUntil(new Observable.timer(true, new Duration(minutes: 1)))
   ///     .listen(print); // prints 2;
-  Observable<T> skipUntil(Stream<dynamic> otherStream) => transform(skipUntilTransformer(otherStream));
+  Observable<T> skipUntil<S>(Stream<S> otherStream) =>
+      transform(new SkipUntilStreamTransformer<T, S>(otherStream));
 
   /// Skip data events from this stream while they are matched by test.
   ///
@@ -1096,11 +1096,11 @@ class Observable<T> extends Stream<T> {
 
   /// Prepends a value to the source Observable.
   Observable<T> startWith(T startValue) =>
-      transform(startWithTransformer(startValue));
+      transform(new StartWithStreamTransformer<T>(startValue));
 
   /// Prepends a sequence of values to the source Observable.
   Observable<T> startWithMany(List<T> startValues) =>
-      transform(startWithManyTransformer(startValues));
+      transform(new StartWithManyStreamTransformer<T>(startValues));
 
   /// When the original observable emits no items, this operator subscribes to
   /// the given fallback stream and emits items from that observable instead.
@@ -1129,7 +1129,7 @@ class Observable<T> extends Stream<T> {
   ///     memory.switchIfEmpty(disk).switchIfEmpty(network);
   /// ```
   Observable<T> switchIfEmpty(Stream<T> fallbackStream) =>
-      transform(switchIfEmptyTransformer(fallbackStream));
+      transform(new SwitchIfEmptyStreamTransformer<T>(fallbackStream));
 
   /// Provides at most the first `n` values of this stream.
   /// Forwards the first n data events of this stream, and all error events, to
@@ -1153,8 +1153,8 @@ class Observable<T> extends Stream<T> {
 
   /// Returns the values from the source observable sequence until the other
   /// observable sequence produces a value.
-  Observable<T> takeUntil(Stream<dynamic> otherStream) =>
-      transform(takeUntilTransformer(otherStream));
+  Observable<T> takeUntil<S>(Stream<S> otherStream) =>
+      transform(new TakeUntilStreamTransformer<T, S>(otherStream));
 
   /// Forwards data events while test is successful.
   ///
@@ -1179,12 +1179,12 @@ class Observable<T> extends Stream<T> {
   /// Returns an Observable that emits only the first item emitted by the source
   /// Observable during sequential time windows of a specified duration.
   Observable<T> throttle(Duration duration) =>
-      transform(throttleTransformer(duration));
+      transform(new ThrottleStreamTransformer<T>(duration));
 
   /// Records the time interval between consecutive values in an observable
   /// sequence.
   Observable<TimeInterval<T>> timeInterval() =>
-      transform(timeIntervalTransformer<T, TimeInterval<T>>());
+      transform(new TimeIntervalStreamTransformer<T, TimeInterval<T>>());
 
   /// The Timeout operator allows you to abort an Observable with an onError
   /// termination if that Observable fails to emit any items during a specified
@@ -1204,7 +1204,7 @@ class Observable<T> extends Stream<T> {
   ///        .timestamp()
   ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
   Observable<Timestamped<T>> timestamp() {
-    return transform(timestampTransformer());
+    return transform(new TimestampStreamTransformer<T>());
   }
 
   @override
@@ -1224,8 +1224,8 @@ class Observable<T> extends Stream<T> {
 
   /// Projects each element of an observable sequence into zero or more windows
   /// which are produced based on element count information.
-  Observable<Observable<T>> windowWithCount(int count, [int skip]) =>
-      transform(windowWithCountTransformer(count, skip));
+  Observable<Observable<T>> windowWithCount(int count, [int skip]) => transform(
+      new WindowWithCountStreamTransformer<T, Observable<T>>(count, skip));
 
   /// Creates an Observable that emits when the source stream emits,
   /// combining the latest values from the two streams using
@@ -1237,7 +1237,8 @@ class Observable<T> extends Stream<T> {
   /// http://rxmarbles.com/#withLatestFrom
   Observable<R> withLatestFrom<S, R>(
           Stream<S> latestFromStream, R fn(T t, S s)) =>
-      transform(withLatestFromTransformer(latestFromStream, fn));
+      transform(
+          new WithLatestFromStreamTransformer<T, S, R>(latestFromStream, fn));
 
   /// Returns an Observable that combines the current stream together with
   /// another stream using a given function.

@@ -19,39 +19,49 @@ import 'package:rxdart/src/transformers/call.dart';
 ///         .fromIterable([new Notification.onError(new Exception(), null)])
 ///         .transform(dematerializeTransformer())
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
-StreamTransformer<Notification<T>, T> dematerializeTransformer<T>() {
-  return new StreamTransformer<Notification<T>, T>(
-      (Stream<Notification<T>> input, bool cancelOnError) {
-    StreamController<T> controller;
-    StreamSubscription<Notification<T>> subscription;
+class DematerializeStreamTransformer<T>
+    implements StreamTransformer<Notification<T>, T> {
+  final StreamTransformer<Notification<T>, T> transformer;
 
-    controller = new StreamController<T>(
-        sync: true,
-        onListen: () {
-          subscription = input.listen((Notification<T> notification) {
-            if (notification.isOnData) {
-              controller.add(notification.value);
-            } else if (notification.isOnDone) {
-              controller.close();
-            } else if (notification.isOnError) {
-              controller.addError(notification.errorAndStackTrace.error,
-                  notification.errorAndStackTrace.stacktrace);
-            }
+  DematerializeStreamTransformer() : transformer = _buildTransformer();
+
+  @override
+  Stream<T> bind(Stream<Notification<T>> stream) => transformer.bind(stream);
+
+  static StreamTransformer<Notification<T>, T> _buildTransformer<T>() {
+    return new StreamTransformer<Notification<T>, T>(
+        (Stream<Notification<T>> input, bool cancelOnError) {
+      StreamController<T> controller;
+      StreamSubscription<Notification<T>> subscription;
+
+      controller = new StreamController<T>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen((Notification<T> notification) {
+              if (notification.isOnData) {
+                controller.add(notification.value);
+              } else if (notification.isOnDone) {
+                controller.close();
+              } else if (notification.isOnError) {
+                controller.addError(notification.errorAndStackTrace.error,
+                    notification.errorAndStackTrace.stacktrace);
+              }
+            },
+                onError: controller.addError,
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
           },
-              onError: controller.addError,
-              onDone: controller.close,
-              cancelOnError: cancelOnError);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
-        },
-        onResume: () {
-          subscription.resume();
-        },
-        onCancel: () {
-          return subscription.cancel();
-        });
+          onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
+          },
+          onResume: () {
+            subscription.resume();
+          },
+          onCancel: () {
+            return subscription.cancel();
+          });
 
-    return controller.stream.listen(null);
-  });
+      return controller.stream.listen(null);
+    });
+  }
 }
