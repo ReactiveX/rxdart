@@ -9,33 +9,34 @@ void main() {
   test('rx.Observable.retry', () async {
     final int retries = 3;
 
-    await expect(
-        new Observable<int>.retry(_getRetryStream(retries), retries), emits(1));
+    await expect(new Observable<int>.retry(_getRetryStream(retries), retries),
+        emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream', () async {
     final int retries = 3;
 
-    await expect(
-        new RetryStream<int>(_getRetryStream(retries), retries), emits(1));
+    await expect(new RetryStream<int>(_getRetryStream(retries), retries),
+        emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.onDone', () async {
     final int retries = 3;
 
     await expect(new RetryStream<int>(_getRetryStream(retries), retries),
-        emitsInOrder(<Matcher>[equals(1), emitsDone]));
+        emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.infinite.retries', () async {
-    await expect(new RetryStream<int>(_getRetryStream(1000)), emits(1));
+    await expect(new RetryStream<int>(_getRetryStream(1000)),
+        emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.emits.original.items', () async {
     final int retries = 3;
 
     await expect(new RetryStream<int>(_getStreamWithExtras(retries), retries),
-        emitsInOrder(<int>[1, 1, 1, 2]));
+        emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
   });
 
   test('RetryStream.asBroadcastStream', () async {
@@ -55,9 +56,10 @@ void main() {
     Stream<int> observableWithError =
         new RetryStream<int>(_getRetryStream(3), 2);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(e is RetryError, isTrue);
-    });
+    await expect(
+        observableWithError,
+        emitsInOrder(
+            <Matcher>[emitsError(new isInstanceOf<RetryError>()), emitsDone]));
   });
 
   test('RetryStream.pause.resume', () async {

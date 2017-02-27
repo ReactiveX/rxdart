@@ -46,25 +46,19 @@ class RetryStream<T> extends Stream<T> {
   }
 
   void retry() {
-    bool errorOccurred = false;
-
     subscription = streamFactory().listen((T data) {
       controller.add(data);
     }, onError: (dynamic e, dynamic s) {
-      errorOccurred = true;
+      subscription.cancel();
 
       if (count == retryStep) {
         controller.addError(new RetryError(count));
+        controller.close();
       } else {
-        subscription.cancel();
         retryStep++;
         retry();
       }
-    }, onDone: () {
-      if (!errorOccurred) {
-        controller.close();
-      }
-    }, cancelOnError: false);
+    }, onDone: controller.close, cancelOnError: false);
   }
 }
 
