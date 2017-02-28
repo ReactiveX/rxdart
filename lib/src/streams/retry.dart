@@ -24,15 +24,18 @@ class RetryStream<T> extends Stream<T> {
   final StreamFactory<T> streamFactory;
   int count;
   int retryStep = 0;
-  bool shouldClose = false;
   StreamController<T> controller;
   StreamSubscription<T> subscription;
+  bool _isUsed = false;
 
   RetryStream(this.streamFactory, [this.count]);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
+    if (_isUsed) throw new StateError("Stream has already been listened to.");
+    _isUsed = true;
+
     controller = new StreamController<T>(
         sync: true,
         onListen: retry,

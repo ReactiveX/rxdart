@@ -39,6 +39,19 @@ void main() {
         emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
   });
 
+  test('RetryStream.single.subscription', () async {
+    int retries = 3;
+
+    Stream<int> stream = new RetryStream<int>(_getRetryStream(retries), retries);
+
+    try {
+      stream.listen((_) {});
+      stream.listen((_) {});
+    } catch(e) {
+      await expect(e, isStateError);
+    }
+  });
+
   test('RetryStream.asBroadcastStream', () async {
     int retries = 3;
 
@@ -84,7 +97,7 @@ StreamFactory<int> _getRetryStream(int failCount) {
   return () {
     if (count < failCount) {
       count++;
-      return new Observable<int>.error(new Error());
+      return new ErrorStream<int>(new Error());
     } else {
       return new Observable<int>.just(1);
     }
@@ -101,7 +114,7 @@ StreamFactory<int> _getStreamWithExtras(int failCount) {
       // Emit first item
       return new Observable<int>.just(1)
           // Emit the error
-          .concatWith(<Stream<int>>[new Observable<int>.error(new Error())])
+          .concatWith(<Stream<int>>[new ErrorStream<int>(new Error())])
           // Emit an extra item, testing that it is not included
           .concatWith(<Stream<int>>[new Observable<int>.just(1)]);
     } else {
