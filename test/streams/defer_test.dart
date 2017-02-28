@@ -28,6 +28,17 @@ void main() {
     }, count: 1));
   });
 
+  test('rx.Observable.defer.single.subscription', () async {
+    Stream<int> observable = _getDeferStream();
+
+    try {
+      observable.listen((_) {});
+      observable.listen((_) {});
+    } catch (e) {
+      await expect(e, isStateError);
+    }
+  });
+
   test('rx.Observable.defer.error.shouldThrow', () async {
     Stream<int> observableWithError =
         new Observable<int>.defer(() => _getErroneousStream());
