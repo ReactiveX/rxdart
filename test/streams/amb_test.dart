@@ -29,6 +29,15 @@ void main() {
     }, count: 3));
   });
 
+  test('rx.Observable.amb.single.subscription', () async {
+    final Stream<num> first = getDelayedStream(50, 1);
+
+    Observable<num> observable = new Observable<num>.amb(<Stream<num>>[first]);
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.amb.asBroadcastStream', () async {
     final Stream<num> first = getDelayedStream(50, 1);
     final Stream<num> second = getDelayedStream(60, 2);

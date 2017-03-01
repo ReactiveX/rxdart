@@ -34,6 +34,13 @@ void main() {
     await expect(onErrorCalled, isFalse);
   });
 
+  test('NeverStream.single.subscription', () async {
+    final NeverStream<int> stream = new NeverStream<int>();
+
+    stream.listen((_) {});
+    await expect(() => stream.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.never', () async {
     bool onDataCalled = false;
     bool onDoneCalled = false;

@@ -13,15 +13,16 @@ List<Stream<num>> _getStreams() {
 
 void main() {
   test('rx.Observable.merge', () async {
-    const List<num> expectedOutput = const <num>[1, 2, 3, 4, 0, 1, 2];
-    int count = 0;
-
     Stream<num> observable = new Observable<num>.merge(_getStreams());
 
-    observable.listen(expectAsync1((num result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[count++]);
-    }, count: expectedOutput.length));
+    await expect(observable, emitsInOrder(<num>[1, 2, 3, 4, 0, 1, 2]));
+  });
+
+  test('rx.Observable.merge.single.subscription', () async {
+    Stream<num> observable = new Observable<num>.merge(_getStreams());
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.merge.asBroadcastStream', () async {

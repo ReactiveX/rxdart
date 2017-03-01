@@ -15,6 +15,13 @@ void main() {
     }, count: expected.length));
   });
 
+  test('RangeStream.single.subscription', () async {
+    final RangeStream stream = new RangeStream(1, 5);
+
+    stream.listen((_) {});
+    await expect(() => stream.listen((_) {}), throwsA(isStateError));
+  });
+
   test('RangeStream.single', () async {
     Stream<int> stream = new RangeStream(1, 1);
 

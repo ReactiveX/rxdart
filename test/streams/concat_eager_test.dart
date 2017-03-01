@@ -31,6 +31,13 @@ void main() {
     }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.concatEager.single.subscription', () async {
+    Stream<num> observable = new Observable<num>.concatEager(_getStreams());
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.concatEager.withEmptyStream', () async {
     const List<num> expectedOutput = const <num>[0, 1, 2, 3, 4, 5];
     int count = 0;
