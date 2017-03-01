@@ -12,6 +12,24 @@ void main() {
         }, count: 1));
   });
 
+  test('rx.Observable.switchIfEmpty.reusable', () async {
+    final SwitchIfEmptyStreamTransformer<bool> transformer =
+        new SwitchIfEmptyStreamTransformer<bool>(
+            new Observable<bool>.just(true).asBroadcastStream());
+
+    new Observable<bool>(new Stream<bool>.empty())
+        .transform(transformer)
+        .listen(expectAsync1((bool result) {
+          expect(result, true);
+        }, count: 1));
+
+    new Observable<bool>(new Stream<bool>.empty())
+        .transform(transformer)
+        .listen(expectAsync1((bool result) {
+          expect(result, true);
+        }, count: 1));
+  });
+
   test('rx.Observable.switchIfEmpty.whenNotEmpty', () async {
     new Observable<bool>.just(false)
         .switchIfEmpty(new Observable<bool>.just(true))

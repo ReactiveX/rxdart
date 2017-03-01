@@ -1,14 +1,17 @@
 import 'dart:async';
 
-class ScanStreamTransformer<T, S> implements StreamTransformer<T, S> {
-  final StreamTransformer<T, S> transformer;
+typedef S _ScanStreamTransformerPredicate<T, S>(
+    S accumulated, T value, int index);
 
-  ScanStreamTransformer(S predicate(S accumulated, T value, int index),
-      [S seed])
-      : transformer = _buildTransformer(predicate, seed);
+class ScanStreamTransformer<T, S> implements StreamTransformer<T, S> {
+  final _ScanStreamTransformerPredicate<T, S> predicate;
+  final S seed;
+
+  ScanStreamTransformer(this.predicate, [this.seed]);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) =>
+      _buildTransformer<T, S>(predicate, seed).bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       S predicate(S accumulated, T value, int index),

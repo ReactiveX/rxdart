@@ -11,18 +11,17 @@ class OnErrorResumeNextStreamTransformer<T> implements StreamTransformer<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       Stream<T> recoveryStream) {
-    StreamController<T> controller;
-    bool shouldCloseController = true;
-
-    void safeClose() {
-      if (shouldCloseController) {
-        controller.close();
-      }
-    }
-
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamSubscription<T> inputSubscription;
       StreamSubscription<T> recoverySubscription;
+      StreamController<T> controller;
+      bool shouldCloseController = true;
+
+      void safeClose() {
+        if (shouldCloseController) {
+          controller.close();
+        }
+      }
 
       controller = new StreamController<T>(
           sync: true,

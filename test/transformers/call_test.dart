@@ -51,6 +51,24 @@ void main() {
     }));
   });
 
+  test('rx.Observable.call.reusable', () async {
+    bool onDataCalled = false;
+    final CallStreamTransformer<int> transformer =
+        new CallStreamTransformer<int>(onData: (_) {
+      onDataCalled = true;
+    });
+    final Observable<int> observableA = new Observable<int>.just(1);
+    final Observable<int> observableB = new Observable<int>.just(1);
+
+    observableA.transform(transformer).listen((_) {}, onDone: expectAsync0(() {
+      expect(onDataCalled, isTrue);
+    }));
+
+    observableB.transform(transformer).listen((_) {}, onDone: expectAsync0(() {
+      expect(onDataCalled, isTrue);
+    }));
+  });
+
   test('rx.Observable.call.onDone', () async {
     final Observable<int> observable = new Observable<int>.just(1);
 

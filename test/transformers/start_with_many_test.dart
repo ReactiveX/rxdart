@@ -17,6 +17,25 @@ void main() {
     }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.startWithMany.reusable', () async {
+    final StartWithManyStreamTransformer<int> transformer =
+        new StartWithManyStreamTransformer<int>(const <int>[5, 6]);
+    const List<int> expectedOutput = const <int>[5, 6, 1, 2, 3, 4];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countA++], result);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countB++], result);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.startWithMany.asBroadcastStream', () async {
     Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .startWithMany(const <int>[5, 6]);

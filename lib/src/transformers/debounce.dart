@@ -10,12 +10,11 @@ class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    bool _closeAfterNextEvent = false;
-    Timer _timer;
-
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
+      bool _closeAfterNextEvent = false;
+      Timer _timer;
       bool streamHasEvent = false;
 
       controller = new StreamController<T>(

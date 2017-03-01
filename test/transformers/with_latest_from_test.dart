@@ -29,6 +29,35 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.withLatestFrom.reusable', () async {
+    final WithLatestFromStreamTransformer<int, int, Pair> transformer =
+        new WithLatestFromStreamTransformer<int, int, Pair>(
+            _getLatestFromStream().asBroadcastStream(),
+            (int first, int second) => new Pair(first, second));
+    const List<Pair> expectedOutput = const <Pair>[
+      const Pair(2, 0),
+      const Pair(3, 0),
+      const Pair(4, 1),
+      const Pair(5, 1),
+      const Pair(6, 2)
+    ];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .take(5)
+        .listen(expectAsync1((Pair result) {
+          expect(result, expectedOutput[countA++]);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .take(5)
+        .listen(expectAsync1((Pair result) {
+          expect(result, expectedOutput[countB++]);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.withLatestFrom.asBroadcastStream', () async {
     Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .withLatestFrom(_getLatestFromStream().asBroadcastStream(),
