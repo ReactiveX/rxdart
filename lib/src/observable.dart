@@ -9,6 +9,7 @@ import 'package:rxdart/src/streams/error.dart';
 import 'package:rxdart/src/streams/merge.dart';
 import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/streams/range.dart';
+import 'package:rxdart/src/streams/retry.dart';
 import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
@@ -237,7 +238,7 @@ class Observable<T> extends Stream<T> {
       new Observable<T>(new ConcatEagerStream<T>(streams));
 
   /// The defer factory waits until an observer subscribes to it, and then it
-  /// generates an Observable with the given function.
+  /// creates an Observable with the given factory function.
   ///
   /// It does this afresh for each subscriber, so although each subscriber may
   /// think it is subscribing to the same Observable, in fact each subscriber
@@ -246,8 +247,8 @@ class Observable<T> extends Stream<T> {
   /// In some circumstances, waiting until the last minute (that is, until
   /// subscription time) to generate the Observable can ensure that this
   /// Observable contains the freshest data.
-  factory Observable.defer(Stream<T> createStream()) =>
-      new Observable<T>(new DeferStream<T>(createStream));
+  factory Observable.defer(Stream<T> streamFactory()) =>
+      new Observable<T>(new DeferStream<T>(streamFactory));
 
   /// Returns an observable sequence that terminates with an exception, then
   /// immediately completes.
@@ -342,6 +343,28 @@ class Observable<T> extends Stream<T> {
   ///     Observable.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
   static Observable<int> range(int startInclusive, int endInclusive) =>
       new Observable<int>(new RangeStream(startInclusive, endInclusive));
+
+  /// Creates an Observable that will recreate and re-listen to the source
+  /// Stream the specified number of times until the Stream terminates
+  /// successfully.
+  ///
+  /// If the retry count is not specified, it retries indefinitely. If the retry
+  /// count is met, but the Stream has not terminated successfully, a
+  /// `RetryError` will be thrown.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.retry(() { new Observable.just(1); })
+  ///         .listen((i) => print(i)); // Prints 1
+  ///
+  ///     new Observable
+  ///        .retry(() {
+  ///          new Observable.just(1).concatWith([new Observable.error(new Error())]);
+  ///        }, 1)
+  ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
+  factory Observable.retry(Stream<T> streamFactory(), [int count]) {
+    return new Observable<T>(new RetryStream<T>(streamFactory, count));
+  }
 
   /// Emits the given value after a specified amount of time.
   ///

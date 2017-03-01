@@ -1,27 +1,20 @@
 import 'dart:async';
 
-class DeferStream<T> extends Stream<T> {
-  final StreamProvider<T> streamProvider;
+import 'package:rxdart/src/streams/utils.dart';
 
-  DeferStream(this.streamProvider);
+class DeferStream<T> extends Stream<T> {
+  final StreamFactory<T> streamFactory;
+  bool _isUsed = false;
+
+  DeferStream(this.streamFactory);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    StreamController<T> controller;
-    Stream<T> stream = streamProvider();
-    bool hasListened = false;
+    if (_isUsed) throw new StateError("Stream has already been listened to.");
+    _isUsed = true;
 
-    controller = new StreamController<T>(onListen: () {
-      if (!hasListened) {
-        stream.listen(controller.add,
-            onError: controller.addError, onDone: controller.close);
-      }
-    });
-
-    return controller.stream.listen(onData,
+    return streamFactory().listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }
-
-typedef Stream<T> StreamProvider<T>();
