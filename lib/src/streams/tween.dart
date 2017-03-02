@@ -1,25 +1,23 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/interval.dart';
-
-enum Ease { LINEAR, IN, OUT, IN_OUT }
-
-typedef double Sampler(
-    double startValue, double changeInTime, int currentTimeMs, int durationMs);
-
 class TweenStream extends Stream<double> {
-  final double startValue;
-  final double changeInTime;
-  final Duration duration;
-  final int intervalMs;
-  final Ease ease;
+  final StreamController<double> controller;
 
-  TweenStream(this.startValue, this.changeInTime, this.duration,
-      this.intervalMs, this.ease);
+  TweenStream(double startValue, double changeInTime, Duration duration,
+      int intervalMs, Ease ease)
+      : controller = _buildController(
+            startValue, changeInTime, duration, intervalMs, ease);
 
   @override
   StreamSubscription<double> listen(void onData(double event),
       {Function onError, void onDone(), bool cancelOnError}) {
+    return controller.stream
+        .listen(onData,
+            onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  static StreamController<double> _buildController(double startValue,
+      double changeInTime, Duration duration, int intervalMs, Ease ease) {
     StreamController<double> _controller;
     StreamSubscription<double> subscription;
 
@@ -51,11 +49,7 @@ class TweenStream extends Stream<double> {
         },
         onCancel: () => subscription.cancel());
 
-    return _controller.stream
-        .transform(new IntervalStreamTransformer<double>(
-            new Duration(milliseconds: intervalMs)))
-        .listen(onData,
-            onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return _controller;
   }
 
   static Stream<double> sampleFromValues<T>(Sampler sampler, double startValue,
@@ -71,6 +65,8 @@ class TweenStream extends Stream<double> {
       result = sampler(startValue, changeInTime, currentTimeMs, durationMs);
 
       yield result;
+
+      await new Future<int>.delayed(new Duration(milliseconds: intervalMs));
     }
 
     result = startValue + changeInTime;
@@ -78,6 +74,11 @@ class TweenStream extends Stream<double> {
     yield result;
   }
 }
+
+enum Ease { LINEAR, IN, OUT, IN_OUT }
+
+typedef double Sampler(
+    double startValue, double changeInTime, int currentTimeMs, int durationMs);
 
 Sampler get linear => (double startValue, double changeInTime,
         int currentTimeMs, int durationMs) =>

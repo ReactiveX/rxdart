@@ -6,36 +6,35 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('ErrorStream', () async {
-    bool onDataCalled = false;
     Stream<int> stream = new ErrorStream<int>(new Exception());
 
-    stream.listen(
-        expectAsync1((int actual) {
-          onDataCalled = true;
-        }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isException);
-        }, count: 1),
-        onDone: expectAsync0(() {
-          expect(true, true);
-          expect(onDataCalled, isFalse);
-        }, count: 1));
+    await expect(
+        stream,
+        emitsInOrder(<Matcher>[
+          neverEmits(anything),
+          emitsError(isException),
+          emitsDone
+        ]));
+  });
+
+  test('ErrorStream.single.subscription', () async {
+    Stream<int> stream = new ErrorStream<int>(new Exception());
+
+    stream.listen((_) {}, onError: (dynamic e, dynamic s) {});
+    await expect(
+        () => stream.listen((_) {}, onError: (dynamic e, dynamic s) {}),
+        throwsA(isStateError));
   });
 
   test('rx.Observable.error', () async {
-    bool onDataCalled = false;
     Observable<int> observable = new Observable<int>.error(new Exception());
 
-    observable.listen(
-        expectAsync1((int actual) {
-          onDataCalled = true;
-        }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isException);
-        }, count: 1),
-        onDone: expectAsync0(() {
-          expect(true, true);
-          expect(onDataCalled, isFalse);
-        }, count: 1));
+    await expect(
+        observable,
+        emitsInOrder(<Matcher>[
+          neverEmits(anything),
+          emitsError(isException),
+          emitsDone
+        ]));
   });
 }

@@ -35,6 +35,16 @@ void main() {
     }, count: 3));
   });
 
+  test('rx.Observable.combineLatest3.single.subscription', () async {
+    Stream<String> observable = Observable.combineLatest3(
+        streamA, streamB, streamC, (int a_value, int b_value, bool c_value) {
+      return '$a_value $b_value $c_value';
+    });
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.combineLatest2', () async {
     final List<List<int>> expected = <List<int>>[
       <int>[1, 2],

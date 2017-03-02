@@ -244,6 +244,14 @@ void main() {
     }));
   });
 
+  test('rx.Observable.zip.single.subscription', () async {
+    Observable<int> observable = Observable.zip2(new Observable<int>.just(1),
+        new Observable<int>.just(1), (int a, int b) => a + b);
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.zip.asBroadcastStream', () async {
     StreamController<bool> testStream = new StreamController<bool>()
       ..add(true)

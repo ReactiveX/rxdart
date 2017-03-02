@@ -1,17 +1,24 @@
 import 'dart:async';
 
 class AmbStream<T> extends Stream<T> {
-  final Iterable<Stream<T>> streams;
+  final StreamController<T> controller;
 
-  AmbStream(this.streams);
+  AmbStream(Iterable<Stream<T>> streams)
+      : controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
-    StreamController<T> controller;
     bool isDisambiguated = false;
+
+    StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
@@ -44,7 +51,6 @@ class AmbStream<T> extends Stream<T> {
               return new Future<dynamic>.value();
             }).where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller;
   }
 }

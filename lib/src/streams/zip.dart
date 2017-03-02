@@ -1,14 +1,19 @@
 import 'dart:async';
 
 class ZipStream<T> extends Stream<T> {
-  final Iterable<Stream<dynamic>> streams;
-  final Function predicate;
+  final StreamController<T> controller;
 
-  ZipStream(this.streams, this.predicate);
+  ZipStream(Iterable<Stream<dynamic>> streams, Function predicate)
+      : controller = _buildController(streams, predicate);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      controller.stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+
+  static StreamController<T> _buildController<T>(
+      Iterable<Stream<dynamic>> streams, Function predicate) {
     StreamController<T> controller;
     final List<bool> pausedStates =
         new List<bool>.generate(streams.length, (_) => false, growable: false);
@@ -60,8 +65,7 @@ class ZipStream<T> extends Stream<T> {
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller;
   }
 
   static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,

@@ -131,6 +131,14 @@ void main() {
         }, count: expectedValues.length));
   });
 
+  test('rx.Observable.tween.single.subscription', () async {
+    Observable<double> observable = Observable
+        .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20);
+
+    observable.listen((_) {});
+    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+  });
+
   test('rx.Observable.tween.asBroadcast', () async {
     Observable<double> observable = Observable
         .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)

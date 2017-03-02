@@ -11,15 +11,13 @@ import 'dart:async';
 ///     new ErrorStream(new ArgumentError());
 class ErrorStream<T> extends Stream<T> {
   final Object error;
+  StreamController<T> controller = new StreamController<T>();
 
   ErrorStream(this.error);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    // ignore: close_sinks
-    StreamController<T> controller = new StreamController<T>();
-
     controller.addError(error);
 
     controller.close();

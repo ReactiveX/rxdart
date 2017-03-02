@@ -8,14 +8,14 @@ import 'dart:async';
 /// other Observables or as parameters to operators that expect other
 /// Observables as parameters.
 class NeverStream<T> extends Stream<T> {
+  // ignore: close_sinks
+  StreamController<T> controller = new StreamController<T>();
+
   NeverStream();
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    // ignore: close_sinks
-    StreamController<T> controller = new StreamController<T>();
-
     return controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
