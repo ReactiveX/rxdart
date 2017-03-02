@@ -1,3 +1,12 @@
+## 0.9.0
+
+* Api Changes:
+  * Convert all StreamTransformer factories to proper classes
+    * Ensure these classes can be re-used multiple times
+  * Retry has moved from an operator to a constructor. This is to ensure the stream can be properly re-constructed every time in the correct way.
+  * Streams now properly enforce the single-subscription contract
+* Include example Flutter app. To run it, please follow the instructions in the README.
+
 ## 0.8.3+1
 * rename examples map to example
 
