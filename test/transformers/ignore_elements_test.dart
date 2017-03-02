@@ -29,6 +29,26 @@ void main() {
         }, count: 1));
   });
 
+  test('rx.Observable.ignoreElements.reusable', () async {
+    final IgnoreElementsStreamTransformer<int> transformer =
+        new IgnoreElementsStreamTransformer<int>();
+    bool hasReceivedEvent = false;
+
+    new Observable<int>(_getStream()).transform(transformer).listen((_) {
+      hasReceivedEvent = true;
+    },
+        onDone: expectAsync0(() {
+          expect(hasReceivedEvent, isFalse);
+        }, count: 1));
+
+    new Observable<int>(_getStream()).transform(transformer).listen((_) {
+      hasReceivedEvent = true;
+    },
+        onDone: expectAsync0(() {
+          expect(hasReceivedEvent, isFalse);
+        }, count: 1));
+  });
+
   test('rx.Observable.ignoreElements.asBroadcastStream', () async {
     Stream<int> stream =
         new Observable<int>(_getStream().asBroadcastStream()).ignoreElements();
