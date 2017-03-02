@@ -7,8 +7,8 @@ Stream<int> _getStream() {
   return new Stream<int>.fromIterable(<int>[1, 2, 3]);
 }
 
-Stream<num> _getOtherStream(num value) {
-  StreamController<num> controller = new StreamController<num>();
+Stream<int> _getOtherStream(int value) {
+  StreamController<int> controller = new StreamController<int>();
 
   new Timer(
       // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
@@ -33,6 +33,25 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.flatMap.reusable', () async {
+    final FlatMapStreamTransformer<int, int> transformer =
+        new FlatMapStreamTransformer<int, int>(_getOtherStream);
+    const List<int> expectedOutput = const <int>[3, 2, 1];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expectedOutput[countA++]);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expectedOutput[countB++]);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.flatMap.asBroadcastStream', () async {
     Stream<num> stream = new Observable<int>(_getStream().asBroadcastStream())
         .flatMap(_getOtherStream);
@@ -45,8 +64,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    Stream<int> observableWithError =
+        new Observable<int>(new ErrorStream<int>(new Exception()))
             .flatMap(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

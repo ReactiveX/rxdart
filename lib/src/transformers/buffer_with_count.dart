@@ -2,13 +2,14 @@ import 'dart:async';
 
 class BufferWithCountStreamTransformer<T, S extends List<T>>
     implements StreamTransformer<T, S> {
-  final StreamTransformer<T, S> transformer;
+  final int count;
+  final int skip;
 
-  BufferWithCountStreamTransformer(int count, [int skip])
-      : transformer = _buildTransformer(count, skip);
+  BufferWithCountStreamTransformer(this.count, [this.skip]);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) =>
+      _buildTransformer<T, S>(count, skip).bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S extends List<T>>(
       int count,

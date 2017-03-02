@@ -20,6 +20,31 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.timeInterval.reusable', () async {
+    final TimeIntervalStreamTransformer<int, TimeInterval<int>> transformer =
+        new TimeIntervalStreamTransformer<int, TimeInterval<int>>();
+    const List<int> expectedOutput = const <int>[0, 1, 2];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .interval(const Duration(milliseconds: 1))
+        .transform(transformer)
+        .listen(expectAsync1((TimeInterval<int> result) {
+          expect(expectedOutput[countA++], result.value);
+
+          expect(result.interval >= 1000 /* microseconds! */, true);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .interval(const Duration(milliseconds: 1))
+        .transform(transformer)
+        .listen(expectAsync1((TimeInterval<int> result) {
+          expect(expectedOutput[countB++], result.value);
+
+          expect(result.interval >= 1000 /* microseconds! */, true);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
     Stream<TimeInterval<int>> stream =
         new Observable<int>(_getStream().asBroadcastStream())

@@ -29,6 +29,25 @@ void main() {
         }, count: 2));
   });
 
+  test('rx.Observable.throttle.reusable', () async {
+    final ThrottleStreamTransformer<int> transformer =
+        new ThrottleStreamTransformer<int>(const Duration(milliseconds: 250));
+    const List<int> expectedOutput = const <int>[1, 4];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(result, expectedOutput[countA++]);
+        }, count: 2));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(result, expectedOutput[countB++]);
+        }, count: 2));
+  });
+
   test('rx.Observable.throttle.asBroadcastStream', () async {
     Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .throttle(const Duration(milliseconds: 200));

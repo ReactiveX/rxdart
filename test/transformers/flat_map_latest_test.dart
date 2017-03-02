@@ -17,8 +17,8 @@ Stream<int> _getStream() {
   return controller.stream;
 }
 
-Stream<num> _getOtherStream(num value) {
-  StreamController<num> controller = new StreamController<num>();
+Stream<int> _getOtherStream(int value) {
+  StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 15), () => controller.add(value + 1));
   new Timer(const Duration(milliseconds: 25), () => controller.add(value + 2));
@@ -46,6 +46,25 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.flatMapLatest.reusable', () async {
+    final FlatMapLatestStreamTransformer<int, int> transformer =
+        new FlatMapLatestStreamTransformer<int, int>(_getOtherStream);
+    const List<int> expectedOutput = const <int>[5, 6, 7, 8];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expectedOutput[countA++]);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expectedOutput[countB++]);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.flatMapLatest.asBroadcastStream', () async {
     Stream<num> stream = new Observable<int>(_getStream().asBroadcastStream())
         .flatMapLatest(_getOtherStream);
@@ -58,8 +77,8 @@ void main() {
   });
 
   test('rx.Observable.flatMapLatest.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    Stream<int> observableWithError =
+        new Observable<int>(new ErrorStream<int>(new Exception()))
             .flatMapLatest(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {

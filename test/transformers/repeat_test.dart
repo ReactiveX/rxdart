@@ -31,6 +31,37 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.repeat.reusable', () async {
+    final RepeatStreamTransformer<int> transformer = new RepeatStreamTransformer<int>(3);
+    const List<int> expectedOutput = const <int>[
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4
+    ];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+      expect(expectedOutput[countA++], result);
+    }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+      expect(expectedOutput[countB++], result);
+    }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.repeat.asBroadcastStream', () async {
     Stream<int> stream =
         new Observable<int>(_getStream().asBroadcastStream()).repeat(3);

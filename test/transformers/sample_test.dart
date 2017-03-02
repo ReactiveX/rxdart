@@ -6,19 +6,33 @@ import 'package:rxdart/rxdart.dart';
 Stream<int> _getStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 20), (int count) => count).take(5);
 Stream<int> _getSampleStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 35), (int count) => count).take(5);
+    const Duration(milliseconds: 35), (int count) => count).take(10);
 
 void main() {
   test('rx.Observable.sample', () async {
-    Observable<int> observable =
+    final Observable<int> observable =
         new Observable<int>(_getStream()).sample(_getSampleStream());
 
     await expect(observable, emitsInOrder(const <int>[0, 2, 4]));
   });
 
+  test('rx.Observable.sample.reusable', () async {
+    final SampleStreamTransformer<int> transformer =
+        new SampleStreamTransformer<int>(
+            _getSampleStream().asBroadcastStream());
+    final Observable<int> observableA =
+        new Observable<int>(_getStream()).transform(transformer);
+    final Observable<int> observableB =
+        new Observable<int>(_getStream()).transform(transformer);
+
+    await expect(observableA, emitsInOrder(const <int>[0, 2, 4]));
+    await expect(observableB, emitsInOrder(const <int>[0, 2, 4]));
+  });
+
   test('rx.Observable.sample.onDone', () async {
-    Observable<int> observable = new Observable<int>(new Observable<int>.just(1))
-        .sample(new Observable<int>.empty());
+    Observable<int> observable =
+        new Observable<int>(new Observable<int>.just(1))
+            .sample(new Observable<int>.empty());
 
     await expect(observable, emits(1));
   });

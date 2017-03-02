@@ -17,6 +17,30 @@ void main() {
     }));
   });
 
+  test('rx.Observable.dematerialize.reusable', () async {
+    final DematerializeStreamTransformer<int> transformer =
+        new DematerializeStreamTransformer<int>();
+    final int expectedValue = 1;
+    final Observable<Notification<int>> observableA =
+        new Observable<int>.just(1).materialize();
+    final Observable<Notification<int>> observableB =
+        new Observable<int>.just(1).materialize();
+
+    observableA.transform(transformer).listen(expectAsync1((int value) {
+      expect(value, expectedValue);
+    }), onDone: expectAsync0(() {
+      // Should call onDone
+      expect(true, isTrue);
+    }));
+
+    observableB.transform(transformer).listen(expectAsync1((int value) {
+      expect(value, expectedValue);
+    }), onDone: expectAsync0(() {
+      // Should call onDone
+      expect(true, isTrue);
+    }));
+  });
+
   test('dematerializeTransformer.happyPath', () async {
     final int expectedValue = 1;
     final Stream<Notification<int>> stream =

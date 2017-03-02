@@ -23,6 +23,38 @@ void main() {
     }, count: 2));
   });
 
+  test('rx.Observable.bufferWithCount.reusable', () async {
+    final BufferWithCountStreamTransformer<int, List<int>> transformer =
+        new BufferWithCountStreamTransformer<int, List<int>>(2);
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[3, 4]
+    ];
+    int countA = 0, countB = 0;
+
+    Stream<List<int>> streamA =
+        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+            .transform(transformer);
+
+    streamA.listen(expectAsync1((List<int> result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[countA][0], result[0]);
+      expect(expectedOutput[countA][1], result[1]);
+      countA++;
+    }, count: 2));
+
+    Stream<List<int>> streamB =
+        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+            .transform(transformer);
+
+    streamB.listen(expectAsync1((List<int> result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[countB][0], result[0]);
+      expect(expectedOutput[countB][1], result[1]);
+      countB++;
+    }, count: 2));
+  });
+
   test('rx.Observable.bufferWithCount.skip', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],

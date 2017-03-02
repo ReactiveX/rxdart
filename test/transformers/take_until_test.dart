@@ -17,8 +17,8 @@ Stream<int> _getStream() {
   return controller.stream;
 }
 
-Stream<num> _getOtherStream() {
-  StreamController<num> controller = new StreamController<num>();
+Stream<int> _getOtherStream() {
+  StreamController<int> controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 250), () {
     controller.add(1);
@@ -37,6 +37,26 @@ void main() {
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((int result) {
           expect(expectedOutput[count++], result);
+        }, count: expectedOutput.length));
+  });
+
+  test('rx.Observable.takeUntil.reusable', () async {
+    final TakeUntilStreamTransformer<int, int> transformer =
+        new TakeUntilStreamTransformer<int, int>(
+            _getOtherStream().asBroadcastStream());
+    const List<int> expectedOutput = const <int>[1, 2];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countA++], result);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 

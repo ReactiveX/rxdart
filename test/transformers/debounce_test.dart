@@ -26,6 +26,23 @@ void main() {
         }, count: 1));
   });
 
+  test('rx.Observable.debounce.reusable', () async {
+    final DebounceStreamTransformer<int> transformer =
+        new DebounceStreamTransformer<int>(const Duration(milliseconds: 200));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(result, 4);
+        }, count: 1));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(result, 4);
+        }, count: 1));
+  });
+
   test('rx.Observable.debounce.asBroadcastStream', () async {
     Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .debounce(const Duration(milliseconds: 200));

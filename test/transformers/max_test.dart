@@ -41,6 +41,25 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.max.transformer.reusable', () async {
+    final MaxStreamTransformer<int> transformer =
+        new MaxStreamTransformer<int>((int a, int b) => 1);
+    const List<int> expectedOutput = const <int>[2, 3, 3, 5, 2, 9, 1, 2, 0];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countA++], result);
+        }, count: expectedOutput.length));
+
+    new Observable<int>(_getStream())
+        .transform(transformer)
+        .listen(expectAsync1((int result) {
+          expect(expectedOutput[countB++], result);
+        }, count: expectedOutput.length));
+  });
+
   test('rx.Observable.min.withCompare.withoutComparable', () async {
     const List<Map<String, int>> expectedOutput = const <Map<String, int>>[
       const <String, int>{'value': 10},

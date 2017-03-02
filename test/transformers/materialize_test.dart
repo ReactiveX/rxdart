@@ -17,6 +17,33 @@ void main() {
     }));
   });
 
+  test('rx.Observable.materialize.reusable', () async {
+    final MaterializeStreamTransformer<int> transformer =
+        new MaterializeStreamTransformer<int>();
+    final Observable<int> observable =
+        new Observable<int>.just(1).asBroadcastStream();
+    List<Notification<int>> notificationsA = <Notification<int>>[],
+        notificationsB = <Notification<int>>[];
+
+    observable.transform(transformer).listen((Notification<int> notification) {
+      notificationsA.add(notification);
+    }, onDone: expectAsync0(() {
+      expect(notificationsA, <Notification<int>>[
+        new Notification<int>.onData(1),
+        new Notification<int>.onDone()
+      ]);
+    }));
+
+    observable.transform(transformer).listen((Notification<int> notification) {
+      notificationsB.add(notification);
+    }, onDone: expectAsync0(() {
+      expect(notificationsB, <Notification<int>>[
+        new Notification<int>.onData(1),
+        new Notification<int>.onDone()
+      ]);
+    }));
+  });
+
   test('materializeTransformer.happyPath', () async {
     final Stream<int> stream = new Stream<int>.fromIterable(<int>[1]);
     List<Notification<int>> notifications = <Notification<int>>[];

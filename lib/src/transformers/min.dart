@@ -1,13 +1,14 @@
 import 'dart:async';
 
-class MinStreamTransformer<T> implements StreamTransformer<T, T> {
-  final StreamTransformer<T, T> transformer;
+typedef int _MinStreamTransformerCompare<T>(T a, T b);
 
-  MinStreamTransformer([int compare(T a, T b)])
-      : transformer = _buildTransformer(compare);
+class MinStreamTransformer<T> implements StreamTransformer<T, T> {
+  final _MinStreamTransformerCompare<T> compare;
+
+  MinStreamTransformer([this.compare]);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _buildTransformer<T>(compare).bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>([int compare(T a, T b)]) {
     T _currentMin;

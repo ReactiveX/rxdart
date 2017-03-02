@@ -10,12 +10,11 @@ class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    Timer _timer;
-    bool _closeAfterNextEvent = false;
-
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
+      Timer _timer;
+      bool _closeAfterNextEvent = false;
 
       bool _resetTimer() {
         if (_timer != null && _timer.isActive) return false;

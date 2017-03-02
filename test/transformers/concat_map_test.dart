@@ -16,6 +16,26 @@ void main() {
     }));
   });
 
+  test('rx.Observable.concatMap.reusable', () async {
+    final ConcatMapStreamTransformer<int, int> transformer = new ConcatMapStreamTransformer<int, int>(_getOtherStream);
+    const List<int> expectedOutput = const <int>[1, 1, 2, 2, 3, 3];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(_getStream()).transform(transformer).listen(
+        expectAsync1((int result) {
+          expect(result, expectedOutput[countA++]);
+        }, count: expectedOutput.length), onDone: expectAsync0(() {
+      expect(true, true);
+    }));
+
+    new Observable<int>(_getStream()).transform(transformer).listen(
+        expectAsync1((int result) {
+          expect(result, expectedOutput[countB++]);
+        }, count: expectedOutput.length), onDone: expectAsync0(() {
+      expect(true, true);
+    }));
+  });
+
   test('rx.Observable.concatMap.asBroadcastStream', () async {
     Stream<num> stream = new Observable<int>(_getStream())
         .concatMap(_getOtherStream)
@@ -29,8 +49,8 @@ void main() {
   });
 
   test('rx.Observable.concatMap.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    Stream<int> observableWithError =
+        new Observable<int>(new ErrorStream<int>(new Exception()))
             .concatMap(_getOtherStream);
 
     observableWithError.listen(null, onError: (dynamic e, dynamic s) {
@@ -55,9 +75,9 @@ void main() {
   });
 
   test('rx.Observable.concatMap.cancel', () async {
-    StreamSubscription<num> subscription;
-    Observable<num> stream =
-        new Observable<num>(_getStream()).concatMap(_getOtherStream);
+    StreamSubscription<int> subscription;
+    Observable<int> stream =
+        new Observable<int>(_getStream()).concatMap(_getOtherStream);
 
     // Cancel the subscription before any events come through
     subscription = stream.listen(
@@ -81,8 +101,8 @@ Stream<int> _getStream() {
   return new Stream<int>.fromIterable(<int>[1, 2, 3]);
 }
 
-Stream<num> _getOtherStream(num value) {
-  StreamController<num> controller = new StreamController<num>();
+Stream<int> _getOtherStream(int value) {
+  StreamController<int> controller = new StreamController<int>();
 
   new Timer(
       // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer

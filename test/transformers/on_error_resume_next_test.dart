@@ -20,6 +20,25 @@ void main() {
         }, count: expected.length));
   });
 
+  test('rx.Observable.onErrorResumeNext.reusable', () async {
+    final OnErrorResumeNextStreamTransformer<num> transformer =
+        new OnErrorResumeNextStreamTransformer<num>(
+            _getStream().asBroadcastStream());
+    int countA = 0, countB = 0;
+
+    observable(new ErrorStream<num>(new Exception()))
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expected[countA++]);
+        }, count: expected.length));
+
+    observable(new ErrorStream<num>(new Exception()))
+        .transform(transformer)
+        .listen(expectAsync1((num result) {
+          expect(result, expected[countB++]);
+        }, count: expected.length));
+  });
+
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
     Stream<num> stream = observable(new ErrorStream<num>(new Exception()))
         .onErrorResumeNext(_getStream())

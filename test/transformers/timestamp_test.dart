@@ -15,6 +15,25 @@ void main() {
         }, count: expected.length));
   });
 
+  test('Rx.Observable.timestamp.reusable', () async {
+    final TimestampStreamTransformer<int> transformer =
+        new TimestampStreamTransformer<int>();
+    final List<int> expected = <int>[1, 2, 3];
+    int countA = 0, countB = 0;
+
+    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3]))
+        .transform(transformer)
+        .listen(expectAsync1((Timestamped<int> result) {
+          expect(result.value, expected[countA++]);
+        }, count: expected.length));
+
+    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3]))
+        .transform(transformer)
+        .listen(expectAsync1((Timestamped<int> result) {
+          expect(result.value, expected[countB++]);
+        }, count: expected.length));
+  });
+
   test('timestampTransformer', () async {
     final List<int> expected = <int>[1, 2, 3];
     int count = 0;
@@ -41,7 +60,8 @@ void main() {
 
   test('timestampTransformer.error.shouldThrow', () async {
     Stream<Timestamped<int>> streamWithError =
-        new ErrorStream<int>(new Exception()).transform(new TimestampStreamTransformer<int>());
+        new ErrorStream<int>(new Exception())
+            .transform(new TimestampStreamTransformer<int>());
 
     streamWithError.listen(null, onError: (dynamic e, dynamic s) {
       expect(e, isException);
