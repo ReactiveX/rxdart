@@ -14,7 +14,7 @@ import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
-import 'package:rxdart/src/as_observable_future.dart';
+import 'package:rxdart/src/utils/as_observable_future.dart';
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/concat_map.dart';

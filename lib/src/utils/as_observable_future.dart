@@ -10,13 +10,18 @@ import 'package:rxdart/rxdart.dart';
 ///
 /// Example:
 ///
-///   new Observable.fromIterable([1, 2, 3]).last.asObservable(); // .flatMap...
+///   new Observable.fromIterable(["hello", "friends"])
+///       .join(" ") // Returns an AsObservableFuture
+///       .asObservable() // Fluently convert the Future back to an Observable
+///       .flatMap((message) => new Observable.just(message.length)); // Use the operators you need
 class AsObservableFuture<T> implements Future<T> {
   final Future<T> wrapped;
 
   AsObservableFuture(this.wrapped);
 
-  Observable<T> asObservable() => new Observable<T>.fromFuture(wrapped);
+  Observable<T> asObservable() {
+    return new Observable<T>.fromFuture(wrapped);
+  }
 
   @override
   Stream<T> asStream() => wrapped.asStream();

@@ -8,12 +8,5 @@ void main() {
 
     await expect(actual, 1);
   });
-
-  test('rx.Observable.first.asObservable', () async {
-    final Observable<int> observable =
-        new Observable<int>.fromIterable(<int>[1, 2, 3]).first.asObservable();
-
-    await expect(observable, emits(1));
-  });
 }
 
