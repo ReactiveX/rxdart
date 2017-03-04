@@ -1,7 +1,7 @@
 import 'dart:async';
 
-/// Returns an observable sequence that terminates with an exception, then
-/// immediately completes.
+/// Returns an observable sequence that emits an [error], then immediately
+/// completes.
 ///
 /// The error operator is one with very specific and limited behavior. It is
 /// mostly useful for testing purposes.

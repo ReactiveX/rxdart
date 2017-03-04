@@ -1,10 +1,27 @@
 import 'dart:async';
 
+/// Merges the given Streams into one Stream sequence by using the
+/// combiner function whenever any of the source stream sequences emits an
+/// item.
+///
+/// The Stream will not emit until all Streams have emitted at least one
+/// item.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+///
+/// ### Example
+///
+///     new CombineLatestStream([
+///       new Stream.fromIterable(["a"]),
+///       new Stream.fromIterable(["b"]),
+///       new Stream.fromIterable(["c", "c"])],
+///       (a, b, c) => a + b + c)
+///     .listen(print); //prints "abc", "abc"
 class CombineLatestStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  CombineLatestStream(Iterable<Stream<dynamic>> streams, Function predicate)
-      : controller = _buildController(streams, predicate);
+  CombineLatestStream(Iterable<Stream<dynamic>> streams, Function combiner)
+      : controller = _buildController(streams, combiner);
 
   @override
   StreamSubscription<T> listen(void onData(T event),

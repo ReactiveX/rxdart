@@ -45,28 +45,32 @@ This has two major implications:
 - All [methods defined on the Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on RxDart's Observables as well.
 - All Observables can be passed to any API that expects a Dart Stream as an input.
 
+##### Note
+
+The following sections link to DartDoc. While DartDoc is a bit scary looking at first, the documentation is up-to-date, readable, and contains examples. Furthermore, this documentation lives within the code, which means it can be easily read from within your favorite editor. 
+
 ### Instantiation
 
 Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level constructor `new Observable()`, or by calling a factory method on the Observable class.
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
-###### Usage
+##### Usage
 ```dart
 var myObservable = new Observable(myStream);
 ```
 
-##### Available Factory Methods
-- amb
-- concat
-- defer
-- error
-- just
-- merge
-- never
-- periodic
-- retry
-- timer
+#### Available Factory Methods
+- [amb](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.amb.html)
+- [concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html)
+- [defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html)
+- [error](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.error.html)
+- [just](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.just.html)
+- [merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html)
+- [never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html)
+- [periodic](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.periodic.html)
+- [retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html)
+- [timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html)
 
 ###### Usage
 ```dart
@@ -74,10 +78,10 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 ```
 
 ##### Available Static Methods
-- combineLatest (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
-- range
-- tween
-- zip (zip2, zip3, zip4, ..., zip9)
+- [combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) (combineLatest2, combineLatest3, combineLatest4, ..., combineLatest9)
+- [range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html)
+- [tween](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/tween.html)
+- [zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html) (zip2, zip3, zip4, ..., zip9)
 
 ###### Usage
 ```dart
@@ -91,34 +95,36 @@ var myObservable = Observable.combineLatest3(
 ### Transformations
     
 ##### Available Methods
-- bufferWithCount
-- call
-- concatMap
-- concatWith
-- debounce
-- dematerialize
-- flatMapLatest
-- flatMap
-- groupBy
-- interval  
-- materialize
-- mergeWith
-- max
-- min
-- pluck  
-- repeat  
-- sample  
-- scan  
-- skipUntil
-- startWith  
-- startWithMany  
-- takeUntil  
-- timeInterval  
-- timestamp
-- throttle
-- windowWithCount
-- withLatestFrom
-- zipWith
+- [bufferWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithCount.html)
+- [call](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/call.html)
+- [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html)
+- [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
+- [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html)
+- [dematerialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/dematerialize.html)
+- [flatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMap.html)
+- [flatMapLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMapLatest.html)
+- [groupBy](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/groupBy.html)
+- [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html)  
+- [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html)
+- [mergeWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mergeWith.html)
+- [max](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/max.html)
+- [min](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/min.html)
+- [pluck](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/pluck.html)  
+- [repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/repeat.html)  
+- [sample](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sample.html)  
+- [scan](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/scan.html)  
+- [skipUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/skipUntil.html)
+- [startWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWith.html)  
+- [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html)  
+- [takeUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/takeUntil.html)  
+- [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html)  
+- [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html)
+- [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html)
+- [windowWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowWithCount.html)
+- [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html)
+- [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
+
+A full list of all methods and properties including those provided by the Dart Stream API (such as `first`, `asyncMap`, etc), can be seen by examining the [DartDocs](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html#instance-methods)
 
 ###### Usage
 ```Dart
@@ -129,9 +135,9 @@ var myObservable = new Observable(myStream)
 
 ### Objects
 
-- Observable
-- BehaviourSubject
-- ReplaySubject
+- [Observable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html)
+- [BehaviourSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/BehaviourSubject-class.html)
+- [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/ReplaySubject-class.html)
 
 ## Examples
 
@@ -158,7 +164,7 @@ In order to run the command line example, please follow these steps:
   
 #### Install Flutter
 
-In order to run this repo, you must have Flutter installed. For help getting started with Flutter, view the online
+In order to run the flutter example, you must have Flutter installed. For installation instructions, view the online
 [documentation](http://flutter.io/).
 
 #### Run the app
@@ -169,8 +175,6 @@ In order to run this repo, you must have Flutter installed. For help getting sta
   4. Run `flutter doctor` to ensure you have all Flutter dependencies working.
   5. Run `flutter packages get`
   6. Run `flutter run`
- 
-  
 
 ## Notable References
 - [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)

@@ -1,10 +1,28 @@
 import 'dart:async';
 
+/// Merges the specified streams into one observable sequence using the given
+/// combiner function whenever all of the observable sequences have produced
+/// an element at a corresponding index.
+///
+/// It applies this function in strict sequence, so the first item emitted by
+/// the new Observable will be the result of the function applied to the first
+/// item emitted by Observable #1 and the first item emitted by Observable #2;
+/// the second item emitted by the new zip-Observable will be the result of
+/// the function applied to the second item emitted by Observable #1 and the
+/// second item emitted by Observable #2; and so forth. It will only emit as
+/// many items as the number of items emitted by the source Observable that
+/// emits the fewest items.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#zip)
+///
+/// ### Example
+///
+///     new ZipStream()
 class ZipStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  ZipStream(Iterable<Stream<dynamic>> streams, Function predicate)
-      : controller = _buildController(streams, predicate);
+  ZipStream(Iterable<Stream<dynamic>> streams, Function zipper)
+      : controller = _buildController(streams, zipper);
 
   @override
   StreamSubscription<T> listen(void onData(T event),

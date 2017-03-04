@@ -44,92 +44,157 @@ import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
-/// Deprecated: Please use `new Observable(stream)` instead
-Observable<S> observable<S>(Stream<S> stream) => new Observable<S>(stream);
-
 class Observable<T> extends Stream<T> {
   final Stream<T> stream;
 
   Observable(this.stream);
 
-  /// Given two or more source Observables, emit all of the items from only
-  /// the first of these Observables to emit an item or notification.
+  /// Given two or more source [streams], emit all of the items from only
+  /// the first of these [streams] to emit an item or notification.
   ///
-  /// http://rxmarbles.com/#amb
+  /// [Interactive marble diagram](http://rxmarbles.com/#amb)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.amb([
+  ///       new Observable.timer(1, new Duration(days: 1)),
+  ///       new Observable.timer(2, new Duration(days: 2)),
+  ///       new Observable.timer(3, new Duration(seconds: 1))
+  ///     ]).listen(print); // prints 3
   factory Observable.amb(Iterable<Stream<T>> streams) =>
       new Observable<T>(new AmbStream<T>(streams));
 
   @override
   Future<bool> any(bool test(T element)) => stream.any(test);
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
-  @Deprecated(
-      'For better strong mode support, use combineLatest2, combineLatest3, ... instead')
-  factory Observable.combineLatest(
-          Iterable<Stream<dynamic>> streams, Function predicate) =>
-      new Observable<T>(new CombineLatestStream<T>(streams, predicate));
-
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest2(
+  ///       new Observable.just(1),
+  ///       new Observable.fromIterable([0, 1, 2]),
+  ///       (a, b) => a + b)
+  ///     .listen(print); //prints 1, 2, 3
   static Observable<T> combineLatest2<A, B, T>(
-          Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b)) =>
+          Stream<A> streamOne, Stream<B> streamTwo, T combiner(A a, B b)) =>
       new Observable<T>(new CombineLatestStream<T>(
-          <Stream<dynamic>>[streamOne, streamTwo], predicate));
+          <Stream<dynamic>>[streamOne, streamTwo], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest3(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.fromIterable(["c", "c"]),
+  ///       (a, b, c) => a + b + c)
+  ///     .listen(print); //prints "abc", "abc"
   static Observable<T> combineLatest3<A, B, C, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
-          T predicate(A a, B b, C c)) =>
+          T combiner(A a, B b, C c)) =>
       new Observable<T>(new CombineLatestStream<T>(
-          <Stream<dynamic>>[streamOne, streamTwo, streamThree], predicate));
+          <Stream<dynamic>>[streamOne, streamTwo, streamThree], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest4(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.fromIterable(["d", "d"]),
+  ///       (a, b, c, d) => a + b + c + d)
+  ///     .listen(print); //prints "abcd", "abcd"
   static Observable<T> combineLatest4<A, B, C, D, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
           Stream<D> streamFour,
-          T predicate(A a, B b, C c, D d)) =>
+          T combiner(A a, B b, C c, D d)) =>
       new Observable<T>(new CombineLatestStream<T>(
           <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
-          predicate));
+          combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest5(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.fromIterable(["e", "e"]),
+  ///       (a, b, c, d, e) => a + b + c + d + e)
+  ///     .listen(print); //prints "abcde", "abcde"
   static Observable<T> combineLatest5<A, B, C, D, E, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
           Stream<D> streamFour,
           Stream<E> streamFive,
-          T predicate(A a, B b, C c, D d, E e)) =>
+          T combiner(A a, B b, C c, D d, E e)) =>
       new Observable<T>(new CombineLatestStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
         streamThree,
         streamFour,
         streamFive
-      ], predicate));
+      ], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest6(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.fromIterable(["f", "f"]),
+  ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
+  ///     .listen(print); //prints "abcdef", "abcdef"
   static Observable<T> combineLatest6<A, B, C, D, E, F, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -137,7 +202,7 @@ class Observable<T> extends Stream<T> {
           Stream<D> streamFour,
           Stream<E> streamFive,
           Stream<F> streamSix,
-          T predicate(A a, B b, C c, D d, E e, F f)) =>
+          T combiner(A a, B b, C c, D d, E e, F f)) =>
       new Observable<T>(new CombineLatestStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -145,12 +210,29 @@ class Observable<T> extends Stream<T> {
         streamFour,
         streamFive,
         streamSix
-      ], predicate));
+      ], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest7(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.fromIterable(["g", "g"]),
+  ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
+  ///     .listen(print); //prints "abcdefg", "abcdefg"
   static Observable<T> combineLatest7<A, B, C, D, E, F, G, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -159,7 +241,7 @@ class Observable<T> extends Stream<T> {
           Stream<E> streamFive,
           Stream<F> streamSix,
           Stream<G> streamSeven,
-          T predicate(A a, B b, C c, D d, E e, F f, G g)) =>
+          T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
       new Observable<T>(new CombineLatestStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -168,12 +250,30 @@ class Observable<T> extends Stream<T> {
         streamFive,
         streamSix,
         streamSeven
-      ], predicate));
+      ], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest8(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.fromIterable(["h", "h"]),
+  ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
+  ///     .listen(print); //prints "abcdefgh", "abcdefgh"
   static Observable<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -183,7 +283,7 @@ class Observable<T> extends Stream<T> {
           Stream<F> streamSix,
           Stream<G> streamSeven,
           Stream<H> streamEight,
-          T predicate(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+          T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
       new Observable<T>(new CombineLatestStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -193,12 +293,31 @@ class Observable<T> extends Stream<T> {
         streamSix,
         streamSeven,
         streamEight
-      ], predicate));
+      ], combiner));
 
-  /// Creates an Observable where each item is the result of passing the latest
-  /// values from each feeder stream into the predicate function.
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an
+  /// item.
   ///
-  /// http://rxmarbles.com/#combineLatest
+  /// The Observable will not emit until all streams have emitted at least one
+  /// item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatest9(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.just("h"),
+  ///       new Observable.fromIterable(["i", "i"]),
+  ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
+  ///     .listen(print); //prints "abcdefghi", "abcdefghi"
   static Observable<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -209,7 +328,7 @@ class Observable<T> extends Stream<T> {
           Stream<G> streamSeven,
           Stream<H> streamEight,
           Stream<I> streamNine,
-          T predicate(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+          T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
       new Observable<T>(new CombineLatestStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -220,38 +339,64 @@ class Observable<T> extends Stream<T> {
         streamSeven,
         streamEight,
         streamNine
-      ], predicate));
+      ], combiner));
 
-  /// Concatenates all of the specified observable sequences, as long as the
-  /// previous observable sequence terminated successfully..
+  /// Concatenates all of the specified stream sequences, as long as the
+  /// previous stream sequence terminated successfully.
   ///
-  /// http://rxmarbles.com/#concat
+  /// It does this by subscribing to each stream one by one, emitting all items
+  /// and completing before subscribing to the next stream.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#concat)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.concat([
+  ///       new Observable.just(1),
+  ///       new Observable.timer(2, new Duration(days: 1)),
+  ///       new Observable.just(3)
+  ///     ])
+  ///     .listen(print); // prints 1, 2, 3
   factory Observable.concat(Iterable<Stream<T>> streams) =>
       new Observable<T>(new ConcatStream<T>(streams));
 
-  /// Concatenates all of the specified observable sequences,
-  /// a backlog is being kept for events that emit on the waiting streams.
-  /// When a previous sequence is terminated, all backlog for the next stream
-  /// is eagerly emitted at once.
+  /// Concatenates all of the specified stream sequences, as long as the
+  /// previous stream sequence terminated successfully.
   ///
+  /// In the case of concatEager, rather than subscribing to one stream after
+  /// the next, all streams are immediately subscribed to. The events are then
+  /// captured and emitted at the correct time, after the previous stream has
+  /// finished emitting items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#concat)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.concatEager([
+  ///       new Observable.just(1),
+  ///       new Observable.timer(2, new Duration(days: 1)),
+  ///       new Observable.just(3)
+  ///     ])
+  ///     .listen(print); // prints 1, 2, 3
   factory Observable.concatEager(Iterable<Stream<T>> streams) =>
       new Observable<T>(new ConcatEagerStream<T>(streams));
 
   /// The defer factory waits until an observer subscribes to it, and then it
   /// creates an Observable with the given factory function.
   ///
-  /// It does this afresh for each subscriber, so although each subscriber may
-  /// think it is subscribing to the same Observable, in fact each subscriber
-  /// gets its own individual sequence.
-  ///
   /// In some circumstances, waiting until the last minute (that is, until
   /// subscription time) to generate the Observable can ensure that this
   /// Observable contains the freshest data.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.defer(() => new Observable.just(1))
+  ///       .listen(print); //prints 1
   factory Observable.defer(Stream<T> streamFactory()) =>
       new Observable<T>(new DeferStream<T>(streamFactory));
 
-  /// Returns an observable sequence that terminates with an exception, then
-  /// immediately completes.
+  /// Returns an observable sequence that emits an [error], then immediately
+  /// completes.
   ///
   /// The error operator is one with very specific and limited behavior. It is
   /// mostly useful for testing purposes.
@@ -280,6 +425,11 @@ class Observable<T> extends Stream<T> {
   ///
   /// When the future completes, the stream will fire one event, either
   /// data or error, and then close with a done-event.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromFuture(new Future.value("Hello"))
+  ///       .listen(print); // prints "Hello"
   factory Observable.fromFuture(Future<T> future) =>
       new Observable<T>((new Stream<T>.fromFuture(future)));
 
@@ -292,24 +442,45 @@ class Observable<T> extends Stream<T> {
   /// that error. No done event will be sent (iteration is not complete), but no
   /// further data events will be generated either, since iteration cannot
   /// continue.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable([1, 2]).listen(print); // prints 1, 2
   factory Observable.fromIterable(Iterable<T> data) =>
       new Observable<T>((new Stream<T>.fromIterable(data)));
 
   /// Creates an Observable that contains a single value
   ///
   /// The value is emitted when the stream receives a listener.
+  ///
+  /// ### Example
+  ///
+  ///      new Observable.just(1).listen(print); // prints 1
   factory Observable.just(T data) =>
       new Observable<T>((new Stream<T>.fromIterable(<T>[data])));
 
   /// Creates an Observable that contains no values.
   ///
   /// No items are emitted from the stream, and done is called upon listening.
-  factory Observable.empty() => observable((new Stream<T>.empty()));
-
-  /// Creates an Observable where each item is the interleaved output emitted by
-  /// the feeder streams.
   ///
-  /// http://rxmarbles.com/#merge
+  /// ### Example
+  ///
+  ///     new Observable.empty().listen(
+  ///       (_) => print("data"), onDone: () => print("done")); // prints "done"
+  factory Observable.empty() => new Observable<T>((new Stream<T>.empty()));
+
+  /// Flattens the items emitted by the given [streams] into a single Observable
+  /// sequence.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#merge)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.merge([
+  ///       new Observable.timer(1, new Duration(days: 10)),
+  ///       new Observable.just(2)
+  ///     ])
+  ///     .listen(print); // prints 2, 1
   factory Observable.merge(Iterable<Stream<T>> streams) =>
       new Observable<T>(new MergeStream<T>(streams));
 
@@ -320,6 +491,10 @@ class Observable<T> extends Stream<T> {
   /// are useful for testing purposes, and sometimes also for combining with
   /// other Observables or as parameters to operators that expect other
   /// Observables as parameters.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.never().listen(print); // Neither prints nor terminates
   factory Observable.never() => new Observable<T>(new NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
@@ -329,6 +504,11 @@ class Observable<T> extends Stream<T> {
   /// every event.
   ///
   /// If [computation] is omitted the event values will all be `null`.
+  ///
+  /// ### Example
+  ///
+  ///      new Observable.periodic(new Duration(seconds: 1), (i) => i).take(3)
+  ///        .listen(print); // prints 0, 1, 2
   factory Observable.periodic(Duration period,
           [T computation(int computationCount)]) =>
       new Observable<T>((new Stream<T>.periodic(period, computation)));
@@ -377,134 +557,179 @@ class Observable<T> extends Stream<T> {
 
   /// Creates an Observable that emits values starting from startValue and
   /// incrementing according to the ease type over the duration.
-  /// todo : needs more detail
+  ///
+  /// This function is generally useful for transitions, such as animating
+  /// items across a screen or muting the volume of a sound gracefully.
+  ///
+  /// ### Example
+  ///
+  ///     Observable
+  ///       .tween(0.0, 100.0, const Duration(seconds: 1), ease: Ease.IN)
+  ///       .listen((i) => view.setLeft(i)); // Imaginary API as an example
   static Observable<double> tween(
           double startValue, double changeInTime, Duration duration,
-          {int intervalMs: 20, Ease ease: Ease.LINEAR}) =>
+          {int intervalMs: 16, Ease ease: Ease.LINEAR}) =>
       new Observable<double>(new TweenStream(
           startValue, changeInTime, duration, intervalMs, ease));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
-  @Deprecated('For better strong mode support, use zip2, zip3, ... instead')
-  factory Observable.zip(
-          Iterable<Stream<dynamic>> streams, Function predicate) =>
-      new Observable<T>(new ZipStream<T>(streams, predicate));
-
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
   ///
-  /// http://rxmarbles.com/#zip
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip2(
+  ///       new Observable.just("Hi "),
+  ///       new Observable.fromIterable(["Friend", "Dropped"]),
+  ///       (a, b) => a + b)
+  ///     .listen(print); // prints "Hi Friend"
   static Observable<T> zip2<A, B, T>(
-          Stream<A> streamOne, Stream<B> streamTwo, T predicate(A a, B b)) =>
+          Stream<A> streamOne, Stream<B> streamTwo, T zipper(A a, B b)) =>
       new Observable<T>(
-          new ZipStream<T>(<Stream<dynamic>>[streamOne, streamTwo], predicate));
+          new ZipStream<T>(<Stream<dynamic>>[streamOne, streamTwo], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip3(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.fromIterable(["c", "dropped"]),
+  ///       (a, b, c) => a + b + c)
+  ///     .listen(print); //prints "abc"
   static Observable<T> zip3<A, B, C, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
-          T predicate(A a, B b, C c)) =>
+          T zipper(A a, B b, C c)) =>
       new Observable<T>(new ZipStream<T>(
-          <Stream<dynamic>>[streamOne, streamTwo, streamThree], predicate));
+          <Stream<dynamic>>[streamOne, streamTwo, streamThree], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip4(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.fromIterable(["d", "dropped"]),
+  ///       (a, b, c, d) => a + b + c + d)
+  ///     .listen(print); //prints "abcd"
   static Observable<T> zip4<A, B, C, D, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
           Stream<D> streamFour,
-          T predicate(A a, B b, C c, D d)) =>
+          T zipper(A a, B b, C c, D d)) =>
       new Observable<T>(new ZipStream<T>(
           <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
-          predicate));
+          zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip5(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.fromIterable(["e", "dropped"]),
+  ///       (a, b, c, d, e) => a + b + c + d + e)
+  ///     .listen(print); //prints "abcde"
   static Observable<T> zip5<A, B, C, D, E, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
           Stream<C> streamThree,
           Stream<D> streamFour,
           Stream<E> streamFive,
-          T predicate(A a, B b, C c, D d, E e)) =>
+          T zipper(A a, B b, C c, D d, E e)) =>
       new Observable<T>(new ZipStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
         streamThree,
         streamFour,
         streamFive
-      ], predicate));
+      ], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip6(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.fromIterable(["f", "dropped"]),
+  ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
+  ///     .listen(print); //prints "abcdef"
   static Observable<T> zip6<A, B, C, D, E, F, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -512,7 +737,7 @@ class Observable<T> extends Stream<T> {
           Stream<D> streamFour,
           Stream<E> streamFive,
           Stream<F> streamSix,
-          T predicate(A a, B b, C c, D d, E e, F f)) =>
+          T zipper(A a, B b, C c, D d, E e, F f)) =>
       new Observable<T>(new ZipStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -520,21 +745,35 @@ class Observable<T> extends Stream<T> {
         streamFour,
         streamFive,
         streamSix
-      ], predicate));
+      ], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip7(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.fromIterable(["g", "dropped"]),
+  ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
+  ///     .listen(print); //prints "abcdefg"
   static Observable<T> zip7<A, B, C, D, E, F, G, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -543,7 +782,7 @@ class Observable<T> extends Stream<T> {
           Stream<E> streamFive,
           Stream<F> streamSix,
           Stream<G> streamSeven,
-          T predicate(A a, B b, C c, D d, E e, F f, G g)) =>
+          T zipper(A a, B b, C c, D d, E e, F f, G g)) =>
       new Observable<T>(new ZipStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -552,21 +791,36 @@ class Observable<T> extends Stream<T> {
         streamFive,
         streamSix,
         streamSeven
-      ], predicate));
+      ], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip8(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.fromIterable(["h", "dropped"]),
+  ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
+  ///     .listen(print); //prints "abcdefgh"
   static Observable<T> zip8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -576,7 +830,7 @@ class Observable<T> extends Stream<T> {
           Stream<F> streamSix,
           Stream<G> streamSeven,
           Stream<H> streamEight,
-          T predicate(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+          T zipper(A a, B b, C c, D d, E e, F f, G g, H h)) =>
       new Observable<T>(new ZipStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -586,21 +840,37 @@ class Observable<T> extends Stream<T> {
         streamSix,
         streamSeven,
         streamEight
-      ], predicate));
+      ], zipper));
 
-  /// Creates an Observable that applies a function of your choosing to the
-  /// combination of items emitted, in sequence, by two (or more) other
-  /// Observables, with the results of this function becoming the items emitted
-  /// by the returned Observable. It applies this function in strict sequence,
-  /// so the first item emitted by the new Observable will be the result of the
-  /// function applied to the first item emitted by Observable #1 and the first
-  /// item emitted by Observable #2; the second item emitted by the new
-  /// zip-Observable will be the result of the function applied to the second
-  /// item emitted by Observable #1 and the second item emitted by Observable
-  /// #2; and so forth. It will only emit as many items as the number of items
-  /// emitted by the source Observable that emits the fewest items.
+  /// Merges the specified streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
   ///
-  /// http://rxmarbles.com/#zip
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip9(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.just("h"),
+  ///       new Observable.fromIterable(["i", "dropped"]),
+  ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
+  ///     .listen(print); //prints "abcdefghi"
   static Observable<T> zip9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamOne,
           Stream<B> streamTwo,
@@ -611,7 +881,7 @@ class Observable<T> extends Stream<T> {
           Stream<G> streamSeven,
           Stream<H> streamEight,
           Stream<I> streamNine,
-          T predicate(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+          T zipper(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
       new Observable<T>(new ZipStream<T>(<Stream<dynamic>>[
         streamOne,
         streamTwo,
@@ -622,7 +892,7 @@ class Observable<T> extends Stream<T> {
         streamSeven,
         streamEight,
         streamNine
-      ], predicate));
+      ], zipper));
 
   /// Returns a multi-subscription stream that produces the same events as this.
   ///
@@ -940,11 +1210,49 @@ class Observable<T> extends Stream<T> {
   Future<dynamic> lastWhere(bool test(T element), {Object defaultValue()}) =>
       stream.lastWhere(test, defaultValue: defaultValue);
 
+  /// Adds a subscription to this stream. Returns a [StreamSubscription] which
+  /// handles events from the stream using the provided [onData], [onError] and
+  /// [onDone] handlers.
+  ///
+  /// The handlers can be changed on the subscription, but they start out
+  /// as the provided functions.
+  ///
+  /// On each data event from this stream, the subscriber's [onData] handler
+  /// is called. If [onData] is `null`, nothing happens.
+  ///
+  /// On errors from this stream, the [onError] handler is called with the
+  /// error object and possibly a stack trace.
+  ///
+  /// The [onError] callback must be of type `void onError(error)` or
+  /// `void onError(error, StackTrace stackTrace)`. If [onError] accepts
+  /// two arguments it is called with the error object and the stack trace
+  /// (which could be `null` if the stream itself received an error without
+  /// stack trace).
+  /// Otherwise it is called with just the error object.
+  /// If [onError] is omitted, any errors on the stream are considered unhandled,
+  /// and will be passed to the current [Zone]'s error handler.
+  /// By default unhandled async errors are treated
+  /// as if they were uncaught top-level errors.
+  ///
+  /// If this stream closes and sends a done event, the [onDone] handler is
+  /// called. If [onDone] is `null`, nothing happens.
+  ///
+  /// If [cancelOnError] is true, the subscription is automatically cancelled
+  /// when the first error event is delivered. The default is `false`.
+  ///
+  /// While a subscription is paused, or when it has been cancelled,
+  /// the subscription doesn't receive events and none of the
+  /// event handler functions are called.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1).listen(print); // prints 1
   @override
   StreamSubscription<T> listen(void onData(T event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
-      stream.listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      {Function onError, void onDone(), bool cancelOnError}) {
+    return stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
 
   @override
   Future<int> get length => stream.length;
