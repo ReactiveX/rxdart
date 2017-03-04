@@ -1,5 +1,20 @@
 import 'dart:async';
 
+/// Converts each emitted item into a new Stream using the given mapper
+/// function. The newly created Stream will be be listened to and begin
+/// emitting items downstream.
+///
+/// The items emitted by each of the new Streams are emitted downstream in the
+/// same order they arrive. In other words, the sequences are merged
+/// together.
+///
+/// ### Example
+///
+///   new Stream.fromIterable([4, 3, 2, 1])
+///     .transform(new FlatMapStreamTransformer((i) =>
+///       new Stream.fromFuture(
+///         new Future.delayed(new Duration(minutes: i), () => i))
+///     .listen(print); // prints 1, 2, 3, 4
 class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
 

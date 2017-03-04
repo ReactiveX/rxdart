@@ -1,5 +1,29 @@
 import 'dart:async';
 
+/// When the original observable emits no items, this operator subscribes to
+/// the given fallback stream and emits items from that observable instead.
+///
+/// This can be particularly useful when consuming data from multiple sources.
+/// For example, when using the Repository Pattern. Assuming you have some
+/// data you need to load, you might want to start with the fastest access
+/// point and keep falling back to the slowest point. For example, first query
+/// an in-memory database, then a database on the file system, then a network
+/// call if the data isn't on the local machine.
+///
+/// This can be achieved quite simply with switchIfEmpty!
+///
+/// ### Example
+///
+///     // Let's pretend we have some Data sources that complete without emitting
+///     // any items if they don't contain the data we're looking for
+///     Stream<Data> memory;
+///     Stream<Data> disk;
+///     Stream<Data> network;
+///
+///     // Start with memory, fallback to disk, then fallback to network.
+///     // Simple as that!
+///     Stream<Data> getThatData =
+///         memory.switchIfEmpty(disk).switchIfEmpty(network);
 class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

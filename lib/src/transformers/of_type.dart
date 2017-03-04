@@ -1,5 +1,33 @@
 import 'dart:async';
 
+/// Filters a sequence so that only events of a given type pass
+///
+/// In order to capture the Type correctly, it needs to be wrapped
+/// in a [TypeToken] as the generic parameter.
+///
+/// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
+/// checks and castings within `OfTypeObservable` itself. Therefore, the
+/// [TypeToken] class was introduced to capture the type of class you'd
+/// like `ofType` to filter down to.
+///
+/// ### Examples
+///
+///     new Stream.fromIterable([1, "hi"])
+///       .ofType(new TypeToken<String>)
+///       .listen(print); // prints "hi"
+///
+/// As a shortcut, you can use some pre-defined constants to write the above
+/// in the following way:
+///
+///     new Stream.fromIterable([1, "hi"])
+///       .transform(new OfTypeStreamTransformer(kString))
+///       .listen(print); // prints "hi"
+///
+/// If you'd like to create your own shortcuts like the example above,
+/// simply create a constant:
+///
+///     const TypeToken<Map<Int, String>> kMapIntString =
+///       const TypeToken<Map<Int, String>>();
 class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
 
@@ -44,26 +72,11 @@ class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
 /// was introduced to capture the type of class you'd like `ofType` to filter
 /// down to.
 ///
-/// Example:
+/// ### Example
 ///
-/// ```dart
-/// myObservable.ofType(const TypeToken<num>);
-/// ```
-///
-/// As a shortcut, you can use the pre-defined constants to write the above in
-/// the following way:
-///
-/// ```dart
-/// myObservable.ofType(kNum);
-/// ```
-///
-/// If you'd like to create your own shortcuts like the example above,
-/// simply create a constant:
-///
-/// ```dart
-/// const TypeToken<Map<Int, String>> kMapIntString =
-///   const TypeToken<Map<Int, String>>();
-/// ```
+/// new Stream.fromIterable([1, "hi"])
+///   .ofType(new TypeToken<String>)
+///   .listen(print); // prints "hi"
 class TypeToken<S> {
   const TypeToken();
 

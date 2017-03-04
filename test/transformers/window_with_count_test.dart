@@ -12,8 +12,7 @@ void main() {
     int count = 0;
 
     Stream<Stream<int>> stream =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .windowWithCount(2);
+        new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).windowWithCount(2);
 
     stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches

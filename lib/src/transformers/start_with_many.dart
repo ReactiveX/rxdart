@@ -1,5 +1,12 @@
 import 'dart:async';
 
+/// Prepends a sequence of values to the source Stream.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([3])
+///       .transform(new StartWithManyStreamTransformer([1, 2]))
+///       .listen(print); // prints 1, 2, 3
 class StartWithManyStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

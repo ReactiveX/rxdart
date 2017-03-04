@@ -1,5 +1,13 @@
 import 'dart:async';
 
+/// A StreamTransformer that emits only the first item emitted by the source
+/// Stream during sequential time windows of a specified duration.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1, 2, 3])
+///       .transform(new ThrottleStreamTransformer(new Duration(seconds: 1)))
+///       .listen(print); // prints 1
 class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

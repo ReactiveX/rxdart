@@ -11,9 +11,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .bufferWithCount(2);
+    Stream<List<int>> stream = Observable.range(1, 4).bufferWithCount(2);
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -64,9 +62,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .bufferWithCount(2, 1);
+    Stream<List<int>> stream = Observable.range(1, 4).bufferWithCount(2, 1);
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches

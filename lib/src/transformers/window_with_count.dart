@@ -2,6 +2,18 @@ import 'dart:async';
 
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 
+/// Creates an Observable where each item is a Stream containing the items
+/// from the source sequence, in batches of count.
+///
+/// If skip is provided, each group will start where the previous group
+/// ended minus the skip value.
+///
+/// ### Example
+///
+///     new RangeStream(1, 4)
+///      .transform(new WindowWithCountStreamTransformer(3))
+///      .transform(new FlatMapStreamTransformer((i) => i))
+///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
 class WindowWithCountStreamTransformer<T, S extends Stream<T>>
     implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;

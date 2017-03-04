@@ -17,7 +17,11 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new ZipStream()
+///     new ZipStream([
+///         new Stream.fromIterable([1]),
+///         new Stream.fromIterable([2, 3])
+///       ], (a, b) => a + b)
+///       .listen(print); // prints 3
 class ZipStream<T> extends Stream<T> {
   final StreamController<T> controller;
 

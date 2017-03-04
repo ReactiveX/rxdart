@@ -1,5 +1,14 @@
 import 'dart:async';
 
+/// Records the time interval between consecutive values in an observable
+/// sequence.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1])
+///       .transform(new IntervalStreamTransformer(new Duration(seconds: 1)))
+///       .transform(new TimeIntervalStreamTransformer())
+///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
     implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
@@ -27,7 +36,8 @@ class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
 
                   stopwatch.stop();
 
-                  controller.add(new TimeInterval<T>(value, ems));
+                  controller.add(new TimeInterval<T>(
+                      value, new Duration(microseconds: ems)));
 
                   stopwatch = new Stopwatch()..start();
                 },
@@ -49,7 +59,7 @@ class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
 }
 
 class TimeInterval<T> {
-  final int interval;
+  final Duration interval;
   final T value;
 
   TimeInterval(this.value, this.interval);

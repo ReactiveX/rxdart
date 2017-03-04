@@ -1,5 +1,15 @@
 import 'dart:async';
 
+/// A StreamTransformer that, when the specified sample stream emits
+/// an item or completes, emits the most recently emitted item (if any)
+/// emitted by the source stream since the previous emission from
+/// the sample stream.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1, 2, 3])
+///       .transform(new SampleStreamTransformer(new TimerStream(1, new Duration(seconds: 1)))
+///       .listen(print); // prints 3
 class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 
