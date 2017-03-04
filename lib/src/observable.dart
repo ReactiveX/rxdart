@@ -44,6 +44,62 @@ import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
+/// A wrapper class that extends Stream. It combines all the Streams and
+/// StreamTransformers contained in this library into a fluent api.
+///
+/// ### Example
+///
+///     new Observable(new Stream.fromIterable([1]))
+///       .interval(new Duration(seconds: 1))
+///       .flatMap((i) => new Observable.just(2))
+///       .take(1)
+///       .listen(print); // prints 2
+///
+/// ### Learning RxDart
+///
+/// This library contains documentation and examples for each method. In
+/// addition, more complex examples can be found in the
+/// [RxDart github repo](https://github.com/ReactiveX/rxdart) demonstrating how
+/// to use RxDart with web, command line, and Flutter applications.
+///
+/// ### Dart Streams vs Observables
+///
+/// In order to integrate fluently with the Dart ecosystem, the Observable class
+/// extends the Dart `Stream` class. This provides several advantages:
+///
+///    - Observables work with any API that expects a Dart Stream as an input.
+///    - Inherit the many methods and properties from the core Stream API.
+///    - Ability to create Streams with language-level syntax.
+///
+/// Overall, we attempt to follow the Observable spec as closely as we can, but
+/// prioritize fitting in with the Dart ecosystem when a trade-off must be made.
+/// Therefore, there are some important differences to note between Dart's
+/// `Stream` class and standard Rx `Observable`.
+///
+/// First, Cold Observables in Dart are single-subscription. In other words,
+/// you can only listen to Observables once, unless it is a hot (aka broadcast)
+/// Stream. If you attempt to listen to a cold stream twice, a StateError will
+/// be thrown. If you need to listen to a stream multiple times, you can simply
+/// create a factory function that returns a new instance of the stream.
+///
+/// Second, many methods contained within, such as `first` and `last` do not
+/// return a `Single` nor an `Observable`, but rather must return a Dart Future.
+/// Luckily, Dart Futures are easy to work with, and easily convert back to a
+/// Stream using the `myFuture.asStream()` method if needed.
+///
+/// Third, Streams in Dart do not close by default when an error occurs. In Rx,
+/// an Error causes the Observable to terminate unless it is intercepted by
+/// an operator. Dart has mechanisms for creating streams that close when an
+/// error occurs, but the majority of Streams do not exhibit this behavior.
+///
+/// Fourth, Dart streams are asynchronous by default, whereas Observables are
+/// synchronous by default, unless you schedule work on a different Scheduler.
+/// You can create synchronous Streams with Dart, but please be aware the the
+/// default is simply different.
+///
+/// Finally, when using Dart Broadcast Streams (similar to Hot Observables),
+/// please know that `onListen` will only be called the first time the
+/// broadcast stream is listened to.
 class Observable<T> extends Stream<T> {
   final Stream<T> stream;
 
