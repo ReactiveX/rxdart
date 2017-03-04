@@ -13,7 +13,7 @@ void main() {
   test('rx.Observable.onErrorResumeNext', () async {
     int count = 0;
 
-    observable(new ErrorStream<num>(new Exception()))
+    new Observable<num>(new ErrorStream<num>(new Exception()))
         .onErrorResumeNext(_getStream())
         .listen(expectAsync1((num result) {
           expect(result, expected[count++]);
@@ -26,13 +26,13 @@ void main() {
             _getStream().asBroadcastStream());
     int countA = 0, countB = 0;
 
-    observable(new ErrorStream<num>(new Exception()))
+    new Observable<num>(new ErrorStream<num>(new Exception()))
         .transform(transformer)
         .listen(expectAsync1((num result) {
           expect(result, expected[countA++]);
         }, count: expected.length));
 
-    observable(new ErrorStream<num>(new Exception()))
+    new Observable<num>(new ErrorStream<num>(new Exception()))
         .transform(transformer)
         .listen(expectAsync1((num result) {
           expect(result, expected[countB++]);
@@ -40,7 +40,7 @@ void main() {
   });
 
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
-    Stream<num> stream = observable(new ErrorStream<num>(new Exception()))
+    Stream<num> stream = new Observable<num>(new ErrorStream<num>(new Exception()))
         .onErrorResumeNext(_getStream())
         .asBroadcastStream();
     int countA = 0;
@@ -58,7 +58,7 @@ void main() {
 
   test('rx.Observable.onErrorResumeNext.error.shouldThrow', () async {
     Stream<num> observableWithError =
-        observable(new ErrorStream<num>(new Exception()))
+        new Observable<num>(new ErrorStream<num>(new Exception()))
             .onErrorResumeNext(new ErrorStream<num>(new Exception()));
 
     observableWithError.listen((_) {},
@@ -71,7 +71,7 @@ void main() {
     StreamSubscription<num> subscription;
     int count = 0;
 
-    subscription = observable(new ErrorStream<num>(new Exception()))
+    subscription = new Observable<num>(new ErrorStream<num>(new Exception()))
         .onErrorResumeNext(_getStream())
         .listen(expectAsync1((num result) {
           expect(result, expected[count++]);
@@ -88,7 +88,7 @@ void main() {
   test('rx.Observable.onErrorResumeNext.close', () async {
     int count = 0;
 
-    observable(new ErrorStream<num>(new Exception()))
+    new Observable<num>(new ErrorStream<num>(new Exception()))
         .onErrorResumeNext(_getStream())
         .listen(
             expectAsync1((num result) {
