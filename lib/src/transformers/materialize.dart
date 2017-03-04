@@ -9,7 +9,8 @@ import 'package:rxdart/src/transformers/call.dart';
 /// OnError), and the item or error that was emitted. In the case of onDone,
 /// no data is emitted as part of the [Notification].
 ///
-/// Example:
+/// ### Example
+///
 ///     new Stream<int>.fromIterable([1])
 ///         .transform(materializeTransformer())
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification

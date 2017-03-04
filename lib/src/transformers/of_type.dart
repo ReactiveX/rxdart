@@ -74,9 +74,9 @@ class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
 ///
 /// ### Example
 ///
-/// new Stream.fromIterable([1, "hi"])
-///   .ofType(new TypeToken<String>)
-///   .listen(print); // prints "hi"
+///     new Stream.fromIterable([1, "hi"])
+///       .ofType(new TypeToken<String>)
+///       .listen(print); // prints "hi"
 class TypeToken<S> {
   const TypeToken();
 

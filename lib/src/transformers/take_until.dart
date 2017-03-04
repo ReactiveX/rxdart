@@ -3,13 +3,15 @@ import 'dart:async';
 /// Returns the values from the source observable sequence until the other
 /// stream sequence produces a value.
 ///
-/// new MergeStream([
-///     new Stream.fromIterable([1]),
-///     new TimerStream(2, new Duration(minutes: 1))
-///   ])
-///   .transform(new TakeUntilStreamTransformer(
-///     new TimerStream(3, new Duration(seconds: 10))))
-///   .listen(print); // prints 1
+/// ### Example
+///
+///     new MergeStream([
+///         new Stream.fromIterable([1]),
+///         new TimerStream(2, new Duration(minutes: 1))
+///       ])
+///       .transform(new TakeUntilStreamTransformer(
+///         new TimerStream(3, new Duration(seconds: 10))))
+///       .listen(print); // prints 1
 class TakeUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

@@ -12,22 +12,22 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///   new Stream.fromIterable([4, 3, 2, 1])
-///     .transform(new FlatMapLatestStreamTransformer((i) =>
-///       new Stream.fromFuture(
-///         new Future.delayed(new Duration(minutes: i), () => i))
-///     .listen(print); // prints 1
+///     new Stream.fromIterable([4, 3, 2, 1])
+///       .transform(new FlatMapLatestStreamTransformer((i) =>
+///         new Stream.fromFuture(
+///           new Future.delayed(new Duration(minutes: i), () => i))
+///       .listen(print); // prints 1
 class FlatMapLatestStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
 
-  FlatMapLatestStreamTransformer(Stream<S> predicate(T value))
-      : transformer = _buildTransformer(predicate);
+  FlatMapLatestStreamTransformer(Stream<S> mapper(T value))
+      : transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> predicate(T value)) {
+      Stream<S> mapper(T value)) {
     return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
@@ -44,7 +44,7 @@ class FlatMapLatestStreamTransformer<T, S> implements StreamTransformer<T, S> {
 
                   hasMainEvent = true;
 
-                  otherSubscription = predicate(value).listen(controller.add,
+                  otherSubscription = mapper(value).listen(controller.add,
                       onError: controller.addError, onDone: () {
                     rightClosed = true;
 

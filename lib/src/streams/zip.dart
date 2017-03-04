@@ -35,7 +35,7 @@ class ZipStream<T> extends Stream<T> {
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(
-      Iterable<Stream<dynamic>> streams, Function predicate) {
+      Iterable<Stream<dynamic>> streams, Function zipper) {
     StreamController<T> controller;
     final List<bool> pausedStates =
         new List<bool>.generate(streams.length, (_) => false, growable: false);
@@ -58,7 +58,7 @@ class ZipStream<T> extends Stream<T> {
             if (subscriptions[index] != null) subscriptions[index].pause();
 
             if (_areAllPaused(pausedStates)) {
-              updateWithValues(predicate, values, controller);
+              updateWithValues(zipper, values, controller);
 
               _resumeAll(subscriptions, pausedStates);
             }
@@ -90,7 +90,7 @@ class ZipStream<T> extends Stream<T> {
     return controller;
   }
 
-  static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,
+  static void updateWithValues<T>(Function zipper, Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
       final int len = values.length;
@@ -98,22 +98,22 @@ class ZipStream<T> extends Stream<T> {
 
       switch (len) {
         case 2:
-          result = predicate(values.elementAt(0), values.elementAt(1));
+          result = zipper(values.elementAt(0), values.elementAt(1));
           break;
         case 3:
-          result = predicate(
+          result = zipper(
               values.elementAt(0), values.elementAt(1), values.elementAt(2));
           break;
         case 4:
-          result = predicate(values.elementAt(0), values.elementAt(1),
+          result = zipper(values.elementAt(0), values.elementAt(1),
               values.elementAt(2), values.elementAt(3));
           break;
         case 5:
-          result = predicate(values.elementAt(0), values.elementAt(1),
+          result = zipper(values.elementAt(0), values.elementAt(1),
               values.elementAt(2), values.elementAt(3), values.elementAt(4));
           break;
         case 6:
-          result = predicate(
+          result = zipper(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -122,7 +122,7 @@ class ZipStream<T> extends Stream<T> {
               values.elementAt(5));
           break;
         case 7:
-          result = predicate(
+          result = zipper(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -132,7 +132,7 @@ class ZipStream<T> extends Stream<T> {
               values.elementAt(6));
           break;
         case 8:
-          result = predicate(
+          result = zipper(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -143,7 +143,7 @@ class ZipStream<T> extends Stream<T> {
               values.elementAt(7));
           break;
         case 9:
-          result = predicate(
+          result = zipper(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),

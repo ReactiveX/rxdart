@@ -5,9 +5,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///   new Stream.empty()
-///     .transform(new DefaultIfEmptyStreamTransformer(10))
-///     .listen(print); // prints 10
+///     new Stream.empty()
+///       .transform(new DefaultIfEmptyStreamTransformer(10))
+///       .listen(print); // prints 10
 class DefaultIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

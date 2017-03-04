@@ -1078,10 +1078,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///   Observable.range(4, 1)
-  ///     .concatMap((i) =>
-  ///       new Observable.timer(i, new Duration(minutes: i))
-  ///     .listen(print); // prints 4, 3, 2, 1
+  ///     Observable.range(4, 1)
+  ///       .concatMap((i) =>
+  ///         new Observable.timer(i, new Duration(minutes: i))
+  ///       .listen(print); // prints 4, 3, 2, 1
   Observable<S> concatMap<S>(Stream<S> mapper(T value)) =>
       transform(new ConcatMapStreamTransformer<T, S>(mapper));
 
@@ -1120,7 +1120,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///   new Observable.empty().defaultIfEmpty(10).listen(print); // prints 10
+  ///     new Observable.empty().defaultIfEmpty(10).listen(print); // prints 10
   Observable<T> defaultIfEmpty(T defaultValue) =>
       transform(new DefaultIfEmptyStreamTransformer<T>(defaultValue));
 
@@ -1131,11 +1131,14 @@ class Observable<T> extends Stream<T> {
   /// events as [Notification] objects. Dematerialize simply reverses this by
   /// transforming [Notification] objects back to a normal stream of events.
   ///
-  /// Example:
+  /// ### Example
+  ///
   ///     new Observable<Notification<int>>
   ///         .fromIterable([new Notification.onData(1), new Notification.onDone()])
   ///         .dematerialize()
   ///         .listen((i) => print(i)); // Prints 1
+  ///
+  /// ### Error example
   ///
   ///     new Observable<Notification<int>>
   ///         .just(new Notification.onError(new Exception(), null))
@@ -1207,10 +1210,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///   Observable.range(4, 1)
-  ///     .flatMap((i) =>
-  ///       new Observable.timer(i, new Duration(minutes: i))
-  ///     .listen(print); // prints 1, 2, 3, 4
+  ///     Observable.range(4, 1)
+  ///       .flatMap((i) =>
+  ///         new Observable.timer(i, new Duration(minutes: i))
+  ///       .listen(print); // prints 1, 2, 3, 4
   Observable<S> flatMap<S>(Stream<S> mapper(T value)) =>
       transform(new FlatMapStreamTransformer<T, S>(mapper));
 
@@ -1226,10 +1229,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///   Observable.range(4, 1)
-  ///     .flatMapLatest((i) =>
-  ///       new Observable.timer(i, new Duration(minutes: i))
-  ///     .listen(print); // prints 1
+  ///     Observable.range(4, 1)
+  ///       .flatMapLatest((i) =>
+  ///         new Observable.timer(i, new Duration(minutes: i))
+  ///       .listen(print); // prints 1
   Observable<S> flatMapLatest<S>(Stream<S> mapper(T value)) =>
       transform(new FlatMapLatestStreamTransformer<T, S>(mapper));
 
@@ -1543,11 +1546,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.merge([
-  ///       new Observable.just(1),
-  ///       new Observable.timer(2, new Duration(minutes: 2))
-  ///     ])
-  ///     .skipUntil(new Observable.timer(true, new Duration(minutes: 1)))
-  ///     .listen(print); // prints 2;
+  ///         new Observable.just(1),
+  ///         new Observable.timer(2, new Duration(minutes: 2))
+  ///       ])
+  ///       .skipUntil(new Observable.timer(true, new Duration(minutes: 1)))
+  ///       .listen(print); // prints 2;
   Observable<T> skipUntil<S>(Stream<S> otherStream) =>
       transform(new SkipUntilStreamTransformer<T, S>(otherStream));
 
@@ -1632,12 +1635,14 @@ class Observable<T> extends Stream<T> {
   /// Returns the values from the source observable sequence until the other
   /// observable sequence produces a value.
   ///
-  /// new Observable.merge([
-  ///     new Observable.just(1),
-  ///     new Observable.timer(2, new Duration(minutes: 1))
-  ///   ])
-  ///   .takeUntil(new Observable.timer(3, new Duration(seconds: 10)))
-  ///   .listen(print); // prints 1
+  /// ### Example
+  ///
+  ///     new Observable.merge([
+  ///         new Observable.just(1),
+  ///         new Observable.timer(2, new Duration(minutes: 1))
+  ///       ])
+  ///       .takeUntil(new Observable.timer(3, new Duration(seconds: 10)))
+  ///       .listen(print); // prints 1
   Observable<T> takeUntil<S>(Stream<S> otherStream) =>
       transform(new TakeUntilStreamTransformer<T, S>(otherStream));
 

@@ -11,11 +11,11 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///   new Stream.fromIterable([4, 3, 2, 1])
-///     .transform(new ConcatMapStreamTransformer((i) =>
-///       new Stream.fromFuture(
-///         new Future.delayed(new Duration(minutes: i), () => i))
-///     .listen(print); // prints 4, 3, 2, 1
+///     new Stream.fromIterable([4, 3, 2, 1])
+///       .transform(new ConcatMapStreamTransformer((i) =>
+///         new Stream.fromFuture(
+///           new Future.delayed(new Duration(minutes: i), () => i))
+///       .listen(print); // prints 4, 3, 2, 1
 class ConcatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
 
@@ -26,7 +26,7 @@ class ConcatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
   Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> predicate(T value)) {
+      Stream<S> mapper(T value)) {
     return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       final List<Stream<S>> streams = <Stream<S>>[];
       final List<bool> completionStatuses = <bool>[];
@@ -67,7 +67,7 @@ class ConcatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
           onListen: () {
             subscription = input.listen(
                 (T value) {
-                  streams.add(predicate(value));
+                  streams.add(mapper(value));
                   completionStatuses.add(false);
 
                   moveNext();

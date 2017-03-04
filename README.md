@@ -65,7 +65,7 @@ Generally speaking, creating a new Observable is either done by wrapping a Dart 
 But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
-##### Usage
+###### Usage
 ```dart
 var myObservable = new Observable(myStream);
 ```

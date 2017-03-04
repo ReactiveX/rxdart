@@ -142,8 +142,11 @@ class CallStreamTransformer<T> implements StreamTransformer<T, T> {
   }
 }
 
+/// The type of event
 enum Kind { OnData, OnDone, OnError }
 
+/// A class that encapsulates the [Kind] of event, value of the event in case of
+/// onData, or the Error in the case of onError.
 class Notification<T> {
   final Kind kind;
   final T value;

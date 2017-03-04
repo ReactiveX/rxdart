@@ -5,11 +5,11 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///    new MergeStream([
-///      new Stream.fromIterable([1]),
-///      new ErrorStream(new Exception())
-///    ])
-///    .listen(print, onError: print); // prints Exception
+///     new MergeStream([
+///       new Stream.fromIterable([1]),
+///       new ErrorStream(new Exception())
+///     ])
+///     .listen(print, onError: print); // prints Exception
 class IgnoreElementsStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 
