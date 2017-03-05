@@ -9,3 +9,4 @@ void main() {
     await expect(actual, 1);
   });
 }
+

@@ -89,6 +89,8 @@ import 'transformers/zip_with_test.dart' as zip_with_test;
 import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
 
+import 'utils/as_observable_future_test.dart' as as_observable_future_test;
+
 void main() {
   amb_test.main();
   combine_latest_test.main();
@@ -179,4 +181,6 @@ void main() {
 
   behaviour_subject_test.main();
   replay_subject_test.main();
+
+  as_observable_future_test.main();
 }
