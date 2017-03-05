@@ -87,7 +87,7 @@ import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
 import 'subject/replay_subject_test.dart' as replay_subject_test;
-import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
+import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 
 void main() {
   amb_test.main();
