@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:rxdart/src/observable.dart';
 
+import 'dart:async';
+import 'package:rxdart/src/observable.dart';
+
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
 /// listener.
@@ -49,15 +52,9 @@ class BehaviorSubject<T> implements StreamController<T> {
         _latestValue = seedValue;
 
   @override
-  Observable<T> get stream => new Observable<T>.defer(() {
-        final Observable<T> observable = new Observable<T>(_controller.stream);
-
-        if (_latestValue != null) {
-          return observable.startWith(_latestValue);
-        } else {
-          return observable;
-        }
-      });
+  Observable<T> get stream => new Observable<T>.eventTransformed(
+      _controller.stream,
+      (EventSink<T> sink) => new _BehaviorSink<T>(sink, _latestValue));
 
   @override
   StreamSink<T> get sink => _controller.sink;
@@ -170,4 +167,21 @@ class BehaviorSubject<T> implements StreamController<T> {
 
     return _controller.close();
   }
+}
+
+class _BehaviorSink<T> implements EventSink<T> {
+  final EventSink<T> _outputSink;
+
+  _BehaviorSink(this._outputSink, T initialValue) {
+    if (initialValue != null) _outputSink.add(initialValue);
+  }
+
+  @override
+  void add(T data) => _outputSink.add(data);
+
+  @override
+  void addError(dynamic e, [StackTrace st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
 }
