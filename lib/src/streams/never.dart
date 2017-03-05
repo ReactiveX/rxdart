@@ -7,6 +7,10 @@ import 'dart:async';
 /// are useful for testing purposes, and sometimes also for combining with
 /// other Observables or as parameters to operators that expect other
 /// Observables as parameters.
+///
+/// ### Example
+///
+///     new NeverStream().listen(print); // Neither prints nor terminates
 class NeverStream<T> extends Stream<T> {
   // ignore: close_sinks
   StreamController<T> controller = new StreamController<T>();

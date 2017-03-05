@@ -9,11 +9,14 @@ import 'package:rxdart/src/transformers/call.dart';
 /// events as [Notification] objects. Dematerialize simply reverses this by
 /// transforming [Notification] objects back to a normal stream of events.
 ///
-/// Example:
+/// ### Example
+///
 ///     new Stream<Notification<int>>
 ///         .fromIterable([new Notification.onData(1), new Notification.onDone()])
 ///         .transform(dematerializeTransformer())
 ///         .listen((i) => print(i)); // Prints 1
+///
+/// ### Error example
 ///
 ///     new Stream<Notification<int>>
 ///         .fromIterable([new Notification.onError(new Exception(), null)])

@@ -1,5 +1,17 @@
 import 'dart:async';
 
+/// Given two or more source streams, emit all of the items from only
+/// the first of these streams to emit an item or notification.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#amb)
+///
+/// ### Example
+///
+///     new AmbStream([
+///       new TimerStream(1, new Duration(days: 1)),
+///       new TimerStream(2, new Duration(days: 2)),
+///       new TimerStream(3, new Duration(seconds: 3))
+///     ]).listen(print); // prints 3
 class AmbStream<T> extends Stream<T> {
   final StreamController<T> controller;
 

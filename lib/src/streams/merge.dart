@@ -1,5 +1,17 @@
 import 'dart:async';
 
+/// Flattens the items emitted by the given streams into a single Observable
+/// sequence.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#merge)
+///
+/// ### Example
+///
+///     new MergeStream([
+///       new TimerStream(1, new Duration(days: 10)),
+///       new Stream.fromIterable([2])
+///     ])
+///     .listen(print); // prints 2, 1
 class MergeStream<T> extends Stream<T> {
   final StreamController<T> controller;
 

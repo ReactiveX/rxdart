@@ -1,5 +1,15 @@
 import 'dart:async';
 
+/// Creates an Observable where all emitted items are ignored, only the
+/// error / completed notifications are passed
+///
+/// ### Example
+///
+///     new MergeStream([
+///       new Stream.fromIterable([1]),
+///       new ErrorStream(new Exception())
+///     ])
+///     .listen(print, onError: print); // prints Exception
 class IgnoreElementsStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

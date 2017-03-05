@@ -1,10 +1,27 @@
 import 'dart:async';
 
+/// Merges the given Streams into one Stream sequence by using the
+/// combiner function whenever any of the source stream sequences emits an
+/// item.
+///
+/// The Stream will not emit until all Streams have emitted at least one
+/// item.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+///
+/// ### Example
+///
+///     new CombineLatestStream([
+///       new Stream.fromIterable(["a"]),
+///       new Stream.fromIterable(["b"]),
+///       new Stream.fromIterable(["c", "c"])],
+///       (a, b, c) => a + b + c)
+///     .listen(print); //prints "abc", "abc"
 class CombineLatestStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  CombineLatestStream(Iterable<Stream<dynamic>> streams, Function predicate)
-      : controller = _buildController(streams, predicate);
+  CombineLatestStream(Iterable<Stream<dynamic>> streams, Function combiner)
+      : controller = _buildController(streams, combiner);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
@@ -14,7 +31,7 @@ class CombineLatestStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(
-      Iterable<Stream<dynamic>> streams, Function predicate) {
+      Iterable<Stream<dynamic>> streams, Function combiner) {
     final List<StreamSubscription<dynamic>> subscriptions =
         new List<StreamSubscription<dynamic>>(streams.length);
     StreamController<T> controller;
@@ -42,7 +59,7 @@ class CombineLatestStream<T> extends Stream<T> {
                         triggered.reduce((bool a, bool b) => a && b);
 
                   if (allStreamsHaveEvents)
-                    updateWithValues(predicate, values, controller);
+                    updateWithValues(combiner, values, controller);
                 },
                 onError: controller.addError,
                 onDone: () {
@@ -61,7 +78,7 @@ class CombineLatestStream<T> extends Stream<T> {
     return controller;
   }
 
-  static void updateWithValues<T>(Function predicate, Iterable<dynamic> values,
+  static void updateWithValues<T>(Function combiner, Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
       final int len = values.length;
@@ -69,22 +86,22 @@ class CombineLatestStream<T> extends Stream<T> {
 
       switch (len) {
         case 2:
-          result = predicate(values.elementAt(0), values.elementAt(1));
+          result = combiner(values.elementAt(0), values.elementAt(1));
           break;
         case 3:
-          result = predicate(
+          result = combiner(
               values.elementAt(0), values.elementAt(1), values.elementAt(2));
           break;
         case 4:
-          result = predicate(values.elementAt(0), values.elementAt(1),
+          result = combiner(values.elementAt(0), values.elementAt(1),
               values.elementAt(2), values.elementAt(3));
           break;
         case 5:
-          result = predicate(values.elementAt(0), values.elementAt(1),
+          result = combiner(values.elementAt(0), values.elementAt(1),
               values.elementAt(2), values.elementAt(3), values.elementAt(4));
           break;
         case 6:
-          result = predicate(
+          result = combiner(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -93,7 +110,7 @@ class CombineLatestStream<T> extends Stream<T> {
               values.elementAt(5));
           break;
         case 7:
-          result = predicate(
+          result = combiner(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -103,7 +120,7 @@ class CombineLatestStream<T> extends Stream<T> {
               values.elementAt(6));
           break;
         case 8:
-          result = predicate(
+          result = combiner(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),
@@ -114,7 +131,7 @@ class CombineLatestStream<T> extends Stream<T> {
               values.elementAt(7));
           break;
         case 9:
-          result = predicate(
+          result = combiner(
               values.elementAt(0),
               values.elementAt(1),
               values.elementAt(2),

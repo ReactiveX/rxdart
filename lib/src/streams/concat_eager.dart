@@ -1,5 +1,23 @@
 import 'dart:async';
 
+/// Concatenates all of the specified stream sequences, as long as the
+/// previous stream sequence terminated successfully.
+///
+/// In the case of concatEager, rather than subscribing to one stream after
+/// the next, all streams are immediately subscribed to. The events are then
+/// captured and emitted at the correct time, after the previous stream has
+/// finished emitting items.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#concat)
+///
+/// ### Example
+///
+///     new ConcatEagerStream([
+///       new Stream.fromIterable([1]),
+///       new TimerStream(2, new Duration(days: 1)),
+///       new Stream.fromIterable([3])
+///     ])
+///     .listen(print); // prints 1, 2, 3
 class ConcatEagerStream<T> extends Stream<T> {
   final StreamController<T> controller;
 

@@ -1,5 +1,15 @@
 import 'dart:async';
 
+/// Creates a Stream that emits values starting from startValue and
+/// incrementing according to the ease type over the duration.
+///
+/// This function is generally useful for transitions, such as animating
+/// items across a screen or muting the volume of a sound gracefully.
+///
+/// ### Example
+///
+///     new TweenStream(0.0, 100.0, const Duration(seconds: 1), ease: Ease.IN)
+///       .listen((i) => view.setLeft(i)); // Imaginary API as an example
 class TweenStream extends Stream<double> {
   final StreamController<double> controller;
 

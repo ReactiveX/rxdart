@@ -2,7 +2,7 @@ import 'dart:async';
 
 /// Starts emitting items only after the given stream emits an item.
 ///
-/// Example:
+/// ### Example
 ///
 ///     new MergeStream([
 ///       new Observable.just(1),

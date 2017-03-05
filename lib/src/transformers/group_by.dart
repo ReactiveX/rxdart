@@ -1,5 +1,12 @@
 import 'dart:async';
 
+/// The GroupBy operator divides a Stream that emits items into a Stream that
+/// emits Stream, each one of which emits some subset of the items from the
+/// original source Stream.
+///
+///  Which items end up on which Stream is typically decided by a
+///  discriminating function that evaluates each item and assigns it a
+///  key. All items with the same key are emitted by the same Observable.
 class GroupByStreamTransformer<T, S>
     implements StreamTransformer<T, GroupByMap<S, T>> {
   final StreamTransformer<T, GroupByMap<S, T>> transformer;

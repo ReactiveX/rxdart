@@ -1,5 +1,22 @@
 import 'dart:async';
 
+/// Creates an Observable where each item is a list containing the items
+/// from the source sequence, in batches of count.
+///
+/// If skip is provided, each group will start where the previous group
+/// ended minus the skip value.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1, 2, 3, 4])
+///       .transform(new BufferWithCountStreamTransformer(2))
+///       .listen(print); // prints [1, 2], [3, 4]
+///
+/// ### Example with skip
+///
+///     new Stream.fromIterable([1, 2, 3, 4])
+///       .transform(new BufferWithCountStreamTransformer(2, 1))
+///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
 class BufferWithCountStreamTransformer<T, S extends List<T>>
     implements StreamTransformer<T, S> {
   final int count;

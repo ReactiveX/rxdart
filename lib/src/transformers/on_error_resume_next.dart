@@ -1,5 +1,18 @@
 import 'dart:async';
 
+/// Intercepts error events and switches to the given recovery stream in
+/// that case
+///
+/// The OnErrorResumeNextStreamTransformer intercepts an onError notification from
+/// the source Stream. Instead of passing the error through to any
+/// listeners, it replaces it with another Stream of items.
+///
+/// ### Example
+///
+///     new ErrorStream(new Exception())
+///       .transform(new OnErrorResumeNextStreamTransformer(
+///         new Observable.fromIterable([1, 2, 3])))
+///       .listen(print); // prints 1, 2, 3
 class OnErrorResumeNextStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

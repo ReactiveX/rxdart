@@ -16,7 +16,7 @@ void main() {
         .listen(expectAsync1((TimeInterval<int> result) {
           expect(expectedOutput[count++], result.value);
 
-          expect(result.interval >= 1000 /* microseconds! */, true);
+          expect(result.interval.inMicroseconds >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
   });
 
@@ -32,7 +32,7 @@ void main() {
         .listen(expectAsync1((TimeInterval<int> result) {
           expect(expectedOutput[countA++], result.value);
 
-          expect(result.interval >= 1000 /* microseconds! */, true);
+          expect(result.interval.inMicroseconds >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
 
     new Observable<int>(_getStream())
@@ -41,7 +41,7 @@ void main() {
         .listen(expectAsync1((TimeInterval<int> result) {
           expect(expectedOutput[countB++], result.value);
 
-          expect(result.interval >= 1000 /* microseconds! */, true);
+          expect(result.interval.inMicroseconds >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
   });
 

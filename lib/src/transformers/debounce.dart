@@ -1,5 +1,19 @@
 import 'dart:async';
 
+/// Transforms a Stream so that will only emit items from the source sequence
+/// if a particular time span has passed without the source sequence emitting
+/// another item.
+///
+/// The Debounce Transformer filters out items emitted by the source Observable
+/// that are rapidly followed by another emitted item.
+///
+/// [Interactive marble diagram](http://rxmarbles.com/#debounce)
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1, 2, 3, 4])
+///       .transform(new DebounceStreamTransformer(new Duration(seconds: 1)))
+///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

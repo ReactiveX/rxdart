@@ -2,6 +2,16 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/utils.dart';
 
+/// The defer factory waits until an observer subscribes to it, and then it
+/// creates an Observable with the given factory function.
+///
+/// In some circumstances, waiting until the last minute (that is, until
+/// subscription time) to generate the Observable can ensure that this
+/// Observable contains the freshest data.
+///
+/// ### Example
+///
+///     new DeferStream(() => new Observable.just(1)).listen(print); //prints 1
 class DeferStream<T> extends Stream<T> {
   final StreamFactory<T> streamFactory;
   bool _isUsed = false;

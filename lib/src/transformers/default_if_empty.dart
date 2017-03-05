@@ -1,5 +1,13 @@
 import 'dart:async';
 
+/// Emit items from the source Stream, or a single default item if the source
+/// Stream emits nothing.
+///
+/// ### Example
+///
+///     new Stream.empty()
+///       .transform(new DefaultIfEmptyStreamTransformer(10))
+///       .listen(print); // prints 10
 class DefaultIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

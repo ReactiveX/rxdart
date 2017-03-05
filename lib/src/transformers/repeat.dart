@@ -1,5 +1,13 @@
 import 'dart:async';
 
+/// A StreamTransformer that repeats the source's elements the specified
+/// number of times.
+///
+/// ### Example
+///
+///     new Stream.fromIterable([1])
+///       .transform(new RepeatStreamTransformer(3))
+///       .listen(print); // prints 1, 1, 1
 class RepeatStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 

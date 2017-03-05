@@ -1,16 +1,31 @@
 import 'dart:async';
 
+/// Converts each emitted item into a new Stream using the given mapper
+/// function. The newly created Stream will be be listened to and begin
+/// emitting items downstream.
+///
+/// The items emitted by each of the new Streams are emitted downstream in the
+/// same order they arrive. In other words, the sequences are merged
+/// together.
+///
+/// ### Example
+///
+///       new Stream.fromIterable([4, 3, 2, 1])
+///         .transform(new FlatMapStreamTransformer((i) =>
+///           new Stream.fromFuture(
+///             new Future.delayed(new Duration(minutes: i), () => i))
+///         .listen(print); // prints 1, 2, 3, 4
 class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
 
-  FlatMapStreamTransformer(Stream<S> predicate(T value))
-      : transformer = _buildTransformer(predicate);
+  FlatMapStreamTransformer(Stream<S> mapper(T value))
+      : transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> predicate(T value)) {
+      Stream<S> mapper(T value)) {
     return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       final List<Stream<S>> streams = <Stream<S>>[];
       final List<StreamSubscription<S>> subscriptions =
@@ -26,7 +41,7 @@ class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
           onListen: () {
             subscription = input.listen(
                 (T value) {
-                  Stream<S> otherStream = predicate(value);
+                  Stream<S> otherStream = mapper(value);
 
                   hasMainEvent = true;
 
