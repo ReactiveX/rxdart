@@ -1,5 +1,7 @@
 library test.rx;
 
+import 'observable/amb_test.dart' as observable_amb_test;
+
 import 'streams/amb_test.dart' as amb_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
@@ -90,6 +92,8 @@ import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'subject/behaviour_subject_test.dart' as behaviour_subject_test;
 
 void main() {
+  observable_amb_test.main();
+
   amb_test.main();
   combine_latest_test.main();
   concat_eager_test.main();

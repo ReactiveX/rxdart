@@ -3,54 +3,34 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<num> getDelayedStream<T>(int delay, num value) async* {
-  final Completer<dynamic> completer = new Completer<dynamic>();
-
-  new Timer(new Duration(milliseconds: delay), () => completer.complete());
-
-  await completer.future;
-
-  yield value;
-  yield value + 1;
-  yield value + 2;
-}
-
 void main() {
-  test('rx.Observable.amb', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
-    int expected = 1;
+  group('AmbStream', () {
+    test('emits only the items from the first stream to emit items', () async {
+      final Stream<num> first =
+          new TimerStream<num>(1, new Duration(milliseconds: 10));
+      final Stream<num> second =
+          new TimerStream<num>(2, new Duration(milliseconds: 20));
 
-    new Observable<num>.amb(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num result) {
-      // test to see if the combined output matches
-      expect(result.compareTo(expected++), 0);
-    }, count: 3));
-  });
+      await expect(new AmbStream<num>(<Stream<num>>[first, second]),
+          emitsInOrder(<dynamic>[1, emitsDone]));
+    });
 
-  test('rx.Observable.amb.single.subscription', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
+    test('emits done when the fastest stream ends without emitting', () async {
+      final Stream<num> first = new Stream<num>.empty();
+      final Stream<num> second =
+          new TimerStream<num>(2, new Duration(milliseconds: 20));
 
-    Observable<num> observable = new Observable<num>.amb(<Stream<num>>[first]);
+      await expect(new AmbStream<num>(<Stream<num>>[first, second]), emitsDone);
+    });
 
-    observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
-  });
+    test('can only be listened to once', () async {
+      final Stream<num> first =
+          new TimerStream<num>(1, new Duration(milliseconds: 50));
 
-  test('rx.Observable.amb.asBroadcastStream', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
+      Stream<num> observable = new AmbStream<num>(<Stream<num>>[first]);
 
-    Stream<num> observable =
-        new Observable<num>.amb(<Stream<num>>[first, second, last])
-            .asBroadcastStream();
-
-    // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
-    // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+      observable.listen(null);
+      await expect(() => observable.listen(null), throwsA(isStateError));
+    });
   });
 }
