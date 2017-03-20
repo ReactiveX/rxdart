@@ -1,6 +1,6 @@
 # RxDart
 
-[![Build Status](https://api.travis-ci.org/ReactiveX/rxdart.svg)](https://travis-ci.org/ReactiveX/rxdart)
+[![Build Status](https://travis-ci.org/ReactiveX/rxdart.svg?branch=master)](https://travis-ci.org/ReactiveX/rxdart)
 [![codecov](https://codecov.io/gh/ReactiveX/rxdart/branch/master/graph/badge.svg)](https://codecov.io/gh/ReactiveX/rxdart)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 [![Gitter](https://img.shields.io/gitter/room/ReactiveX/rxdart.svg)](https://gitter.im/ReactiveX/rxdart)
@@ -118,8 +118,8 @@ var myObservable = Observable.combineLatest3(
 - [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html) / [IntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/IntervalStreamTransformer-class.html)
 - [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html) / [MaterializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/MaterializeStreamTransformer-class.html)
 - [mergeWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mergeWith.html)
-- [max](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/max.html) / [MaxStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/MaxStreamTransformer-class.html)
-- [min](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/min.html) / [MinStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/MinStreamTransformer-class.html)
+- [max](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/max.html) / [StreamMaxFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx_futures/StreamMaxFuture-class.html)
+- [min](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/min.html) / [StreamMinFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx_futures/StreamMinFuture-class.html)
 - [repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/repeat.html) / [RepeatStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/RepeatStreamTransformer-class.html)
 - [sample](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sample.html) / [SampleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/SampleStreamTransformer-class.html)
 - [scan](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/scan.html) / [ScanStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ScanStreamTransformer-class.html)

@@ -53,9 +53,7 @@ import 'transformers/join_test.dart' as join_test;
 import 'transformers/last_test.dart' as last_test;
 import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/materialize_test.dart' as materialize_test;
-import 'transformers/max_test.dart' as max_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
-import 'transformers/min_test.dart' as min_test;
 import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_resume_next_test.dart'
     as on_error_resume_next_test;
@@ -89,9 +87,13 @@ import 'transformers/zip_with_test.dart' as zip_with_test;
 import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 
-import 'utils/as_observable_future_test.dart' as as_observable_future_test;
+import 'futures/as_observable_future_test.dart' as as_observable_future_test;
+import 'futures/stream_max_test.dart' as stream_max_test;
+import 'futures/stream_min_test.dart' as stream_min_test;
+import 'futures/wrapped_future_test.dart' as wrapped_future_test;
 
 void main() {
+  // Streams
   amb_test.main();
   combine_latest_test.main();
   concat_eager_test.main();
@@ -111,6 +113,7 @@ void main() {
   stream_test.main();
   zip_test.main();
 
+  // StreamTransformers
   any_test.main();
   as_broadcast_stream.main();
   as_broadcast_stream.main();
@@ -145,9 +148,7 @@ void main() {
   last_test.main();
   last_where_test.main();
   materialize_test.main();
-  max_test.main();
   merge_with_test.main();
-  min_test.main();
   of_type_test.main();
   on_error_resume_next_test.main();
   on_error_return_test.main();
@@ -179,8 +180,13 @@ void main() {
   with_latest_from_test.main();
   zip_with_test.main();
 
+  // Subjects
   behaviour_subject_test.main();
   replay_subject_test.main();
 
+  // Futures
   as_observable_future_test.main();
+  stream_max_test.main();
+  stream_min_test.main();
+  wrapped_future_test.main();
 }
