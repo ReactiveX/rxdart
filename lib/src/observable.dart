@@ -21,7 +21,6 @@ import 'package:rxdart/src/streams/zip.dart';
 import 'package:rxdart/src/transformers/cast.dart';
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
-import 'package:rxdart/src/transformers/concat_map.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
@@ -603,7 +602,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// If the retry count is not specified, it retries indefinitely. If the retry
   /// count is met, but the Stream has not terminated successfully, a
-  /// `RetryError` will be thrown.
+  /// [RetryError] will be thrown.
   ///
   /// ### Example
   ///
@@ -993,19 +992,27 @@ class Observable<T> extends Stream<T> {
       new Observable<T>(
           stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
-  /// Creates an Observable with the events of a stream per original event.
+  /// Maps each emitted item to a new [Stream] using the given mapper, then
+  /// subscribes to each new stream one after the next until all values are
+  /// emitted.
   ///
-  /// This acts like expand, except that convert returns a Stream instead of an
-  /// Iterable. The events of the returned stream becomes the events of the
-  /// returned stream, in the order they are produced.
+  /// asyncExpand is similar to flatMap, but ensures order by guaranteeing that
+  /// all items from the created stream will be emitted before moving to the
+  /// next created stream. This process continues until all created streams have
+  /// completed.
   ///
-  /// If convert returns null, no value is put on the output stream, just as if
-  /// it returned an empty stream.
+  /// This is functionally equivalent to `concatMap`, which exists as an alias
+  /// for a more fluent Rx API.
   ///
-  /// The returned stream is a broadcast stream if this stream is.
+  /// ### Example
+  ///
+  ///     Observable.range(4, 1)
+  ///       .asyncExpand((i) =>
+  ///         new Observable.timer(i, new Duration(minutes: i))
+  ///       .listen(print); // prints 4, 3, 2, 1
   @override
-  Observable<S> asyncExpand<S>(Stream<S> convert(T value)) =>
-      new Observable<S>(stream.asyncExpand(convert));
+  Observable<S> asyncExpand<S>(Stream<S> mapper(T value)) =>
+      new Observable<S>(stream.asyncExpand(mapper));
 
   /// Creates an Observable with each data event of this stream asynchronously
   /// mapped to a new event.
@@ -1093,9 +1100,12 @@ class Observable<T> extends Stream<T> {
   /// in a [TypeToken] as the generic parameter.
   ///
   /// Given the way Dart generics work, one cannot simply use `as T`
-  /// checks and castings within `CastStreamTransformer` itself. Therefore, the
+  /// checks and castings within [CastStreamTransformer] itself. Therefore, the
   /// [TypeToken] class was introduced to capture the type of class you'd
   /// like `cast` to convert to.
+  ///
+  /// Note: Unlike `ofType`, this operator performs no filtering, and you
+  /// may run into a [CastError] if not used wisely.
   ///
   /// ### Examples
   ///
@@ -1110,7 +1120,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     // A Stream of num, but we know the data is an int
   ///     new Stream<num>.fromIterable(<int>[1, 2, 3])
-  ///       .cast(kInt) // Use the `kInt` constant as a shortcut
+  ///       .cast(kInt) // Use the [kInt] constant as a shortcut
   ///       .map((i) => i.isEven)
   ///       .listen(print); // prints "false", "true", "false"
   ///
@@ -1131,6 +1141,9 @@ class Observable<T> extends Stream<T> {
   /// next created stream. This process continues until all created streams have
   /// completed.
   ///
+  /// This is a simple alias for Dart Stream's `asyncExpand`, but is included to
+  /// ensure a more consistent Rx API.
+  ///
   /// ### Example
   ///
   ///     Observable.range(4, 1)
@@ -1138,7 +1151,7 @@ class Observable<T> extends Stream<T> {
   ///         new Observable.timer(i, new Duration(minutes: i))
   ///       .listen(print); // prints 4, 3, 2, 1
   Observable<S> concatMap<S>(Stream<S> mapper(T value)) =>
-      transform(new ConcatMapStreamTransformer<T, S>(mapper));
+      new Observable<S>(stream.asyncExpand(mapper));
 
   /// Returns an Observable that emits all items from the current Observable,
   /// then emits all items from the given observable, one after the next.
@@ -1529,7 +1542,7 @@ class Observable<T> extends Stream<T> {
   /// in a [TypeToken] as the generic parameter.
   ///
   /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
-  /// checks and castings within `OfTypeObservable` itself. Therefore, the
+  /// checks and castings with this method alone. Therefore, the
   /// [TypeToken] class was introduced to capture the type of class you'd
   /// like `ofType` to filter down to.
   ///

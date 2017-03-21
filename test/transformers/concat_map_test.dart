@@ -16,38 +16,6 @@ void main() {
     }));
   });
 
-  test('rx.Observable.concatMap.reusable', () async {
-    final ConcatMapStreamTransformer<int, int> transformer = new ConcatMapStreamTransformer<int, int>(_getOtherStream);
-    const List<int> expectedOutput = const <int>[1, 1, 2, 2, 3, 3];
-    int countA = 0, countB = 0;
-
-    new Observable<int>(_getStream()).transform(transformer).listen(
-        expectAsync1((int result) {
-          expect(result, expectedOutput[countA++]);
-        }, count: expectedOutput.length), onDone: expectAsync0(() {
-      expect(true, true);
-    }));
-
-    new Observable<int>(_getStream()).transform(transformer).listen(
-        expectAsync1((int result) {
-          expect(result, expectedOutput[countB++]);
-        }, count: expectedOutput.length), onDone: expectAsync0(() {
-      expect(true, true);
-    }));
-  });
-
-  test('rx.Observable.concatMap.asBroadcastStream', () async {
-    Stream<num> stream = new Observable<int>(_getStream())
-        .concatMap(_getOtherStream)
-        .asBroadcastStream();
-
-    // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
-    // code should reach here
-    await expect(stream.isBroadcast, isTrue);
-  });
-
   test('rx.Observable.concatMap.error.shouldThrow', () async {
     Stream<int> observableWithError =
         new Observable<int>(new ErrorStream<int>(new Exception()))

@@ -1,3 +1,22 @@
+## 0.10.0
+
+* Api Changes
+  * Observable
+    * Remove all deprecated methods, including:
+      * `observable` factory -- replaced by the constructor `new Observable()`
+      * `combineLatest` -- replaced by Strong-Mode versions `combineLatest2` - `combineLatest9`
+      * `zip` -- replaced by Strong-Mode versions `zip2` - `zip9`
+    * Support `asObservable` conversion from Future-returning methods. e.g. `new Observable.fromIterable([1, 2]).first.asObservable()`
+    * Max and Min now return a Future of the Max or Min value, rather than a stream of increasing or decreasing values.
+    * Add `cast` operator
+    * Remove `ConcatMapStreamTransformer` -- functionality is already supported by `asyncExpand`. Keep the `concatMap` method as an alias.
+  * Subjects
+    * BehaviourSubject has been renamed to BehaviorSubject
+    * The subjects have been rewritten and include far more testing
+    * In keeping with the Rx idea of Subjects, they are broadcast-only
+* Documentation -- extensive documentation has been added to the library with explanations and examples for each Future, Stream & Transformer.
+  * Docs detailing the differences between RxDart and raw Observables.
+  
 ## 0.9.0
 
 * Api Changes:

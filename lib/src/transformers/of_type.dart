@@ -8,7 +8,7 @@ import 'package:rxdart/src/utils/type_token.dart';
 /// in a [TypeToken] as the generic parameter.
 ///
 /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
-/// checks and castings within `OfTypeObservable` itself. Therefore, the
+/// checks and castings within `OfTypeStreamTransformer` itself. Therefore, the
 /// [TypeToken] class was introduced to capture the type of class you'd
 /// like `ofType` to filter down to.
 ///
