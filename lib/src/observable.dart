@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:rxdart/src/futures/as_observable_future.dart';
+import 'package:rxdart/src/futures/stream_max_future.dart';
+import 'package:rxdart/src/futures/stream_min_future.dart';
+
 import 'package:rxdart/src/streams/amb.dart';
 import 'package:rxdart/src/streams/combine_latest.dart';
 import 'package:rxdart/src/streams/concat.dart';
@@ -15,7 +19,6 @@ import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/cast.dart';
-import 'package:rxdart/src/utils/as_observable_future.dart';
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/concat_map.dart';
@@ -28,8 +31,6 @@ import 'package:rxdart/src/transformers/group_by.dart';
 import 'package:rxdart/src/transformers/ignore_elements.dart';
 import 'package:rxdart/src/transformers/interval.dart';
 import 'package:rxdart/src/transformers/materialize.dart';
-import 'package:rxdart/src/transformers/max.dart';
-import 'package:rxdart/src/transformers/min.dart';
 import 'package:rxdart/src/transformers/of_type.dart';
 import 'package:rxdart/src/transformers/on_error_resume_next.dart';
 import 'package:rxdart/src/transformers/repeat.dart';
@@ -45,6 +46,8 @@ import 'package:rxdart/src/transformers/time_interval.dart';
 import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
+
+import 'package:rxdart/src/utils/as_observable_future.dart';
 import 'package:rxdart/src/utils/type_token.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
@@ -1467,10 +1470,26 @@ class Observable<T> extends Stream<T> {
   Observable<Notification<T>> materialize() =>
       transform(new MaterializeStreamTransformer<T>());
 
-  /// Creates an Observable that returns the maximum value in the source
-  /// sequence according to the specified compare function.
-  Observable<T> max([int compare(T a, T b)]) =>
-      transform(new MaxStreamTransformer<T>(compare));
+  /// Converts a Stream into a Future that completes with the largest item emitted
+  /// by the Stream.
+  ///
+  /// This is similar to finding the max value in a list, but the values are
+  /// asynchronous.
+  ///
+  /// ### Example
+  ///
+  ///     final max = await new Observable.fromIterable([1, 2, 3]).max();
+  ///
+  ///     print(max); // prints 3
+  ///
+  /// ### Example with custom [Comparator]
+  ///
+  ///     final observable = new Observable.fromIterable("short", "looooooong");
+  ///     final max = await observable.max((a, b) => a.length - b.length);
+  ///
+  ///     print(max); // prints "looooooong"
+  AsObservableFuture<T> max([Comparator<T> comparator]) =>
+      new AsObservableFuture<T>(new StreamMaxFuture<T>(stream, comparator));
 
   /// Combines the items emitted by multiple streams into a single stream of
   /// items. The items are emitted in the order they are emitted by their
@@ -1484,10 +1503,26 @@ class Observable<T> extends Stream<T> {
   Observable<T> mergeWith(Iterable<Stream<T>> streams) => new Observable<T>(
       new MergeStream<T>(<Stream<T>>[stream]..addAll(streams)));
 
-  /// Creates an Observable that returns the minimum value in the source
-  /// sequence according to the specified compare function.
-  Observable<T> min([int compare(T a, T b)]) =>
-      transform(new MinStreamTransformer<T>(compare));
+  /// Converts a Stream into a Future that completes with the smallest item
+  /// emitted by the Stream.
+  ///
+  /// This is similar to finding the min value in a list, but the values are
+  /// asynchronous!
+  ///
+  /// ### Example
+  ///
+  ///     final min = await new Observable.fromIterable([1, 2, 3]).min();
+  ///
+  ///     print(min); // prints 1
+  ///
+  /// ### Example with custom [Comparator]
+  ///
+  ///     final observable = new Observable.fromIterable("short", "looooooong");
+  ///     final min = await observable.min((a, b) => a.length - b.length);
+  ///
+  ///     print(min); // prints "short"
+  AsObservableFuture<T> min([Comparator<T> comparator]) =>
+      new AsObservableFuture<T>(new StreamMinFuture<T>(stream, comparator));
 
   /// Filters a sequence so that only events of a given type pass
   ///
