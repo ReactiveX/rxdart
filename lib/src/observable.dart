@@ -47,7 +47,6 @@ import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
-import 'package:rxdart/src/utils/as_observable_future.dart';
 import 'package:rxdart/src/utils/type_token.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
