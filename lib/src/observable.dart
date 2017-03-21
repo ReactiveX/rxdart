@@ -18,6 +18,7 @@ import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/streams/tween.dart';
 import 'package:rxdart/src/streams/zip.dart';
 
+import 'package:rxdart/src/transformers/cast.dart';
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
 import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/concat_map.dart';
@@ -46,6 +47,9 @@ import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
+import 'package:rxdart/src/utils/as_observable_future.dart';
+import 'package:rxdart/src/utils/type_token.dart';
+
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.
 ///
@@ -63,6 +67,17 @@ import 'package:rxdart/src/transformers/with_latest_from.dart';
 /// addition, more complex examples can be found in the
 /// [RxDart github repo](https://github.com/ReactiveX/rxdart) demonstrating how
 /// to use RxDart with web, command line, and Flutter applications.
+///
+/// #### Additional Resources
+///
+/// In addition to the RxDart documentation and examples, you can find many
+/// more articles on Dart Streams that teach the fundamentals upon which
+/// RxDart is built.
+///
+///   - [Asynchronous Programming: Streams](https://www.dartlang.org/tutorials/language/streams)
+///   - [Single-Subscription vs. Broadcast Streams](https://www.dartlang.org/articles/libraries/broadcast-streams)
+///   - [Creating Streams in Dart](https://www.dartlang.org/articles/libraries/creating-streams)
+///   - [Testing Streams: Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers)
 ///
 /// ### Dart Streams vs Observables
 ///
@@ -1069,6 +1084,44 @@ class Observable<T> extends Stream<T> {
           onListen: onListen,
           onPause: onPause,
           onResume: onResume));
+
+  /// Casts a sequence of items to a given type.
+  ///
+  /// This operator is often useful when going from a generic to a more
+  /// specific type.
+  ///
+  /// In order to capture the Type correctly, it needs to be wrapped
+  /// in a [TypeToken] as the generic parameter.
+  ///
+  /// Given the way Dart generics work, one cannot simply use `as T`
+  /// checks and castings within `CastStreamTransformer` itself. Therefore, the
+  /// [TypeToken] class was introduced to capture the type of class you'd
+  /// like `cast` to convert to.
+  ///
+  /// ### Examples
+  ///
+  ///     // A Stream of num, but we know the data is an int
+  ///     new Stream<num>.fromIterable(<int>[1, 2, 3])
+  ///       .cast(new TypeToken<int>) // So we can call `isEven`
+  ///       .map((i) => i.isEven)
+  ///       .listen(print); // prints "false", "true", "false"
+  ///
+  /// As a shortcut, you can use some pre-defined constants to write the above
+  /// in the following way:
+  ///
+  ///     // A Stream of num, but we know the data is an int
+  ///     new Stream<num>.fromIterable(<int>[1, 2, 3])
+  ///       .cast(kInt) // Use the `kInt` constant as a shortcut
+  ///       .map((i) => i.isEven)
+  ///       .listen(print); // prints "false", "true", "false"
+  ///
+  /// If you'd like to create your own shortcuts like the example above,
+  /// simply create a constant:
+  ///
+  ///     const TypeToken<Map<Int, String>> kMapIntString =
+  ///       const TypeToken<Map<Int, String>>();
+  Observable<S> cast<S>(TypeToken<S> typeToken) =>
+      transform(new CastStreamTransformer<T, S>(typeToken));
 
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are

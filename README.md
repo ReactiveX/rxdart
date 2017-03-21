@@ -108,6 +108,7 @@ var myObservable = Observable.combineLatest3(
 ##### Available Methods
 - [bufferWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithCount.html) / [BufferWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWithCountStreamTransformer-class.html)
 - [call](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/call.html) / [CallStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/CallStreamTransformer-class.html)
+- [cast](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/cast.html) / [CastStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/CastStreamTransformer-class.html)
 - [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) / [ConcatMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ConcatMapStreamTransformer-class.html)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
 - [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DebounceStreamTransformer-class.html)

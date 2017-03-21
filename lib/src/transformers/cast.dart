@@ -2,38 +2,44 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/type_token.dart';
 
-/// Filters a sequence so that only events of a given type pass
+/// Casts a sequence of items to a given type.
 ///
 /// In order to capture the Type correctly, it needs to be wrapped
 /// in a [TypeToken] as the generic parameter.
 ///
-/// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
-/// checks and castings within `OfTypeObservable` itself. Therefore, the
+/// Given the way Dart generics work, one cannot simply use `as T`
+/// checks and castings within `CastStreamTransformer` itself. Therefore, the
 /// [TypeToken] class was introduced to capture the type of class you'd
-/// like `ofType` to filter down to.
+/// like `cast` to convert to.
+///
+/// This operator is often useful when going from a more generic type to a more
+/// specific type.
 ///
 /// ### Examples
 ///
-///     new Stream.fromIterable([1, "hi"])
-///       .ofType(new TypeToken<String>)
-///       .listen(print); // prints "hi"
+///     // A Stream of num, but we know the data is an int
+///     new Stream<num>.fromIterable(<int>[1, 2, 3])
+///       .cast(new TypeToken<int>) // So we can call `isEven`
+///       .map((i) => i.isEven)
+///       .listen(print); // prints "false", "true", "false"
 ///
 /// As a shortcut, you can use some pre-defined constants to write the above
 /// in the following way:
 ///
-///     new Stream.fromIterable([1, "hi"])
-///       .transform(new OfTypeStreamTransformer(kString))
-///       .listen(print); // prints "hi"
+///     // A Stream of num, but we know the data is an int
+///     new Stream<num>.fromIterable(<int>[1, 2, 3])
+///       .cast(kInt) // Use the `kInt` constant as a shortcut
+///       .map((i) => i.isEven)
+///       .listen(print); // prints "false", "true", "false"
 ///
 /// If you'd like to create your own shortcuts like the example above,
 /// simply create a constant:
 ///
 ///     const TypeToken<Map<Int, String>> kMapIntString =
 ///       const TypeToken<Map<Int, String>>();
-class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
+class CastStreamTransformer<T, S> implements StreamTransformer<T, S> {
   final StreamTransformer<T, S> transformer;
-
-  OfTypeStreamTransformer(TypeToken<S> typeToken)
+  CastStreamTransformer(TypeToken<S> typeToken)
       : transformer = _buildTransformer(typeToken);
 
   @override
@@ -49,8 +55,10 @@ class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
-              if (typeToken.isType(value)) {
+              try {
                 controller.add(typeToken.toType(value));
+              } catch (e) {
+                controller.addError(e);
               }
             },
                 onError: controller.addError,
