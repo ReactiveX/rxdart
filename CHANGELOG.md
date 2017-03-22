@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Documentation fixes
+
 ## 0.10.0
 
 * Api Changes

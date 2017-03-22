@@ -54,7 +54,7 @@ class ZipStream<T> extends Stream<T> {
             pausedStates[index] = true;
 
             // subscriptions[i] might be null if doUpdate triggers
-            // instantly (i.e. BehaviourSubject)
+            // instantly (i.e. BehaviorSubject)
             if (subscriptions[index] != null) subscriptions[index].pause();
 
             if (_areAllPaused(pausedStates)) {

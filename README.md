@@ -43,7 +43,7 @@ void main() {
 ### Objects
 
 - [Observable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html)
-- [BehaviourSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/BehaviourSubject-class.html)
+- [BehaviorSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/BehaviorSubject-class.html)
 - [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/ReplaySubject-class.html)
 
 ### Observable
@@ -109,7 +109,7 @@ var myObservable = Observable.combineLatest3(
 - [bufferWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithCount.html) / [BufferWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWithCountStreamTransformer-class.html)
 - [call](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/call.html) / [CallStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/CallStreamTransformer-class.html)
 - [cast](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/cast.html) / [CastStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/CastStreamTransformer-class.html)
-- [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) / [ConcatMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ConcatMapStreamTransformer-class.html)
+- [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) (alias for `asyncExpand`)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
 - [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DebounceStreamTransformer-class.html)
 - [dematerialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/dematerialize.html) / [DematerializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DematerializeStreamTransformer-class.html)
