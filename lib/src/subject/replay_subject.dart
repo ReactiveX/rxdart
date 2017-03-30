@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:rxdart/src/observable.dart';
-import 'package:rxdart/src/streams/defer.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -53,10 +52,10 @@ class ReplaySubject<T> implements StreamController<T> {
             onListen: onListen, onCancel: onCancel, sync: sync);
 
   @override
-  Observable<T> get stream => new Observable<T>(new DeferStream<T>(
+  Observable<T> get stream => new Observable<T>.defer(
       () => new Observable<T>(_controller.stream)
           .startWithMany(_queue.toList(growable: false)),
-      broadcast: true));
+      reusable: true);
 
   @override
   StreamSink<T> get sink => _controller.sink;

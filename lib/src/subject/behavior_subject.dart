@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:rxdart/src/observable.dart';
-import 'package:rxdart/src/streams/defer.dart';
-import 'package:rxdart/src/transformers/start_with.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -47,12 +45,11 @@ class BehaviorSubject<T> implements StreamController<T> {
         _latestValue = seedValue;
 
   @override
-  Observable<T> get stream => _latestValue == null
-      ? new Observable<T>(_controller.stream)
-      : new Observable<T>(new DeferStream<T>(
-          () => _controller.stream
-              .transform(new StartWithStreamTransformer<T>(_latestValue)),
-          broadcast: true));
+  Observable<T> get stream => new Observable<T>.defer(
+      () => _latestValue == null
+          ? _controller.stream
+          : new Observable<T>(_controller.stream).startWith(_latestValue),
+      reusable: true);
 
   @override
   StreamSink<T> get sink => _controller.sink;
