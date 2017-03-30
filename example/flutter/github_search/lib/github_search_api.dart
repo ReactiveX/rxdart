@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/http.dart';
+import 'package:http/http.dart';
 import 'package:rxdart/rxdart.dart';
 
 class GithubApi {

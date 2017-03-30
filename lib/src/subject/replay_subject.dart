@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/streams/defer.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -17,10 +18,6 @@ import 'package:rxdart/src/observable.dart';
 /// ReplaySubject is, by default, a broadcast (aka hot) controller, in order
 /// to fulfill the Rx Subject contract. This means the Subject's `stream` can
 /// be listened to multiple times.
-///
-/// As a Dart quirk, in order to listen to the stream multiple times while
-/// getting the recorded items, always use the `mySubject.stream` getter. The
-/// returned Stream is an `Observable`.
 ///
 /// ### Example
 ///
@@ -56,9 +53,10 @@ class ReplaySubject<T> implements StreamController<T> {
             onListen: onListen, onCancel: onCancel, sync: sync);
 
   @override
-  Observable<T> get stream =>
-      new Observable<T>.defer(() => new Observable<T>(_controller.stream)
-          .startWithMany(_queue.toList(growable: false)));
+  Observable<T> get stream => new Observable<T>(new DeferStream<T>(
+      () => new Observable<T>(_controller.stream)
+          .startWithMany(_queue.toList(growable: false)),
+      broadcast: true));
 
   @override
   StreamSink<T> get sink => _controller.sink;

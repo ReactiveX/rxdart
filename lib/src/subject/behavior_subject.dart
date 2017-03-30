@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/streams/defer.dart';
+import 'package:rxdart/src/transformers/start_with.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -14,10 +16,6 @@ import 'package:rxdart/src/observable.dart';
 /// BehaviorSubject is, by default, a broadcast (aka hot) controller, in order
 /// to fulfill the Rx Subject contract. This means the Subject's `stream` can
 /// be listened to multiple times.
-///
-/// As a Dart quirk, in order to listen to the stream multiple times while
-/// getting the latest item, always use the `mySubject.stream` getter. The
-/// returned Stream is an `Observable`.
 ///
 /// ### Example
 ///
@@ -49,15 +47,12 @@ class BehaviorSubject<T> implements StreamController<T> {
         _latestValue = seedValue;
 
   @override
-  Observable<T> get stream => new Observable<T>.defer(() {
-        final Observable<T> observable = new Observable<T>(_controller.stream);
-
-        if (_latestValue != null) {
-          return observable.startWith(_latestValue);
-        } else {
-          return observable;
-        }
-      });
+  Observable<T> get stream => _latestValue == null
+      ? new Observable<T>(_controller.stream)
+      : new Observable<T>(new DeferStream<T>(
+          () => _controller.stream
+              .transform(new StartWithStreamTransformer<T>(_latestValue)),
+          broadcast: true));
 
   @override
   StreamSink<T> get sink => _controller.sink;

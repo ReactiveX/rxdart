@@ -220,5 +220,15 @@ void main() {
 
       await expect(subject.done, completes);
     });
+
+    test('can be listened to multiple times', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject =
+          new BehaviorSubject<int>(seedValue: 1);
+      final Stream<int> stream = subject.stream;
+
+      await expect(stream, emits(1));
+      await expect(stream, emits(1));
+    });
   });
 }
