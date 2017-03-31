@@ -9,22 +9,28 @@ import 'package:rxdart/src/streams/utils.dart';
 /// subscription time) to generate the Observable can ensure that this
 /// Observable contains the freshest data.
 ///
+/// By default, DeferStreams are single-subscription. However, it's possible
+/// to make them reusable.
+///
 /// ### Example
 ///
 ///     new DeferStream(() => new Observable.just(1)).listen(print); //prints 1
 class DeferStream<T> extends Stream<T> {
-  final StreamFactory<T> streamFactory;
+  final StreamFactory<T> _streamFactory;
+  final bool _isReusable;
   bool _isUsed = false;
 
-  DeferStream(this.streamFactory);
+  DeferStream(this._streamFactory, {bool reusable: false})
+      : _isReusable = reusable;
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    if (_isUsed) throw new StateError("Stream has already been listened to.");
+    if (_isUsed && !_isReusable)
+      throw new StateError("Stream has already been listened to.");
     _isUsed = true;
 
-    return streamFactory().listen(onData,
+    return _streamFactory().listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

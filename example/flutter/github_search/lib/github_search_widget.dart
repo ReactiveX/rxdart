@@ -1,4 +1,4 @@
-import 'package:flutter/http.dart';
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stream_friends/flutter_stream_friends.dart';
 import 'package:github_search/github_search_api.dart';

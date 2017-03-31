@@ -460,12 +460,15 @@ class Observable<T> extends Stream<T> {
   /// subscription time) to generate the Observable can ensure that this
   /// Observable contains the freshest data.
   ///
+  /// By default, DeferStreams are single-subscription. However, it's possible
+  /// to make them reusable.
+  ///
   /// ### Example
   ///
   ///     new Observable.defer(() => new Observable.just(1))
   ///       .listen(print); //prints 1
-  factory Observable.defer(Stream<T> streamFactory()) =>
-      new Observable<T>(new DeferStream<T>(streamFactory));
+  factory Observable.defer(Stream<T> streamFactory(), {bool reusable: false}) =>
+      new Observable<T>(new DeferStream<T>(streamFactory, reusable: reusable));
 
   /// Returns an observable sequence that emits an [error], then immediately
   /// completes.

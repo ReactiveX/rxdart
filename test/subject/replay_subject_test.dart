@@ -223,5 +223,17 @@ void main() {
 
       await expect(subject.done, completes);
     });
+
+    test('can be listened to multiple times', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new ReplaySubject<int>();
+      final Stream<int> stream = subject.stream;
+
+      subject.add(1);
+      subject.add(2);
+
+      await expect(stream, emitsInOrder(<int>[1, 2]));
+      await expect(stream, emitsInOrder(<int>[1, 2]));
+    });
   });
 }

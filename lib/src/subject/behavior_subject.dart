@@ -15,10 +15,6 @@ import 'package:rxdart/src/observable.dart';
 /// to fulfill the Rx Subject contract. This means the Subject's `stream` can
 /// be listened to multiple times.
 ///
-/// As a Dart quirk, in order to listen to the stream multiple times while
-/// getting the latest item, always use the `mySubject.stream` getter. The
-/// returned Stream is an `Observable`.
-///
 /// ### Example
 ///
 ///     final subject = new BehaviorSubject<int>();
@@ -49,15 +45,11 @@ class BehaviorSubject<T> implements StreamController<T> {
         _latestValue = seedValue;
 
   @override
-  Observable<T> get stream => new Observable<T>.defer(() {
-        final Observable<T> observable = new Observable<T>(_controller.stream);
-
-        if (_latestValue != null) {
-          return observable.startWith(_latestValue);
-        } else {
-          return observable;
-        }
-      });
+  Observable<T> get stream => new Observable<T>.defer(
+      () => _latestValue == null
+          ? _controller.stream
+          : new Observable<T>(_controller.stream).startWith(_latestValue),
+      reusable: true);
 
   @override
   StreamSink<T> get sink => _controller.sink;
