@@ -36,20 +36,23 @@ import 'package:rxdart/src/observable.dart';
 ///     subject.listen(print); // prints 1
 class BehaviorSubject<T> implements StreamController<T> {
   final StreamController<T> _controller;
+  bool _isAddingStreamItems = false;
   T _latestValue;
-  bool isAddingStreamItems = false;
+  Observable<T> _observable;
 
   BehaviorSubject({T seedValue, void onListen(), onCancel(), bool sync: false})
       : _controller = new StreamController<T>.broadcast(
             onListen: onListen, onCancel: onCancel, sync: sync),
-        _latestValue = seedValue;
+        _latestValue = seedValue {
+    _observable = new Observable<T>.defer(
+        () => _latestValue == null
+            ? _controller.stream
+            : new Observable<T>(_controller.stream).startWith(_latestValue),
+        reusable: true);
+  }
 
   @override
-  Observable<T> get stream => new Observable<T>.defer(
-      () => _latestValue == null
-          ? _controller.stream
-          : new Observable<T>(_controller.stream).startWith(_latestValue),
-      reusable: true);
+  Observable<T> get stream => _observable;
 
   @override
   StreamSink<T> get sink => _controller.sink;
@@ -100,7 +103,7 @@ class BehaviorSubject<T> implements StreamController<T> {
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add an error while items are being added from addStream");
     }
@@ -110,13 +113,13 @@ class BehaviorSubject<T> implements StreamController<T> {
 
   @override
   Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add items while items are being added from addStream");
     }
 
     final Completer<T> completer = new Completer<T>();
-    isAddingStreamItems = true;
+    _isAddingStreamItems = true;
 
     source.listen((T item) {
       _add(item);
@@ -124,11 +127,11 @@ class BehaviorSubject<T> implements StreamController<T> {
       _controller.addError(e, s);
 
       if (cancelOnError) {
-        isAddingStreamItems = false;
+        _isAddingStreamItems = false;
         completer.completeError(e);
       }
     }, onDone: () {
-      isAddingStreamItems = false;
+      _isAddingStreamItems = false;
       completer.complete();
     }, cancelOnError: cancelOnError);
 
@@ -137,7 +140,7 @@ class BehaviorSubject<T> implements StreamController<T> {
 
   @override
   void add(T event) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add items while items are being added from addStream");
     }
@@ -153,7 +156,7 @@ class BehaviorSubject<T> implements StreamController<T> {
 
   @override
   Future<dynamic> close() {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot close the subject while items are being added from addStream");
     }

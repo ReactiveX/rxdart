@@ -230,5 +230,12 @@ void main() {
       await expect(stream, emits(1));
       await expect(stream, emits(1));
     });
+
+    test('always returns the same stream', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new BehaviorSubject<int>();
+
+      await expect(subject.stream, equals(subject.stream));
+    });
   });
 }
