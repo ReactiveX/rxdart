@@ -1,3 +1,7 @@
+## 0.10.2
+
+* BugFix: The new Subject implementation no longer causes infinite loops when used with ng2 async pipes.
+
 ## 0.10.1
 
 * Documentation fixes
