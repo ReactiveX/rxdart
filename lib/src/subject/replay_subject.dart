@@ -45,17 +45,20 @@ class ReplaySubject<T> implements StreamController<T> {
   final StreamController<T> _controller;
   final Queue<T> _queue = new Queue<T>();
   int maxSize;
-  bool isAddingStreamItems = false;
+  bool _isAddingStreamItems = false;
+  Observable<T> _observable;
 
   ReplaySubject({this.maxSize, void onListen(), onCancel(), bool sync: false})
       : _controller = new StreamController<T>.broadcast(
-            onListen: onListen, onCancel: onCancel, sync: sync);
+            onListen: onListen, onCancel: onCancel, sync: sync) {
+    _observable = new Observable<T>.defer(
+            () => new Observable<T>(_controller.stream)
+            .startWithMany(_queue.toList(growable: false)),
+        reusable: true);
+  }
 
   @override
-  Observable<T> get stream => new Observable<T>.defer(
-      () => new Observable<T>(_controller.stream)
-          .startWithMany(_queue.toList(growable: false)),
-      reusable: true);
+  Observable<T> get stream => _observable;
 
   @override
   StreamSink<T> get sink => _controller.sink;
@@ -106,7 +109,7 @@ class ReplaySubject<T> implements StreamController<T> {
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add an error while items are being added from addStream");
     }
@@ -116,13 +119,13 @@ class ReplaySubject<T> implements StreamController<T> {
 
   @override
   Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add items while items are being added from addStream");
     }
 
     final Completer<T> completer = new Completer<T>();
-    isAddingStreamItems = true;
+    _isAddingStreamItems = true;
 
     source.listen((T item) {
       _add(item);
@@ -130,11 +133,11 @@ class ReplaySubject<T> implements StreamController<T> {
       _controller.addError(e, s);
 
       if (cancelOnError) {
-        isAddingStreamItems = false;
+        _isAddingStreamItems = false;
         completer.completeError(e);
       }
     }, onDone: () {
-      isAddingStreamItems = false;
+      _isAddingStreamItems = false;
       completer.complete();
     }, cancelOnError: cancelOnError);
 
@@ -143,7 +146,7 @@ class ReplaySubject<T> implements StreamController<T> {
 
   @override
   void add(T event) {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot add items while items are being added from addStream");
     }
@@ -162,7 +165,7 @@ class ReplaySubject<T> implements StreamController<T> {
 
   @override
   Future<dynamic> close() {
-    if (isAddingStreamItems) {
+    if (_isAddingStreamItems) {
       throw new StateError(
           "You cannot close the subject while items are being added from addStream");
     }

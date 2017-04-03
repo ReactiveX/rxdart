@@ -235,5 +235,12 @@ void main() {
       await expect(stream, emitsInOrder(<int>[1, 2]));
       await expect(stream, emitsInOrder(<int>[1, 2]));
     });
+
+    test('always returns the same stream', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new ReplaySubject<int>();
+
+      await expect(subject.stream, equals(subject.stream));
+    });
   });
 }
