@@ -24,6 +24,7 @@ import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
+import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
 import 'package:rxdart/src/transformers/group_by.dart';
@@ -46,6 +47,7 @@ import 'package:rxdart/src/transformers/timestamp.dart';
 import 'package:rxdart/src/transformers/window_with_count.dart';
 import 'package:rxdart/src/transformers/with_latest_from.dart';
 
+import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/src/utils/type_token.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
@@ -1075,6 +1077,7 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.just(1).call(onData: print); // Prints: 1
+  @Deprecated('Please use doOn methods instead. Will be removed before 1.0')
   Observable<T> call(
           {void onCancel(),
           void onData(T event),
@@ -1242,6 +1245,104 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
       new Observable<T>(stream.distinct(equals));
+
+  /// Invokes the given callback function when the stream subscription is
+  /// cancelled. Often called doOnUnsubscribe or doOnDispose in other
+  /// implementations.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = new Observable.timer(1, new Duration(minutes: 1))
+  ///       .doOnCancel(() => print("hi"));
+  ///       .listen(null);
+  ///
+  ///     subscription.cancel(); // prints "hi"
+  Observable<T> doOnCancel(void onCancel()) =>
+      transform(new DoStreamTransformer<T>(onCancel: onCancel));
+
+  /// Invokes the given callback function when the stream emits an item. In
+  /// other implementations, this is called doOnNext.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable([1, 2, 3])
+  ///       .doOnData(print)
+  ///       .listen(null); // prints 1, 2, 3
+  Observable<T> doOnData(void onData(T event)) =>
+      transform(new DoStreamTransformer<T>(onData: onData));
+
+  /// Invokes the given callback function when the stream finishes emitting
+  /// items. In other implementations, this is called doOnComplete(d).
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable([1, 2, 3])
+  ///       .doOnDone(() => print("all set"))
+  ///       .listen(null); // prints "all set"
+  Observable<T> doOnDone(void onDone()) =>
+      transform(new DoStreamTransformer<T>(onDone: onDone));
+
+  /// Invokes the given callback function when the stream emits data, emits
+  /// an error, or emits done. The callback receives a [Notification] object.
+  ///
+  /// The [Notification] object contains the [Kind] of event (OnData, onDone,
+  /// or OnError), and the item or error that was emitted. In the case of
+  /// onDone, no data is emitted as part of the [Notification].
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1)
+  ///       .doOnEach(print)
+  ///       .listen(null); // prints Notification{kind: OnData, value: 1, errorAndStackTrace: null}, Notification{kind: OnDone, value: null, errorAndStackTrace: null}
+  Observable<T> doOnEach(void onEach(Notification<T> notification)) =>
+      transform(new DoStreamTransformer<T>(onEach: onEach));
+
+  /// Invokes the given callback function when the stream emits an error.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.error(new Exception())
+  ///       .doOnError(() => print("oh no"))
+  ///       .listen(null); // prints "Oh no"
+  Observable<T> doOnError(Function onError) =>
+      transform(new DoStreamTransformer<T>(onError: onError));
+
+  /// Invokes the given callback function when the stream is first listened to.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(1)
+  ///       .doOnListen(() => print("Is someone there?"))
+  ///       .listen(null); // prints "Is someone there?"
+  Observable<T> doOnListen(void onListen()) =>
+      transform(new DoStreamTransformer<T>(onListen: onListen));
+
+  /// Invokes the given callback function when the stream subscription is
+  /// paused.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = new Observable.just(1)
+  ///       .doOnPause(() => print("Gimme a minute please"))
+  ///       .listen(null);
+  ///
+  ///     subscription.pause(); // prints "Gimme a minute please"
+  Observable<T> doOnPause(void onPause(Future<dynamic> resumeSignal)) =>
+      transform(new DoStreamTransformer<T>(onPause: onPause));
+
+  /// Invokes the given callback function when the stream subscription
+  /// resumes receiving items.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = new Observable.just(1)
+  ///       .doOnResume(() => print("Let's do this!"))
+  ///       .listen(null);
+  ///
+  ///     subscription.pause();
+  ///     subscription.resume(); "Let's do this!"
+  Observable<T> doOnResume(void onResume()) =>
+      transform(new DoStreamTransformer<T>(onResume: onResume));
 
   @override
   AsObservableFuture<S> drain<S>([S futureValue]) =>
@@ -1464,8 +1565,8 @@ class Observable<T> extends Stream<T> {
   /// The returned sequence throws an error if the source sequence throws an
   /// error.
   @override
-  Observable<S>
-      map<S>(S convert(T event)) => new Observable<S>(stream.map(convert));
+  Observable<S> map<S>(S convert(T event)) =>
+      new Observable<S>(stream.map(convert));
 
   /// Converts the onData, on Done, and onError events into [Notification]
   /// objects that are passed into the downstream onData listener.
@@ -1886,7 +1987,7 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.just(1)
   ///         .zipWith(new Observable.just(2), (one, two) => one + two)
   ///         .listen(print); // prints 3
-  Observable<R>
-      zipWith<S, R>(Stream<S> other, R zipper(T t, S s)) => new Observable<R>(
+  Observable<R> zipWith<S, R>(Stream<S> other, R zipper(T t, S s)) =>
+      new Observable<R>(
           new ZipStream<R>(<Stream<dynamic>>[stream, other], zipper));
 }

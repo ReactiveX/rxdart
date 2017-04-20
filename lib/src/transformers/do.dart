@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/notification.dart';
 
-/// Invokes each callback at the given point in the stream lifecycle
+/// Invokes the given callback at the corresponding point the the stream
+/// lifecycle. For example, if you pass in an onDone callback, it will
+/// be invoked when the stream finishes emitting items.
 ///
-/// This method can be used for debugging, logging, etc. by intercepting the
-/// stream at different points to run arbitrary actions.
+/// This transformer can be used for debugging, logging, etc. by intercepting
+/// the stream at different points to run arbitrary actions.
 ///
 /// It is possible to hook onto the following parts of the stream lifecycle:
 ///
@@ -24,18 +26,21 @@ import 'package:rxdart/src/utils/notification.dart';
 /// of the [Notification].
 ///
 /// If no callbacks are passed in, a runtime error will be thrown in dev mode
-/// in order to "fail fast" and alert the developer that the operator should be
-/// used or safely removed.
+/// in order to "fail fast" and alert the developer that the transformer should
+/// be used or safely removed.
 ///
 /// ### Example
 ///
 ///     new Stream.fromIterable([1])
-///         .transform(callTransformer(onData: (i) => print(i))); // Prints: 1
-@Deprecated("Please use DoStreamTransformer. This will be removed before 1.0")
-class CallStreamTransformer<T> implements StreamTransformer<T, T> {
+///         .transform(new DoStreamTransformer(
+///           onData: print,
+///           onError: (e, s) => print("Oh no!"),
+///           onDone: () => print("Done")))
+///         .listen(null); // Prints: 1, "Done"
+class DoStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  CallStreamTransformer(
+  DoStreamTransformer(
       {void onCancel(),
       void onData(T event),
       void onDone(),

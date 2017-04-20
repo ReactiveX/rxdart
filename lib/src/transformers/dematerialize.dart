@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/call.dart';
+import 'package:rxdart/src/utils/notification.dart';
 
 /// Converts the onData, onDone, and onError [Notification] objects from a
 /// materialized stream into normal onData, onDone, and onError events.
@@ -46,8 +46,8 @@ class DematerializeStreamTransformer<T>
               } else if (notification.isOnDone) {
                 controller.close();
               } else if (notification.isOnError) {
-                controller.addError(notification.errorAndStackTrace.error,
-                    notification.errorAndStackTrace.stacktrace);
+                controller.addError(notification.error,
+                    notification.stackTrace);
               }
             },
                 onError: controller.addError,
