@@ -24,6 +24,7 @@ import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
+import 'package:rxdart/src/transformers/distinct_unique.dart';
 import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
@@ -1244,6 +1245,9 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
       new Observable<T>(stream.distinct(equals));
+
+  Observable<T> distinctUnique({bool equals(T e1, T e2), int hashCode(T e)}) =>
+      transform(new DistinctUniqueStreamTransformer<T>(equals, hashCode));
 
   /// Invokes the given callback function when the stream subscription is
   /// cancelled. Often called doOnUnsubscribe or doOnDispose in other
