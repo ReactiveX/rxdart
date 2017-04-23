@@ -1228,6 +1228,10 @@ class Observable<T> extends Stream<T> {
     return transform(new DematerializeStreamTransformer<T>());
   }
 
+  /// * WARNING
+  /// * distinct in Dart is not the same as distinct in Rx
+  /// * for Rx distinct, see distinctUnique instead
+  ///
   /// Creates an Observable where data events are skipped if they are equal to
   /// the previous data event.
   ///
@@ -1241,11 +1245,23 @@ class Observable<T> extends Stream<T> {
   /// broadcast stream is listened to more than once, each subscription will
   /// individually perform the equals test.
   ///
-  /// [Interactive marble diagram](http://rxmarbles.com/#distinct)
+  /// [Interactive marble diagram](http://rxmarbles.com/#distinctUntilChanged)
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
       new Observable<T>(stream.distinct(equals));
 
+  /// Creates an Observable where data events are skipped if they have
+  /// already been emitted before.
+  ///
+  /// Equality is determined by the provided equals and hashCode methods.
+  /// If these are omitted,
+  /// the '==' operator and hashCode on the last provided data element are used.
+  ///
+  /// The returned stream is a broadcast stream if this stream is. If a
+  /// broadcast stream is listened to more than once, each subscription will
+  /// individually perform the equals and hashCode tests.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#distinct)
   Observable<T> distinctUnique({bool equals(T e1, T e2), int hashCode(T e)}) =>
       transform(new DistinctUniqueStreamTransformer<T>(equals, hashCode));
 

@@ -1,7 +1,27 @@
 import 'dart:async';
 import 'dart:collection';
 
+/// Create an [Observable] which implements a [HashSet] under the hood,
+/// using the provided [equals] as equality.
 ///
+/// The [Observable] will only emit an event, if that event is not yet
+/// found within the underlying [HashSet].
+///
+/// for example:
+///     new Stream.fromIterable([1, 2, 1, 2, 1, 2, 3, 2, 1])
+///         .listen((event) => print(event));
+///
+/// will emit:
+///     1, 2, 3
+///
+/// The provided [equals] must define a stable equivalence relation, and
+/// [hashCode] must be consistent with [equals].
+///
+/// If [equals] or [hashCode] are omitted, the set uses
+/// the elements' intrinsic [Object.==] and [Object.hashCode].
+///
+/// If you supply one of [equals] and [hashCode],
+/// you should generally also to supply the other.
 class DistinctUniqueStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
   DistinctUniqueStreamTransformer(bool equals(T e1, T e2), int hashCode(T e))
