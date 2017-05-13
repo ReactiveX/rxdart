@@ -43,6 +43,7 @@ void main() {
 ### Objects
 
 - [Observable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html)
+- [PublishSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/PublishSubject-class.html)
 - [BehaviorSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/BehaviorSubject-class.html)
 - [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/ReplaySubject-class.html)
 

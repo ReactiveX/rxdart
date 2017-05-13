@@ -1,54 +1,37 @@
 import 'dart:async';
-import 'dart:collection';
-
 import 'package:rxdart/src/observable.dart';
 
-/// A special StreamController that captures all of the items that have been
-/// added to the controller, and emits those as the first items to any new
-/// listener.
+/// A combo class that operates as both a StreamController and Observable.
+/// This allows one to send data, error and done events to listeners. Moreover,
+/// one can directly scan, flatMap, etc those events directly through the
+/// Subject.
 ///
-/// This subject allows sending data, error and done events to the listener.
-/// As items are added to the subject, the ReplaySubject will store them.
-/// When the stream is listened to, those recorded items will be emitted to
-/// the listener. After that, any new events will be appropriately sent to the
-/// listeners. It is possible to cap the number of stored events by setting
-/// a maxSize value.
-///
-/// ReplaySubject is, by default, a broadcast (aka hot) controller, in order
+/// PublishSubject is, by default, a broadcast (aka hot) controller, in order
 /// to fulfill the Rx Subject contract. This means the Subject's `stream` can
 /// be listened to multiple times.
 ///
+/// While multiple consumers can subscribe to the PublishSubject, no events will
+/// be replayed. If you're looking for such functionality, please examine
+/// `ReplaySubject` or `BehaviorSubject`.
+///
 /// ### Example
 ///
-///     final subject = new ReplaySubject<int>();
+///     final subject = new PublishSubject<int>();
 ///
-///     subject.add(1);
-///     subject.add(2);
-///     subject.add(3);
+///     subject.listen(print);
 ///
-///     subject.listen(print); // prints 1, 2, 3
-///     subject.listen(print); // prints 1, 2, 3
-///     subject.listen(print); // prints 1, 2, 3
-///
-/// ### Example with maxSize
-///
-///     final subject = new ReplaySubject<int>(maxSize: 2);
-///
-///     subject.add(1);
-///     subject.add(2);
-///     subject.add(3);
-///
-///     subject.listen(print); // prints 2, 3
-///     subject.listen(print); // prints 2, 3
-///     subject.listen(print); // prints 2, 3
-class ReplaySubject<T> extends Observable<T> implements StreamController<T> {
-  _ReplaySubjectStream<T> _subjectStream;
+///     subject.add(1); // prints 1
+///     subject.add(2); // prints 2
+///     subject.add(3); // prints 3
+class PublishSubject<T> extends Observable<T> implements StreamController<T> {
   bool _isAddingStreamItems = false;
+  _PublishSubjectStream<T> _subjectStream;
 
-  ReplaySubject({int maxSize, void onListen(), onCancel(), bool sync: false})
-      : super(new _ReplaySubjectStream<T>(maxSize: maxSize, onListen: onListen, onCancel: onCancel, sync: sync)) {
+  PublishSubject({void onListen(), onCancel(), bool sync: false})
+      : super(new _PublishSubjectStream<T>(
+            onListen: onListen, onCancel: onCancel, sync: false)) {
     // ignore: avoid_as
-    _subjectStream = stream as _ReplaySubjectStream<T>;
+    _subjectStream = stream as _PublishSubjectStream<T>;
   }
 
   @override
@@ -64,19 +47,19 @@ class ReplaySubject<T> extends Observable<T> implements StreamController<T> {
 
   @override
   ControllerCallback get onPause => throw new UnsupportedError(
-      "ReplaySubjects do not support pause callbacks");
+      "PublishSubjects do not support pause callbacks");
 
   @override
   set onPause(void onPauseHandler()) => throw new UnsupportedError(
-      "ReplaySubjects do not support pause callbacks");
+      "PublishSubjects do not support pause callbacks");
 
   @override
   ControllerCallback get onResume => throw new UnsupportedError(
-      "ReplaySubjects do not support resume callbacks");
+      "PublishSubjects do not support resume callbacks");
 
   @override
   set onResume(void onResumeHandler()) => throw new UnsupportedError(
-      "ReplaySubjects do not support resume callbacks");
+      "PublishSubjects do not support resume callbacks");
 
   @override
   ControllerCancelCallback get onCancel => _subjectStream._controller.onCancel;
@@ -146,11 +129,6 @@ class ReplaySubject<T> extends Observable<T> implements StreamController<T> {
   }
 
   void _add(T event) {
-    if (_subjectStream._queue.length == _subjectStream.maxSize) {
-      _subjectStream._queue.removeFirst();
-    }
-
-    _subjectStream._queue.add(event);
     _subjectStream._controller.add(event);
   }
 
@@ -161,32 +139,21 @@ class ReplaySubject<T> extends Observable<T> implements StreamController<T> {
           "You cannot close the subject while items are being added from addStream");
     }
 
-    _subjectStream._queue.clear();
-
     return _subjectStream._controller.close();
   }
 }
 
-class _ReplaySubjectStream<T> extends Stream<T> {
+class _PublishSubjectStream<T> extends Stream<T> {
   final StreamController<T> _controller;
-  final Queue<T> _queue = new Queue<T>();
-  int maxSize;
-  Observable<T> _observable;
 
-  _ReplaySubjectStream(
-      {this.maxSize, void onListen(), onCancel(), bool sync: false})
+  _PublishSubjectStream({void onListen(), onCancel(), bool sync: false})
       : _controller = new StreamController<T>.broadcast(
-            onListen: onListen, onCancel: onCancel, sync: sync) {
-    _observable = new Observable<T>.defer(
-        () => new Observable<T>(_controller.stream)
-            .startWithMany(_queue.toList(growable: false)),
-        reusable: true);
-  }
+            onListen: onListen, onCancel: onCancel, sync: sync);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return _observable.listen(onData,
+    return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }
