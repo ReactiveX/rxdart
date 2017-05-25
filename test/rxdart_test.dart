@@ -45,7 +45,6 @@ import 'transformers/flat_map_latest_test.dart' as flat_map_latest_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
 import 'transformers/fold_test.dart' as fold_test;
 import 'transformers/for_each_test.dart' as for_each_test;
-import 'transformers/group_by_test.dart' as group_by_test;
 import 'transformers/handle_error_test.dart' as handle_error_test;
 import 'transformers/ignore_elements_test.dart' as ignore_elements_test;
 import 'transformers/interval_test.dart' as interval_test;
@@ -141,7 +140,6 @@ void main() {
   flat_map_test.main();
   fold_test.main();
   for_each_test.main();
-  group_by_test.main();
   handle_error_test.main();
   ignore_elements_test.main();
   interval_test.main();

@@ -26,7 +26,6 @@ import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
 import 'package:rxdart/src/transformers/flat_map.dart';
 import 'package:rxdart/src/transformers/flat_map_latest.dart';
-import 'package:rxdart/src/transformers/group_by.dart';
 import 'package:rxdart/src/transformers/ignore_elements.dart';
 import 'package:rxdart/src/transformers/interval.dart';
 import 'package:rxdart/src/transformers/materialize.dart';
@@ -1321,18 +1320,6 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<dynamic> forEach(void action(T element)) =>
       new AsObservableFuture<dynamic>(stream.forEach(action));
-
-  /// The GroupBy operator divides an Observable that emits items into an
-  /// Observable that emits Observables, each one of which emits some subset
-  /// of the items from the original source Observable.
-  ///
-  ///  Which items end up on which Observable is typically decided by a
-  ///  discriminating function that evaluates each item and assigns it a
-  ///  key. All items with the same key are emitted by the same Observable.
-  Observable<GroupByMap<S, T>> groupBy<S>(S keySelector(T value),
-          {int compareKeys(S keyA, S keyB): null}) =>
-      transform(new GroupByStreamTransformer<T, S>(keySelector,
-          compareKeys: compareKeys));
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
