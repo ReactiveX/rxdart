@@ -1,3 +1,8 @@
+## 0.11.0
+
+* !!!Breaking Api Change!!!
+    * Observable.groupBy has been removed in order to be compatible with the next version of the `Stream` class in Dart 1.24.0, which includes this method
+
 ## 0.10.2
 
 * BugFix: The new Subject implementation no longer causes infinite loops when used with ng2 async pipes.
