@@ -17,32 +17,27 @@ class GithubSearch extends StatefulWidget {
 }
 
 class GithubSearchState extends State<GithubSearch> {
-  // Use InputValueStreamCallback from the flutter_stream_friends package that
-  // allows us to transform a normal Widget Callback of InputValue into a
-  // Stream<InputValue>. We can then use this stream later to update the Widget
+  // Use StringStreamCallback from the flutter_stream_friends package that
+  // allows us to transform a normal Widget Callback of String into a
+  // Stream<String>. We can then use this stream later to update the Widget
   // state and perform the search.
-  final InputValueStreamCallback onTextChanged = new InputValueStreamCallback();
+  final ValueChangedStreamCallback<String> onTextChanged =
+      new ValueChangedStreamCallback<String>();
   final GithubApi githubApi;
 
-  InputValue inputValue = new InputValue();
+  String inputValue = "";
   SearchResult result = new SearchResult.noTerm();
   bool hasError = false;
   bool isLoading = false;
 
   GithubSearchState(this.githubApi) {
-    new Observable<InputValue>(onTextChanged)
-        // Use call(onData) to ensure the UI always the latest input
-        .call(onData: (InputValue latestValue) {
-          setState(() {
-            inputValue = latestValue;
-          });
-        })
+    new Observable<String>(onTextChanged)
         // Use distinct() to ignore all keystrokes that don't have an impact on the input field's value (brake, ctrl, shift, ..)
-        .distinct((InputValue prev, InputValue next) => prev.text == next.text)
+        .distinct((String prev, String next) => prev == next)
         // Use debounce() to prevent calling the server on fast following keystrokes
         .debounce(const Duration(milliseconds: 250))
         // Use call(onData) to clear the previous results / errors and begin showing the loading state
-        .call(onData: (InputValue latestValue) {
+        .call(onData: (String latestValue) {
           setState(() {
             hasError = false;
             isLoading = true;
@@ -54,7 +49,7 @@ class GithubSearchState extends State<GithubSearch> {
         // looking for the previous one. Since we're only interested in the results of the very last search term entered,
         // flatMapLatest() will cancel the previous request, and notify use of the last result that comes in.
         // Normal flatMap() would give us all previous results as well.
-        .flatMapLatest((InputValue value) => githubApi.search(value.text))
+        .flatMapLatest((String value) => githubApi.search(value))
         .listen((SearchResult latestResult) {
           // If a result has been returned, disable the loading and error states and save the latest result
           setState(() {
@@ -78,14 +73,16 @@ class GithubSearchState extends State<GithubSearch> {
       new Flex(direction: Axis.vertical, children: <Widget>[
         new Container(
             padding: new EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
-            child: new Input(
-                showDivider: false,
+            child: new TextField(
+                decoration: new InputDecoration(
+                  hideDivider: true,
+                  hintText: 'Search Github...',
+                ),
                 style: new TextStyle(
-                    fontSize: 36.0,
-                    fontFamily: "Hind",
-                    decoration: TextDecoration.none),
-                hintText: 'Search Github...',
-                value: inputValue,
+                  fontSize: 36.0,
+                  fontFamily: "Hind",
+                  decoration: TextDecoration.none,
+                ),
                 onChanged: onTextChanged)),
         new Expanded(
             child: new Stack(children: <Widget>[
