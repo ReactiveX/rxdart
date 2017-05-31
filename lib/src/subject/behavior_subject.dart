@@ -34,35 +34,29 @@ import 'package:rxdart/src/observable.dart';
 ///     subject.listen(print); // prints 1
 ///     subject.listen(print); // prints 1
 ///     subject.listen(print); // prints 1
-class BehaviorSubject<T> implements StreamController<T> {
-  final StreamController<T> _controller;
+class BehaviorSubject<T> extends Observable<T> implements StreamController<T> {
   bool _isAddingStreamItems = false;
-  T _latestValue;
-  Observable<T> _observable;
+  _BehaviorSubjectStream<T> _subjectStream;
 
   BehaviorSubject({T seedValue, void onListen(), onCancel(), bool sync: false})
-      : _controller = new StreamController<T>.broadcast(
-            onListen: onListen, onCancel: onCancel, sync: sync),
-        _latestValue = seedValue {
-    _observable = new Observable<T>.defer(
-        () => _latestValue == null
-            ? _controller.stream
-            : new Observable<T>(_controller.stream).startWith(_latestValue),
-        reusable: true);
+      : super(new _BehaviorSubjectStream<T>(
+            seedValue: seedValue,
+            onListen: onListen,
+            onCancel: onCancel,
+            sync: false)) {
+    // ignore: avoid_as
+    _subjectStream = stream as _BehaviorSubjectStream<T>;
   }
 
   @override
-  Observable<T> get stream => _observable;
+  StreamSink<T> get sink => _subjectStream._controller.sink;
 
   @override
-  StreamSink<T> get sink => _controller.sink;
-
-  @override
-  ControllerCallback get onListen => _controller.onListen;
+  ControllerCallback get onListen => _subjectStream._controller.onListen;
 
   @override
   set onListen(void onListenHandler()) {
-    _controller.onListen = onListenHandler;
+    _subjectStream._controller.onListen = onListenHandler;
   }
 
   @override
@@ -82,24 +76,24 @@ class BehaviorSubject<T> implements StreamController<T> {
       "BehaviorSubjects do not support resume callbacks");
 
   @override
-  ControllerCancelCallback get onCancel => _controller.onCancel;
+  ControllerCancelCallback get onCancel => _subjectStream._controller.onCancel;
 
   @override
   set onCancel(onCancelHandler()) {
-    _controller.onCancel = onCancelHandler;
+    _subjectStream._controller.onCancel = onCancelHandler;
   }
 
   @override
-  bool get isClosed => _controller.isClosed;
+  bool get isClosed => _subjectStream._controller.isClosed;
 
   @override
-  bool get isPaused => _controller.isPaused;
+  bool get isPaused => _subjectStream._controller.isPaused;
 
   @override
-  bool get hasListener => _controller.hasListener;
+  bool get hasListener => _subjectStream._controller.hasListener;
 
   @override
-  Future<dynamic> get done => _controller.done;
+  Future<dynamic> get done => _subjectStream._controller.done;
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
@@ -108,7 +102,7 @@ class BehaviorSubject<T> implements StreamController<T> {
           "You cannot add an error while items are being added from addStream");
     }
 
-    _controller.addError(error, stackTrace);
+    _subjectStream._controller.addError(error, stackTrace);
   }
 
   @override
@@ -124,7 +118,7 @@ class BehaviorSubject<T> implements StreamController<T> {
     source.listen((T item) {
       _add(item);
     }, onError: (dynamic e, dynamic s) {
-      _controller.addError(e, s);
+      _subjectStream._controller.addError(e, s);
 
       if (cancelOnError) {
         _isAddingStreamItems = false;
@@ -149,9 +143,9 @@ class BehaviorSubject<T> implements StreamController<T> {
   }
 
   void _add(T event) {
-    _latestValue = event;
+    _subjectStream._latestValue = event;
 
-    _controller.add(event);
+    _subjectStream._controller.add(event);
   }
 
   @override
@@ -161,8 +155,33 @@ class BehaviorSubject<T> implements StreamController<T> {
           "You cannot close the subject while items are being added from addStream");
     }
 
-    _latestValue = null;
+    _subjectStream._latestValue = null;
 
-    return _controller.close();
+    return _subjectStream._controller.close();
+  }
+}
+
+class _BehaviorSubjectStream<T> extends Stream<T> {
+  final StreamController<T> _controller;
+  T _latestValue;
+  Observable<T> _observable;
+
+  _BehaviorSubjectStream(
+      {T seedValue, void onListen(), onCancel(), bool sync: false})
+      : _controller = new StreamController<T>.broadcast(
+            onListen: onListen, onCancel: onCancel, sync: sync),
+        _latestValue = seedValue {
+    _observable = new Observable<T>.defer(
+        () => _latestValue == null
+            ? _controller.stream
+            : new Observable<T>(_controller.stream).startWith(_latestValue),
+        reusable: true);
+  }
+
+  @override
+  StreamSubscription<T> listen(void onData(T event),
+      {Function onError, void onDone(), bool cancelOnError}) {
+    return _observable.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

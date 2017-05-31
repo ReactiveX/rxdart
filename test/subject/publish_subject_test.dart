@@ -1,89 +1,76 @@
 import 'dart:async';
 
+import 'package:rxdart/src/subject/publish_subject.dart';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  group('ReplaySubject', () {
-    test('replays the previously emitted items to every subscriber', () async {
-      // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+  group('PublishSubject', () {
+    test('works as a StreamController', () async {
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+        subject.add(3);
+        subject.close();
+      });
 
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
+      await expect(subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
-    test('replays the most recently emitted items up to a max size', () async {
-      // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>(maxSize: 2);
+    test('works as an Observable', () async {
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
-      subject.add(1); // Should be dropped
-      subject.add(2);
-      subject.add(3);
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+        subject.add(3);
+        subject.close();
+      });
 
-      await expect(subject, emitsInOrder(<int>[2, 3]));
-      await expect(subject, emitsInOrder(<int>[2, 3]));
-      await expect(subject, emitsInOrder(<int>[2, 3]));
+      await expect(subject.max(), completion(3));
     });
 
-    test('emits done event to listeners when the subject is closed', () async {
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+    test('reflects the proper closed state', () async {
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.isClosed, isFalse);
-
-      subject.add(1);
-      scheduleMicrotask(() => subject.close());
-
-      await expect(subject, emitsInOrder(<dynamic>[1, emitsDone]));
+      await subject.close();
       await expect(subject.isClosed, isTrue);
     });
 
     test('emits error events to subscribers', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       scheduleMicrotask(() => subject.addError(new Exception()));
 
       await expect(subject, emitsError(isException));
     });
 
-    test('replays the previously emitted items from addStream', () async {
-      // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
-
-      await subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
-
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
-    });
-
     test('allows items to be added once addStream is complete', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await subject.addStream(new Stream<int>.fromIterable(<int>[1, 2]));
-      subject.add(3);
 
-      await expect(subject, emitsInOrder(<int>[1, 2, 3]));
+      scheduleMicrotask(() => subject.add(3));
+
+      await expect(subject, emits(3));
     });
 
-    test('allows items to be added once addStream is completes with an error',
+    test('allows items to be added once addStream completes with an error',
         () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(
           subject.addStream(new ErrorStream<int>(new Exception()),
               cancelOnError: true),
           throwsException);
 
-      subject.add(1);
+      scheduleMicrotask(() => subject.add(1));
 
       await expect(subject, emits(1));
     });
@@ -91,7 +78,7 @@ void main() {
     test('does not allow events to be added when addStream is active',
         () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       // Purposely don't wait for the future to complete, then try to add items
       // ignore: unawaited_futures
@@ -103,7 +90,7 @@ void main() {
     test('does not allow errors to be added when addStream is active',
         () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       // Purposely don't wait for the future to complete, then try to add items
       // ignore: unawaited_futures
@@ -115,7 +102,7 @@ void main() {
     test('does not allow subject to be closed when addStream is active',
         () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       // Purposely don't wait for the future to complete, then try to add items
       // ignore: unawaited_futures
@@ -128,7 +115,7 @@ void main() {
         'does not allow addStream to add items when previous addStream is active',
         () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       // Purposely don't wait for the future to complete, then try to add items
       // ignore: unawaited_futures
@@ -142,8 +129,8 @@ void main() {
     test('returns onListen callback set in constructor', () async {
       final ControllerCallback testOnListen = () {};
       // ignore: close_sinks
-      final ReplaySubject<int> subject =
-          new ReplaySubject<int>(onListen: testOnListen);
+      final PublishSubject<int> subject =
+          new PublishSubject<int>(onListen: testOnListen);
 
       await expect(subject.onListen, testOnListen);
     });
@@ -151,7 +138,7 @@ void main() {
     test('sets onListen callback', () async {
       final ControllerCallback testOnListen = () {};
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.onListen, isNull);
 
@@ -163,8 +150,8 @@ void main() {
     test('returns onCancel callback set in constructor', () async {
       final ControllerCallback testOnCancel = () {};
       // ignore: close_sinks
-      final ReplaySubject<int> subject =
-          new ReplaySubject<int>(onCancel: testOnCancel);
+      final PublishSubject<int> subject =
+          new PublishSubject<int>(onCancel: testOnCancel);
 
       await expect(subject.onCancel, testOnCancel);
     });
@@ -172,7 +159,7 @@ void main() {
     test('sets onCancel callback', () async {
       final ControllerCallback testOnCancel = () {};
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.onCancel, isNull);
 
@@ -183,7 +170,7 @@ void main() {
 
     test('reports if a listener is present', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.hasListener, isFalse);
 
@@ -194,7 +181,7 @@ void main() {
 
     test('onPause unsupported', () {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       expect(subject.isPaused, isFalse);
       expect(() => subject.onPause, throwsUnsupportedError);
@@ -203,7 +190,7 @@ void main() {
 
     test('onResume unsupported', () {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       expect(() => subject.onResume, throwsUnsupportedError);
       expect(() => subject.onResume = () {}, throwsUnsupportedError);
@@ -211,13 +198,13 @@ void main() {
 
     test('returns controller sink', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.sink, new isInstanceOf<EventSink<int>>());
     });
 
     test('correctly closes done Future', () async {
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       scheduleMicrotask(() => subject.close());
 
@@ -226,18 +213,26 @@ void main() {
 
     test('can be listened to multiple times', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
-      subject.add(1);
-      subject.add(2);
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+      });
 
       await expect(subject, emitsInOrder(<int>[1, 2]));
+
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+      });
+
       await expect(subject, emitsInOrder(<int>[1, 2]));
     });
 
     test('always returns the same stream', () async {
       // ignore: close_sinks
-      final ReplaySubject<int> subject = new ReplaySubject<int>();
+      final PublishSubject<int> subject = new PublishSubject<int>();
 
       await expect(subject.stream, equals(subject.stream));
     });
