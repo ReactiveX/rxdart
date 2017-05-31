@@ -35,6 +35,7 @@ import 'transformers/debounce_test.dart' as debounce_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
 import 'transformers/dematerialize_test.dart' as dematerialize_test;
 import 'transformers/distinct_test.dart' as distinct_test;
+import 'transformers/do_test.dart' as do_test;
 import 'transformers/drain_test.dart' as drain_test;
 import 'transformers/element_at_test.dart' as element_at_test;
 import 'transformers/every_test.dart' as every_test;
@@ -129,6 +130,7 @@ void main() {
   default_if_empty_test.main();
   dematerialize_test.main();
   distinct_test.main();
+  do_test.main();
   drain_test.main();
   element_at_test.main();
   every_test.main();

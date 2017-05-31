@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/call.dart';
+import 'package:rxdart/src/utils/notification.dart';
 
 /// Converts the onData, on Done, and onError events into [Notification]
 /// objects that are passed into the downstream onData listener.
