@@ -1,3 +1,10 @@
+## 0.12.0
+
+* Added doOn* operators in place of `call`.
+* Added `DoStreamTransformer` as a replacement for `CallStreamTransformer`
+* Deprecated `call` and `CallStreamTransformer`. Please use the appropriate `doOnX` operator / transformer.
+* Added `distinctUnique`. Emits items if they've never been emitted before. Same as to Rx#distinct.
+
 ## 0.11.0
 
 * !!!Breaking Api Change!!!
