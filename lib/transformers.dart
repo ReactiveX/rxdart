@@ -6,6 +6,7 @@ export 'package:rxdart/src/transformers/cast.dart';
 export 'package:rxdart/src/transformers/debounce.dart';
 export 'package:rxdart/src/transformers/default_if_empty.dart';
 export 'package:rxdart/src/transformers/dematerialize.dart';
+export 'package:rxdart/src/transformers/distinct_unique.dart';
 export 'package:rxdart/src/transformers/do.dart';
 export 'package:rxdart/src/transformers/flat_map.dart';
 export 'package:rxdart/src/transformers/flat_map_latest.dart';
