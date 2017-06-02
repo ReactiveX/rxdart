@@ -23,17 +23,17 @@ import 'package:rxdart/src/observable.dart';
 ///     subject.add(2);
 ///     subject.add(3);
 ///
-///     subject.listen(print); // prints 3
-///     subject.listen(print); // prints 3
-///     subject.listen(print); // prints 3
+///     subject.stream.listen(print); // prints 3
+///     subject.stream.listen(print); // prints 3
+///     subject.stream.listen(print); // prints 3
 ///
 /// ### Example with seed value
 ///
 ///     final subject = new BehaviorSubject<int>(seedValue: 1);
 ///
-///     subject.listen(print); // prints 1
-///     subject.listen(print); // prints 1
-///     subject.listen(print); // prints 1
+///     subject.stream.listen(print); // prints 1
+///     subject.stream.listen(print); // prints 1
+///     subject.stream.listen(print); // prints 1
 class BehaviorSubject<T> implements StreamController<T> {
   final StreamController<T> _controller;
   bool _isAddingStreamItems = false;

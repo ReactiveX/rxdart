@@ -26,9 +26,9 @@ import 'package:rxdart/src/observable.dart';
 ///     subject.add(2);
 ///     subject.add(3);
 ///
-///     subject.listen(print); // prints 1, 2, 3
-///     subject.listen(print); // prints 1, 2, 3
-///     subject.listen(print); // prints 1, 2, 3
+///     subject.stream.listen(print); // prints 1, 2, 3
+///     subject.stream.listen(print); // prints 1, 2, 3
+///     subject.stream.listen(print); // prints 1, 2, 3
 ///
 /// ### Example with maxSize
 ///
@@ -38,9 +38,9 @@ import 'package:rxdart/src/observable.dart';
 ///     subject.add(2);
 ///     subject.add(3);
 ///
-///     subject.listen(print); // prints 2, 3
-///     subject.listen(print); // prints 2, 3
-///     subject.listen(print); // prints 2, 3
+///     subject.stream.listen(print); // prints 2, 3
+///     subject.stream.listen(print); // prints 2, 3
+///     subject.stream.listen(print); // prints 2, 3
 class ReplaySubject<T> implements StreamController<T> {
   final StreamController<T> _controller;
   final Queue<T> _queue = new Queue<T>();
