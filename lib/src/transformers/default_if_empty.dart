@@ -29,7 +29,11 @@ class DefaultIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
             subscription = input.listen(
                 (T value) {
                   hasEvent = true;
-                  controller.add(value);
+                  try {
+                    controller.add(value);
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 },
                 onError: controller.addError,
                 onDone: () {

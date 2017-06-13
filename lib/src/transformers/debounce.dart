@@ -38,13 +38,17 @@ class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
                 (T value) {
                   streamHasEvent = true;
 
-                  if (_timer != null && _timer.isActive) _timer.cancel();
+                  try {
+                    if (_timer != null && _timer.isActive) _timer.cancel();
 
-                  _timer = new Timer(duration, () {
-                    controller.add(value);
+                    _timer = Zone.current.createTimer(duration, () {
+                      controller.add(value);
 
-                    if (_closeAfterNextEvent) controller.close();
-                  });
+                      if (_closeAfterNextEvent) controller.close();
+                    });
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 },
                 onError: controller.addError,
                 onDone: () {

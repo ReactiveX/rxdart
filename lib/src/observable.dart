@@ -20,7 +20,6 @@ import 'package:rxdart/src/streams/zip.dart';
 
 import 'package:rxdart/src/transformers/cast.dart';
 import 'package:rxdart/src/transformers/buffer_with_count.dart';
-import 'package:rxdart/src/transformers/call.dart';
 import 'package:rxdart/src/transformers/debounce.dart';
 import 'package:rxdart/src/transformers/default_if_empty.dart';
 import 'package:rxdart/src/transformers/dematerialize.dart';
@@ -1048,54 +1047,6 @@ class Observable<T> extends Stream<T> {
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(new BufferWithCountStreamTransformer<T, List<T>>(count, skip));
-
-  /// Invokes each callback at the given point in the stream lifecycle
-  ///
-  /// This method can be used for debugging, logging, etc. by intercepting the
-  /// stream at different points to run arbitrary actions.
-  ///
-  /// It is possible to hook onto the following parts of the stream lifecycle:
-  ///
-  ///   - onCancel
-  ///   - onData
-  ///   - onDone
-  ///   - onError
-  ///   - onListen
-  ///   - onPause
-  ///   - onResume
-  ///
-  /// In addition, the `onEach` argument is called at `onData`, `onDone`, and
-  /// `onError` with a [Notification] passed in. The [Notification] argument
-  /// contains the [Kind] of event (OnData, OnDone, OnError), and the item or
-  /// error that was emitted. In the case of onDone, no data is emitted as part
-  /// of the [Notification].
-  ///
-  /// If no callbacks are passed in, a runtime error will be thrown in dev mode
-  /// in order to "fail fast" and alert the developer that the operator should
-  /// be used or safely removed.
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.just(1).call(onData: print); // Prints: 1
-  @Deprecated('Please use doOn methods instead. Will be removed before 1.0')
-  Observable<T> call(
-          {void onCancel(),
-          void onData(T event),
-          void onDone(),
-          void onEach(Notification<T> notification),
-          Function onError,
-          void onListen(),
-          void onPause(Future<dynamic> resumeSignal),
-          void onResume()}) =>
-      transform(new CallStreamTransformer<T>(
-          onCancel: onCancel,
-          onData: onData,
-          onDone: onDone,
-          onEach: onEach,
-          onError: onError,
-          onListen: onListen,
-          onPause: onPause,
-          onResume: onResume));
 
   /// Casts a sequence of items to a given type.
   ///

@@ -97,11 +97,12 @@ void main() {
   });
 
   test('rx.Observable.bufferWithCount.skip.shouldThrow', () async {
-    try {
-      new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-          .bufferWithCount(2, 100);
-    } catch (e) {
-      await expect(e, isArgumentError);
-    }
+    Stream<List<int>> observableWithError =
+        new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .bufferWithCount(2, 100);
+
+    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+      expect(e, isException);
+    });
   });
 }
