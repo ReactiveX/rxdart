@@ -70,15 +70,37 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.withLatestFrom.error.shouldThrow', () async {
+  test('rx.Observable.withLatestFrom.error.shouldThrowA', () async {
     Stream<String> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .withLatestFrom(
                 _getLatestFromStream(), (num first, int second) => "Hello");
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.withLatestFrom.error.shouldThrowB', () async {
+    Stream<String> observableWithError = new Observable<num>.just(1)
+        .withLatestFrom(null, (num first, int second) => "Hello");
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.withLatestFrom.error.shouldThrowC', () async {
+    Stream<dynamic> observableWithError = new Observable<int>(_getStream())
+        .withLatestFrom(_getLatestFromStream(), null)
+        .take(5);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+          expect(e, isArgumentError);
+        }, count: 5));
   });
 
   test('rx.Observable.withLatestFrom.pause.resume', () async {

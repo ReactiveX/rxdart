@@ -76,14 +76,37 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.flatMapLatest.error.shouldThrow', () async {
+  test('rx.Observable.flatMapLatest.error.shouldThrowA', () async {
     Stream<int> observableWithError =
         new Observable<int>(new ErrorStream<int>(new Exception()))
             .flatMapLatest(_getOtherStream);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
+    }));
+  });
+
+  test('rx.Observable.flatMapLatest.error.shouldThrowB', () async {
+    Stream<int> observableWithError = new Observable<int>.just(1).flatMapLatest(
+        (_) => new ErrorStream<int>(new Exception('Catch me if you can!')));
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isException);
+    }));
+  });
+
+  test('rx.Observable.flatMapLatest.error.shouldThrowC', () async {
+    Stream<int> observableWithError =
+        new Observable<int>.just(1).flatMapLatest((_) {
+      throw new Exception('oh noes!');
     });
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isException);
+    }));
   });
 
   test('rx.Observable.flatMapLatest.pause.resume', () async {

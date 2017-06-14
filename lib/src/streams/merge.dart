@@ -26,24 +26,39 @@ class MergeStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    final List<StreamSubscription<T>> subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final List<StreamSubscription<T>> subscriptions = streams != null
+        ? new List<StreamSubscription<T>>(streams.length)
+        : null;
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          final List<bool> completedStatus =
-              new List<bool>.generate(streams.length, (_) => false);
+          if (streams == null) {
+            controller.addError(new ArgumentError('streams cannot be null'));
+          } else if (streams.isEmpty) {
+            controller.addError(
+                new ArgumentError('at least 1 stream needs to be provided'));
+          } else {
+            final List<bool> completedStatus =
+                new List<bool>.generate(streams.length, (_) => false);
 
-          for (int i = 0, len = streams.length; i < len; i++) {
-            subscriptions[i] = streams.elementAt(i).listen(controller.add,
-                onError: controller.addError, onDone: () {
-              completedStatus[i] = true;
+            for (int i = 0, len = streams.length; i < len; i++) {
+              Stream<T> stream = streams.elementAt(i);
 
-              if (completedStatus.reduce((bool a, bool b) => a && b))
-                controller.close();
-            });
+              if (stream == null) {
+                controller.addError(
+                    new ArgumentError('stream at position $i is Null'));
+              } else {
+                subscriptions[i] = stream.listen(controller.add,
+                    onError: controller.addError, onDone: () {
+                  completedStatus[i] = true;
+
+                  if (completedStatus.reduce((bool a, bool b) => a && b))
+                    controller.close();
+                });
+              }
+            }
           }
         },
         onCancel: () => Future.wait(subscriptions

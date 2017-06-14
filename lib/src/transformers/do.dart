@@ -117,8 +117,8 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
               if (onError != null) {
                 try {
                   onError(e, s);
-                } catch (e, s) {
-                  controller.addError(e, s);
+                } catch (e2, s2) {
+                  controller.addError(e2, s2);
                 }
               }
 

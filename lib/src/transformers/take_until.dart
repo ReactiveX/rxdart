@@ -31,15 +31,18 @@ class TakeUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T data) {
-              controller.add(data);
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
+            if (otherStream == null) {
+              controller.addError(
+                  new ArgumentError('otherSubscription cannot be null'));
+            } else {
+              subscription = input.listen(controller.add,
+                  onError: controller.addError,
+                  onDone: controller.close,
+                  cancelOnError: cancelOnError);
 
-            otherSubscription = otherStream.listen((_) => controller.close(),
-                onError: controller.addError, cancelOnError: cancelOnError);
+              otherSubscription = otherStream.listen((_) => controller.close(),
+                  onError: controller.addError, cancelOnError: cancelOnError);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

@@ -52,9 +52,9 @@ void main() {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception())).startWith(5);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
   test('rx.Observable.startWith.pause.resume', () async {

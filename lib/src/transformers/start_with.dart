@@ -24,7 +24,11 @@ class StartWithStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            controller.add(startValue);
+            try {
+              controller.add(startValue);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
 
             subscription = input.listen(controller.add,
                 onError: controller.addError,

@@ -59,9 +59,9 @@ void main() {
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .debounce(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
   /// Should also throw if the current [Zone] is unable to install a [Timer]
@@ -70,9 +70,8 @@ void main() {
       Stream<num> observableWithError = new Observable<int>.just(1)
           .debounce(const Duration(milliseconds: 200));
 
-      observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-        expect(e, isException);
-      });
+      observableWithError.listen(null,
+          onError: expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
     },
         zoneSpecification: new ZoneSpecification(
             createTimer: (Zone self, ZoneDelegate parent, Zone zone,

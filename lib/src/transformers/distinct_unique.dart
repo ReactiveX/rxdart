@@ -41,7 +41,11 @@ class DistinctUniqueStreamTransformer<T> implements StreamTransformer<T, T> {
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
-              if (collection.add(value)) controller.add(value);
+              try {
+                if (collection.add(value)) controller.add(value);
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
             },
                 onError: controller.addError,
                 onDone: controller.close,

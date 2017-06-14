@@ -14,7 +14,8 @@ import 'dart:async';
 ///       new WithLatestFromStreamTransformer(
 ///         new Stream.fromIterable([2, 3]), (a, b) => a + b)
 ///       .listen(print); // prints 4 (due to the async nature of streams)
-class WithLatestFromStreamTransformer<T, S, R> implements StreamTransformer<T, R> {
+class WithLatestFromStreamTransformer<T, S, R>
+    implements StreamTransformer<T, R> {
   final StreamTransformer<T, R> transformer;
 
   WithLatestFromStreamTransformer(Stream<S> latestFromStream, R fn(T t, S s))
@@ -36,16 +37,30 @@ class WithLatestFromStreamTransformer<T, S, R> implements StreamTransformer<T, R
           onListen: () {
             subscription = input.listen((T value) {
               if (latestValue != null) {
-                controller.add(fn(value, latestValue));
+                if (fn == null) {
+                  controller
+                      .addError(new ArgumentError('combiner cannot be null'));
+                } else {
+                  try {
+                    controller.add(fn(value, latestValue));
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
+                }
               }
             }, onError: controller.addError);
 
-            latestFromSubscription = latestFromStream.listen((S latest) {
-              latestValue = latest;
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
+            if (latestFromStream == null) {
+              controller.addError(
+                  new ArgumentError('latestFromStream cannot be null'));
+            } else {
+              latestFromSubscription = latestFromStream.listen((S latest) {
+                latestValue = latest;
+              },
+                  onError: controller.addError,
+                  onDone: controller.close,
+                  cancelOnError: cancelOnError);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

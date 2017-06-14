@@ -30,20 +30,21 @@ class SkipUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T data) {
-              if (goTime) {
-                controller.add(data);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
+            if (otherStream == null) {
+              controller
+                  .addError(new ArgumentError('otherStream cannot be null'));
+            } else {
+              subscription = input.where((_) => goTime).listen(controller.add,
+                  onError: controller.addError,
+                  onDone: controller.close,
+                  cancelOnError: cancelOnError);
 
-            otherSubscription = otherStream.listen((_) {
-              goTime = true;
+              otherSubscription = otherStream.listen((_) {
+                goTime = true;
 
-              otherSubscription.cancel();
-            }, onError: controller.addError, cancelOnError: cancelOnError);
+                otherSubscription.cancel();
+              }, onError: controller.addError, cancelOnError: cancelOnError);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

@@ -57,7 +57,7 @@ void main() {
     test('throws when cast fails', () async {
       new Observable<int>.just(1)
           .cast(const TypeToken<String>())
-          .listen(null, onError: (e, s) => expect(e, isCastError));
+          .listen(null, onError: expectAsync2((e, s) => expect(e, isCastError)));
     });
   });
 }

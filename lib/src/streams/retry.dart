@@ -49,14 +49,16 @@ class RetryStream<T> extends Stream<T> {
   }
 
   void retry() {
-    subscription = streamFactory().listen((T data) {
-      controller.add(data);
-    }, onError: (dynamic e, dynamic s) {
-      subscription.cancel();
+    subscription = streamFactory().listen(controller.add,
+        onError: (dynamic e, dynamic s) async {
+      Future<dynamic> cancelFuture = subscription.cancel();
+
+      if (cancelFuture != null) await cancelFuture;
 
       if (count == retryStep) {
         controller.addError(new RetryError(count));
-        controller.close();
+        Future<dynamic> cancelFuture2 = controller.close();
+        if (cancelFuture2 != null) await cancelFuture2;
       } else {
         retryStep++;
         retry();

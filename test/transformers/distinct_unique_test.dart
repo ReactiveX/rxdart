@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   group("DistinctUniqueStreamTransformer", () {
-    test("works with the equals and hascode of the class", () async {
+    test("rx.Observable.distinctUnique.withoutEqualsAndHash", () async {
       Stream<_TestObject> observable =
           new Observable<_TestObject>.fromIterable(<_TestObject>[
         new _TestObject("a"),
@@ -30,7 +30,7 @@ void main() {
           ]));
     });
 
-    test("works with a provided equals and hashcode", () async {
+    test("rx.Observable.distinctUnique.withEqualsAndHash", () async {
       Stream<_TestObject> observable =
           new Observable<_TestObject>.fromIterable(<_TestObject>[
         new _TestObject("a"),
@@ -57,7 +57,22 @@ void main() {
           ]));
     });
 
-    test("is reusable", () async {
+    test("rx.Observable.distinctUnique.error.shouldThrow", () async {
+      Stream<_TestObject> observable =
+          new Observable<_TestObject>.fromIterable(<_TestObject>[
+        new _TestObject("a"),
+        new _TestObject("b"),
+        new _TestObject("c")
+      ]).distinctUnique(
+              equals: (_TestObject a, _TestObject b) => a.key == b.key,
+              hashCode: (_TestObject o) =>
+                  throw new Exception('Catch me if you can!'));
+
+      observable.listen(null,
+          onError: expectAsync2((e, s) => expect(e, isException), count: 3));
+    });
+
+    test("rx.Observable.distinctUnique.isReusable", () async {
       final List<_TestObject> data = <_TestObject>[
         new _TestObject("a"),
         new _TestObject("a"),

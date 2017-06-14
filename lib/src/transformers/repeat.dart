@@ -20,7 +20,11 @@ class RepeatStreamTransformer<T> implements StreamTransformer<T, T> {
   static StreamTransformer<T, T> _buildTransformer<T>(int repeatCount) {
     return new StreamTransformer<T, T>.fromHandlers(
         handleData: (T data, EventSink<T> sink) {
-      for (int i = 0; i < repeatCount; i++) sink.add(data);
+      if (repeatCount == null) {
+        sink.addError(new ArgumentError('repeatCount cannot be null'));
+      } else {
+        for (int i = 0; i < repeatCount; i++) sink.add(data);
+      }
     });
   }
 }

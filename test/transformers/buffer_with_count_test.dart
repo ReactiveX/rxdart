@@ -86,23 +86,33 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.bufferWithCount.error.shouldThrow', () async {
+  test('rx.Observable.bufferWithCount.error.shouldThrowA', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .bufferWithCount(2);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
-  test('rx.Observable.bufferWithCount.skip.shouldThrow', () async {
+  test('rx.Observable.bufferWithCount.skip.shouldThrowB', () async {
     Stream<List<int>> observableWithError =
         new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
             .bufferWithCount(2, 100);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(e, isException);
-    });
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }, count: 4));
+  });
+
+  test('rx.Observable.bufferWithCount.skip.shouldThrowC', () async {
+    Stream<List<int>> observableWithError =
+    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+        .bufferWithCount(null);
+
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }, count: 4));
   });
 }

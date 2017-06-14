@@ -49,8 +49,12 @@ class OfTypeStreamTransformer<T, S> implements StreamTransformer<T, S> {
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
-              if (typeToken.isType(value)) {
-                controller.add(typeToken.toType(value));
+              try {
+                if (typeToken.isType(value)) {
+                  controller.add(typeToken.toType(value));
+                }
+              } catch (e, s) {
+                controller.addError(e, s);
               }
             },
                 onError: controller.addError,

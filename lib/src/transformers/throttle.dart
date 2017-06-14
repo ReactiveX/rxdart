@@ -27,9 +27,20 @@ class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
       bool _resetTimer() {
         if (_timer != null && _timer.isActive) return false;
 
-        _timer = new Timer(duration, () {
-          if (_closeAfterNextEvent && !controller.isClosed) controller.close();
-        });
+        if (duration == null) {
+          controller.addError(new ArgumentError('duration cannot be null'));
+
+          return false;
+        } else {
+          try {
+            _timer = Zone.current.createTimer(duration, () {
+              if (_closeAfterNextEvent && !controller.isClosed)
+                controller.close();
+            });
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
 
         return true;
       }
@@ -37,15 +48,12 @@ class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  if (_resetTimer()) controller.add(value);
-                },
-                onError: controller.addError,
-                onDone: () {
-                  _closeAfterNextEvent = true;
-                },
-                cancelOnError: cancelOnError);
+            subscription = input
+                .where((_) => _resetTimer())
+                .listen(controller.add, onError: controller.addError,
+                    onDone: () {
+              _closeAfterNextEvent = true;
+            }, cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

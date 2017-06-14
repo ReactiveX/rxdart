@@ -41,13 +41,17 @@ class DematerializeStreamTransformer<T>
           sync: true,
           onListen: () {
             subscription = input.listen((Notification<T> notification) {
-              if (notification.isOnData) {
-                controller.add(notification.value);
-              } else if (notification.isOnDone) {
-                controller.close();
-              } else if (notification.isOnError) {
-                controller.addError(notification.error,
-                    notification.stackTrace);
+              try {
+                if (notification.isOnData) {
+                  controller.add(notification.value);
+                } else if (notification.isOnDone) {
+                  controller.close();
+                } else if (notification.isOnError) {
+                  controller.addError(
+                      notification.error, notification.stackTrace);
+                }
+              } catch (e, s) {
+                controller.addError(e, s);
               }
             },
                 onError: controller.addError,

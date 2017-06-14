@@ -39,17 +39,18 @@ class OnErrorResumeNextStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            inputSubscription = input.listen((T data) {
-              controller.add(data);
-            }, onError: (dynamic e, dynamic s) {
+            inputSubscription = input.listen(controller.add,
+                onError: (dynamic e, dynamic s) async {
               shouldCloseController = false;
+
+              Future<dynamic> cancelFuture = inputSubscription.cancel();
+
+              if (cancelFuture != null) await cancelFuture;
 
               recoverySubscription = recoveryStream.listen(controller.add,
                   onError: controller.addError,
                   onDone: controller.close,
                   cancelOnError: cancelOnError);
-
-              inputSubscription.cancel();
             }, onDone: safeClose, cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) {

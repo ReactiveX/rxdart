@@ -99,14 +99,36 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.windowWithCount.error.shouldThrow', () async {
+  test('rx.Observable.windowWithCount.error.shouldThrowA', () async {
     Stream<Stream<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .windowWithCount(2);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.bufferWithCount.skip.shouldThrowB', () async {
+    Stream<Stream<int>> observableWithError =
+        new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .windowWithCount(2, 100);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+          expect(e, isArgumentError);
+        }, count: 4));
+  });
+
+  test('rx.Observable.windowWithCount.error.shouldThrowC', () async {
+    Stream<Stream<num>> observableWithError =
+        new Observable<num>.just(1).windowWithCount(null);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.windowWithCount.pause.resume', () async {

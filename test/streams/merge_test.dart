@@ -36,12 +36,42 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.merge.error.shouldThrow', () async {
+  test('rx.Observable.merge.error.shouldThrowA', () async {
     Stream<num> observableWithError = new Observable<num>.merge(
         _getStreams()..add(new ErrorStream<num>(new Exception())));
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.merge.error.shouldThrowB', () async {
+    Stream<num> observableWithError = new Observable<num>.merge(null);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.merge.error.shouldThrowC', () async {
+    Stream<num> observableWithError =
+        new Observable<num>.merge(<Stream<num>>[]);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.merge.error.shouldThrowD', () async {
+    Stream<num> observableWithError = new Observable<num>.merge(
+        <Stream<num>>[new Observable<num>.just(1), null]);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
   });
 }

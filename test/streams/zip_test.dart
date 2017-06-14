@@ -278,7 +278,7 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.zip.error.shouldThrow', () async {
+  test('rx.Observable.zip.error.shouldThrowA', () async {
     Stream<int> observableWithError = Observable.zip2(
         new Observable<int>.just(1),
         new Observable<int>.just(2),
@@ -288,6 +288,18 @@ void main() {
         onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
     }));
+  });
+
+  test('rx.Observable.zip.error.shouldThrowB', () async {
+    Stream<int> observableWithError = Observable.zip2(
+        new Observable<int>.just(1),
+        null,
+            (int a, _) => null);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+          expect(e, isArgumentError);
+        }));
   });
 
   test('rx.Observable.zip.pause.resume', () async {

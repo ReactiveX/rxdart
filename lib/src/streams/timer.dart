@@ -19,7 +19,7 @@ class TimerStream<T> extends Stream<T> {
     StreamSubscription<T> subscription = controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-    new Timer(duration, () {
+    Zone.current.createTimer(duration, () {
       controller.add(value);
       controller.close();
     });

@@ -66,13 +66,29 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.interval.error.shouldThrow', () async {
+  test('rx.Observable.interval.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .interval(const Duration(milliseconds: 20));
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.interval.error.shouldThrowB', () async {
+    runZoned(() {
+      Stream<num> observableWithError = new Observable<num>.just(1)
+          .interval(const Duration(milliseconds: 20));
+
+      observableWithError.listen(null,
+          onError:
+              expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+    },
+        zoneSpecification: new ZoneSpecification(
+            createTimer: (Zone self, ZoneDelegate parent, Zone zone,
+                    Duration duration, void f()) =>
+                throw new Exception('Zone createTimer error')));
   });
 }

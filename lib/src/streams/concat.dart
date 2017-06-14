@@ -36,25 +36,38 @@ class ConcatStream<T> extends Stream<T> {
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          final int len = streams.length;
-          int index = 0;
+          if (streams == null) {
+            controller.addError(new ArgumentError('streams cannot be null'));
+          } else if (streams.isEmpty) {
+            controller.addError(
+                new ArgumentError('at least 1 stream needs to be provided'));
+          } else {
+            final int len = streams.length;
+            int index = 0;
 
-          void moveNext() {
-            Stream<T> stream = streams.elementAt(index);
-            subscription?.cancel();
+            Future<Null> moveNext() async {
+              Stream<T> stream = streams.elementAt(index);
+              Future<dynamic> cancelFuture = subscription?.cancel();
 
-            subscription = stream.listen(controller.add,
-                onError: controller.addError, onDone: () {
-              index++;
+              if (cancelFuture != null) await cancelFuture;
 
-              if (index == len)
-                controller.close();
-              else
-                moveNext();
-            });
+              if (stream == null) {
+                controller.addError(new ArgumentError('stream at position $index is Null'));
+              } else {
+                subscription = stream.listen(controller.add,
+                    onError: controller.addError, onDone: () {
+                      index++;
+
+                      if (index == len)
+                        controller.close();
+                      else
+                        moveNext();
+                    });
+              }
+            }
+
+            moveNext();
           }
-
-          moveNext();
         },
         onCancel: () => subscription.cancel());
 

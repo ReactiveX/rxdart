@@ -95,13 +95,42 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.concat.error.shouldThrow', () async {
+  test('rx.Observable.concat.error.shouldThrowA', () async {
     Stream<num> observableWithError = new Observable<num>.concat(
         _getStreams()..add(new ErrorStream<num>(new Exception())));
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
+    }));
+  });
+
+  test('rx.Observable.concat.error.shouldThrowB', () async {
+    Stream<num> observableWithError = new Observable<num>.concat(null);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.concat.error.shouldThrowC', () async {
+    Stream<num> observableWithError =
+        new Observable<num>.concat(<Stream<Null>>[]);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.concat.error.shouldThrowD', () async {
+    Stream<num> observableWithError = new Observable<num>.concat(
+        <Stream<num>>[new Observable<num>.just(1), null]);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
     }));
   });
 }

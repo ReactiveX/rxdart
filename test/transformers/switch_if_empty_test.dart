@@ -51,14 +51,25 @@ void main() {
     await expect(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrow', () async {
+  test('rx.Observable.switchIfEmpty.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .switchIfEmpty(new Observable<int>.just(1));
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.switchIfEmpty.error.shouldThrowB', () async {
+    Stream<num> observableWithError =
+        new Observable<num>.empty().switchIfEmpty(null);
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.switchIfEmpty.pause.resume', () async {

@@ -30,26 +30,30 @@ class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T value) {
-              currentValue = value;
-            }, onError: controller.addError);
+            try {
+              subscription = input.listen((T value) {
+                currentValue = value;
+              }, onError: controller.addError);
 
-            sampleSubscription = sampleStream.listen(
-                (_) {
-                  if (currentValue != null) {
-                    controller.add(currentValue);
-                    currentValue = null;
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (currentValue != null) {
-                    controller.add(currentValue);
-                  }
+              sampleSubscription = sampleStream.listen(
+                  (_) {
+                    if (currentValue != null) {
+                      controller.add(currentValue);
+                      currentValue = null;
+                    }
+                  },
+                  onError: controller.addError,
+                  onDone: () {
+                    if (currentValue != null) {
+                      controller.add(currentValue);
+                    }
 
-                  controller.close();
-                },
-                cancelOnError: cancelOnError);
+                    controller.close();
+                  },
+                  cancelOnError: cancelOnError);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

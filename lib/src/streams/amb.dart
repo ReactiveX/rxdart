@@ -26,8 +26,9 @@ class AmbStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    final List<StreamSubscription<T>> subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final List<StreamSubscription<T>> subscriptions = streams != null
+        ? new List<StreamSubscription<T>>(streams.length)
+        : null;
     bool isDisambiguated = false;
 
     StreamController<T> controller;
@@ -36,24 +37,35 @@ class AmbStream<T> extends Stream<T> {
         sync: true,
         onListen: () {
           void doUpdate(int i, T value) {
-            if (!isDisambiguated)
-              for (int k = 0, len = subscriptions.length; k < len; k++) {
-                if (k != i) {
-                  subscriptions[k].cancel();
-                  subscriptions[k] = null;
+            try {
+              if (!isDisambiguated)
+                for (int k = 0, len = subscriptions.length; k < len; k++) {
+                  if (k != i) {
+                    subscriptions[k].cancel();
+                    subscriptions[k] = null;
+                  }
                 }
-              }
 
-            isDisambiguated = true;
+              isDisambiguated = true;
 
-            controller.add(value);
+              controller.add(value);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
           }
 
-          for (int i = 0, len = streams.length; i < len; i++) {
-            Stream<T> stream = streams.elementAt(i);
+          if (streams == null) {
+            controller.addError(new ArgumentError('streams cannot be null'));
+          } else if (streams.isEmpty) {
+            controller.addError(new ArgumentError('provide at least 1 stream'));
+          } else {
+            for (int i = 0, len = streams.length; i < len; i++) {
+              Stream<T> stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen((T value) => doUpdate(i, value),
-                onError: controller.addError, onDone: () => controller.close());
+              subscriptions[i] = stream.listen((T value) => doUpdate(i, value),
+                  onError: controller.addError,
+                  onDone: () => controller.close());
+            }
           }
         },
         onCancel: () =>
