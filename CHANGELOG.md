@@ -1,3 +1,9 @@
+## 0.13.0
+
+* Remove `call` operator / `StreamTransformer` entirely
+* Important bug fix: Errors thrown within any Stream or Operator will now be properly sent to the `StreamSubscription`.
+* Improve overall handling of errors throughout the library to ensure they're handled correctly
+
 ## 0.12.0
 
 * Added doOn* operators in place of `call`.
