@@ -32,51 +32,50 @@ class CombineLatestStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(
       Iterable<Stream<dynamic>> streams, Function combiner) {
-    final List<StreamSubscription<dynamic>> subscriptions = streams != null
-        ? new List<StreamSubscription<dynamic>>(streams.length)
-        : null;
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('provide at least 1 stream');
+    } else if (combiner == null) {
+      throw new ArgumentError('combiner cannot be null');
+    }
+
+    final List<StreamSubscription<dynamic>> subscriptions =
+        new List<StreamSubscription<dynamic>>(streams.length);
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          if (streams == null) {
-            controller.addError(new ArgumentError('streams cannot be null'));
-          } else if (streams.isEmpty) {
-            controller.addError(new ArgumentError('provide at least 1 stream'));
-          } else if (combiner == null) {
-            controller.addError(new ArgumentError('combiner cannot be null'));
-          } else {
-            final List<dynamic> values = new List<dynamic>(streams.length);
-            final List<bool> triggered =
-                new List<bool>.generate(streams.length, (_) => false);
-            final List<bool> completedStatus =
-                new List<bool>.generate(streams.length, (_) => false);
-            bool allStreamsHaveEvents = false;
+          final List<dynamic> values = new List<dynamic>(streams.length);
+          final List<bool> triggered =
+              new List<bool>.generate(streams.length, (_) => false);
+          final List<bool> completedStatus =
+              new List<bool>.generate(streams.length, (_) => false);
+          bool allStreamsHaveEvents = false;
 
-            for (int i = 0, len = streams.length; i < len; i++) {
-              Stream<dynamic> stream = streams.elementAt(i);
+          for (int i = 0, len = streams.length; i < len; i++) {
+            Stream<dynamic> stream = streams.elementAt(i);
 
-              subscriptions[i] = stream.listen(
-                  (dynamic value) {
-                    values[i] = value;
-                    triggered[i] = true;
+            subscriptions[i] = stream.listen(
+                (dynamic value) {
+                  values[i] = value;
+                  triggered[i] = true;
 
-                    if (!allStreamsHaveEvents)
-                      allStreamsHaveEvents =
-                          triggered.reduce((bool a, bool b) => a && b);
+                  if (!allStreamsHaveEvents)
+                    allStreamsHaveEvents =
+                        triggered.reduce((bool a, bool b) => a && b);
 
-                    if (allStreamsHaveEvents)
-                      updateWithValues(combiner, values, controller);
-                  },
-                  onError: controller.addError,
-                  onDone: () {
-                    completedStatus[i] = true;
+                  if (allStreamsHaveEvents)
+                    updateWithValues(combiner, values, controller);
+                },
+                onError: controller.addError,
+                onDone: () {
+                  completedStatus[i] = true;
 
-                    if (completedStatus.reduce((bool a, bool b) => a && b))
-                      controller.close();
-                  });
-            }
+                  if (completedStatus.reduce((bool a, bool b) => a && b))
+                    controller.close();
+                });
           }
         },
         onCancel: () => Future.wait(subscriptions

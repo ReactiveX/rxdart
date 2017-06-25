@@ -30,44 +30,41 @@ class ConcatStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
+    if (streams == null) {
+      throw new ArgumentError('Streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('At least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
     StreamController<T> controller;
     StreamSubscription<T> subscription;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          if (streams == null) {
-            controller.addError(new ArgumentError('streams cannot be null'));
-          } else if (streams.isEmpty) {
-            controller.addError(
-                new ArgumentError('at least 1 stream needs to be provided'));
-          } else {
-            final int len = streams.length;
-            int index = 0;
+          final int len = streams.length;
+          int index = 0;
 
-            Future<Null> moveNext() async {
-              Stream<T> stream = streams.elementAt(index);
-              Future<dynamic> cancelFuture = subscription?.cancel();
+          Future<Null> moveNext() async {
+            Stream<T> stream = streams.elementAt(index);
+            Future<dynamic> cancelFuture = subscription?.cancel();
 
-              if (cancelFuture != null) await cancelFuture;
+            if (cancelFuture != null) await cancelFuture;
 
-              if (stream == null) {
-                controller.addError(new ArgumentError('stream at position $index is Null'));
-              } else {
-                subscription = stream.listen(controller.add,
-                    onError: controller.addError, onDone: () {
-                      index++;
+            subscription = stream.listen(controller.add,
+                onError: controller.addError, onDone: () {
+              index++;
 
-                      if (index == len)
-                        controller.close();
-                      else
-                        moveNext();
-                    });
-              }
-            }
-
-            moveNext();
+              if (index == len)
+                controller.close();
+              else
+                moveNext();
+            });
           }
+
+          moveNext();
         },
         onCancel: () => subscription.cancel());
 
