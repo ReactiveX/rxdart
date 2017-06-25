@@ -17,6 +17,10 @@ class StartWithManyStreamTransformer<T> implements StreamTransformer<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Iterable<T> startValues) {
+    if (startValues == null) {
+      throw new ArgumentError('startValues cannot be null');
+    }
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -24,17 +28,12 @@ class StartWithManyStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            if (startValues == null) {
-              controller
-                  .addError(new ArgumentError('startValues cannot be null'));
-            } else {
               startValues.forEach(controller.add);
 
               subscription = input.listen(controller.add,
                   onError: controller.addError,
                   onDone: controller.close,
                   cancelOnError: cancelOnError);
-            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
