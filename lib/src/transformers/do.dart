@@ -71,14 +71,16 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
       void onListen(),
       void onPause(Future<dynamic> resumeSignal),
       void onResume()}) {
-    assert(onCancel != null ||
-        onData != null ||
-        onDone != null ||
-        onEach != null ||
-        onError != null ||
-        onListen != null ||
-        onPause != null ||
-        onResume != null);
+    if (onCancel == null &&
+        onData == null &&
+        onDone == null &&
+        onEach == null &&
+        onError == null &&
+        onListen == null &&
+        onPause == null &&
+        onResume == null) {
+      throw new ArgumentError("Must provide at least one handler");
+    }
 
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;

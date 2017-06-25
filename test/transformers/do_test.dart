@@ -141,7 +141,7 @@ void main() {
 
     test('throws an error when no arguments are provided', () {
       expect(() => new DoStreamTransformer<int>(),
-          throwsA(new isInstanceOf<AssertionError>()));
+          throwsArgumentError);
     });
 
     test('should propagate errors', () {
