@@ -31,12 +31,7 @@ class BufferWithCountStreamTransformer<T, S extends List<T>>
   static StreamTransformer<T, S> _buildTransformer<T, S extends List<T>>(
       int count,
       [int skip]) {
-    final int skipAmount = ((skip == null) ? count : skip);
-
-    if (skipAmount <= 0 || skipAmount > count) {
-      throw new ArgumentError(
-          'skip has to be greater than zero and smaller than count');
-    }
+    assertCountAndSkip(count, skip);
 
     final int bufferKeep = count - ((skip == null) ? count : skip);
     List<T> buffer = <T>[];
@@ -53,5 +48,16 @@ class BufferWithCountStreamTransformer<T, S extends List<T>>
     }, handleDone: (EventSink<S> sink) {
       if (buffer.isNotEmpty) sink.add(buffer);
     });
+  }
+
+  static void assertCountAndSkip(int count, [int skip]) {
+    final int skipAmount = skip == null ? count : skip;
+
+    if (count == null) {
+      throw new ArgumentError('count cannot be null');
+    } else if (skipAmount <= 0 || skipAmount > count) {
+      throw new ArgumentError(
+          'skip has to be greater than zero and smaller than count');
+    }
   }
 }

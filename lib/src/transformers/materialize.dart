@@ -33,7 +33,11 @@ class MaterializeStreamTransformer<T>
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
-              controller.add(new Notification<T>.onData(value));
+              try {
+                controller.add(new Notification<T>.onData(value));
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
             }, onError: (dynamic e, dynamic s) {
               controller.add(new Notification<T>.onError(e, s));
             }, onDone: () {

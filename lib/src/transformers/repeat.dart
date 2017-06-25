@@ -18,6 +18,10 @@ class RepeatStreamTransformer<T> implements StreamTransformer<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(int repeatCount) {
+    if (repeatCount == null) {
+      throw new ArgumentError('repeatCount cannot be null');
+    }
+
     return new StreamTransformer<T, T>.fromHandlers(
         handleData: (T data, EventSink<T> sink) {
       for (int i = 0; i < repeatCount; i++) sink.add(data);

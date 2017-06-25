@@ -35,6 +35,10 @@ class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       Stream<T> fallbackStream) {
+    if (fallbackStream == null) {
+      throw new ArgumentError('fallbackStream cannot be null');
+    }
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> defaultSubscription;

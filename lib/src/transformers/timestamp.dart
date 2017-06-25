@@ -21,17 +21,17 @@ class TimestampStreamTransformer<T>
     return new StreamTransformer<T, Timestamped<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Timestamped<T>> controller;
-      StreamSubscription<T> subscription;
+      StreamSubscription<Timestamped<T>> subscription;
 
       controller = new StreamController<Timestamped<T>>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T value) {
-              controller.add(new Timestamped<T>(new DateTime.now(), value));
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
+            subscription = input
+                .map((T value) => new Timestamped<T>(new DateTime.now(), value))
+                .listen(controller.add,
+                    onError: controller.addError,
+                    onDone: controller.close,
+                    cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

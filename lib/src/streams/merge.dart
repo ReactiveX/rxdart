@@ -26,6 +26,14 @@ class MergeStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('at least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
@@ -37,7 +45,9 @@ class MergeStream<T> extends Stream<T> {
               new List<bool>.generate(streams.length, (_) => false);
 
           for (int i = 0, len = streams.length; i < len; i++) {
-            subscriptions[i] = streams.elementAt(i).listen(controller.add,
+            Stream<T> stream = streams.elementAt(i);
+
+            subscriptions[i] = stream.listen(controller.add,
                 onError: controller.addError, onDone: () {
               completedStatus[i] = true;
 

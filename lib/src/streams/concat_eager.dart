@@ -32,16 +32,26 @@ class ConcatEagerStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('at least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     final List<Completer<dynamic>> completeEvents =
-        new List<Completer<dynamic>>(streams.length);
+        streams != null ? new List<Completer<dynamic>>(streams.length) : null;
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
           for (int i = 0, len = streams.length; i < len; i++) {
+            Stream<T> stream = streams.elementAt(i);
+
             completeEvents[i] = new Completer<dynamic>();
 
             subscriptions[i] = streams.elementAt(i).listen(controller.add,

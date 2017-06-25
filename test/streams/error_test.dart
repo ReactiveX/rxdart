@@ -20,10 +20,12 @@ void main() {
   test('ErrorStream.single.subscription', () async {
     Stream<int> stream = new ErrorStream<int>(new Exception());
 
-    stream.listen((_) {}, onError: (dynamic e, dynamic s) {});
-    await expect(
-        () => stream.listen((_) {}, onError: (dynamic e, dynamic s) {}),
-        throwsA(isStateError));
+    // expect to hit onError in first subscription
+    // expect immediate error when trying another subscription
+    stream.listen(null,
+        onError:
+            expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+    await expect(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('rx.Observable.error', () async {

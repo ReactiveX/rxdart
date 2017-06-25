@@ -32,6 +32,14 @@ class CombineLatestStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(
       Iterable<Stream<dynamic>> streams, Function combiner) {
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('provide at least 1 stream');
+    } else if (combiner == null) {
+      throw new ArgumentError('combiner cannot be null');
+    }
+
     final List<StreamSubscription<dynamic>> subscriptions =
         new List<StreamSubscription<dynamic>>(streams.length);
     StreamController<T> controller;

@@ -57,6 +57,23 @@ void main() {
           ]));
     });
 
+    test(
+        "sends an error to the subscription if an error occurs in the equals or hashmap methods",
+        () async {
+      Stream<_TestObject> observable =
+          new Observable<_TestObject>.fromIterable(<_TestObject>[
+        new _TestObject("a"),
+        new _TestObject("b"),
+        new _TestObject("c")
+      ]).distinctUnique(
+              equals: (_TestObject a, _TestObject b) => a.key == b.key,
+              hashCode: (_TestObject o) =>
+                  throw new Exception('Catch me if you can!'));
+
+      observable.listen(null,
+          onError: expectAsync2((e, s) => expect(e, isException), count: 3));
+    });
+
     test("is reusable", () async {
       final List<_TestObject> data = <_TestObject>[
         new _TestObject("a"),

@@ -55,9 +55,9 @@ void main() {
         new Observable<dynamic>(new ErrorStream<num>(new Exception()))
             .ofType(kNum);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
   test('rx.Observable.ofType.pause.resume', () async {

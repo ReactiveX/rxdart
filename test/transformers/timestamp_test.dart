@@ -63,9 +63,9 @@ void main() {
         new ErrorStream<int>(new Exception())
             .transform(new TimestampStreamTransformer<int>());
 
-    streamWithError.listen(null, onError: (dynamic e, dynamic s) {
+    streamWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
   });
 
   test('timestampTransformer.pause.resume', () async {

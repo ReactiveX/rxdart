@@ -21,6 +21,10 @@ class SkipUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T, S>(
       Stream<S> otherStream) {
+    if (otherStream == null) {
+      throw new ArgumentError('otherStream cannot be null');
+    }
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;

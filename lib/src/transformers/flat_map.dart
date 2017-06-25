@@ -41,22 +41,26 @@ class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
           onListen: () {
             subscription = input.listen(
                 (T value) {
-                  Stream<S> otherStream = mapper(value);
+                  try {
+                    Stream<S> otherStream = mapper(value);
 
-                  hasMainEvent = true;
+                    hasMainEvent = true;
 
-                  streams.add(otherStream);
+                    streams.add(otherStream);
 
-                  otherSubscription = otherStream.listen(controller.add,
-                      onError: controller.addError, onDone: () {
-                    streams.remove(otherStream);
-                    subscriptions.remove(otherSubscription);
+                    otherSubscription = otherStream.listen(controller.add,
+                        onError: controller.addError, onDone: () async {
+                      streams.remove(otherStream);
+                      subscriptions.remove(otherSubscription);
 
-                    if (closeAfterNextEvent && streams.isEmpty)
-                      controller.close();
-                  });
+                      if (closeAfterNextEvent && streams.isEmpty)
+                        await controller.close();
+                    });
 
-                  subscriptions.add(otherSubscription);
+                    subscriptions.add(otherSubscription);
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 },
                 onError: controller.addError,
                 onDone: () {

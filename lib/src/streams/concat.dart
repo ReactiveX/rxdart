@@ -30,6 +30,14 @@ class ConcatStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
+    if (streams == null) {
+      throw new ArgumentError('Streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('At least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
     StreamController<T> controller;
     StreamSubscription<T> subscription;
 
@@ -39,9 +47,11 @@ class ConcatStream<T> extends Stream<T> {
           final int len = streams.length;
           int index = 0;
 
-          void moveNext() {
+          Future<Null> moveNext() async {
             Stream<T> stream = streams.elementAt(index);
-            subscription?.cancel();
+            Future<dynamic> cancelFuture = subscription?.cancel();
+
+            if (cancelFuture != null) await cancelFuture;
 
             subscription = stream.listen(controller.add,
                 onError: controller.addError, onDone: () {

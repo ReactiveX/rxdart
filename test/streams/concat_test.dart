@@ -95,7 +95,7 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.concat.error.shouldThrow', () async {
+  test('rx.Observable.concat.error.shouldThrowA', () async {
     Stream<num> observableWithError = new Observable<num>.concat(
         _getStreams()..add(new ErrorStream<num>(new Exception())));
 
@@ -103,5 +103,24 @@ void main() {
         onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
     }));
+  });
+
+  test('rx.Observable.concat.error.shouldThrowB', () {
+    expect(() => new Observable<num>.concat(null), throwsArgumentError);
+  });
+
+  test('rx.Observable.concat.error.shouldThrowC', () {
+    expect(() => new Observable<num>.concat(<Stream<Null>>[]),
+        throwsArgumentError);
+  });
+
+  test('rx.Observable.concat.error.shouldThrowD', () {
+    expect(
+        () => <Stream<num>>[
+              new Observable<num>.concat(
+                  <Stream<num>>[new Observable<num>.just(1), null]),
+              null
+            ],
+        throwsArgumentError);
   });
 }

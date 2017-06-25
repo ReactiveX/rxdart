@@ -36,6 +36,14 @@ class ZipStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(
       Iterable<Stream<dynamic>> streams, Function zipper) {
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('at least 1 stream needs to be provided');
+    } else if (streams.any((Stream<dynamic> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
     StreamController<T> controller;
     final List<bool> pausedStates =
         new List<bool>.generate(streams.length, (_) => false, growable: false);
@@ -45,41 +53,47 @@ class ZipStream<T> extends Stream<T> {
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          final List<dynamic> values = new List<dynamic>(streams.length);
-          final List<bool> completedStatus =
-              new List<bool>.generate(streams.length, (_) => false);
+          try {
+            final List<dynamic> values = new List<dynamic>(streams.length);
+            final List<bool> completedStatus =
+                new List<bool>.generate(streams.length, (_) => false);
 
-          void doUpdate(int index, dynamic value) {
-            values[index] = value;
-            pausedStates[index] = true;
+            void doUpdate(int index, dynamic value) {
+              values[index] = value;
+              pausedStates[index] = true;
 
-            // subscriptions[i] might be null if doUpdate triggers
-            // instantly (i.e. BehaviorSubject)
-            if (subscriptions[index] != null) subscriptions[index].pause();
+              // subscriptions[i] might be null if doUpdate triggers
+              // instantly (i.e. BehaviorSubject)
+              if (subscriptions[index] != null) subscriptions[index].pause();
 
-            if (_areAllPaused(pausedStates)) {
-              updateWithValues(zipper, values, controller);
+              if (_areAllPaused(pausedStates)) {
+                updateWithValues(zipper, values, controller);
 
-              _resumeAll(subscriptions, pausedStates);
+                _resumeAll(subscriptions, pausedStates);
+              }
             }
-          }
 
-          void markDone(int i) {
-            completedStatus[i] = true;
+            void markDone(int i) {
+              completedStatus[i] = true;
 
-            if (completedStatus.reduce((bool a, bool b) => a && b))
-              controller.close();
-          }
+              if (completedStatus.reduce((bool a, bool b) => a && b))
+                controller.close();
+            }
 
-          for (int i = 0, len = streams.length; i < len; i++) {
-            subscriptions[i] = streams.elementAt(i).listen(
-                (dynamic value) => doUpdate(i, value),
-                onError: controller.addError,
-                onDone: () => markDone(i));
+            for (int i = 0, len = streams.length; i < len; i++) {
+              Stream<T> stream = streams.elementAt(i);
 
-            // updating the above subscription if doUpdate triggered too soon
-            if (pausedStates[i] && !subscriptions[i].isPaused)
-              subscriptions[i].pause();
+              subscriptions[i] = stream.listen(
+                  (dynamic value) => doUpdate(i, value),
+                  onError: controller.addError,
+                  onDone: () => markDone(i));
+
+              // updating the above subscription if doUpdate triggered too soon
+              if (pausedStates[i] && !subscriptions[i].isPaused)
+                subscriptions[i].pause();
+            }
+          } catch (e, s) {
+            controller.addError(e, s);
           }
         },
         onCancel: () => Future.wait(subscriptions

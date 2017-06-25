@@ -143,5 +143,65 @@ void main() {
       expect(() => new DoStreamTransformer<int>(),
           throwsA(new isInstanceOf<AssertionError>()));
     });
+
+    test('should propagate errors', () {
+      new Observable<int>.just(1)
+          .doOnListen(
+              () => throw new Exception('catch me if you can! doOnListen'))
+          .listen(null,
+              onError: expectAsync2((e, s) => expect(e, isException)));
+
+      new Observable<int>.just(1)
+          .doOnData((_) => throw new Exception('catch me if you can! doOnData'))
+          .listen(null,
+              onError: expectAsync2((e, s) => expect(e, isException)));
+
+      new Observable<int>.error(new Exception('oh noes!'))
+          .doOnError(
+              (_, __) => throw new Exception('catch me if you can! doOnError'))
+          .listen(null,
+              onError:
+                  expectAsync2((e, s) => expect(e, isException), count: 2));
+
+      // a cancel() call may occur after the controller is already closed
+      // in that case, the error is forwarded to the current [Zone]
+      runZoned(() {
+        new Observable<int>.just(1)
+            .doOnCancel(() =>
+                throw new Exception('catch me if you can! doOnCancel-zoned'))
+            .listen(null);
+
+        new Observable<int>.just(1)
+            .doOnCancel(
+                () => throw new Exception('catch me if you can! doOnCancel'))
+            .listen(null)
+              ..cancel();
+      }, onError: expectAsync2((e, s) => expect(e, isException)));
+
+      new Observable<int>.just(1)
+          .doOnDone(() => throw new Exception('catch me if you can! doOnDone'))
+          .listen(null,
+              onError: expectAsync2((e, s) => expect(e, isException)));
+
+      new Observable<int>.just(1)
+          .doOnEach((_) => throw new Exception('catch me if you can! doOnEach'))
+          .listen(null,
+              onError:
+                  expectAsync2((e, s) => expect(e, isException), count: 2));
+
+      new Observable<int>.just(1)
+          .doOnPause(
+              (_) => throw new Exception('catch me if you can! doOnPause'))
+          .listen(null, onError: expectAsync2((e, s) => expect(e, isException)))
+            ..pause()
+            ..resume();
+
+      new Observable<int>.just(1)
+          .doOnResume(
+              () => throw new Exception('catch me if you can! doOnResume'))
+          .listen(null, onError: expectAsync2((e, s) => expect(e, isException)))
+            ..pause()
+            ..resume();
+    });
   });
 }

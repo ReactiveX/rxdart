@@ -47,14 +47,20 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.startWithMany.error.shouldThrow', () async {
+  test('rx.Observable.startWithMany.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .startWithMany(const <int>[5, 6]);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.startWithMany.error.shouldThrowA', () {
+    expect(() => new Observable<int>.just(1).startWithMany(null),
+        throwsArgumentError);
   });
 
   test('rx.Observable.startWithMany.pause.resume', () async {

@@ -278,15 +278,49 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.combineLatest.error.shouldThrow.A', () async {
+  test('rx.Observable.combineLatest.error.shouldThrowA', () async {
     Stream<String> observableWithError = Observable.combineLatest4(
-        streamA, streamB, streamC, new ErrorStream<num>(new Exception()),
-        (int a_value, int b_value, bool c_value, _) {
+        new Observable<num>.just(1),
+        new Observable<num>.just(1),
+        new Observable<num>.just(1),
+        new ErrorStream<num>(new Exception()),
+        (num a_value, num b_value, num c_value, _) {
       return '$a_value $b_value $c_value $_';
     });
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
+    }));
+  });
+
+  test('rx.Observable.combineLatest.error.shouldThrowB', () async {
+    Stream<String> observableWithError = Observable.combineLatest3(
+        new Observable<num>.just(1),
+        new Observable<num>.just(1),
+        new Observable<num>.just(1), (num a_value, num b_value, num c_value) {
+      throw new Exception('oh noes!');
     });
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isException);
+    }));
+  });
+
+  test('rx.Observable.combineLatest.error.shouldThrowC', () {
+    expect(
+        () => Observable.combineLatest3(new Observable<num>.just(1),
+            new Observable<num>.just(1), new Observable<num>.just(1), null),
+        throwsArgumentError);
+  });
+
+  test('rx.Observable.combineLatest.error.shouldThrowD', () {
+    expect(() => new CombineLatestStream<num>(null, null), throwsArgumentError);
+  });
+
+  test('rx.Observable.combineLatest.error.shouldThrowE', () {
+    expect(() => new CombineLatestStream<num>(<Stream<num>>[], null),
+        throwsArgumentError);
   });
 }

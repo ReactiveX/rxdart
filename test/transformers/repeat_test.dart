@@ -32,7 +32,8 @@ void main() {
   });
 
   test('rx.Observable.repeat.reusable', () async {
-    final RepeatStreamTransformer<int> transformer = new RepeatStreamTransformer<int>(3);
+    final RepeatStreamTransformer<int> transformer =
+        new RepeatStreamTransformer<int>(3);
     const List<int> expectedOutput = const <int>[
       1,
       1,
@@ -52,14 +53,14 @@ void main() {
     new Observable<int>(_getStream())
         .transform(transformer)
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[countA++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[countA++], result);
+        }, count: expectedOutput.length));
 
     new Observable<int>(_getStream())
         .transform(transformer)
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[countB++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[countB++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.repeat.asBroadcastStream', () async {
@@ -73,12 +74,17 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.repeat.error.shouldThrow', () async {
+  test('rx.Observable.repeat.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception())).repeat(3);
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
-      expect(e, isException);
-    });
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+          expect(e, isException);
+        }, count: 1));
+  });
+
+  test('rx.Observable.repeat.error.shouldThrowB', () {
+    expect(() => new Observable<num>.just(1).repeat(null), throwsArgumentError);
   });
 }

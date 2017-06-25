@@ -53,5 +53,19 @@ void main() {
       subscription.pause();
       subscription.resume();
     });
+
+    test('throws when cast fails', () async {
+      new Observable<int>.just(1)
+          .cast(const TypeToken<String>())
+          .listen(null, onError: expectAsync2((e, s) => expect(e, isCastError)));
+    });
   });
+}
+
+/// A matcher for CastErrors.
+const Matcher isCastError = const _CastError();
+
+class _CastError extends TypeMatcher {
+  const _CastError() : super("CastError");
+  bool matches(item, Map matchState) => item is CastError;
 }

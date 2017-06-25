@@ -26,6 +26,12 @@ class AmbStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('provide at least 1 stream');
+    }
+
     final List<StreamSubscription<T>> subscriptions =
         new List<StreamSubscription<T>>(streams.length);
     bool isDisambiguated = false;
@@ -36,17 +42,21 @@ class AmbStream<T> extends Stream<T> {
         sync: true,
         onListen: () {
           void doUpdate(int i, T value) {
-            if (!isDisambiguated)
-              for (int k = 0, len = subscriptions.length; k < len; k++) {
-                if (k != i) {
-                  subscriptions[k].cancel();
-                  subscriptions[k] = null;
+            try {
+              if (!isDisambiguated)
+                for (int k = 0, len = subscriptions.length; k < len; k++) {
+                  if (k != i) {
+                    subscriptions[k].cancel();
+                    subscriptions[k] = null;
+                  }
                 }
-              }
 
-            isDisambiguated = true;
+              isDisambiguated = true;
 
-            controller.add(value);
+              controller.add(value);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
           }
 
           for (int i = 0, len = streams.length; i < len; i++) {

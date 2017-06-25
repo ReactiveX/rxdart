@@ -36,8 +36,12 @@ class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
 
                   stopwatch.stop();
 
-                  controller.add(new TimeInterval<T>(
-                      value, new Duration(microseconds: ems)));
+                  try {
+                    controller.add(new TimeInterval<T>(
+                        value, new Duration(microseconds: ems)));
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
 
                   stopwatch = new Stopwatch()..start();
                 },

@@ -88,36 +88,64 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
           sync: true,
           onListen: () {
             if (onListen != null) {
-              onListen();
+              try {
+                onListen();
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
             }
 
             subscription = input.listen((T value) {
               if (onData != null) {
-                onData(value);
+                try {
+                  onData(value);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
               }
 
               if (onEach != null) {
-                onEach(new Notification<T>.onData(value));
+                try {
+                  onEach(new Notification<T>.onData(value));
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
               }
 
               controller.add(value);
             }, onError: (dynamic e, dynamic s) {
               if (onError != null) {
-                onError(e, s);
+                try {
+                  onError(e, s);
+                } catch (e2, s2) {
+                  controller.addError(e2, s2);
+                }
               }
 
               if (onEach != null) {
-                onEach(new Notification<T>.onError(e, s));
+                try {
+                  onEach(new Notification<T>.onError(e, s));
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
               }
 
               controller.addError(e, s);
             }, onDone: () {
               if (onDone != null) {
-                onDone();
+                try {
+                  onDone();
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
               }
 
               if (onEach != null) {
-                onEach(new Notification<T>.onDone());
+                try {
+                  onEach(new Notification<T>.onDone());
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
               }
 
               controller.close();
@@ -125,21 +153,37 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
           },
           onPause: ([Future<dynamic> resumeSignal]) {
             if (onPause != null) {
-              onPause(resumeSignal);
+              try {
+                onPause(resumeSignal);
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
             }
 
             subscription.pause(resumeSignal);
           },
           onResume: () {
             if (onResume != null) {
-              onResume();
+              try {
+                onResume();
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
             }
 
             subscription.resume();
           },
           onCancel: () {
             if (onCancel != null) {
-              onCancel();
+              try {
+                onCancel();
+              } catch (e, s) {
+                if (!controller.isClosed) {
+                  controller.addError(e, s);
+                } else {
+                  Zone.current.handleUncaughtError(e, s);
+                }
+              }
             }
 
             return subscription.cancel();

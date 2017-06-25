@@ -39,17 +39,26 @@ class FlatMapLatestStreamTransformer<T, S> implements StreamTransformer<T, S> {
           sync: true,
           onListen: () {
             subscription = input.listen(
-                (T value) {
-                  otherSubscription?.cancel();
+                (T value) async {
+                  try {
+                    final Future<dynamic> closeFuture =
+                        otherSubscription?.cancel();
 
-                  hasMainEvent = true;
+                    if (closeFuture != null) {
+                      await closeFuture;
+                    }
 
-                  otherSubscription = mapper(value).listen(controller.add,
-                      onError: controller.addError, onDone: () {
-                    rightClosed = true;
+                    hasMainEvent = true;
 
-                    if (leftClosed) controller.close();
-                  });
+                    otherSubscription = mapper(value).listen(controller.add,
+                        onError: controller.addError, onDone: () {
+                      rightClosed = true;
+
+                      if (leftClosed) controller.close();
+                    });
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 },
                 onError: controller.addError,
                 onDone: () {

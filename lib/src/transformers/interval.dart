@@ -25,10 +25,17 @@ class IntervalStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen(
-                (T value) => subscription.pause(
-                    new Future<T>.delayed(duration, () => value)
-                        .then(controller.add)),
+            subscription = input.listen((T value) {
+              try {
+                final Completer<T> completer = new Completer<T>();
+
+                new Timer(duration, () => completer.complete(value));
+
+                subscription.pause(completer.future.then(controller.add));
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            },
                 onError: controller.addError,
                 onDone: controller.close,
                 cancelOnError: cancelOnError);

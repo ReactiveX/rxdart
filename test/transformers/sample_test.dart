@@ -48,14 +48,25 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.sample.error.shouldThrow', () async {
+  test('rx.Observable.sample.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .sample(_getSampleStream());
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  test('rx.Observable.sample.error.shouldThrowB', () async {
+    Stream<num> observableWithError = new Observable<num>.just(1)
+        .sample(new ErrorStream<num>(new Exception('Catch me if you can!')));
+
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
+      expect(e, isException);
+    }));
   });
 
   test('rx.Observable.sample.pause.resume', () async {

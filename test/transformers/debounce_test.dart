@@ -54,14 +54,29 @@ void main() {
     await expect(true, true);
   });
 
-  test('rx.Observable.debounce.error.shouldThrow', () async {
+  test('rx.Observable.debounce.error.shouldThrowA', () async {
     Stream<num> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .debounce(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null, onError: (dynamic e, dynamic s) {
+    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
-    });
+    }));
+  });
+
+  /// Should also throw if the current [Zone] is unable to install a [Timer]
+  test('rx.Observable.debounce.error.shouldThrowB', () async {
+    runZoned(() {
+      Stream<num> observableWithError = new Observable<int>.just(1)
+          .debounce(const Duration(milliseconds: 200));
+
+      observableWithError.listen(null,
+          onError: expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+    },
+        zoneSpecification: new ZoneSpecification(
+            createTimer: (Zone self, ZoneDelegate parent, Zone zone,
+                    Duration duration, void f()) =>
+                throw new Exception('Zone createTimer error')));
   });
 
   test('rx.Observable.debounce.pause.resume', () async {
