@@ -110,25 +110,16 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferWithCount.skip.shouldThrowB', () async {
-    Stream<Stream<int>> observableWithError =
-        new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .windowWithCount(2, 100);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isArgumentError);
-        }, count: 4));
+  test('rx.Observable.bufferWithCount.skip.shouldThrowB', () {
+    expect(
+        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .windowWithCount(2, 100),
+        throwsArgumentError);
   });
 
-  test('rx.Observable.windowWithCount.error.shouldThrowC', () async {
-    Stream<Stream<num>> observableWithError =
-        new Observable<num>.just(1).windowWithCount(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.windowWithCount.error.shouldThrowC', () {
+    expect(() => new Observable<num>.just(1).windowWithCount(null),
+        throwsArgumentError);
   });
 
   test('rx.Observable.windowWithCount.pause.resume', () async {

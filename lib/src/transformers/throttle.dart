@@ -18,6 +18,10 @@ class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
+    if (duration == null) {
+      throw new ArgumentError('duration cannot be null');
+    }
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -27,19 +31,13 @@ class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
       bool _resetTimer() {
         if (_timer != null && _timer.isActive) return false;
 
-        if (duration == null) {
-          controller.addError(new ArgumentError('duration cannot be null'));
-
-          return false;
-        } else {
-          try {
-            _timer = Zone.current.createTimer(duration, () {
-              if (_closeAfterNextEvent && !controller.isClosed)
-                controller.close();
-            });
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
+        try {
+          _timer = new Timer(duration, () {
+            if (_closeAfterNextEvent && !controller.isClosed)
+              controller.close();
+          });
+        } catch (e, s) {
+          controller.addError(e, s);
         }
 
         return true;

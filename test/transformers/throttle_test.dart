@@ -70,14 +70,9 @@ void main() {
     }));
   });
 
-  test('rx.Observable.throttle.error.shouldThrowB', () async {
-    Stream<num> observableWithError =
-        new Observable<num>.just(1).throttle(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.throttle.error.shouldThrowB', () {
+    expect(
+        () => new Observable<num>.just(1).throttle(null), throwsArgumentError);
   });
 
   test('rx.Observable.throttle.error.shouldThrowC', () async {

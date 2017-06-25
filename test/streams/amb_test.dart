@@ -54,20 +54,12 @@ void main() {
     await expect(observable.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.amb.shouldThrowA', () async {
-    Stream<num> observable = new Observable<num>.amb(null);
-
-    // listen twice on same stream
-    observable.listen(null,
-        onError: expectAsync2((e, s) => expect(e, isArgumentError)));
+  test('rx.Observable.amb.shouldThrowA', () {
+    expect(() => new Observable<num>.amb(null), throwsArgumentError);
   });
 
-  test('rx.Observable.amb.shouldThrowB', () async {
-    Stream<num> observable = new Observable<num>.amb(<Stream<num>>[]);
-
-    // listen twice on same stream
-    observable.listen(null,
-        onError: expectAsync2((e, s) => expect(e, isArgumentError)));
+  test('rx.Observable.amb.shouldThrowB', () {
+    expect(() => new Observable<num>.amb(<Stream<num>>[]), throwsArgumentError);
   });
 
   test('rx.Observable.amb.shouldThrowC', () async {

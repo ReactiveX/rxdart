@@ -62,14 +62,9 @@ void main() {
     }));
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrowB', () async {
-    Stream<num> observableWithError =
-        new Observable<num>.empty().switchIfEmpty(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.switchIfEmpty.error.shouldThrowB', () {
+    expect(() => new Observable<num>.empty().switchIfEmpty(null),
+        throwsArgumentError);
   });
 
   test('rx.Observable.switchIfEmpty.pause.resume', () async {

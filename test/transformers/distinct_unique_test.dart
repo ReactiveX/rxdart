@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   group("DistinctUniqueStreamTransformer", () {
-    test("rx.Observable.distinctUnique.withoutEqualsAndHash", () async {
+    test("works with the equals and hascode of the class", () async {
       Stream<_TestObject> observable =
           new Observable<_TestObject>.fromIterable(<_TestObject>[
         new _TestObject("a"),
@@ -30,7 +30,7 @@ void main() {
           ]));
     });
 
-    test("rx.Observable.distinctUnique.withEqualsAndHash", () async {
+    test("works with a provided equals and hashcode", () async {
       Stream<_TestObject> observable =
           new Observable<_TestObject>.fromIterable(<_TestObject>[
         new _TestObject("a"),
@@ -57,7 +57,9 @@ void main() {
           ]));
     });
 
-    test("rx.Observable.distinctUnique.error.shouldThrow", () async {
+    test(
+        "sends an error to the subscription if an error occurs in the equals or hashmap methods",
+        () async {
       Stream<_TestObject> observable =
           new Observable<_TestObject>.fromIterable(<_TestObject>[
         new _TestObject("a"),
@@ -72,7 +74,7 @@ void main() {
           onError: expectAsync2((e, s) => expect(e, isException), count: 3));
     });
 
-    test("rx.Observable.distinctUnique.isReusable", () async {
+    test("is reusable", () async {
       final List<_TestObject> data = <_TestObject>[
         new _TestObject("a"),
         new _TestObject("a"),

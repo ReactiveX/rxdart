@@ -35,6 +35,10 @@ class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       Stream<T> fallbackStream) {
+    if (fallbackStream == null) {
+      throw new ArgumentError('fallbackStream cannot be null');
+    }
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> defaultSubscription;
@@ -52,15 +56,12 @@ class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
                 onError: controller.addError,
                 onDone: () {
                   if (!hasEvent) {
-                    if (fallbackStream == null) {
-                      controller.addError(
-                          new ArgumentError('fallbackStream cannot be null'));
-                    } else {
-                      switchSubscription = fallbackStream.listen(controller.add,
-                          onError: controller.addError,
-                          onDone: controller.close,
-                          cancelOnError: cancelOnError);
-                    }
+                    switchSubscription = fallbackStream.listen((T value) {
+                      controller.add(value);
+                    },
+                        onError: controller.addError,
+                        onDone: controller.close,
+                        cancelOnError: cancelOnError);
                   }
                 },
                 cancelOnError: cancelOnError);

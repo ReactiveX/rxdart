@@ -84,12 +84,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.repeat.error.shouldThrowB', () async {
-    Stream<num> observableWithError = new Observable<num>.just(1).repeat(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.repeat.error.shouldThrowB', () {
+    expect(() => new Observable<num>.just(1).repeat(null), throwsArgumentError);
   });
 }

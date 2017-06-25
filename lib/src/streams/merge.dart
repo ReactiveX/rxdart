@@ -26,39 +26,34 @@ class MergeStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    final List<StreamSubscription<T>> subscriptions = streams != null
-        ? new List<StreamSubscription<T>>(streams.length)
-        : null;
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('at least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
+    final List<StreamSubscription<T>> subscriptions =
+        new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          if (streams == null) {
-            controller.addError(new ArgumentError('streams cannot be null'));
-          } else if (streams.isEmpty) {
-            controller.addError(
-                new ArgumentError('at least 1 stream needs to be provided'));
-          } else {
-            final List<bool> completedStatus =
-                new List<bool>.generate(streams.length, (_) => false);
+          final List<bool> completedStatus =
+              new List<bool>.generate(streams.length, (_) => false);
 
-            for (int i = 0, len = streams.length; i < len; i++) {
-              Stream<T> stream = streams.elementAt(i);
+          for (int i = 0, len = streams.length; i < len; i++) {
+            Stream<T> stream = streams.elementAt(i);
 
-              if (stream == null) {
-                controller.addError(
-                    new ArgumentError('stream at position $i is Null'));
-              } else {
-                subscriptions[i] = stream.listen(controller.add,
-                    onError: controller.addError, onDone: () {
-                  completedStatus[i] = true;
+            subscriptions[i] = stream.listen(controller.add,
+                onError: controller.addError, onDone: () {
+              completedStatus[i] = true;
 
-                  if (completedStatus.reduce((bool a, bool b) => a && b))
-                    controller.close();
-                });
-              }
-            }
+              if (completedStatus.reduce((bool a, bool b) => a && b))
+                controller.close();
+            });
           }
         },
         onCancel: () => Future.wait(subscriptions

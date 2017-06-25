@@ -27,6 +27,8 @@ class WindowWithCountStreamTransformer<T, S extends Stream<T>>
   static StreamTransformer<T, S> _buildTransformer<T, S extends Stream<T>>(
       int count,
       [int skip]) {
+    BufferWithCountStreamTransformer.assertCountAndSkip(count, skip);
+
     return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<Iterable<T>> subscription;

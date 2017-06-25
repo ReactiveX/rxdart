@@ -290,16 +290,23 @@ void main() {
     }));
   });
 
-  test('rx.Observable.zip.error.shouldThrowB', () async {
-    Stream<int> observableWithError = Observable.zip2(
-        new Observable<int>.just(1),
-        null,
-            (int a, _) => null);
+  test('rx.Observable.zip.error.shouldThrowB', () {
+    expect(
+        () => Observable.zip2(
+            new Observable<int>.just(1), null, (int a, _) => null),
+        throwsArgumentError);
+  });
 
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isArgumentError);
-        }));
+  test('rx.Observable.zip.error.shouldThrowC', () {
+    expect(
+        () => new ZipStream<num>(null, () {}),
+        throwsArgumentError);
+  });
+
+  test('rx.Observable.zip.error.shouldThrowD', () {
+    expect(
+        () => new ZipStream<num>(<Stream<dynamic>>[], () {}),
+        throwsArgumentError);
   });
 
   test('rx.Observable.zip.pause.resume', () async {

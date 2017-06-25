@@ -29,7 +29,7 @@ class IntervalStreamTransformer<T> implements StreamTransformer<T, T> {
               try {
                 final Completer<T> completer = new Completer<T>();
 
-                Zone.current.createTimer(duration, () => completer.complete(value));
+                new Timer(duration, () => completer.complete(value));
 
                 subscription.pause(completer.future.then(controller.add));
               } catch (e, s) {

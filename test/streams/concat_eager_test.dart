@@ -117,32 +117,19 @@ void main() {
     }));
   });
 
-  test('rx.Observable.concatEager.error.shouldThrowB', () async {
-    Stream<num> observableWithError = new Observable<num>.concatEager(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.concatEager.error.shouldThrowB', () {
+    expect(() => new Observable<num>.concatEager(null), throwsArgumentError);
   });
 
-  test('rx.Observable.concatEager.error.shouldThrowC', () async {
-    Stream<num> observableWithError =
-        new Observable<num>.concatEager(<Stream<num>>[]);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.concatEager.error.shouldThrowC', () {
+    expect(() => new Observable<num>.concatEager(<Stream<num>>[]),
+        throwsArgumentError);
   });
 
-  test('rx.Observable.concatEager.error.shouldThrowD', () async {
-    Stream<num> observableWithError = new Observable<num>.concatEager(
-        <Stream<num>>[new Observable<num>.just(1), null]);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.concatEager.error.shouldThrowD', () {
+    expect(
+        () => new Observable<num>.concatEager(
+            <Stream<num>>[new Observable<num>.just(1), null]),
+        throwsArgumentError);
   });
 }

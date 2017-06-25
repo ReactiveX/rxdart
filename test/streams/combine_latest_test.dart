@@ -308,16 +308,19 @@ void main() {
     }));
   });
 
-  test('rx.Observable.combineLatest.error.shouldThrowC', () async {
-    Stream<String> observableWithError = Observable.combineLatest3(
-        new Observable<num>.just(1),
-        new Observable<num>.just(1),
-        new Observable<num>.just(1),
-        null);
+  test('rx.Observable.combineLatest.error.shouldThrowC', () {
+    expect(
+        () => Observable.combineLatest3(new Observable<num>.just(1),
+            new Observable<num>.just(1), new Observable<num>.just(1), null),
+        throwsArgumentError);
+  });
 
-    observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
-      expect(e, isArgumentError);
-    }));
+  test('rx.Observable.combineLatest.error.shouldThrowD', () {
+    expect(() => new CombineLatestStream<num>(null, null), throwsArgumentError);
+  });
+
+  test('rx.Observable.combineLatest.error.shouldThrowE', () {
+    expect(() => new CombineLatestStream<num>(<Stream<num>>[], null),
+        throwsArgumentError);
   });
 }

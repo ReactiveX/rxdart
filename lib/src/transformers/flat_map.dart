@@ -63,12 +63,11 @@ class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
                   }
                 },
                 onError: controller.addError,
-                onDone: () async {
-                  if (!hasMainEvent) {
-                    if (!controller.isClosed) await controller.close();
-                  } else {
+                onDone: () {
+                  if (!hasMainEvent)
+                    controller.close();
+                  else
                     closeAfterNextEvent = true;
-                  }
                 },
                 cancelOnError: cancelOnError);
           },

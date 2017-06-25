@@ -32,9 +32,16 @@ class ConcatEagerStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    final List<StreamSubscription<T>> subscriptions = streams != null
-        ? new List<StreamSubscription<T>>(streams.length)
-        : null;
+    if (streams == null) {
+      throw new ArgumentError('streams cannot be null');
+    } else if (streams.isEmpty) {
+      throw new ArgumentError('at least 1 stream needs to be provided');
+    } else if (streams.any((Stream<T> stream) => stream == null)) {
+      throw new ArgumentError('One of the provided streams is null');
+    }
+
+    final List<StreamSubscription<T>> subscriptions =
+        new List<StreamSubscription<T>>(streams.length);
     final List<Completer<dynamic>> completeEvents =
         streams != null ? new List<Completer<dynamic>>(streams.length) : null;
     StreamController<T> controller;
@@ -42,31 +49,19 @@ class ConcatEagerStream<T> extends Stream<T> {
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          if (streams == null) {
-            controller.addError(new ArgumentError('streams cannot be null'));
-          } else if (streams.isEmpty) {
-            controller.addError(
-                new ArgumentError('at least 1 stream needs to be provided'));
-          } else {
-            for (int i = 0, len = streams.length; i < len; i++) {
-              Stream<T> stream = streams.elementAt(i);
+          for (int i = 0, len = streams.length; i < len; i++) {
+            Stream<T> stream = streams.elementAt(i);
 
-              if (stream == null) {
-                controller.addError(
-                    new ArgumentError('stream at position $i is Null'));
-              } else {
-                completeEvents[i] = new Completer<dynamic>();
+            completeEvents[i] = new Completer<dynamic>();
 
-                subscriptions[i] = streams.elementAt(i).listen(controller.add,
-                    onError: controller.addError, onDone: () {
-                  completeEvents[i].complete();
+            subscriptions[i] = streams.elementAt(i).listen(controller.add,
+                onError: controller.addError, onDone: () {
+              completeEvents[i].complete();
 
-                  if (i == len - 1) controller.close();
-                });
+              if (i == len - 1) controller.close();
+            });
 
-                if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
-              }
-            }
+            if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
           }
         },
         onCancel: () => Future.wait(subscriptions
