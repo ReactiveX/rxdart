@@ -29,28 +29,18 @@ void main() {
     final IntervalStreamTransformer<int> transformer =
         new IntervalStreamTransformer<int>(const Duration(milliseconds: 1));
     const List<int> expectedOutput = const <int>[0, 1, 2, 3, 4];
-    int countA = 0, countB = 0, lastIntervalA = -1, lastIntervalB = -1;
+    int countA = 0, countB = 0;
     Stopwatch stopwatch = new Stopwatch()..start();
 
     new Observable<int>(_getStream()).transform(transformer).listen(
         expectAsync1((int result) {
           expect(expectedOutput[countA++], result);
-
-          if (lastIntervalA != -1)
-            expect(stopwatch.elapsedMilliseconds - lastIntervalA >= 1, true);
-
-          lastIntervalA = stopwatch.elapsedMilliseconds;
         }, count: expectedOutput.length),
         onDone: stopwatch.stop);
 
     new Observable<int>(_getStream()).transform(transformer).listen(
         expectAsync1((int result) {
           expect(expectedOutput[countB++], result);
-
-          if (lastIntervalB != -1)
-            expect(stopwatch.elapsedMilliseconds - lastIntervalB >= 1, true);
-
-          lastIntervalB = stopwatch.elapsedMilliseconds;
         }, count: expectedOutput.length),
         onDone: stopwatch.stop);
   });
