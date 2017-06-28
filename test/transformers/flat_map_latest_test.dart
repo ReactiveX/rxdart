@@ -76,6 +76,36 @@ void main() {
     await expect(true, true);
   });
 
+
+  test('rx.Observable.flatMapLatest.error.shouldThrow12d122', () async {
+    StateError error;
+
+    try {
+      final StreamController<int> streamController =
+      new StreamController<int>(sync: true);
+      final Observable<int> observable =
+      new Observable<int>(streamController.stream).flatMapLatest((int i) =>
+      new Observable<int>.timer(1, new Duration(milliseconds: 100)));
+
+      scheduleMicrotask(() {
+        streamController.add(1);
+        streamController.add(2);
+      });
+
+      scheduleMicrotask(() {
+        streamController.close();
+      });
+
+      var listen = observable.listen(null);
+      listen.cancel();
+      await new Future.delayed(new Duration(milliseconds: 200));
+    } catch(e, s) {
+      error = e;
+    } finally {
+      await expect(error, isStateError);
+    }
+  });
+
   test('rx.Observable.flatMapLatest.error.shouldThrowA', () async {
     Stream<int> observableWithError =
         new Observable<int>(new ErrorStream<int>(new Exception()))

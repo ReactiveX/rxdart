@@ -1,3 +1,7 @@
+## 0.13.1
+
+* Fix error with FlatMapLatest where it was not properly cancelled in some scenarios
+
 ## 0.13.0
 
 * Remove `call` operator / `StreamTransformer` entirely
