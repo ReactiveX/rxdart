@@ -47,11 +47,9 @@ class ConcatStream<T> extends Stream<T> {
           final int len = streams.length;
           int index = 0;
 
-          Future<Null> moveNext() async {
+          void moveNext() {
             Stream<T> stream = streams.elementAt(index);
-            Future<dynamic> cancelFuture = subscription?.cancel();
-
-            if (cancelFuture != null) await cancelFuture;
+            subscription?.cancel();
 
             subscription = stream.listen(controller.add,
                 onError: controller.addError, onDone: () {

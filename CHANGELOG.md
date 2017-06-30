@@ -1,6 +1,7 @@
 ## 0.13.1
 
 * Fix error with FlatMapLatest where it was not properly cancelled in some scenarios
+* Remove additional async methods on Stream handlers unless they're shown to solve a problem
 
 ## 0.13.0
 
