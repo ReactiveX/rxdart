@@ -53,19 +53,19 @@ class PublishSubject<T> implements StreamController<T> {
 
   @override
   ControllerCallback get onPause => throw new UnsupportedError(
-      "BehaviorSubjects do not support pause callbacks");
+      "PublishSubjects do not support pause callbacks");
 
   @override
   set onPause(void onPauseHandler()) => throw new UnsupportedError(
-      "BehaviorSubjects do not support pause callbacks");
+      "PublishSubjects do not support pause callbacks");
 
   @override
   ControllerCallback get onResume => throw new UnsupportedError(
-      "BehaviorSubjects do not support resume callbacks");
+      "PublishSubjects do not support resume callbacks");
 
   @override
   set onResume(void onResumeHandler()) => throw new UnsupportedError(
-      "BehaviorSubjects do not support resume callbacks");
+      "PublishSubjects do not support resume callbacks");
 
   @override
   ControllerCancelCallback get onCancel => _controller.onCancel;
