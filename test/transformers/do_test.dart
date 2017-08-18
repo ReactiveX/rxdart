@@ -25,6 +25,23 @@ void main() {
       await expect(onErrorCalled, isTrue);
     });
 
+    test(
+        'onError only called once when an error is emitted on a broadcast stream',
+        () async {
+      int count = 0;
+      final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
+      final Stream<int> stream = subject.stream.doOnError((e, s) => count++);
+
+      stream.listen(null, onError: (dynamic e, dynamic s) {});
+      stream.listen(null, onError: (dynamic e, dynamic s) {});
+
+      subject.addError(new Exception());
+      subject.addError(new Exception());
+
+      await expect(count, 2);
+      await subject.close();
+    });
+
     test('calls onCancel when the subscription is cancelled', () async {
       bool onCancelCalled = false;
       final Observable<int> observable = new Observable<int>.just(1);
@@ -37,6 +54,20 @@ void main() {
       await expect(onCancelCalled, isTrue);
     });
 
+    test(
+        'onCancel called only once when the subscription is multiple listeners',
+        () async {
+      int count = 0;
+      final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
+      final Observable<int> observable =
+          subject.stream.doOnCancel(() => count++);
+
+      observable.listen(null);
+      await observable.listen(null).cancel();
+
+      await expect(count, 1);
+    });
+
     test('calls onData when the observable emits an item', () async {
       bool onDataCalled = false;
       final Observable<int> observable =
@@ -44,6 +75,24 @@ void main() {
 
       await expect(observable, emits(1));
       await expect(onDataCalled, isTrue);
+    });
+
+    test('onData only emits once for broadcast streams with multiple listeners',
+        () async {
+      final List<int> actual = <int>[];
+      final StreamController<int> controller =
+          new StreamController<int>.broadcast(sync: true);
+      final Stream<int> observable = controller.stream
+          .transform(new DoStreamTransformer<int>(onData: actual.add));
+
+      observable.listen(null);
+      observable.listen(null);
+
+      controller.add(1);
+      controller.add(2);
+
+      await expect(actual, <int>[1, 2]);
+      await controller.close();
     });
 
     test('emits onEach Notifications for Data, Error, and Done', () async {
@@ -69,6 +118,26 @@ void main() {
         new Notification<int>.onError(exception, stacktrace),
         new Notification<int>.onDone()
       ]);
+    });
+
+    test('onEach only emits once for broadcast streams with multiple listeners',
+        () async {
+      int count = 0;
+      final StreamController<int> controller =
+          new StreamController<int>.broadcast(sync: true);
+      final Stream<int> observable =
+          controller.stream.transform(new DoStreamTransformer<int>(onEach: (_) {
+        count++;
+      }));
+
+      observable.listen(null);
+      observable.listen(null);
+
+      controller.add(1);
+      controller.add(2);
+
+      await expect(count, 2);
+      await controller.close();
     });
 
     test('calls onListen when a consumer listens', () async {
@@ -140,8 +209,7 @@ void main() {
     });
 
     test('throws an error when no arguments are provided', () {
-      expect(() => new DoStreamTransformer<int>(),
-          throwsArgumentError);
+      expect(() => new DoStreamTransformer<int>(), throwsArgumentError);
     });
 
     test('should propagate errors', () {

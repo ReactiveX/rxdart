@@ -82,77 +82,107 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
       throw new ArgumentError("Must provide at least one handler");
     }
 
+    final Map<Stream<dynamic>, StreamSubscription<dynamic>> subscriptions =
+        <Stream<dynamic>, StreamSubscription<dynamic>>{};
+
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      StreamSubscription<T> subscription;
-
-      controller = new StreamController<T>(
-          sync: true,
-          onListen: () {
-            if (onListen != null) {
-              try {
-                onListen();
-              } catch (e, s) {
+      final Function onListenLocal = () {
+        if (onListen != null) {
+          try {
+            onListen();
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
+        subscriptions.putIfAbsent(
+          input,
+          () {
+            return input.listen(
+              (T value) {
+                if (onData != null) {
+                  try {
+                    onData(value);
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
+                }
+                if (onEach != null) {
+                  try {
+                    onEach(new Notification<T>.onData(value));
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
+                }
+                controller.add(value);
+              },
+              onError: (dynamic e, dynamic s) {
+                if (onError != null) {
+                  try {
+                    onError(e, s);
+                  } catch (e2, s2) {
+                    controller.addError(e2, s2);
+                  }
+                }
+                if (onEach != null) {
+                  try {
+                    onEach(new Notification<T>.onError(e, s));
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
+                }
                 controller.addError(e, s);
-              }
-            }
-
-            subscription = input.listen((T value) {
-              if (onData != null) {
-                try {
-                  onData(value);
-                } catch (e, s) {
-                  controller.addError(e, s);
+              },
+              onDone: () {
+                if (onDone != null) {
+                  try {
+                    onDone();
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 }
-              }
-
-              if (onEach != null) {
-                try {
-                  onEach(new Notification<T>.onData(value));
-                } catch (e, s) {
-                  controller.addError(e, s);
+                if (onEach != null) {
+                  try {
+                    onEach(new Notification<T>.onDone());
+                  } catch (e, s) {
+                    controller.addError(e, s);
+                  }
                 }
-              }
-
-              controller.add(value);
-            }, onError: (dynamic e, dynamic s) {
-              if (onError != null) {
-                try {
-                  onError(e, s);
-                } catch (e2, s2) {
-                  controller.addError(e2, s2);
-                }
-              }
-
-              if (onEach != null) {
-                try {
-                  onEach(new Notification<T>.onError(e, s));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-
-              controller.addError(e, s);
-            }, onDone: () {
-              if (onDone != null) {
-                try {
-                  onDone();
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-
-              if (onEach != null) {
-                try {
-                  onEach(new Notification<T>.onDone());
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-
-              controller.close();
-            }, cancelOnError: cancelOnError);
+                controller.close();
+              },
+              cancelOnError: cancelOnError,
+            );
           },
+        );
+      };
+      final Function onCancelLocal = () {
+        if (onCancel != null) {
+          try {
+            onCancel();
+          } catch (e, s) {
+            if (!controller.isClosed) {
+              controller.addError(e, s);
+            } else {
+              Zone.current.handleUncaughtError(e, s);
+            }
+          }
+        }
+        return subscriptions[input]
+            .cancel()
+            .whenComplete(() => subscriptions.remove(input));
+      };
+
+      if (input.isBroadcast) {
+        controller = new StreamController<T>.broadcast(
+          sync: true,
+          onListen: onListenLocal,
+          onCancel: onCancelLocal,
+        );
+      } else {
+        controller = new StreamController<T>(
+          sync: true,
+          onListen: onListenLocal,
+          onCancel: onCancelLocal,
           onPause: ([Future<dynamic> resumeSignal]) {
             if (onPause != null) {
               try {
@@ -162,7 +192,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
               }
             }
 
-            subscription.pause(resumeSignal);
+            subscriptions[input].pause(resumeSignal);
           },
           onResume: () {
             if (onResume != null) {
@@ -173,23 +203,10 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
               }
             }
 
-            subscription.resume();
+            subscriptions[input].resume();
           },
-          onCancel: () {
-            if (onCancel != null) {
-              try {
-                onCancel();
-              } catch (e, s) {
-                if (!controller.isClosed) {
-                  controller.addError(e, s);
-                } else {
-                  Zone.current.handleUncaughtError(e, s);
-                }
-              }
-            }
-
-            return subscription.cancel();
-          });
+        );
+      }
 
       return controller.stream.listen(null);
     });
