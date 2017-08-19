@@ -42,12 +42,13 @@ void main() {
   test('RetryStream.single.subscription', () async {
     int retries = 3;
 
-    Stream<int> stream = new RetryStream<int>(_getRetryStream(retries), retries);
+    Stream<int> stream =
+        new RetryStream<int>(_getRetryStream(retries), retries);
 
     try {
       stream.listen((_) {});
       stream.listen((_) {});
-    } catch(e) {
+    } catch (e) {
       await expect(e, isStateError);
     }
   });

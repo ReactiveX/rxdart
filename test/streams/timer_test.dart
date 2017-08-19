@@ -14,8 +14,7 @@ void main() {
   });
 
   test('TimerStream.single.subscription', () async {
-    Stream<int> stream =
-    new TimerStream<int>(1, new Duration(milliseconds: 1));
+    Stream<int> stream = new TimerStream<int>(1, new Duration(milliseconds: 1));
 
     stream.listen((_) {});
     await expect(() => stream.listen((_) {}), throwsA(isStateError));

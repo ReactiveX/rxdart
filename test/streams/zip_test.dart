@@ -298,14 +298,11 @@ void main() {
   });
 
   test('rx.Observable.zip.error.shouldThrowC', () {
-    expect(
-        () => new ZipStream<num>(null, () {}),
-        throwsArgumentError);
+    expect(() => new ZipStream<num>(null, () {}), throwsArgumentError);
   });
 
   test('rx.Observable.zip.error.shouldThrowD', () {
-    expect(
-        () => new ZipStream<num>(<Stream<dynamic>>[], () {}),
+    expect(() => new ZipStream<num>(<Stream<dynamic>>[], () {}),
         throwsArgumentError);
   });
 

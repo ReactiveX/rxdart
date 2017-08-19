@@ -56,7 +56,8 @@ void main() {
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .defaultIfEmpty(-1);
 
-    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
     }));
   });

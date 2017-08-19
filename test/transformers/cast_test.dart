@@ -55,9 +55,12 @@ void main() {
     });
 
     test('throws when cast fails', () async {
-      new Observable<int>.just(1)
-          .cast(const TypeToken<String>())
-          .listen(null, onError: expectAsync2((e, s) => expect(e, isCastError)));
+      new Observable<int>.just(1).cast(const TypeToken<String>()).listen(
+            null,
+            onError: expectAsync2(
+              (dynamic e, dynamic s) => expect(e, isCastError),
+            ),
+          );
     });
   });
 }
@@ -67,5 +70,8 @@ const Matcher isCastError = const _CastError();
 
 class _CastError extends TypeMatcher {
   const _CastError() : super("CastError");
-  bool matches(item, Map matchState) => item is CastError;
+
+  @override
+  bool matches(dynamic item, Map<dynamic, dynamic> matchState) =>
+      item is CastError;
 }

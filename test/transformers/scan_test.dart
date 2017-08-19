@@ -32,8 +32,8 @@ void main() {
     new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
         .transform(transformer)
         .listen(expectAsync1((int result) {
-      expect(expectedOutput[countB++], result);
-    }, count: expectedOutput.length));
+          expect(expectedOutput[countB++], result);
+        }, count: expectedOutput.length));
   });
 
   test('rx.Observable.scan.asBroadcastStream', () async {

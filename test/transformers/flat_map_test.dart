@@ -85,13 +85,13 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrowC', () async {
-    Stream<int> observableWithError = new Observable<int>.just(1).flatMap(
-            (_) => throw new Exception('oh noes!'));
+    Stream<int> observableWithError = new Observable<int>.just(1)
+        .flatMap((_) => throw new Exception('oh noes!'));
 
     observableWithError.listen(null,
         onError: expectAsync2((dynamic e, dynamic s) {
-          expect(e, isException);
-        }));
+      expect(e, isException);
+    }));
   });
 
   test('rx.Observable.flatMap.pause.resume', () async {

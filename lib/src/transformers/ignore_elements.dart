@@ -13,8 +13,7 @@ import 'dart:async';
 class IgnoreElementsStreamTransformer<T> implements StreamTransformer<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  IgnoreElementsStreamTransformer()
-      : transformer = _buildTransformer();
+  IgnoreElementsStreamTransformer() : transformer = _buildTransformer();
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);

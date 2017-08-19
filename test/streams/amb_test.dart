@@ -68,6 +68,7 @@ void main() {
 
     // listen twice on same stream
     observable.listen(null,
-        onError: expectAsync2((e, s) => expect(e, isException)));
+        onError:
+            expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
   });
 }

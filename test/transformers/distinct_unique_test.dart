@@ -70,8 +70,13 @@ void main() {
               hashCode: (_TestObject o) =>
                   throw new Exception('Catch me if you can!'));
 
-      observable.listen(null,
-          onError: expectAsync2((e, s) => expect(e, isException), count: 3));
+      observable.listen(
+        null,
+        onError: expectAsync2(
+          (dynamic e, dynamic s) => expect(e, isException),
+          count: 3,
+        ),
+      );
     });
 
     test("is reusable", () async {

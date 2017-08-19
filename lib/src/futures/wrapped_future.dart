@@ -21,8 +21,8 @@ class WrappedFuture<T> implements Future<T> {
       wrapped.catchError(onError, test: test);
 
   @override
-  Future<S> then<S>(FutureOr<S> onValue(T value), {Function onError}) => wrapped
-      .then(onValue, onError: onError);
+  Future<S> then<S>(FutureOr<S> onValue(T value), {Function onError}) =>
+      wrapped.then(onValue, onError: onError);
 
   @override
   Future<T> timeout(Duration timeLimit, {onTimeout()}) =>

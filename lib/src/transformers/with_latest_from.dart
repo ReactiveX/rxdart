@@ -43,10 +43,10 @@ class WithLatestFromStreamTransformer<T, S, R>
           onListen: () {
             subscription = input.listen((T value) {
               if (latestValue != null) {
-                  try {
-                    controller.add(fn(value, latestValue));
-                  } catch (e, s) {
-                    controller.addError(e, s);
+                try {
+                  controller.add(fn(value, latestValue));
+                } catch (e, s) {
+                  controller.addError(e, s);
                 }
               }
             }, onError: controller.addError);

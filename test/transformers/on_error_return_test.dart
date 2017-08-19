@@ -15,9 +15,10 @@ void main() {
   });
 
   test('rx.Observable.onErrorReturn.asBroadcastStream', () async {
-    Stream<num> stream = new Observable<num>(new ErrorStream<num>(new Exception()))
-        .onErrorReturn(0)
-        .asBroadcastStream();
+    Stream<num> stream =
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .onErrorReturn(0)
+            .asBroadcastStream();
 
     await expect(stream.isBroadcast, isTrue);
 

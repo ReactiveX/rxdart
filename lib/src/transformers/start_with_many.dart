@@ -28,12 +28,14 @@ class StartWithManyStreamTransformer<T> implements StreamTransformer<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-              startValues.forEach(controller.add);
+            startValues.forEach(controller.add);
 
-              subscription = input.listen(controller.add,
-                  onError: controller.addError,
-                  onDone: controller.close,
-                  cancelOnError: cancelOnError);
+            subscription = input.listen(
+              controller.add,
+              onError: controller.addError,
+              onDone: controller.close,
+              cancelOnError: cancelOnError,
+            );
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

@@ -45,7 +45,8 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new PublishSubject<int>();
 
-      scheduleMicrotask(() => subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3])));
+      scheduleMicrotask(() =>
+          subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3])));
 
       await expect(subject.stream, emitsInOrder(<dynamic>[1, 2, 3]));
     });
@@ -213,8 +214,7 @@ void main() {
 
     test('can be listened to multiple times', () async {
       // ignore: close_sinks
-      final StreamController<int> subject =
-          new PublishSubject<int>();
+      final StreamController<int> subject = new PublishSubject<int>();
       final Stream<int> stream = subject.stream;
 
       scheduleMicrotask(() => subject.add(1));

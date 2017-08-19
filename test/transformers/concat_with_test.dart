@@ -9,10 +9,9 @@ void main() {
     final List<int> expected = <int>[1, 2];
     int count = 0;
 
-    new Observable<int>(delayedStream)
-        .concatWith(<Observable<int>>[immediateStream])
-        .listen(expectAsync1((int result) {
-          expect(result, expected[count++]);
-        }, count: expected.length));
+    new Observable<int>(delayedStream).concatWith(
+        <Observable<int>>[immediateStream]).listen(expectAsync1((int result) {
+      expect(result, expected[count++]);
+    }, count: expected.length));
   });
 }

@@ -21,9 +21,12 @@ class TweenStream extends Stream<double> {
   @override
   StreamSubscription<double> listen(void onData(double event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream
-        .listen(onData,
-            onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller.stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 
   static StreamController<double> _buildController(double startValue,

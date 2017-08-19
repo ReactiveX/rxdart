@@ -21,7 +21,8 @@ void main() {
         new Observable<int>(new ErrorStream<int>(new Exception()))
             .concatMap(_getOtherStream);
 
-    observableWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
+    observableWithError.listen(null,
+        onError: expectAsync2((dynamic e, dynamic s) {
       expect(e, isException);
     }));
   });

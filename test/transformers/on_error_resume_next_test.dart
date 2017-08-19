@@ -40,9 +40,10 @@ void main() {
   });
 
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
-    Stream<num> stream = new Observable<num>(new ErrorStream<num>(new Exception()))
-        .onErrorResumeNext(_getStream())
-        .asBroadcastStream();
+    Stream<num> stream =
+        new Observable<num>(new ErrorStream<num>(new Exception()))
+            .onErrorResumeNext(_getStream())
+            .asBroadcastStream();
     int countA = 0;
     int countB = 0;
 

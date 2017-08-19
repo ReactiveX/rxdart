@@ -53,7 +53,8 @@ void main() {
       Stream<ErrorComparator> stream = new Stream<ErrorComparator>.fromIterable(
           <ErrorComparator>[new ErrorComparator(), new ErrorComparator()]);
 
-      await expect(new StreamMinFuture<ErrorComparator>(stream), throwsException);
+      await expect(
+          new StreamMinFuture<ErrorComparator>(stream), throwsException);
     });
   });
 }

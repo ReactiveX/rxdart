@@ -9,10 +9,9 @@ void main() {
     final List<int> expected = <int>[2, 1];
     int count = 0;
 
-    new Observable<int>(delayedStream)
-        .mergeWith(<Observable<int>>[immediateStream])
-        .listen(expectAsync1((int result) {
-          expect(result, expected[count++]);
-        }, count: expected.length));
+    new Observable<int>(delayedStream).mergeWith(
+        <Observable<int>>[immediateStream]).listen(expectAsync1((int result) {
+      expect(result, expected[count++]);
+    }, count: expected.length));
   });
 }

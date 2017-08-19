@@ -50,8 +50,6 @@ class ConcatEagerStream<T> extends Stream<T> {
         sync: true,
         onListen: () {
           for (int i = 0, len = streams.length; i < len; i++) {
-            Stream<T> stream = streams.elementAt(i);
-
             completeEvents[i] = new Completer<dynamic>();
 
             subscriptions[i] = streams.elementAt(i).listen(controller.add,
