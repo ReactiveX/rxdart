@@ -1,53 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/src/futures/as_observable_future.dart';
-import 'package:rxdart/src/futures/stream_max_future.dart';
-import 'package:rxdart/src/futures/stream_min_future.dart';
-
-import 'package:rxdart/src/streams/amb.dart';
-import 'package:rxdart/src/streams/combine_latest.dart';
-import 'package:rxdart/src/streams/concat.dart';
-import 'package:rxdart/src/streams/concat_eager.dart';
-import 'package:rxdart/src/streams/defer.dart';
-import 'package:rxdart/src/streams/error.dart';
-import 'package:rxdart/src/streams/merge.dart';
-import 'package:rxdart/src/streams/never.dart';
-import 'package:rxdart/src/streams/range.dart';
-import 'package:rxdart/src/streams/retry.dart';
-import 'package:rxdart/src/streams/timer.dart';
-import 'package:rxdart/src/streams/tween.dart';
-import 'package:rxdart/src/streams/zip.dart';
-
-import 'package:rxdart/src/transformers/cast.dart';
-import 'package:rxdart/src/transformers/buffer_with_count.dart';
-import 'package:rxdart/src/transformers/debounce.dart';
-import 'package:rxdart/src/transformers/default_if_empty.dart';
-import 'package:rxdart/src/transformers/dematerialize.dart';
-import 'package:rxdart/src/transformers/distinct_unique.dart';
-import 'package:rxdart/src/transformers/do.dart';
-import 'package:rxdart/src/transformers/flat_map.dart';
-import 'package:rxdart/src/transformers/flat_map_latest.dart';
-import 'package:rxdart/src/transformers/ignore_elements.dart';
-import 'package:rxdart/src/transformers/interval.dart';
-import 'package:rxdart/src/transformers/materialize.dart';
-import 'package:rxdart/src/transformers/of_type.dart';
-import 'package:rxdart/src/transformers/on_error_resume_next.dart';
-import 'package:rxdart/src/transformers/repeat.dart';
-import 'package:rxdart/src/transformers/sample.dart';
-import 'package:rxdart/src/transformers/scan.dart';
-import 'package:rxdart/src/transformers/skip_until.dart';
-import 'package:rxdart/src/transformers/start_with.dart';
-import 'package:rxdart/src/transformers/start_with_many.dart';
-import 'package:rxdart/src/transformers/switch_if_empty.dart';
-import 'package:rxdart/src/transformers/take_until.dart';
-import 'package:rxdart/src/transformers/throttle.dart';
-import 'package:rxdart/src/transformers/time_interval.dart';
-import 'package:rxdart/src/transformers/timestamp.dart';
-import 'package:rxdart/src/transformers/window_with_count.dart';
-import 'package:rxdart/src/transformers/with_latest_from.dart';
-
-import 'package:rxdart/src/utils/notification.dart';
-import 'package:rxdart/src/utils/type_token.dart';
+import 'package:rxdart/futures.dart';
+import 'package:rxdart/streams.dart';
+import 'package:rxdart/transformers.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.

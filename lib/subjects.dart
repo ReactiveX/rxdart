@@ -1,6 +1,6 @@
 library rx_subjects;
 
-export 'package:rxdart/src/subject/behavior_subject.dart';
-export 'package:rxdart/src/subject/replay_subject.dart';
-export 'package:rxdart/src/subject/publish_subject.dart';
+export 'package:rxdart/src/subjects/behavior_subject.dart';
+export 'package:rxdart/src/subjects/publish_subject.dart';
+export 'package:rxdart/src/subjects/replay_subject.dart';
 

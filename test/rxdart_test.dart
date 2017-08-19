@@ -85,8 +85,9 @@ import 'transformers/window_with_count_test.dart' as window_with_count_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
-import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
+import 'subject/publish_subject_test.dart' as publish_subject_test;
+import 'subject/replay_subject_test.dart' as replay_subject_test;
 
 import 'futures/as_observable_future_test.dart' as as_observable_future_test;
 import 'futures/stream_max_test.dart' as stream_max_test;
@@ -184,6 +185,7 @@ void main() {
 
   // Subjects
   behaviour_subject_test.main();
+  publish_subject_test.main();
   replay_subject_test.main();
 
   // Futures
