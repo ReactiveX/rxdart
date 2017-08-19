@@ -1,3 +1,8 @@
+## 0.14.0
+
+* Add `PublishSubject` (thanks to @pauldemarco)
+* Fix bug with `doOnX` operators where callbacks were fired too often
+
 ## 0.13.1
 
 * Fix error with FlatMapLatest where it was not properly cancelled in some scenarios

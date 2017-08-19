@@ -43,21 +43,18 @@ void main() {
 ### Objects
 
 - [Observable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html)
+- [PublishSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/PublishSubject-class.html)
 - [BehaviorSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/BehaviorSubject-class.html)
 - [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx_subjects/ReplaySubject-class.html)
 
 ### Observable
 
-RxDart's Observables extend the Stream class.
-This has two major implications:  
+RxDart's Observables extends the Stream class. This has two major implications:  
 - All [methods defined on the Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html#instance-methods) exist on RxDart's Observables as well.
 - All Observables can be passed to any API that expects a Dart Stream as an input.
 - Additional important distinctions are documented as part of the [Observable class](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html)
 
-##### Notes
-
-  * The Observable class is a simple wrapper for `Stream` and `StreamTransformer` classes. All underlying implementations can be used free of the Observable wrapper, and are exposed in their own libraries. They are linked to below.
-  * The following sections link to DartDoc. While DartDoc is a bit scary looking at first, the documentation is up-to-date, readable, and contains examples. Furthermore, this documentation lives within the code, which means it can be easily read from within your favorite editor. 
+Finally, the Observable class & operators are simple wrappers around `Stream` and `StreamTransformer` classes. All underlying implementations can be used free of the Observable class, and are exposed in their own libraries. They are linked to below.
 
 ### Instantiation
 
