@@ -167,9 +167,10 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
             }
           }
         }
-        return subscriptions[input]
-            .cancel()
-            .whenComplete(() => subscriptions.remove(input));
+        Future<dynamic> cancelFuture =
+            subscriptions[input].cancel() ?? new Future<dynamic>.value();
+
+        return cancelFuture.whenComplete(() => subscriptions.remove(input));
       };
 
       if (input.isBroadcast) {
