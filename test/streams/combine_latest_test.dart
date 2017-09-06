@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> get streamA => new Stream<int>.periodic(
-    const Duration(milliseconds: 1), (int count) => count).take(3);
+    const Duration(milliseconds: 10), (int count) => count).take(3);
 Stream<int> get streamB =>
     new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 Stream<bool> get streamC {
