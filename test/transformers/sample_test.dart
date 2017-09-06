@@ -4,9 +4,9 @@ import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 20), (int count) => count).take(5);
+    const Duration(milliseconds: 40), (int count) => count).take(5);
 Stream<int> _getSampleStream() => new Stream<int>.periodic(
-    const Duration(milliseconds: 35), (int count) => count).take(10);
+    const Duration(milliseconds: 75), (int count) => count).take(10);
 
 void main() {
   test('rx.Observable.sample', () async {
