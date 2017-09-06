@@ -1,3 +1,7 @@
+## 0.14.0+1
+
+* Change `DoStreamTransformer` to return a `Future` on cancel for api compatibility. 
+
 ## 0.14.0
 
 * Add `PublishSubject` (thanks to @pauldemarco)
