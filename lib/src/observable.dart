@@ -982,7 +982,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// The returned stream is a broadcast stream if this stream is.
   @override
-  Observable<S> asyncMap<S>(dynamic convert(T value)) =>
+  Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
       new Observable<S>(stream.asyncMap(convert));
 
   /// Creates an Observable where each item is a list containing the items
