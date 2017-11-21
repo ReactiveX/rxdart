@@ -95,4 +95,43 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('rx.Observable.debounce.emits.last.item.immediately', () async {
+    List<dynamic> emissions = <dynamic>[];
+    Stopwatch stopwatch = new Stopwatch();
+    Observable<int> stream = new Observable<int>.fromIterable(<int>[1, 2, 3])
+        .debounce(new Duration(seconds: 100));
+
+    stopwatch.start();
+
+    stream.listen(
+        expectAsync1((int val) {
+          emissions.add(val);
+        }, count: 1), onDone: expectAsync0(() {
+      stopwatch.stop();
+
+      expect(emissions, <int>[3]);
+
+      // We debounce for 100 seconds. To ensure we aren't waiting that long to
+      // emit the last item after the base stream completes, we expect the
+      // last value to be emitted to be much shorter than that.
+      expect(stopwatch.elapsedMilliseconds < 500, isTrue);
+    }));
+  }, timeout: new Timeout(new Duration(seconds: 3)));
+
+  test(
+    'rx.Observable.debounce.cancel.emits.nothing',
+    () async {
+      StreamSubscription<int> subscription;
+      Observable<int> stream =
+          new Observable<int>.fromIterable(<int>[1, 2, 3]).doOnDone(() {
+        subscription.cancel();
+      }).debounce(new Duration(seconds: 10));
+
+      // We expect the onData callback to be called 0 times because the
+      // subscription is cancelled when the base stream ends.
+      subscription = stream.listen(expectAsync1((int val) {}, count: 0));
+    },
+    timeout: new Timeout(new Duration(seconds: 3)),
+  );
 }

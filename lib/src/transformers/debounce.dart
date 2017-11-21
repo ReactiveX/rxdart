@@ -25,26 +25,24 @@ class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      T lastEvent;
       StreamController<T> controller;
       StreamSubscription<T> subscription;
-      bool _closeAfterNextEvent = false;
-      Timer _timer;
-      bool streamHasEvent = false;
+      Timer timer;
 
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(
                 (T value) {
-                  streamHasEvent = true;
+                  lastEvent = value;
 
                   try {
-                    if (_timer != null && _timer.isActive) _timer.cancel();
+                    _cancelTimerIfActive(timer);
 
-                    _timer = new Timer(duration, () {
-                      controller.add(value);
-
-                      if (_closeAfterNextEvent) controller.close();
+                    timer = new Timer(duration, () {
+                      controller.add(lastEvent);
+                      lastEvent = null;
                     });
                   } catch (e, s) {
                     controller.addError(e, s);
@@ -52,19 +50,36 @@ class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (!streamHasEvent)
+                  _cancelTimerIfActive(timer);
+
+                  if (lastEvent != null) {
+                    scheduleMicrotask(() {
+                      controller.add(lastEvent);
+
+                      controller.close();
+                    });
+                  } else {
                     controller.close();
-                  else
-                    _closeAfterNextEvent = true;
+                  }
                 },
                 cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+          onCancel: () {
+            _cancelTimerIfActive(timer);
+
+            return subscription.cancel();
+          });
 
       return controller.stream.listen(null);
     });
+  }
+
+  static void _cancelTimerIfActive(Timer _timer) {
+    if (_timer != null && _timer.isActive) {
+      _timer.cancel();
+    }
   }
 }
