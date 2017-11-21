@@ -1,3 +1,8 @@
+## 0.15.0
+
+* Change `debounce` to emit the last item of the source stream as soon as the source stream completes.
+* Ensure `debounce` does not keep open any addition async timers after it has been cancelled.
+
 ## 0.14.0+1
 
 * Change `DoStreamTransformer` to return a `Future` on cancel for api compatibility. 
