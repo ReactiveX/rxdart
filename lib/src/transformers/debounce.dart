@@ -52,9 +52,15 @@ class DebounceStreamTransformer<T> implements StreamTransformer<T, T> {
                 onDone: () {
                   _cancelTimerIfActive(timer);
 
-                  if (lastEvent != null) controller.add(lastEvent);
+                  if (lastEvent != null) {
+                    scheduleMicrotask(() {
+                      controller.add(lastEvent);
 
-                  controller.close();
+                      controller.close();
+                    });
+                  } else {
+                    controller.close();
+                  }
                 },
                 cancelOnError: cancelOnError);
           },
