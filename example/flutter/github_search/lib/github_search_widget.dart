@@ -37,7 +37,7 @@ class GithubSearchState extends State<GithubSearch> {
         // Use debounce() to prevent calling the server on fast following keystrokes
         .debounce(const Duration(milliseconds: 250))
         // Use call(onData) to clear the previous results / errors and begin showing the loading state
-        .call(onData: (String latestValue) {
+        .doOnData((String latestValue) {
           setState(() {
             hasError = false;
             isLoading = true;

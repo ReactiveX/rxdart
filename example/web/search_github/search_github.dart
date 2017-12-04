@@ -25,7 +25,7 @@ void main() {
     // Use debounce() to prevent calling the server on fast following keystrokes
     .debounce(const Duration(milliseconds: 250))
     // Use call(onData) to clear resultsField
-    .call(onData: (_) => resultsField.innerHtml = '')
+    .doOnData((_) => resultsField.innerHtml = '')
     // Use flatMapLatest() to call the gitHub API
     // When a new search term follows a previous term quite fast, it's possible the server is still
     // looking for the previous one. Since we're only interested in the results of the very last search term entered,
