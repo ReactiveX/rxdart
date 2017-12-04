@@ -36,7 +36,7 @@ class GithubSearchState extends State<GithubSearch> {
         .distinct((String prev, String next) => prev == next)
         // Use debounce() to prevent calling the server on fast following keystrokes
         .debounce(const Duration(milliseconds: 250))
-        // Use call(onData) to clear the previous results / errors and begin showing the loading state
+        // Use doOnData() to clear the previous results / errors and begin showing the loading state
         .doOnData((String latestValue) {
           setState(() {
             hasError = false;
