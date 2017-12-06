@@ -16,7 +16,7 @@ class GithubApi {
     } else if (cache.containsKey(term)) {
       return new Observable<SearchResult>.just(cache[term]);
     } else {
-      return fetchResults(term).call(onData: (SearchResult result) {
+      return fetchResults(term).doOnData((SearchResult result) {
         cache[term] = result;
       });
     }
