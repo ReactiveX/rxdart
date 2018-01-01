@@ -8,10 +8,12 @@ class SearchLoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new AnimatedOpacity(
-        duration: new Duration(milliseconds: 300),
-        opacity: isLoading ? 1.0 : 0.0,
-        child: new Container(
-            alignment: FractionalOffset.center,
-            child: new CircularProgressIndicator()));
+      duration: new Duration(milliseconds: 300),
+      opacity: isLoading ? 1.0 : 0.0,
+      child: new Container(
+        alignment: FractionalOffset.center,
+        child: new CircularProgressIndicator(),
+      ),
+    );
   }
 }
