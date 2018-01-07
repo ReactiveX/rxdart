@@ -30,6 +30,11 @@ class SearchModel {
     this.isLoading = false,
   });
 
+  factory SearchModel.initial() =>
+      new SearchModel(result: new SearchResult.noTerm());
+
+  factory SearchModel.loading() => new SearchModel(isLoading: true);
+
   static Stream<SearchModel> stream(
     Stream<String> onTextChanged,
     GithubApi api,
@@ -43,21 +48,15 @@ class SearchModel {
         // Model. If another search term is entered, flatMapLatest will ensure
         // the previous search is discarded so we don't deliver stale results
         // to the View.
-        .flatMapLatest(_buildPerformSearch(api))
+        .flatMapLatest(_buildSearch(api))
         // The initial state of the model.
-        .startWith(
-          new SearchModel(
-            result: new SearchResult.noTerm(),
-          ),
-        );
+        .startWith(new SearchModel.initial());
   }
 
-  static Stream<SearchModel> Function(String) _buildPerformSearch(
-    GithubApi api,
-  ) {
-    return (String value) {
+  static Stream<SearchModel> Function(String) _buildSearch(GithubApi api) {
+    return (String term) {
       return api
-          .search(value)
+          .search(term)
           .map((SearchResult result) {
             return new SearchModel(
               result: result,
@@ -65,10 +64,7 @@ class SearchModel {
             );
           })
           .onErrorReturn(new SearchModel(hasError: true))
-          .startWith(new SearchModel(
-            isLoading: true,
-            result: null,
-          ));
+          .startWith(new SearchModel.loading());
     };
   }
 }
@@ -94,10 +90,10 @@ class SearchView extends StatelessWidget {
   Widget build(BuildContext context) {
     return new StreamBuilder<SearchModel>(
       stream: model,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<SearchModel> snapshot,
-      ) {
+      initialData: new SearchModel.initial(),
+      builder: (BuildContext context, AsyncSnapshot<SearchModel> snapshot) {
+        final model = snapshot.data;
+
         return new Scaffold(
           body: new Stack(
             children: <Widget>[
@@ -121,28 +117,22 @@ class SearchView extends StatelessWidget {
                   child: new Stack(
                     children: <Widget>[
                       // Fade in an intro screen if no term has been entered
-                      new SearchIntroWidget(
-                        snapshot.data?.result?.isNoTerm ?? false,
-                      ),
+                      new SearchIntroWidget(model.result?.isNoTerm ?? false),
 
                       // Fade in an Empty Result screen if the search contained
                       // no items
-                      new EmptyResultWidget(
-                        snapshot.data?.result?.isEmpty ?? false,
-                      ),
+                      new EmptyResultWidget(model.result?.isEmpty ?? false),
 
                       // Fade in a loading screen when results are being fetched
                       // from Github
-                      new SearchLoadingWidget(
-                        snapshot.data?.isLoading ?? false,
-                      ),
+                      new SearchLoadingWidget(model.isLoading ?? false),
 
                       // Fade in an error if something went wrong when fetching
                       // the results
-                      new SearchErrorWidget(snapshot.data?.hasError ?? false),
+                      new SearchErrorWidget(model.hasError ?? false),
 
                       // Fade in the Result if available
-                      new SearchResultWidget(snapshot.data?.result),
+                      new SearchResultWidget(model.result),
                     ],
                   ),
                 )
