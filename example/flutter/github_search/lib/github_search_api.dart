@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sealed_unions/sealed_unions.dart';
+import 'package:sealed_unions/union_3.dart';
 
 class GithubApi {
   final String baseUrl;
@@ -47,32 +49,72 @@ class GithubApi {
 
 enum SearchResultKind { NO_TERM, EMPTY, POPULATED }
 
-class SearchResult {
-  final SearchResultKind kind;
-  final List<SearchResultItem> items;
+class Union3View<A, B, C> implements Union3<A, B, C> {
+  final Union3<A, B, C> _union;
 
-  SearchResult(this.kind, this.items);
+  Union3View(Union3<A, B, C> union) : _union = union;
 
-  factory SearchResult.noTerm() =>
-      new SearchResult(SearchResultKind.NO_TERM, <SearchResultItem>[]);
-
-  factory SearchResult.fromJson(List<Map<String, Object>> json) {
-    final items = json.map((Map<String, Object> item) {
-      return new SearchResultItem.fromJson(item);
-    }).toList();
-
-    return new SearchResult(
-      items.isEmpty ? SearchResultKind.EMPTY : SearchResultKind.POPULATED,
-      items,
-    );
+  @override
+  void continued(
+    Consumer<A> continuationFirst,
+    Consumer<B> continuationSecond,
+    Consumer<C> continuationThird,
+  ) {
+    _union.continued(continuationFirst, continuationSecond, continuationThird);
   }
 
-  bool get isPopulated => kind == SearchResultKind.POPULATED;
+  @override
+  R join<R>(Func1<R, A> mapFirst, Func1<R, B> mapSecond, Func1<R, C> mapThird) {
+    return _union.join(mapFirst, mapSecond, mapThird);
+  }
 
-  bool get isEmpty => kind == SearchResultKind.EMPTY;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Union3View &&
+              runtimeType == other.runtimeType &&
+              _union == other._union;
 
-  bool get isNoTerm => kind == SearchResultKind.NO_TERM;
+  @override
+  int get hashCode => _union.hashCode;
 }
+
+class SearchResult
+    extends Union3View<List<SearchResultItem>, SearchNoTerm, SearchEmpty> {
+  static final Triplet<List<SearchResultItem>, SearchNoTerm, SearchEmpty>
+      factory =
+      new Triplet<List<SearchResultItem>, SearchNoTerm, SearchEmpty>();
+
+  SearchResult._(
+      Union3<List<SearchResultItem>, SearchNoTerm, SearchEmpty> union)
+      : super(union);
+
+  factory SearchResult.from(List<SearchResultItem> results) {
+    return new SearchResult._(factory.first(results));
+  }
+
+  factory SearchResult.noTerm() {
+    return new SearchResult._(factory.second(new SearchNoTerm()));
+  }
+
+  factory SearchResult.empty() {
+    return new SearchResult._(factory.third(new SearchEmpty()));
+  }
+
+  factory SearchResult.fromJson(List<Map<String, Object>> json) {
+    final List<SearchResultItem> items = json
+        .map((Map<String, Object> item) => new SearchResultItem.fromJson(item))
+        .toList();
+
+    return items.isEmpty
+        ? new SearchResult.empty()
+        : new SearchResult.from(items);
+  }
+}
+
+class SearchNoTerm {}
+
+class SearchEmpty {}
 
 class SearchResultItem {
   final String fullName;

@@ -9,6 +9,8 @@ import 'package:github_search/search_loading_widget.dart';
 import 'package:github_search/search_result_widget.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sealed_unions/factories/triplet_factory.dart';
+import 'package:sealed_unions/union_3.dart';
 
 // The Model represents the data the View requires. The View consumes a Stream
 // of Models. The view rebuilds every time the Stream emits a new Model!
@@ -19,21 +21,28 @@ import 'package:rxdart/rxdart.dart';
 //
 // The Model Stream responds to input from the View by accepting a
 // Stream<String>. We call this Stream the onTextChanged "intent".
-class SearchModel {
-  final SearchResult result;
-  final bool hasError;
-  final bool isLoading;
+class SearchModel extends Union3View<SearchResult, SearchLoading, SearchError> {
+  static final Triplet<SearchResult, SearchLoading, SearchError> factory =
+      new Triplet<SearchResult, SearchLoading, SearchError>();
 
-  SearchModel({
-    this.result,
-    this.hasError = false,
-    this.isLoading = false,
-  });
+  SearchModel._(Union3<SearchResult, SearchLoading, SearchError> union)
+      : super(union);
 
-  factory SearchModel.initial() =>
-      new SearchModel(result: new SearchResult.noTerm());
+  factory SearchModel.initial() {
+    return new SearchModel._(factory.first(new SearchResult.noTerm()));
+  }
 
-  factory SearchModel.loading() => new SearchModel(isLoading: true);
+  factory SearchModel.from(SearchResult result) {
+    return new SearchModel._(factory.first(result));
+  }
+
+  factory SearchModel.loading() {
+    return new SearchModel._(factory.second(new SearchLoading()));
+  }
+
+  factory SearchModel.error() {
+    return new SearchModel._(factory.third(new SearchError()));
+  }
 
   static Stream<SearchModel> stream(
     Stream<String> onTextChanged,
@@ -57,17 +66,16 @@ class SearchModel {
     return (String term) {
       return api
           .search(term)
-          .map((SearchResult result) {
-            return new SearchModel(
-              result: result,
-              isLoading: false,
-            );
-          })
-          .onErrorReturn(new SearchModel(hasError: true))
+          .map((SearchResult result) => new SearchModel.from(result))
+          .onErrorReturn(new SearchModel.error())
           .startWith(new SearchModel.loading());
     };
   }
 }
+
+class SearchLoading {}
+
+class SearchError {}
 
 // The View in a Stream-based architecture takes two arguments: The Model Stream
 // and the onTextChanged callback. In our case, the onTextChanged callback will
@@ -114,26 +122,16 @@ class SearchView extends StatelessWidget {
                   ),
                 ),
                 new Expanded(
-                  child: new Stack(
-                    children: <Widget>[
-                      // Fade in an intro screen if no term has been entered
-                      new SearchIntroWidget(model.result?.isNoTerm ?? false),
-
-                      // Fade in an Empty Result screen if the search contained
-                      // no items
-                      new EmptyResultWidget(model.result?.isEmpty ?? false),
-
-                      // Fade in a loading screen when results are being fetched
-                      // from Github
-                      new SearchLoadingWidget(model.isLoading ?? false),
-
-                      // Fade in an error if something went wrong when fetching
-                      // the results
-                      new SearchErrorWidget(model.hasError ?? false),
-
-                      // Fade in the Result if available
-                      new SearchResultWidget(model.result),
-                    ],
+                  child: model.join<Widget>(
+                    ([result]) {
+                      return result.join(
+                        ([results]) => new _CrossFadeResults(results: results),
+                        ([noTerm]) => new _CrossFadeResults(intro: true),
+                        ([empty]) => new _CrossFadeResults(empty: true),
+                      );
+                    },
+                    ([loading]) => new _CrossFadeResults(loading: true),
+                    ([error]) => new _CrossFadeResults(error: true),
                   ),
                 )
               ])
@@ -142,5 +140,34 @@ class SearchView extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _CrossFadeResults extends StatelessWidget {
+  final bool intro;
+  final bool empty;
+  final List<SearchResultItem> results;
+  final bool loading;
+  final bool error;
+
+  _CrossFadeResults({
+    Key key,
+    this.intro = false,
+    this.empty = false,
+    this.results = const <SearchResultItem>[],
+    this.loading = false,
+    this.error = false,
+  })
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Stack(children: <Widget>[
+      new SearchIntroWidget(intro),
+      new EmptyResultWidget(empty),
+      new SearchLoadingWidget(loading),
+      new SearchErrorWidget(error),
+      new SearchResultWidget(results),
+    ]);
   }
 }
