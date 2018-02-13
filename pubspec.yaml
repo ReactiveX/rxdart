@@ -7,6 +7,10 @@ description: Native Dart Rx implementation
 homepage: https://github.com/ReactiveX/rxdart
 environment:
   sdk: '>=1.21.0'
+web:
+  compiler:
+    debug: dartdevc
+    release: dartdevc # TODO remove this once running tests with DDC works
 dependencies:
 dev_dependencies:
   browser: ^0.10.0+2
