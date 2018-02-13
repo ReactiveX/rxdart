@@ -38,7 +38,7 @@ class MaterializeStreamTransformer<T>
               } catch (e, s) {
                 controller.addError(e, s);
               }
-            }, onError: (dynamic e, dynamic s) {
+            }, onError: (dynamic e, StackTrace s) {
               controller.add(new Notification<T>.onError(e, s));
             }, onDone: () {
               controller.add(new Notification<T>.onDone());

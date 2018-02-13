@@ -116,7 +116,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
                 }
                 controller.add(value);
               },
-              onError: (dynamic e, dynamic s) {
+              onError: (dynamic e, StackTrace s) {
                 if (onError != null) {
                   try {
                     onError(e, s);
