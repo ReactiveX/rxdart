@@ -87,7 +87,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
 
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      final Function onListenLocal = () {
+      void onListenLocal() {
         if (onListen != null) {
           try {
             onListen();
@@ -154,8 +154,8 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
             );
           },
         );
-      };
-      final Function onCancelLocal = () {
+      }
+      void onCancelLocal() {
         if (onCancel != null) {
           try {
             onCancel();
@@ -170,8 +170,8 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
         Future<dynamic> cancelFuture =
             subscriptions[input].cancel() ?? new Future<dynamic>.value();
 
-        return cancelFuture.whenComplete(() => subscriptions.remove(input));
-      };
+        cancelFuture.whenComplete(() => subscriptions.remove(input));
+      }
 
       if (input.isBroadcast) {
         controller = new StreamController<T>.broadcast(
