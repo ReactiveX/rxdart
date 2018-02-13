@@ -8,7 +8,7 @@ import 'dart:async';
 ///     new Stream.fromIterable([1, 2, 3])
 ///       .transform(new ThrottleStreamTransformer(new Duration(seconds: 1)))
 ///       .listen(print); // prints 1
-class ThrottleStreamTransformer<T> implements StreamTransformer<T, T> {
+class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   ThrottleStreamTransformer(Duration duration)

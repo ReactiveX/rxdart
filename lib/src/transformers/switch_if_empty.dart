@@ -24,7 +24,7 @@ import 'dart:async';
 ///     // Simple as that!
 ///     Stream<Data> getThatData =
 ///         memory.switchIfEmpty(disk).switchIfEmpty(network);
-class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
+class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   SwitchIfEmptyStreamTransformer(Stream<T> fallbackStream)

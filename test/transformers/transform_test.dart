@@ -15,7 +15,7 @@ void main() {
   });
 }
 
-class TestStreamTransformer implements StreamTransformer<int, String> {
+class TestStreamTransformer extends StreamTransformerBase<int, String> {
   @override
   Stream<String> bind(Stream<int> stream) {
     final StreamController<String> controller = new StreamController<String>();

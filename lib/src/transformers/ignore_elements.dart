@@ -10,7 +10,7 @@ import 'dart:async';
 ///       new ErrorStream(new Exception())
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
-class IgnoreElementsStreamTransformer<T> implements StreamTransformer<T, T> {
+class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   IgnoreElementsStreamTransformer() : transformer = _buildTransformer();

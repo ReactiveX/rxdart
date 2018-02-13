@@ -21,7 +21,7 @@ import 'dart:collection';
 /// If `equals` or `hashCode` are omitted, the set uses the elements' intrinsic
 /// `Object.==` and `Object.hashCode`. If you supply one of `equals` and
 /// `hashCode`, you should generally also to supply the other.
-class DistinctUniqueStreamTransformer<T> implements StreamTransformer<T, T> {
+class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
   DistinctUniqueStreamTransformer({bool equals(T e1, T e2), int hashCode(T e)})
       : transformer = _buildTransformer(equals, hashCode);

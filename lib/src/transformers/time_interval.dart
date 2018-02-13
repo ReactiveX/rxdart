@@ -10,7 +10,7 @@ import 'dart:async';
 ///       .transform(new TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
-    implements StreamTransformer<T, S> {
+    extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
   TimeIntervalStreamTransformer() : transformer = _buildTransformer();

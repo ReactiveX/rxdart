@@ -1003,47 +1003,6 @@ class Observable<T> extends Stream<T> {
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(new BufferWithCountStreamTransformer<T, List<T>>(count, skip));
 
-  /// Casts a sequence of items to a given type.
-  ///
-  /// This operator is often useful when going from a generic to a more
-  /// specific type.
-  ///
-  /// In order to capture the Type correctly, it needs to be wrapped
-  /// in a [TypeToken] as the generic parameter.
-  ///
-  /// Given the way Dart generics work, one cannot simply use `as T`
-  /// checks and castings within [CastStreamTransformer] itself. Therefore, the
-  /// [TypeToken] class was introduced to capture the type of class you'd
-  /// like `cast` to convert to.
-  ///
-  /// Note: Unlike `ofType`, this operator performs no filtering, and you
-  /// may run into a [CastError] if not used wisely.
-  ///
-  /// ### Examples
-  ///
-  ///     // A Stream of num, but we know the data is an int
-  ///     new Stream<num>.fromIterable(<int>[1, 2, 3])
-  ///       .cast(new TypeToken<int>) // So we can call `isEven`
-  ///       .map((i) => i.isEven)
-  ///       .listen(print); // prints "false", "true", "false"
-  ///
-  /// As a shortcut, you can use some pre-defined constants to write the above
-  /// in the following way:
-  ///
-  ///     // A Stream of num, but we know the data is an int
-  ///     new Stream<num>.fromIterable(<int>[1, 2, 3])
-  ///       .cast(kInt) // Use the [kInt] constant as a shortcut
-  ///       .map((i) => i.isEven)
-  ///       .listen(print); // prints "false", "true", "false"
-  ///
-  /// If you'd like to create your own shortcuts like the example above,
-  /// simply create a constant:
-  ///
-  ///     const TypeToken<Map<Int, String>> kMapIntString =
-  ///       const TypeToken<Map<Int, String>>();
-  Observable<S> cast<S>(TypeToken<S> typeToken) =>
-      transform(new CastStreamTransformer<T, S>(typeToken));
-
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are
   /// emitted.
@@ -1297,9 +1256,9 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<T> get first => new AsObservableFuture<T>(stream.first);
 
   @override
-  AsObservableFuture<dynamic> firstWhere(bool test(T element),
-          {Object defaultValue()}) =>
-      new AsObservableFuture<dynamic>(
+  AsObservableFuture<T> firstWhere(bool test(T element),
+          {dynamic defaultValue(), T orElse()}) =>
+      new AsObservableFuture<T>(
           stream.firstWhere(test, defaultValue: defaultValue));
 
   /// Converts each emitted item into a new Stream using the given mapper
@@ -1417,9 +1376,9 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<T> get last => new AsObservableFuture<T>(stream.last);
 
   @override
-  AsObservableFuture<dynamic> lastWhere(bool test(T element),
-          {Object defaultValue()}) =>
-      new AsObservableFuture<dynamic>(
+  AsObservableFuture<T> lastWhere(bool test(T element),
+          {dynamic defaultValue(), T orElse()}) =>
+      new AsObservableFuture<T>(
           stream.lastWhere(test, defaultValue: defaultValue));
 
   /// Adds a subscription to this stream. Returns a [StreamSubscription] which
@@ -1661,8 +1620,8 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<T> get single => new AsObservableFuture<T>(stream.single);
 
   @override
-  AsObservableFuture<T> singleWhere(bool test(T element)) =>
-      new AsObservableFuture<T>(stream.singleWhere(test));
+  AsObservableFuture<T> singleWhere(bool test(T element), {T orElse()}) =>
+      new AsObservableFuture<T>(stream.singleWhere(test, orElse: orElse));
 
   /// Skips the first count data events from this stream.
   ///

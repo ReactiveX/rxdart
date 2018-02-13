@@ -13,7 +13,7 @@ import 'dart:async';
 ///       .transform(new OnErrorResumeNextStreamTransformer(
 ///         new Observable.fromIterable([1, 2, 3])))
 ///       .listen(print); // prints 1, 2, 3
-class OnErrorResumeNextStreamTransformer<T> implements StreamTransformer<T, T> {
+class OnErrorResumeNextStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   OnErrorResumeNextStreamTransformer(Stream<T> recoveryStream)

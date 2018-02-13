@@ -15,7 +15,7 @@ import 'package:rxdart/src/transformers/buffer_with_count.dart';
 ///      .transform(new FlatMapStreamTransformer((i) => i))
 ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
 class WindowWithCountStreamTransformer<T, S extends Stream<T>>
-    implements StreamTransformer<T, S> {
+    extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
   WindowWithCountStreamTransformer(int count, [int skip])

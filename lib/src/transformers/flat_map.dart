@@ -15,7 +15,7 @@ import 'dart:async';
 ///           new Stream.fromFuture(
 ///             new Future.delayed(new Duration(minutes: i), () => i))
 ///         .listen(print); // prints 1, 2, 3, 4
-class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
+class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
   FlatMapStreamTransformer(Stream<S> mapper(T value))

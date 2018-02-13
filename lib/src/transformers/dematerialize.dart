@@ -23,7 +23,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///         .transform(dematerializeTransformer())
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
 class DematerializeStreamTransformer<T>
-    implements StreamTransformer<Notification<T>, T> {
+    extends StreamTransformerBase<Notification<T>, T> {
   final StreamTransformer<Notification<T>, T> transformer;
 
   DematerializeStreamTransformer() : transformer = _buildTransformer();

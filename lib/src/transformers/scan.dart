@@ -9,7 +9,7 @@ import 'dart:async';
 ///     new Stream.fromIterable([1, 2, 3])
 ///        .transform(new ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
-class ScanStreamTransformer<T, S> implements StreamTransformer<T, S> {
+class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final _ScanStreamTransformerAccumulator<T, S> accumulator;
   final S seed;
 

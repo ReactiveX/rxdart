@@ -15,7 +15,7 @@ import 'dart:async';
 ///         new Stream.fromIterable([2, 3]), (a, b) => a + b)
 ///       .listen(print); // prints 4 (due to the async nature of streams)
 class WithLatestFromStreamTransformer<T, S, R>
-    implements StreamTransformer<T, R> {
+    extends StreamTransformerBase<T, R> {
   final StreamTransformer<T, R> transformer;
 
   WithLatestFromStreamTransformer(Stream<S> latestFromStream, R fn(T t, S s))

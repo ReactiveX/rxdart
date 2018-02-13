@@ -37,7 +37,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///           onError: (e, s) => print("Oh no!"),
 ///           onDone: () => print("Done")))
 ///         .listen(null); // Prints: 1, "Done"
-class DoStreamTransformer<T> implements StreamTransformer<T, T> {
+class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   DoStreamTransformer(

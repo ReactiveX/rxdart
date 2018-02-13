@@ -18,7 +18,7 @@ import 'dart:async';
 ///       .transform(new BufferWithCountStreamTransformer(2, 1))
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
 class BufferWithCountStreamTransformer<T, S extends List<T>>
-    implements StreamTransformer<T, S> {
+    extends StreamTransformerBase<T, S> {
   final int count;
   final int skip;
 
