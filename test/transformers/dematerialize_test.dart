@@ -10,7 +10,7 @@ void main() {
     final Observable<Notification<int>> observable =
         new Observable<int>.just(1).materialize();
 
-    observable.dematerialize().listen(expectAsync1((int value) {
+    observable.dematerialize<int>().listen(expectAsync1((int value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
       // Should call onDone
@@ -66,7 +66,7 @@ void main() {
     ]);
 
     stream.transform(new DematerializeStreamTransformer<int>()).listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

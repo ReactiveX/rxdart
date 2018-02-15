@@ -73,7 +73,7 @@ void main() {
       observable.listen(
         null,
         onError: expectAsync2(
-          (dynamic e, dynamic s) => expect(e, isException),
+          (Exception e, StackTrace s) => expect(e, isException),
           count: 3,
         ),
       );

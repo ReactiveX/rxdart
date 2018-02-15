@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
+typedef Future<Null> AsyncVoidCallBack();
+
 void main() {
   group('BehaviorSubject', () {
     test('emits the most recently emitted item to every subscriber', () async {
@@ -158,12 +160,12 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final ControllerCallback testOnCancel = () {};
+      final AsyncVoidCallBack onCancel = () => new Future<Null>.value(null);
       // ignore: close_sinks
-      final StreamController<int> subject =
-          new BehaviorSubject<int>(onCancel: testOnCancel);
+      final StreamController<int> subject = new BehaviorSubject<int>(
+          onCancel: onCancel);
 
-      await expect(subject.onCancel, testOnCancel);
+      await expect(subject.onCancel, onCancel);
     });
 
     test('sets onCancel callback', () async {

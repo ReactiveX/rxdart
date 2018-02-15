@@ -60,7 +60,7 @@ void main() {
             .debounce(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -72,8 +72,8 @@ void main() {
           .debounce(const Duration(milliseconds: 200));
 
       observableWithError.listen(null,
-          onError:
-              expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+          onError: expectAsync2(
+              (Exception e, StackTrace s) => expect(e, isException)));
     },
         zoneSpecification: new ZoneSpecification(
             createTimer: (Zone self, ZoneDelegate parent, Zone zone,

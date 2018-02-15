@@ -6,7 +6,7 @@ authors:
 description: Native Dart Rx implementation
 homepage: https://github.com/ReactiveX/rxdart
 environment:
-  sdk: '>=1.21.0'
+  sdk: '>=1.21.0 <2.0.0'
 dependencies:
 dev_dependencies:
   browser: ^0.10.0+2

@@ -31,7 +31,11 @@ class IntervalStreamTransformer<T> implements StreamTransformer<T, T> {
 
                 new Timer(duration, () => completer.complete(value));
 
-                subscription.pause(completer.future.then(controller.add));
+                subscription.pause(completer.future.then<T>((T event) {
+                  controller.add(event);
+
+                  return event;
+                }));
               } catch (e, s) {
                 controller.addError(e, s);
               }

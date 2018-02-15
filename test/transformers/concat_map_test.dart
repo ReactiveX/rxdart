@@ -22,7 +22,7 @@ void main() {
             .concatMap(_getOtherStream);
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -53,7 +53,7 @@ void main() {
         expectAsync1((num value) {
           expect(true, isFalse);
         }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
           expect(true, isFalse);
         }, count: 0),
         onDone: expectAsync0(() {

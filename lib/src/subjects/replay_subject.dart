@@ -49,7 +49,7 @@ class ReplaySubject<T> extends Subject<T> {
   factory ReplaySubject({
     int maxSize,
     void onListen(),
-    onCancel(),
+    Future<dynamic> onCancel(),
     bool sync: false,
   }) {
     // ignore: close_sinks

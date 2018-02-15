@@ -77,7 +77,7 @@ void main() {
             .skipUntil(_getOtherStream());
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -87,14 +87,14 @@ void main() {
         .skipUntil(new ErrorStream<num>(new Exception('Oh noes!')));
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('rx.Observable.skipUntil.error.shouldThrowC', () {
-    expect(
-        () => new Observable<num>.just(1).skipUntil(null), throwsArgumentError);
+    expect(() => new Observable<num>.just(1).skipUntil<Null>(null),
+        throwsArgumentError);
   });
 
   test('rx.Observable.skipUntil.pause.resume', () async {

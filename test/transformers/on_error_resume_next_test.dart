@@ -63,7 +63,7 @@ void main() {
             .onErrorResumeNext(new ErrorStream<num>(new Exception()));
 
     observableWithError.listen((_) {},
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

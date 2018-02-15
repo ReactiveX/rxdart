@@ -67,7 +67,7 @@ class AmbStream<T> extends Stream<T> {
           }
         },
         onCancel: () =>
-            Future.wait(subscriptions.map((StreamSubscription<T> subscription) {
+            Future.wait<Future<dynamic>>(subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();
 
               return new Future<dynamic>.value();

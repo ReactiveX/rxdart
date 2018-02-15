@@ -44,7 +44,7 @@ void main() {
         new Observable<int>.defer(() => _getErroneousStream());
 
     observableWithError.listen(null,
-        onError: expectAsync1((dynamic e) {
+        onError: expectAsync1((Exception e) {
           expect(e, isException);
         }, count: 1));
   });

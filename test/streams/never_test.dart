@@ -16,7 +16,7 @@ void main() {
         expectAsync1((int actual) {
           onDataCalled = true;
         }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
           onErrorCalled = false;
         }, count: 0),
         onDone: expectAsync0(() {
@@ -52,7 +52,7 @@ void main() {
         expectAsync1((int actual) {
           onDataCalled = true;
         }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
           onErrorCalled = false;
         }, count: 0),
         onDone: expectAsync0(() {

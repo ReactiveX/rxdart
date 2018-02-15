@@ -48,7 +48,7 @@ void main() {
         expectAsync1((int actual) {
           expect(true, isFalse);
         }, count: 0),
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
           expect(true, isFalse);
         }, count: 0),
         onDone: expectAsync0(() {

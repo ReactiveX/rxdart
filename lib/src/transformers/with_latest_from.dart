@@ -62,7 +62,7 @@ class WithLatestFromStreamTransformer<T, S, R>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait(<Future<dynamic>>[
+            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
               subscription.cancel(),
               latestFromSubscription.cancel()
             ].where((Future<dynamic> cancelFuture) => cancelFuture != null));

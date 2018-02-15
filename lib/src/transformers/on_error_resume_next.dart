@@ -60,7 +60,7 @@ class OnErrorResumeNextStreamTransformer<T> implements StreamTransformer<T, T> {
             recoverySubscription?.resume();
           },
           onCancel: () {
-            return Future.wait(<Future<dynamic>>[
+            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
               inputSubscription?.cancel(),
               recoverySubscription?.cancel()
             ].where((Future<dynamic> future) => future != null));

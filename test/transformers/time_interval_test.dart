@@ -22,8 +22,8 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.reusable', () async {
-    final TimeIntervalStreamTransformer<int, TimeInterval<int>> transformer =
-        new TimeIntervalStreamTransformer<int, TimeInterval<int>>();
+    final TimeIntervalStreamTransformer<int> transformer =
+        new TimeIntervalStreamTransformer<int>();
     const List<int> expectedOutput = const <int>[0, 1, 2];
     int countA = 0, countB = 0;
 
@@ -68,7 +68,7 @@ void main() {
             .timeInterval();
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

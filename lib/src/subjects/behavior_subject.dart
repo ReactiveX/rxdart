@@ -48,7 +48,7 @@ class BehaviorSubject<T> extends Subject<T> {
   factory BehaviorSubject({
     T seedValue,
     void onListen(),
-    onCancel(),
+    Future<dynamic> onCancel(),
     bool sync: false,
   }) {
     // ignore: close_sinks

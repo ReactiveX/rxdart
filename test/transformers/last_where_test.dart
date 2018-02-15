@@ -3,8 +3,8 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.lastWhere', () async {
-    final String last =
-        await new Observable<String>.fromIterable(<String>['h', 'i'])
+    final dynamic last =
+        await new Observable<String>.fromIterable(const <String>['h', 'i'])
             .lastWhere((String element) => element.length == 1);
 
     await expect(last, 'i');

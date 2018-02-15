@@ -25,7 +25,18 @@ import 'dart:async';
 class ZipStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  ZipStream(Iterable<Stream<dynamic>> streams, Function zipper)
+  ZipStream(
+      Iterable<Stream<dynamic>> streams,
+      T zipper(
+          [dynamic A,
+          dynamic B,
+          dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I]))
       : controller = _buildController(streams, zipper);
 
   @override
@@ -35,7 +46,17 @@ class ZipStream<T> extends Stream<T> {
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(
-      Iterable<Stream<dynamic>> streams, Function zipper) {
+      Iterable<Stream<dynamic>> streams,
+      T zipper(
+          [dynamic A,
+          dynamic B,
+          dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I])) {
     if (streams == null) {
       throw new ArgumentError('streams cannot be null');
     } else if (streams.isEmpty) {
@@ -81,7 +102,7 @@ class ZipStream<T> extends Stream<T> {
             }
 
             for (int i = 0, len = streams.length; i < len; i++) {
-              Stream<T> stream = streams.elementAt(i);
+              Stream<dynamic> stream = streams.elementAt(i);
 
               subscriptions[i] = stream.listen(
                   (dynamic value) => doUpdate(i, value),
@@ -96,7 +117,7 @@ class ZipStream<T> extends Stream<T> {
             controller.addError(e, s);
           }
         },
-        onCancel: () => Future.wait(subscriptions
+        onCancel: () => Future.wait<Future<dynamic>>(subscriptions
             .map((StreamSubscription<dynamic> subscription) =>
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
@@ -104,7 +125,18 @@ class ZipStream<T> extends Stream<T> {
     return controller;
   }
 
-  static void updateWithValues<T>(Function zipper, Iterable<dynamic> values,
+  static void updateWithValues<T>(
+      T zipper(
+          [dynamic A,
+          dynamic B,
+          dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I]),
+      Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
       final int len = values.length;

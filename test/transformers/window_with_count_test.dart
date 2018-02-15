@@ -26,8 +26,8 @@ void main() {
   });
 
   test('rx.Observable.windowWithCount.reusable', () async {
-    final WindowWithCountStreamTransformer<int, Stream<int>> transformer =
-        new WindowWithCountStreamTransformer<int, Stream<int>>(2);
+    final WindowWithCountStreamTransformer<int> transformer =
+        new WindowWithCountStreamTransformer<int>(2);
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -105,7 +105,7 @@ void main() {
             .windowWithCount(2);
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

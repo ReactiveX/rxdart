@@ -25,9 +25,9 @@ class WrappedFuture<T> implements Future<T> {
       wrapped.then(onValue, onError: onError);
 
   @override
-  Future<T> timeout(Duration timeLimit, {onTimeout()}) =>
+  Future<T> timeout(Duration timeLimit, {FutureOr<T> onTimeout()}) =>
       wrapped.timeout(timeLimit, onTimeout: onTimeout);
 
   @override
-  Future<T> whenComplete(action()) => wrapped.whenComplete(action);
+  Future<T> whenComplete(void action()) => wrapped.whenComplete(action);
 }

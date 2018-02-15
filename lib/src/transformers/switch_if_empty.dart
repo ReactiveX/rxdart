@@ -75,7 +75,7 @@ class SwitchIfEmptyStreamTransformer<T> implements StreamTransformer<T, T> {
             switchSubscription?.resume();
           },
           onCancel: () {
-            return Future.wait(<Future<dynamic>>[
+            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
               defaultSubscription?.cancel(),
               switchSubscription?.cancel()
             ]);
