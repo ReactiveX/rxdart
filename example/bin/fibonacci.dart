@@ -30,7 +30,7 @@ void main(List<String> arguments) {
       // value each time a [Stream] event occurs
       // in this case, the accumulated value is always
       // the latest Fibonacci number
-      .scan((seq, _, __) => new IndexedPair.next(seq), seed)
+      .scan((IndexedPair seq, _, __) => new IndexedPair.next(seq), seed)
       // finally, print the output
       .listen(print, onDone: () => print('done!'));
 }
