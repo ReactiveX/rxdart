@@ -27,10 +27,8 @@ class ZipStream<T> extends Stream<T> {
 
   ZipStream(
       Iterable<Stream<dynamic>> streams,
-      T zipper(
-          [dynamic A,
-          dynamic B,
-          dynamic C,
+      T zipper(dynamic A, dynamic B,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,
@@ -47,10 +45,8 @@ class ZipStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(
       Iterable<Stream<dynamic>> streams,
-      T zipper(
-          [dynamic A,
-          dynamic B,
-          dynamic C,
+      T zipper(dynamic A, dynamic B,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,
@@ -126,10 +122,8 @@ class ZipStream<T> extends Stream<T> {
   }
 
   static void updateWithValues<T>(
-      T zipper(
-          [dynamic A,
-          dynamic B,
-          dynamic C,
+      T zipper(dynamic A, dynamic B,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,

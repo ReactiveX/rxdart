@@ -43,10 +43,8 @@ class CombineLatestStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(
       Iterable<Stream<dynamic>> streams,
-      T combiner(
-          [dynamic A,
-          dynamic B,
-          dynamic C,
+      T combiner(dynamic A, dynamic B,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,
@@ -108,10 +106,8 @@ class CombineLatestStream<T> extends Stream<T> {
   }
 
   static void updateWithValues<T>(
-      T combiner(
-          [dynamic A,
-          dynamic B,
-          dynamic C,
+      T combiner(dynamic A, dynamic B,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,
