@@ -23,9 +23,9 @@ class CombineLatestStream<T> extends Stream<T> {
   CombineLatestStream(
       Iterable<Stream<dynamic>> streams,
       T combiner(
-          [dynamic A,
+          dynamic A,
           dynamic B,
-          dynamic C,
+          [dynamic C,
           dynamic D,
           dynamic E,
           dynamic F,
