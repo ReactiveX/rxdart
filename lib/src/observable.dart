@@ -1392,6 +1392,22 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<bool> every(bool test(T element)) =>
       new AsObservableFuture<bool>(stream.every(test));
 
+  /// Converts items from the source stream into a new Stream using a given
+  /// mapper. It ignores all items from the source stream until the new stream
+  /// completes.
+  ///
+  /// Useful when you have a noisy source Stream and only want to respond once
+  /// the previous async operation is finished.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(0, 2).interval(new Duration(milliseconds: 50))
+  ///       .exhaustMap((i) =>
+  ///         new Observable.timer(i, new Duration(milliseconds: 75)))
+  ///       .listen(print); // prints 0, 2
+  Observable<S> exhaustMap<S>(Stream<S> mapper(T value)) =>
+      transform(new ExhaustMapStreamTransformer<T, S>(mapper));
+
   /// Creates an Observable from this stream that converts each element into
   /// zero or more events.
   ///
