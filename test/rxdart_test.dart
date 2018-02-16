@@ -39,6 +39,7 @@ import 'transformers/do_test.dart' as do_test;
 import 'transformers/drain_test.dart' as drain_test;
 import 'transformers/element_at_test.dart' as element_at_test;
 import 'transformers/every_test.dart' as every_test;
+import 'transformers/exhaust_map_test.dart' as exhaust_map_test;
 import 'transformers/expand_test.dart' as expand_test;
 import 'transformers/first_test.dart' as first_test;
 import 'transformers/first_where_test.dart' as first_where_test;
@@ -135,6 +136,7 @@ void main() {
   drain_test.main();
   element_at_test.main();
   every_test.main();
+  exhaust_map_test.main();
   expand_test.main();
   first_test.main();
   first_where_test.main();
