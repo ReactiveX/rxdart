@@ -57,7 +57,7 @@ void main() {
             .switchIfEmpty(new Observable<int>.just(1));
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

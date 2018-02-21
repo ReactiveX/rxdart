@@ -77,14 +77,14 @@ void main() {
             .takeUntil(_getOtherStream());
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('rx.Observable.takeUntil.error.shouldThrowB', () {
-    expect(
-        () => new Observable<num>.just(1).takeUntil(null), throwsArgumentError);
+    expect(() => new Observable<num>.just(1).takeUntil<Null>(null),
+        throwsArgumentError);
   });
 
   test('rx.Observable.takeUntil.pause.resume', () async {

@@ -12,7 +12,7 @@ void main() {
         .timeout(new Duration(milliseconds: 1));
 
     subscription = observable.listen((_) {},
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((TimeoutException e, StackTrace s) {
           expect(e is TimeoutException, isTrue);
           subscription.cancel();
         }, count: 1));

@@ -20,7 +20,18 @@ import 'dart:async';
 class CombineLatestStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  CombineLatestStream(Iterable<Stream<dynamic>> streams, Function combiner)
+  CombineLatestStream(
+      Iterable<Stream<dynamic>> streams,
+      T combiner(
+          dynamic A,
+          dynamic B,
+          [dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I]))
       : controller = _buildController(streams, combiner);
 
   @override
@@ -31,7 +42,15 @@ class CombineLatestStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(
-      Iterable<Stream<dynamic>> streams, Function combiner) {
+      Iterable<Stream<dynamic>> streams,
+      T combiner(dynamic A, dynamic B,
+          [dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I])) {
     if (streams == null) {
       throw new ArgumentError('streams cannot be null');
     } else if (streams.isEmpty) {
@@ -78,7 +97,7 @@ class CombineLatestStream<T> extends Stream<T> {
                 });
           }
         },
-        onCancel: () => Future.wait(subscriptions
+        onCancel: () => Future.wait<Future<dynamic>>(subscriptions
             .map((StreamSubscription<dynamic> subscription) =>
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
@@ -86,7 +105,16 @@ class CombineLatestStream<T> extends Stream<T> {
     return controller;
   }
 
-  static void updateWithValues<T>(Function combiner, Iterable<dynamic> values,
+  static void updateWithValues<T>(
+      T combiner(dynamic A, dynamic B,
+          [dynamic C,
+          dynamic D,
+          dynamic E,
+          dynamic F,
+          dynamic G,
+          dynamic H,
+          dynamic I]),
+      Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
       final int len = values.length;

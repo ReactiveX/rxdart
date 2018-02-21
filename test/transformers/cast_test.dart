@@ -58,7 +58,7 @@ void main() {
       new Observable<int>.just(1).cast(const TypeToken<String>()).listen(
             null,
             onError: expectAsync2(
-              (dynamic e, dynamic s) => expect(e, isCastError),
+              (CastError e, StackTrace s) => expect(e, isCastError),
             ),
           );
     });

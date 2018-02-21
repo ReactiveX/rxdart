@@ -22,8 +22,8 @@ void main() {
   });
 
   test('rx.Observable.bufferWithCount.reusable', () async {
-    final BufferWithCountStreamTransformer<int, List<int>> transformer =
-        new BufferWithCountStreamTransformer<int, List<int>>(2);
+    final BufferWithCountStreamTransformer<int> transformer =
+        new BufferWithCountStreamTransformer<int>(2);
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -92,7 +92,7 @@ void main() {
             .bufferWithCount(2);
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

@@ -77,7 +77,7 @@ void main() {
                 _getLatestFromStream(), (num first, int second) => "Hello");
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -92,7 +92,7 @@ void main() {
   test('rx.Observable.withLatestFrom.error.shouldThrowC', () {
     expect(
         () => new Observable<int>(_getStream())
-            .withLatestFrom(_getLatestFromStream(), null),
+            .withLatestFrom<int, Null>(_getLatestFromStream(), null),
         throwsArgumentError);
   });
 

@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/notification.dart';
 
+typedef void VoidFunc();
+typedef Future<dynamic> FutureFunc();
+
 /// Invokes the given callback at the corresponding point the the stream
 /// lifecycle. For example, if you pass in an onDone callback, it will
 /// be invoked when the stream finishes emitting items.
@@ -87,7 +90,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
 
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      final Function onListenLocal = () {
+      final VoidFunc onListenLocal = () {
         if (onListen != null) {
           try {
             onListen();
@@ -116,7 +119,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
                 }
                 controller.add(value);
               },
-              onError: (dynamic e, dynamic s) {
+              onError: (dynamic e, StackTrace s) {
                 if (onError != null) {
                   try {
                     onError(e, s);
@@ -155,7 +158,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
           },
         );
       };
-      final Function onCancelLocal = () {
+      final FutureFunc onCancelLocal = () {
         if (onCancel != null) {
           try {
             onCancel();
@@ -163,7 +166,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
             if (!controller.isClosed) {
               controller.addError(e, s);
             } else {
-              Zone.current.handleUncaughtError(e, s);
+              Zone.current.handleUncaughtError<Null>(e, s);
             }
           }
         }

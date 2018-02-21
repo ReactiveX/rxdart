@@ -63,7 +63,8 @@ void main() {
         new ErrorStream<int>(new Exception())
             .transform(new TimestampStreamTransformer<int>());
 
-    streamWithError.listen(null, onError: expectAsync2((dynamic e, dynamic s) {
+    streamWithError.listen(null,
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

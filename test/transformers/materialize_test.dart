@@ -67,7 +67,7 @@ void main() {
         (Notification<int> notification) {
           notifications.add(notification);
         },
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
           // Check to ensure the stream does not come to this point
           expect(true, isFalse);
         }, count: 0),

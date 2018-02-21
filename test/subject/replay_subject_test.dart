@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
+typedef Future<Null> AsyncVoidCallBack();
+
 void main() {
   group('ReplaySubject', () {
     test('replays the previously emitted items to every subscriber', () async {
@@ -161,12 +163,12 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final ControllerCallback testOnCancel = () {};
+      final AsyncVoidCallBack onCancel = () => new Future<Null>.value(null);
       // ignore: close_sinks
       final StreamController<int> subject =
-          new ReplaySubject<int>(onCancel: testOnCancel);
+          new ReplaySubject<int>(onCancel: onCancel);
 
-      await expect(subject.onCancel, testOnCancel);
+      await expect(subject.onCancel, onCancel);
     });
 
     test('sets onCancel callback', () async {

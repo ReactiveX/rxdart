@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream<num> getDelayedStream<T>(int delay, num value) async* {
+Stream<num> getDelayedStream(int delay, num value) async* {
   final Completer<dynamic> completer = new Completer<dynamic>();
 
   new Timer(new Duration(milliseconds: delay), () => completer.complete());
@@ -68,7 +68,7 @@ void main() {
 
     // listen twice on same stream
     observable.listen(null,
-        onError:
-            expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+        onError: expectAsync2(
+            (Exception e, StackTrace s) => expect(e, isException)));
   });
 }

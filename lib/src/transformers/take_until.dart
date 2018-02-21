@@ -48,7 +48,7 @@ class TakeUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait(<Future<dynamic>>[
+            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
               subscription.cancel(),
               otherSubscription.cancel()
             ].where((Future<dynamic> cancelFuture) => cancelFuture != null));

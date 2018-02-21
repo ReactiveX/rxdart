@@ -9,22 +9,22 @@ import 'dart:async';
 ///       .transform(new IntervalStreamTransformer(new Duration(seconds: 1)))
 ///       .transform(new TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
-class TimeIntervalStreamTransformer<T, S extends TimeInterval<T>>
-    implements StreamTransformer<T, S> {
-  final StreamTransformer<T, S> transformer;
+class TimeIntervalStreamTransformer<T>
+    implements StreamTransformer<T, TimeInterval<T>> {
+  final StreamTransformer<T, TimeInterval<T>> transformer;
 
   TimeIntervalStreamTransformer() : transformer = _buildTransformer();
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<TimeInterval<T>> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, S>
-      _buildTransformer<T, S extends TimeInterval<T>>() {
-    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+  static StreamTransformer<T, TimeInterval<T>> _buildTransformer<T>() {
+    return new StreamTransformer<T, TimeInterval<T>>(
+        (Stream<T> input, bool cancelOnError) {
       StreamController<TimeInterval<T>> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<S>(
+      controller = new StreamController<TimeInterval<T>>(
           sync: true,
           onListen: () {
             Stopwatch stopwatch = new Stopwatch()..start();

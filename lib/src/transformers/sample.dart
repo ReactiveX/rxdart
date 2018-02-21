@@ -36,7 +36,7 @@ class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
               }, onError: controller.addError);
 
               sampleSubscription = sampleStream.listen(
-                  (_) {
+                  (dynamic _) {
                     if (currentValue != null) {
                       controller.add(currentValue);
                       currentValue = null;
@@ -59,7 +59,7 @@ class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait(<Future<dynamic>>[
+            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
               subscription.cancel(),
               sampleSubscription.cancel()
             ].where((Future<dynamic> cancelFuture) => cancelFuture != null));

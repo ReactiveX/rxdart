@@ -82,7 +82,7 @@ void main() {
             .flatMapLatest(_getOtherStream);
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -92,7 +92,7 @@ void main() {
         (_) => new ErrorStream<int>(new Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -104,7 +104,7 @@ void main() {
     });
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

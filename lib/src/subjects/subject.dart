@@ -52,7 +52,7 @@ abstract class Subject<T> implements StreamController<T> {
   ControllerCancelCallback get onCancel => controller.onCancel;
 
   @override
-  set onCancel(onCancelHandler()) {
+  set onCancel(void onCancelHandler()) {
     controller.onCancel = onCancelHandler;
   }
 
@@ -90,7 +90,7 @@ abstract class Subject<T> implements StreamController<T> {
 
     source.listen((T event) {
       _add(event);
-    }, onError: (dynamic e, dynamic s) {
+    }, onError: (dynamic e, StackTrace s) {
       controller.addError(e, s);
 
       if (cancelOnError) {

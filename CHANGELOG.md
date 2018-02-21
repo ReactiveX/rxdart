@@ -1,3 +1,9 @@
+## 0.15.1
+
+* Add `exhaustMap` map to inner observable, ignore other values until that observable completes.
+* Improved code to be dartdevc compatible.
+* Add upper SDK version limit in pubspec
+
 ## 0.15.0
 
 * Change `debounce` to emit the last item of the source stream as soon as the source stream completes.

@@ -53,7 +53,7 @@ void main() {
             .startWithMany(const <int>[5, 6]);
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });

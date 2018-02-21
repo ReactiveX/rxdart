@@ -221,20 +221,20 @@ void main() {
               () => throw new Exception('catch me if you can! doOnListen'))
           .listen(null,
               onError: expectAsync2(
-                  (dynamic e, dynamic s) => expect(e, isException)));
+                  (Exception e, StackTrace s) => expect(e, isException)));
 
       new Observable<int>.just(1)
           .doOnData((_) => throw new Exception('catch me if you can! doOnData'))
           .listen(null,
               onError: expectAsync2(
-                  (dynamic e, dynamic s) => expect(e, isException)));
+                  (Exception e, StackTrace s) => expect(e, isException)));
 
       new Observable<int>.error(new Exception('oh noes!'))
-          .doOnError(
-              (_, __) => throw new Exception('catch me if you can! doOnError'))
+          .doOnError((dynamic _, dynamic __) =>
+              throw new Exception('catch me if you can! doOnError'))
           .listen(null,
               onError: expectAsync2(
-                  (dynamic e, dynamic s) => expect(e, isException),
+                  (Exception e, StackTrace s) => expect(e, isException),
                   count: 2));
 
       // a cancel() call may occur after the controller is already closed
@@ -253,7 +253,7 @@ void main() {
                 ..cancel();
         },
         onError: expectAsync2(
-          (dynamic e, dynamic s) => expect(e, isException),
+          (Exception e, StackTrace s) => expect(e, isException),
         ),
       );
 
@@ -262,7 +262,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (dynamic e, dynamic s) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -271,7 +271,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (dynamic e, dynamic s) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
               count: 2,
             ),
           );
@@ -281,7 +281,8 @@ void main() {
               (_) => throw new Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
-                  (dynamic e, dynamic s) => expect(e, isException),))
+                (Exception e, StackTrace s) => expect(e, isException),
+              ))
             ..pause()
             ..resume();
 
@@ -290,7 +291,7 @@ void main() {
               () => throw new Exception('catch me if you can! doOnResume'))
           .listen(null,
               onError: expectAsync2(
-                  (dynamic e, dynamic s) => expect(e, isException)))
+                  (Exception e, StackTrace s) => expect(e, isException)))
             ..pause()
             ..resume();
     });

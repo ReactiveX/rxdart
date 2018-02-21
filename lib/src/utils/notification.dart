@@ -11,7 +11,7 @@ class Notification<T> {
   final Kind kind;
   final T value;
   final dynamic error;
-  final dynamic stackTrace;
+  final StackTrace stackTrace;
 
   Notification(this.kind, this.value, this.error, this.stackTrace);
 
@@ -21,7 +21,7 @@ class Notification<T> {
   factory Notification.onDone() =>
       new Notification<T>(Kind.OnDone, null, null, null);
 
-  factory Notification.onError(dynamic e, dynamic s) =>
+  factory Notification.onError(dynamic e, StackTrace s) =>
       new Notification<T>(Kind.OnError, null, e, s);
 
   @override

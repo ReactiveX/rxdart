@@ -88,7 +88,7 @@ class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
                 new List<StreamSubscription<dynamic>>.from(subscriptions)
                   ..add(subscription);
 
-            return Future.wait(list
+            return Future.wait<Future<dynamic>>(list
                 .map((StreamSubscription<dynamic> subscription) =>
                     subscription.cancel())
                 .where((Future<dynamic> cancelFuture) => cancelFuture != null));

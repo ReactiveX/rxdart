@@ -14,31 +14,30 @@ import 'package:rxdart/src/transformers/buffer_with_count.dart';
 ///      .transform(new WindowWithCountStreamTransformer(3))
 ///      .transform(new FlatMapStreamTransformer((i) => i))
 ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
-class WindowWithCountStreamTransformer<T, S extends Stream<T>>
-    implements StreamTransformer<T, S> {
-  final StreamTransformer<T, S> transformer;
+class WindowWithCountStreamTransformer<T>
+    implements StreamTransformer<T, Stream<T>> {
+  final StreamTransformer<T, Stream<T>> transformer;
 
   WindowWithCountStreamTransformer(int count, [int skip])
       : transformer = _buildTransformer(count, skip);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Stream<T>> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, S> _buildTransformer<T, S extends Stream<T>>(
-      int count,
+  static StreamTransformer<T, Stream<T>> _buildTransformer<T>(int count,
       [int skip]) {
     BufferWithCountStreamTransformer.assertCountAndSkip(count, skip);
 
-    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
+    return new StreamTransformer<T, Stream<T>>(
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<Stream<T>> controller;
       StreamSubscription<Iterable<T>> subscription;
 
-      controller = new StreamController<S>(
+      controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new BufferWithCountStreamTransformer<T, List<T>>(
-                    count, skip))
+                .transform(new BufferWithCountStreamTransformer<T>(count, skip))
                 .listen((Iterable<T> value) {
               controller.add(new Stream<T>.fromIterable(value));
             },

@@ -23,8 +23,8 @@ void main() {
     // expect to hit onError in first subscription
     // expect immediate error when trying another subscription
     stream.listen(null,
-        onError:
-            expectAsync2((dynamic e, dynamic s) => expect(e, isException)));
+        onError: expectAsync2(
+            (Exception e, StackTrace s) => expect(e, isException)));
     await expect(() => stream.listen(null), throwsA(isStateError));
   });
 

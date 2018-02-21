@@ -17,27 +17,26 @@ import 'dart:async';
 ///     new Stream.fromIterable([1, 2, 3, 4])
 ///       .transform(new BufferWithCountStreamTransformer(2, 1))
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-class BufferWithCountStreamTransformer<T, S extends List<T>>
-    implements StreamTransformer<T, S> {
+class BufferWithCountStreamTransformer<T>
+    implements StreamTransformer<T, List<T>> {
   final int count;
   final int skip;
 
   BufferWithCountStreamTransformer(this.count, [this.skip]);
 
   @override
-  Stream<S> bind(Stream<T> stream) =>
-      _buildTransformer<T, S>(count, skip).bind(stream);
+  Stream<List<T>> bind(Stream<T> stream) =>
+      _buildTransformer<T>(count, skip).bind(stream);
 
-  static StreamTransformer<T, S> _buildTransformer<T, S extends List<T>>(
-      int count,
+  static StreamTransformer<T, List<T>> _buildTransformer<T>(int count,
       [int skip]) {
     assertCountAndSkip(count, skip);
 
     final int bufferKeep = count - ((skip == null) ? count : skip);
     List<T> buffer = <T>[];
 
-    return new StreamTransformer<T, S>.fromHandlers(
-        handleData: (T data, EventSink<S> sink) {
+    return new StreamTransformer<T, List<T>>.fromHandlers(
+        handleData: (T data, EventSink<List<T>> sink) {
       buffer.add(data);
 
       if (buffer.length == count) {
@@ -45,7 +44,7 @@ class BufferWithCountStreamTransformer<T, S extends List<T>>
 
         buffer = buffer.sublist(count - bufferKeep);
       }
-    }, handleDone: (EventSink<S> sink) {
+    }, handleDone: (EventSink<List<T>> sink) {
       if (buffer.isNotEmpty) sink.add(buffer);
     });
   }

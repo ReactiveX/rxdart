@@ -59,7 +59,7 @@ void main() {
     });
 
     observableWithError.listen(null,
-        onError: expectAsync2((dynamic e, dynamic s) {
+        onError: expectAsync2((StateError e, StackTrace s) {
           expect(e, isStateError);
         }, count: 4));
   });
