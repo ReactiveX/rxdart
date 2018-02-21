@@ -3,7 +3,7 @@ version: 0.15.1
 authors:
 - Frank Pepermans <frank@igindo.com>
 - Brian Egan <brian@brianegan.com>
-description: Native Dart Rx implementation
+description: RxDart is an implementation of the popular reactiveX api for asynchronous programming, leveraging the native Dart Streams api.
 homepage: https://github.com/ReactiveX/rxdart
 environment:
   sdk: '>=1.21.0 <2.0.0'
