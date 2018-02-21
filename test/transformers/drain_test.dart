@@ -7,6 +7,6 @@ void main() {
 
     final int actual = await new Observable<int>.just(1).drain(expected);
 
-    await expect(actual, expected);
+    await expectLater(actual, expected);
   });
 }

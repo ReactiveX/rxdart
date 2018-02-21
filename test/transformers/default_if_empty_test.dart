@@ -48,7 +48,7 @@ void main() {
     stream.listen((_) {});
 
     // code should reach here
-    await expect(stream.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('rx.Observable.defaultIfEmpty.error.shouldThrow', () async {

@@ -56,7 +56,7 @@ class MergeStream<T> extends Stream<T> {
             });
           }
         },
-        onCancel: () => Future.wait<Future<dynamic>>(subscriptions
+        onCancel: () => Future.wait<dynamic>(subscriptions
             .map((StreamSubscription<T> subscription) => subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 

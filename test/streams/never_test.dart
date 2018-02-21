@@ -29,16 +29,16 @@ void main() {
 
     // We do not expect onData, onDone, nor onError to be called, as [never]
     // streams emit no items or errors, and they do not terminate
-    await expect(onDataCalled, isFalse);
-    await expect(onDoneCalled, isFalse);
-    await expect(onErrorCalled, isFalse);
+    await expectLater(onDataCalled, isFalse);
+    await expectLater(onDoneCalled, isFalse);
+    await expectLater(onErrorCalled, isFalse);
   });
 
   test('NeverStream.single.subscription', () async {
     final NeverStream<int> stream = new NeverStream<int>();
 
     stream.listen((_) {});
-    await expect(() => stream.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => stream.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.never', () async {
@@ -65,8 +65,8 @@ void main() {
 
     // We do not expect onData, onDone, nor onError to be called, as [never]
     // streams emit no items or errors, and they do not terminate
-    await expect(onDataCalled, isFalse);
-    await expect(onDoneCalled, isFalse);
-    await expect(onErrorCalled, isFalse);
+    await expectLater(onDataCalled, isFalse);
+    await expectLater(onDoneCalled, isFalse);
+    await expectLater(onErrorCalled, isFalse);
   });
 }

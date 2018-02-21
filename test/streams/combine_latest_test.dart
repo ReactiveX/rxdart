@@ -42,7 +42,7 @@ void main() {
     });
 
     observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.combineLatest2', () async {
@@ -276,7 +276,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.combineLatest.error.shouldThrowA', () async {

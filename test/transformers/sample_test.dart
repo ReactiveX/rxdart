@@ -13,7 +13,7 @@ void main() {
     final Observable<int> observable =
         new Observable<int>(_getStream()).sample(_getSampleStream());
 
-    await expect(observable, emitsInOrder(const <int>[0, 2, 4]));
+    await expectLater(observable, emitsInOrder(const <int>[0, 2, 4]));
   });
 
   test('rx.Observable.sample.reusable', () async {
@@ -25,8 +25,8 @@ void main() {
     final Observable<int> observableB =
         new Observable<int>(_getStream()).transform(transformer);
 
-    await expect(observableA, emitsInOrder(const <int>[0, 2, 4]));
-    await expect(observableB, emitsInOrder(const <int>[0, 2, 4]));
+    await expectLater(observableA, emitsInOrder(const <int>[0, 2, 4]));
+    await expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]));
   });
 
   test('rx.Observable.sample.onDone', () async {
@@ -34,7 +34,7 @@ void main() {
         new Observable<int>(new Observable<int>.just(1))
             .sample(new Observable<int>.empty());
 
-    await expect(observable, emits(1));
+    await expectLater(observable, emits(1));
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
@@ -45,7 +45,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    await expect(true, true);
+    await expectLater(true, true);
   });
 
   test('rx.Observable.sample.error.shouldThrowA', () async {

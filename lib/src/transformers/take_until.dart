@@ -12,7 +12,7 @@ import 'dart:async';
 ///       .transform(new TakeUntilStreamTransformer(
 ///         new TimerStream(3, new Duration(seconds: 10))))
 ///       .listen(print); // prints 1
-class TakeUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
+class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   TakeUntilStreamTransformer(Stream<S> otherStream)
@@ -48,7 +48,7 @@ class TakeUntilStreamTransformer<T, S> implements StreamTransformer<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
+            return Future.wait<dynamic>(<Future<dynamic>>[
               subscription.cancel(),
               otherSubscription.cancel()
             ].where((Future<dynamic> cancelFuture) => cancelFuture != null));

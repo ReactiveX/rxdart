@@ -7,18 +7,18 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.min', () async {
-    await expect(new Observable<int>(_getStream()).min(), completion(0));
+    await expectLater(new Observable<int>(_getStream()).min(), completion(0));
   });
 
   test('rx.Observable.min.with.comparator', () async {
-    await expect(
+    await expectLater(
         new Observable<String>.fromIterable(<String>["one", "two", "three"])
             .min((String a, String b) => a.length - b.length),
         completion("one"));
   });
 
   test('returns an AsObservableFuture', () async {
-    await expect(
+    await expectLater(
         new Observable<String>.fromIterable(<String>["one", "two", "three"])
             .min((String a, String b) => a.length - b.length),
         new isInstanceOf<AsObservableFuture<String>>());
@@ -26,7 +26,7 @@ void main() {
 
   group('MinFuture', () {
     test('emits the minimum value from a list without a comparator', () async {
-      await expect(new StreamMinFuture<int>(_getStream()), completion(0));
+      await expectLater(new StreamMinFuture<int>(_getStream()), completion(0));
     });
 
     test('emits the minimum value from a list with a comparator', () async {
@@ -36,7 +36,8 @@ void main() {
       final Comparator<String> stringLengthComparator =
           (String a, String b) => a.length - b.length;
 
-      await expect(new StreamMinFuture<String>(stream, stringLengthComparator),
+      await expectLater(
+          new StreamMinFuture<String>(stream, stringLengthComparator),
           completion("one"));
     });
 
@@ -46,14 +47,14 @@ void main() {
         new ErrorStream<int>(new Exception())
       ]);
 
-      await expect(new StreamMinFuture<int>(stream), throwsException);
+      await expectLater(new StreamMinFuture<int>(stream), throwsException);
     });
 
     test('rx.Observable.min.error.comparator', () async {
       Stream<ErrorComparator> stream = new Stream<ErrorComparator>.fromIterable(
           <ErrorComparator>[new ErrorComparator(), new ErrorComparator()]);
 
-      await expect(
+      await expectLater(
           new StreamMinFuture<ErrorComparator>(stream), throwsException);
     });
   });

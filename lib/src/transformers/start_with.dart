@@ -7,7 +7,7 @@ import 'dart:async';
 ///     new Stream.fromIterable([2])
 ///       .transform(new StartWithStreamTransformer(1))
 ///       .listen(print); // prints 1, 2
-class StartWithStreamTransformer<T> implements StreamTransformer<T, T> {
+class StartWithStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   StartWithStreamTransformer(T startValue)

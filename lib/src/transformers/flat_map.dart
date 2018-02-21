@@ -15,7 +15,7 @@ import 'dart:async';
 ///           new Stream.fromFuture(
 ///             new Future.delayed(new Duration(minutes: i), () => i))
 ///         .listen(print); // prints 1, 2, 3, 4
-class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
+class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
   FlatMapStreamTransformer(Stream<S> mapper(T value))
@@ -88,7 +88,7 @@ class FlatMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
                 new List<StreamSubscription<dynamic>>.from(subscriptions)
                   ..add(subscription);
 
-            return Future.wait<Future<dynamic>>(list
+            return Future.wait<dynamic>(list
                 .map((StreamSubscription<dynamic> subscription) =>
                     subscription.cancel())
                 .where((Future<dynamic> cancelFuture) => cancelFuture != null));

@@ -8,7 +8,7 @@ void main() {
   test('ErrorStream', () async {
     Stream<int> stream = new ErrorStream<int>(new Exception());
 
-    await expect(
+    await expectLater(
         stream,
         emitsInOrder(<Matcher>[
           neverEmits(anything),
@@ -25,13 +25,13 @@ void main() {
     stream.listen(null,
         onError: expectAsync2(
             (Exception e, StackTrace s) => expect(e, isException)));
-    await expect(() => stream.listen(null), throwsA(isStateError));
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('rx.Observable.error', () async {
     Observable<int> observable = new Observable<int>.error(new Exception());
 
-    await expect(
+    await expectLater(
         observable,
         emitsInOrder(<Matcher>[
           neverEmits(anything),

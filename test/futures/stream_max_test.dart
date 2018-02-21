@@ -7,18 +7,18 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.max', () async {
-    await expect(new Observable<int>(_getStream()).max(), completion(9));
+    await expectLater(new Observable<int>(_getStream()).max(), completion(9));
   });
 
   test('rx.Observable.max.with.comparator', () async {
-    await expect(
+    await expectLater(
         new Observable<String>.fromIterable(<String>["one", "two", "three"])
             .max((String a, String b) => a.length - b.length),
         completion("three"));
   });
 
   test('returns an AsObservableFuture', () async {
-    await expect(
+    await expectLater(
         new Observable<String>.fromIterable(<String>["one", "two", "three"])
             .max((String a, String b) => a.length - b.length),
         new isInstanceOf<AsObservableFuture<String>>());
@@ -26,7 +26,7 @@ void main() {
 
   group('MaxFuture', () {
     test('emits the maximum value from a list without a comparator', () async {
-      await expect(new StreamMaxFuture<int>(_getStream()), completion(9));
+      await expectLater(new StreamMaxFuture<int>(_getStream()), completion(9));
     });
 
     test('emits the maximum value from a list with a comparator', () async {
@@ -36,7 +36,7 @@ void main() {
       final Comparator<String> stringLengthComparator =
           (String a, String b) => a.length - b.length;
 
-      await expect(new StreamMaxFuture<String>(stream, stringLengthComparator),
+      await expectLater(new StreamMaxFuture<String>(stream, stringLengthComparator),
           completion("three"));
     });
 
@@ -46,14 +46,14 @@ void main() {
         new ErrorStream<int>(new Exception())
       ]);
 
-      await expect(new StreamMaxFuture<int>(stream), throwsException);
+      await expectLater(new StreamMaxFuture<int>(stream), throwsException);
     });
 
     test('rx.Observable.max.error.comparator', () async {
       Stream<ErrorComparator> stream = new Stream<ErrorComparator>.fromIterable(
           <ErrorComparator>[new ErrorComparator(), new ErrorComparator()]);
 
-      await expect(
+      await expectLater(
           new StreamMaxFuture<ErrorComparator>(stream), throwsException);
     });
   });

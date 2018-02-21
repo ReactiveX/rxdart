@@ -15,7 +15,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///         .transform(materializeTransformer())
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification
 class MaterializeStreamTransformer<T>
-    implements StreamTransformer<T, Notification<T>> {
+    extends StreamTransformerBase<T, Notification<T>> {
   final StreamTransformer<T, Notification<T>> transformer;
 
   MaterializeStreamTransformer() : transformer = _buildTransformer();

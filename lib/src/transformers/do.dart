@@ -40,7 +40,7 @@ typedef Future<dynamic> FutureFunc();
 ///           onError: (e, s) => print("Oh no!"),
 ///           onDone: () => print("Done")))
 ///         .listen(null); // Prints: 1, "Done"
-class DoStreamTransformer<T> implements StreamTransformer<T, T> {
+class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   DoStreamTransformer(
@@ -166,7 +166,7 @@ class DoStreamTransformer<T> implements StreamTransformer<T, T> {
             if (!controller.isClosed) {
               controller.addError(e, s);
             } else {
-              Zone.current.handleUncaughtError<Null>(e, s);
+              Zone.current.handleUncaughtError(e, s);
             }
           }
         }

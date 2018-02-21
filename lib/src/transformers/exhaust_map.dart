@@ -15,7 +15,7 @@ import 'dart:async';
 ///         (i) => new Observable.timer(i, new Duration(milliseconds: 200)),
 ///       ))
 ///     .listen(print); // prints 0, 2
-class ExhaustMapStreamTransformer<T, S> implements StreamTransformer<T, S> {
+class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
   ExhaustMapStreamTransformer(Stream<S> mapper(T value))

@@ -20,7 +20,7 @@ void main() {
         new _TestObject("a")
       ]).distinctUnique();
 
-      await expect(
+      await expectLater(
           observable,
           emitsInOrder(<dynamic>[
             new _TestObject("a"),
@@ -47,7 +47,7 @@ void main() {
               equals: (_TestObject a, _TestObject b) => a.key == b.key,
               hashCode: (_TestObject o) => o.key.hashCode);
 
-      await expect(
+      await expectLater(
           observable,
           emitsInOrder(<dynamic>[
             new _TestObject("a"),
@@ -107,7 +107,7 @@ void main() {
           new Stream<_TestObject>.fromIterable(data)
               .transform(distinctUniqueStreamTransformer);
 
-      await expect(
+      await expectLater(
           firstStream,
           emitsInOrder(<dynamic>[
             new _TestObject("a"),
@@ -116,7 +116,7 @@ void main() {
             emitsDone
           ]));
 
-      await expect(
+      await expectLater(
           secondStream,
           emitsInOrder(<dynamic>[
             new _TestObject("a"),

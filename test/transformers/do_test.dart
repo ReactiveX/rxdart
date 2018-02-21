@@ -11,8 +11,8 @@ void main() {
       final Observable<int> observable =
           new Observable<int>.empty().doOnDone(() => onDoneCalled = true);
 
-      await expect(observable, emitsDone);
-      await expect(onDoneCalled, isTrue);
+      await expectLater(observable, emitsDone);
+      await expectLater(onDoneCalled, isTrue);
     });
 
     test('calls onError when an error is emitted', () async {
@@ -21,8 +21,8 @@ void main() {
           new Observable<int>.error(new Exception())
               .doOnError((dynamic e, dynamic s) => onErrorCalled = true);
 
-      await expect(observable, emitsError(isException));
-      await expect(onErrorCalled, isTrue);
+      await expectLater(observable, emitsError(isException));
+      await expectLater(onErrorCalled, isTrue);
     });
 
     test(
@@ -40,7 +40,7 @@ void main() {
       subject.addError(new Exception());
       subject.addError(new Exception());
 
-      await expect(count, 2);
+      await expectLater(count, 2);
       await subject.close();
     });
 
@@ -53,7 +53,7 @@ void main() {
           .listen(null)
           .cancel();
 
-      await expect(onCancelCalled, isTrue);
+      await expectLater(onCancelCalled, isTrue);
     });
 
     test(
@@ -67,7 +67,7 @@ void main() {
       observable.listen(null);
       await observable.listen(null).cancel();
 
-      await expect(count, 1);
+      await expectLater(count, 1);
       await subject.close();
     });
 
@@ -76,8 +76,8 @@ void main() {
       final Observable<int> observable =
           new Observable<int>.just(1).doOnData((int i) => onDataCalled = true);
 
-      await expect(observable, emits(1));
-      await expect(onDataCalled, isTrue);
+      await expectLater(observable, emits(1));
+      await expectLater(onDataCalled, isTrue);
     });
 
     test('onData only emits once for broadcast streams with multiple listeners',
@@ -94,7 +94,7 @@ void main() {
       controller.add(1);
       controller.add(2);
 
-      await expect(actual, <int>[1, 2]);
+      await expectLater(actual, <int>[1, 2]);
       await controller.close();
     });
 
@@ -113,10 +113,10 @@ void main() {
         }
       });
 
-      await expect(observable,
+      await expectLater(observable,
           emitsInOrder(<dynamic>[1, emitsError(isException), emitsDone]));
 
-      await expect(actual, <Notification<int>>[
+      await expectLater(actual, <Notification<int>>[
         new Notification<int>.onData(1),
         new Notification<int>.onError(exception, stacktrace),
         new Notification<int>.onDone()
@@ -139,7 +139,7 @@ void main() {
       controller.add(1);
       controller.add(2);
 
-      await expect(count, 2);
+      await expectLater(count, 2);
       await controller.close();
     });
 
@@ -150,8 +150,8 @@ void main() {
         onListenCalled = true;
       });
 
-      await expect(observable, emitsDone);
-      await expect(onListenCalled, isTrue);
+      await expectLater(observable, emitsDone);
+      await expectLater(onListenCalled, isTrue);
     });
 
     test('calls onListen every time a consumer listens to a broadcast stream',
@@ -168,7 +168,7 @@ void main() {
       observable.listen(null);
       observable.listen(null);
 
-      await expect(onListenCallCount, 2);
+      await expectLater(onListenCallCount, 2);
       await sc.close();
     });
 

@@ -35,7 +35,7 @@ void main() {
       observable.listen((_) {});
       observable.listen((_) {});
     } catch (e) {
-      await expect(e, isStateError);
+      await expectLater(e, isStateError);
     }
   });
 

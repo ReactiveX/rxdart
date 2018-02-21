@@ -10,7 +10,7 @@ import 'dart:async';
 ///     new Stream.fromIterable([1, 2, 3])
 ///       .transform(new SampleStreamTransformer(new TimerStream(1, new Duration(seconds: 1)))
 ///       .listen(print); // prints 3
-class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
+class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   SampleStreamTransformer(Stream<dynamic> sampleStream)
@@ -59,7 +59,7 @@ class SampleStreamTransformer<T> implements StreamTransformer<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            return Future.wait<Future<dynamic>>(<Future<dynamic>>[
+            return Future.wait<dynamic>(<Future<dynamic>>[
               subscription.cancel(),
               sampleSubscription.cancel()
             ].where((Future<dynamic> cancelFuture) => cancelFuture != null));

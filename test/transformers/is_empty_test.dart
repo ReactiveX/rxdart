@@ -6,11 +6,11 @@ void main() {
     final bool populated =
         await new Observable<int>.fromIterable(<int>[1, 2, 3]).isEmpty;
 
-    await expect(populated, isFalse);
+    await expectLater(populated, isFalse);
   });
 
   test('rx.Observable.isEmpty.empty', () async {
     final bool empty = await new Observable<int>.fromIterable(<int>[]).isEmpty;
-    await expect(empty, isTrue);
+    await expectLater(empty, isTrue);
   });
 }
