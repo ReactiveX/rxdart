@@ -249,7 +249,7 @@ void main() {
         new Observable<int>.just(1), (int a, int b) => a + b);
 
     observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.zip.asBroadcastStream', () async {
@@ -275,7 +275,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.zip.error.shouldThrowA', () async {

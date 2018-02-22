@@ -9,6 +9,6 @@ void main() {
       wasCalled = true;
     });
 
-    await expect(wasCalled, isTrue);
+    await expectLater(wasCalled, isTrue);
   });
 }

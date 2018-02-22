@@ -136,7 +136,7 @@ void main() {
         .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20);
 
     observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.tween.asBroadcast', () async {
@@ -147,6 +147,6 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
 
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 }

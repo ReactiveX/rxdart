@@ -8,7 +8,7 @@ import 'dart:async';
 ///     new Stream.fromIterable([1, 2, 3])
 ///       .transform(new IntervalStreamTransformer(seconds: 1))
 ///       .listen((i) => print("$i sec"); // prints 1 sec, 2 sec, 3 sec
-class IntervalStreamTransformer<T> implements StreamTransformer<T, T> {
+class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   IntervalStreamTransformer(Duration duration)

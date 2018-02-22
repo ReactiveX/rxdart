@@ -35,7 +35,7 @@ void main() {
     Observable<num> observable = new Observable<num>.amb(<Stream<num>>[first]);
 
     observable.listen(null);
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.amb.asBroadcastStream', () async {
@@ -51,7 +51,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.amb.shouldThrowA', () {

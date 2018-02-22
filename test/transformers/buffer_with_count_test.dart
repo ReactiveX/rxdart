@@ -83,7 +83,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    await expect(true, true);
+    await expectLater(true, true);
   });
 
   test('rx.Observable.bufferWithCount.error.shouldThrowA', () async {

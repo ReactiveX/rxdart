@@ -9,7 +9,7 @@ import 'dart:async';
 ///        .transform(new TimestampStreamTransformer())
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
-    implements StreamTransformer<T, Timestamped<T>> {
+    extends StreamTransformerBase<T, Timestamped<T>> {
   final StreamTransformer<T, Timestamped<T>> transformer;
 
   TimestampStreamTransformer() : transformer = _buildTransformer();

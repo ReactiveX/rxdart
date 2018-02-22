@@ -14,8 +14,8 @@ void main() {
         return new Observable<int>.timer(i, new Duration(milliseconds: 100));
       });
 
-      await expect(observable, emitsInOrder(<dynamic>[0, emitsDone]));
-      await expect(calls, 1);
+      await expectLater(observable, emitsInOrder(<dynamic>[0, emitsDone]));
+      await expectLater(calls, 1);
     });
 
     test('starts emitting again after previous Stream is complete', () async {
@@ -28,8 +28,8 @@ void main() {
         return new Observable<int>.timer(i, new Duration(milliseconds: 100));
       });
 
-      await expect(observable, emitsInOrder(<dynamic>[0, 5, emitsDone]));
-      await expect(calls, 2);
+      await expectLater(observable, emitsInOrder(<dynamic>[0, 5, emitsDone]));
+      await expectLater(calls, 2);
     });
 
     test('is reusable', () async {
@@ -37,12 +37,12 @@ void main() {
           new ExhaustMapStreamTransformer<int, int>((int i) =>
               new Observable<int>.timer(i, new Duration(milliseconds: 100)));
 
-      await expect(
+      await expectLater(
         Observable.range(0, 9).transform(transformer),
         emitsInOrder(<dynamic>[0, emitsDone]),
       );
 
-      await expect(
+      await expectLater(
         Observable.range(0, 9).transform(transformer),
         emitsInOrder(<dynamic>[0, emitsDone]),
       );
@@ -55,7 +55,7 @@ void main() {
           .exhaustMap((int i) =>
               new Observable<int>.timer(i, new Duration(milliseconds: 100)));
 
-      await expect(() {
+      await expectLater(() {
         stream.listen((_) {});
         stream.listen((_) {});
       }, returnsNormally);
@@ -67,14 +67,14 @@ void main() {
           .exhaustMap((int i) =>
               new Observable<int>.timer(i, new Duration(milliseconds: 100)));
 
-      await expect(observableWithError, emitsError(isException));
+      await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors from mapped stream', () async {
       Stream<int> observableWithError = new Observable<int>.just(1).exhaustMap(
           (_) => new ErrorStream<int>(new Exception('Catch me if you can!')));
 
-      await expect(observableWithError, emitsError(isException));
+      await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors thrown in the mapper', () async {
@@ -83,7 +83,7 @@ void main() {
         throw new Exception('oh noes!');
       });
 
-      await expect(observableWithError, emitsError(isException));
+      await expectLater(observableWithError, emitsError(isException));
     });
 
     test('can be paused and resumed', () async {

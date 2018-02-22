@@ -19,7 +19,7 @@ void main() {
     final RangeStream stream = new RangeStream(1, 5);
 
     stream.listen((_) {});
-    await expect(() => stream.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => stream.listen((_) {}), throwsA(isStateError));
   });
 
   test('RangeStream.single', () async {

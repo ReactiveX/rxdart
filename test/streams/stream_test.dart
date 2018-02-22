@@ -16,8 +16,8 @@ void main() {
 
     Stream<int> stream = new Observable<int>(_getStream());
 
-    await expect(stream is Stream<int>, true);
-    await expect(stream is Observable<int>, true);
+    await expectLater(stream is Stream<int>, true);
+    await expectLater(stream is Observable<int>, true);
 
     stream.listen(expectAsync1((int result) {
       // test to see if the combined output matches
@@ -32,7 +32,7 @@ void main() {
     stream.listen((_) {});
     stream.listen((_) {});
     // code should reach here
-    await expect(true, true);
+    await expectLater(true, true);
   });
 
   test('rx.Observable.stream.error.shouldThrow', () async {

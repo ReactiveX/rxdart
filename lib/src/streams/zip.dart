@@ -22,19 +22,11 @@ import 'dart:async';
 ///         new Stream.fromIterable([2, 3])
 ///       ], (a, b) => a + b)
 ///       .listen(print); // prints 3
-class ZipStream<T> extends Stream<T> {
+class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
   final StreamController<T> controller;
 
-  ZipStream(
-      Iterable<Stream<dynamic>> streams,
-      T zipper(dynamic A, dynamic B,
-          [dynamic C,
-          dynamic D,
-          dynamic E,
-          dynamic F,
-          dynamic G,
-          dynamic H,
-          dynamic I]))
+  ZipStream(Iterable<Stream<dynamic>> streams,
+      T zipper(A a, B b, [C c, D d, E e, F f, G g, H h, I i]))
       : controller = _buildController(streams, zipper);
 
   @override
@@ -43,16 +35,9 @@ class ZipStream<T> extends Stream<T> {
       controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  static StreamController<T> _buildController<T>(
+  static StreamController<T> _buildController<T, A, B, C, D, E, F, G, H, I>(
       Iterable<Stream<dynamic>> streams,
-      T zipper(dynamic A, dynamic B,
-          [dynamic C,
-          dynamic D,
-          dynamic E,
-          dynamic F,
-          dynamic G,
-          dynamic H,
-          dynamic I])) {
+      T zipper(A a, B b, [C c, D d, E e, F f, G g, H h, I i])) {
     if (streams == null) {
       throw new ArgumentError('streams cannot be null');
     } else if (streams.isEmpty) {
@@ -113,7 +98,7 @@ class ZipStream<T> extends Stream<T> {
             controller.addError(e, s);
           }
         },
-        onCancel: () => Future.wait<Future<dynamic>>(subscriptions
+        onCancel: () => Future.wait<dynamic>(subscriptions
             .map((StreamSubscription<dynamic> subscription) =>
                 subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
@@ -121,78 +106,75 @@ class ZipStream<T> extends Stream<T> {
     return controller;
   }
 
-  static void updateWithValues<T>(
-      T zipper(dynamic A, dynamic B,
-          [dynamic C,
-          dynamic D,
-          dynamic E,
-          dynamic F,
-          dynamic G,
-          dynamic H,
-          dynamic I]),
+  static void updateWithValues<T, A, B, C, D, E, F, G, H, I>(
+      T zipper(A a, B b, [C c, D d, E e, F f, G g, H h, I i]),
       Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
       final int len = values.length;
+      final A a = values.elementAt(0);
+      final B b = values.elementAt(1);
       T result;
 
       switch (len) {
         case 2:
-          result = zipper(values.elementAt(0), values.elementAt(1));
+          result = zipper(a, b);
           break;
         case 3:
-          result = zipper(
-              values.elementAt(0), values.elementAt(1), values.elementAt(2));
+          final C c = values.elementAt(2);
+
+          result = zipper(a, b, c);
           break;
         case 4:
-          result = zipper(values.elementAt(0), values.elementAt(1),
-              values.elementAt(2), values.elementAt(3));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+
+          result = zipper(a, b, c, d);
           break;
         case 5:
-          result = zipper(values.elementAt(0), values.elementAt(1),
-              values.elementAt(2), values.elementAt(3), values.elementAt(4));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+          final E e = values.elementAt(4);
+
+          result = zipper(a, b, c, d, e);
           break;
         case 6:
-          result = zipper(
-              values.elementAt(0),
-              values.elementAt(1),
-              values.elementAt(2),
-              values.elementAt(3),
-              values.elementAt(4),
-              values.elementAt(5));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+          final E e = values.elementAt(4);
+          final F f = values.elementAt(5);
+
+          result = zipper(a, b, c, d, e, f);
           break;
         case 7:
-          result = zipper(
-              values.elementAt(0),
-              values.elementAt(1),
-              values.elementAt(2),
-              values.elementAt(3),
-              values.elementAt(4),
-              values.elementAt(5),
-              values.elementAt(6));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+          final E e = values.elementAt(4);
+          final F f = values.elementAt(5);
+          final G g = values.elementAt(6);
+
+          result = zipper(a, b, c, d, e, f, g);
           break;
         case 8:
-          result = zipper(
-              values.elementAt(0),
-              values.elementAt(1),
-              values.elementAt(2),
-              values.elementAt(3),
-              values.elementAt(4),
-              values.elementAt(5),
-              values.elementAt(6),
-              values.elementAt(7));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+          final E e = values.elementAt(4);
+          final F f = values.elementAt(5);
+          final G g = values.elementAt(6);
+          final H h = values.elementAt(7);
+
+          result = zipper(a, b, c, d, e, f, g, h);
           break;
         case 9:
-          result = zipper(
-              values.elementAt(0),
-              values.elementAt(1),
-              values.elementAt(2),
-              values.elementAt(3),
-              values.elementAt(4),
-              values.elementAt(5),
-              values.elementAt(6),
-              values.elementAt(7),
-              values.elementAt(8));
+          final C c = values.elementAt(2);
+          final D d = values.elementAt(3);
+          final E e = values.elementAt(4);
+          final F f = values.elementAt(5);
+          final G g = values.elementAt(6);
+          final H h = values.elementAt(7);
+          final I i = values.elementAt(8);
+
+          result = zipper(a, b, c, d, e, f, g, h, i);
           break;
       }
 

@@ -15,9 +15,9 @@ void main() {
       subject.add(2);
       subject.add(3);
 
-      await expect(subject.stream, emits(3));
-      await expect(subject.stream, emits(3));
-      await expect(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
     });
 
     test('emits the seed item if no new items have been emitted', () async {
@@ -25,21 +25,21 @@ void main() {
       final StreamController<int> subject =
           new BehaviorSubject<int>(seedValue: 1);
 
-      await expect(subject.stream, emits(1));
-      await expect(subject.stream, emits(1));
-      await expect(subject.stream, emits(1));
+      await expectLater(subject.stream, emits(1));
+      await expectLater(subject.stream, emits(1));
+      await expectLater(subject.stream, emits(1));
     });
 
     test('emits done event to listeners when the subject is closed', () async {
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.isClosed, isFalse);
+      await expectLater(subject.isClosed, isFalse);
 
       subject.add(1);
       scheduleMicrotask(() => subject.close());
 
-      await expect(subject.stream, emitsInOrder(<dynamic>[1, emitsDone]));
-      await expect(subject.isClosed, isTrue);
+      await expectLater(subject.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(subject.isClosed, isTrue);
     });
 
     test('emits error events to subscribers', () async {
@@ -48,7 +48,7 @@ void main() {
 
       scheduleMicrotask(() => subject.addError(new Exception()));
 
-      await expect(subject.stream, emitsError(isException));
+      await expectLater(subject.stream, emitsError(isException));
     });
 
     test('replays the previously emitted items from addStream', () async {
@@ -57,9 +57,9 @@ void main() {
 
       await subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
 
-      await expect(subject.stream, emits(3));
-      await expect(subject.stream, emits(3));
-      await expect(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
     });
 
     test('allows items to be added once addStream is complete', () async {
@@ -69,7 +69,7 @@ void main() {
       await subject.addStream(new Stream<int>.fromIterable(<int>[1, 2]));
       subject.add(3);
 
-      await expect(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
     });
 
     test('allows items to be added once addStream is completes with an error',
@@ -77,14 +77,14 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(
+      await expectLater(
           subject.addStream(new ErrorStream<int>(new Exception()),
               cancelOnError: true),
           throwsException);
 
       subject.add(1);
 
-      await expect(subject.stream, emits(1));
+      await expectLater(subject.stream, emits(1));
     });
 
     test('does not allow events to be added when addStream is active',
@@ -96,7 +96,7 @@ void main() {
       // ignore: unawaited_futures
       subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
 
-      await expect(() => subject.add(1), throwsStateError);
+      await expectLater(() => subject.add(1), throwsStateError);
     });
 
     test('does not allow errors to be added when addStream is active',
@@ -108,7 +108,7 @@ void main() {
       // ignore: unawaited_futures
       subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
 
-      await expect(() => subject.addError(new Error()), throwsStateError);
+      await expectLater(() => subject.addError(new Error()), throwsStateError);
     });
 
     test('does not allow subject to be closed when addStream is active',
@@ -120,7 +120,7 @@ void main() {
       // ignore: unawaited_futures
       subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
 
-      await expect(() => subject.close(), throwsStateError);
+      await expectLater(() => subject.close(), throwsStateError);
     });
 
     test(
@@ -133,7 +133,7 @@ void main() {
       // ignore: unawaited_futures
       subject.addStream(new Stream<int>.fromIterable(<int>[1, 2, 3]));
 
-      await expect(
+      await expectLater(
           () => subject.addStream(new Stream<int>.fromIterable(<int>[1])),
           throwsStateError);
     });
@@ -144,7 +144,7 @@ void main() {
       final StreamController<int> subject =
           new BehaviorSubject<int>(onListen: testOnListen);
 
-      await expect(subject.onListen, testOnListen);
+      await expectLater(subject.onListen, testOnListen);
     });
 
     test('sets onListen callback', () async {
@@ -152,11 +152,11 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.onListen, isNull);
+      await expectLater(subject.onListen, isNull);
 
       subject.onListen = testOnListen;
 
-      await expect(subject.onListen, testOnListen);
+      await expectLater(subject.onListen, testOnListen);
     });
 
     test('returns onCancel callback set in constructor', () async {
@@ -165,7 +165,7 @@ void main() {
       final StreamController<int> subject = new BehaviorSubject<int>(
           onCancel: onCancel);
 
-      await expect(subject.onCancel, onCancel);
+      await expectLater(subject.onCancel, onCancel);
     });
 
     test('sets onCancel callback', () async {
@@ -173,22 +173,22 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.onCancel, isNull);
+      await expectLater(subject.onCancel, isNull);
 
       subject.onCancel = testOnCancel;
 
-      await expect(subject.onCancel, testOnCancel);
+      await expectLater(subject.onCancel, testOnCancel);
     });
 
     test('reports if a listener is present', () async {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.hasListener, isFalse);
+      await expectLater(subject.hasListener, isFalse);
 
       subject.stream.listen((_) {});
 
-      await expect(subject.hasListener, isTrue);
+      await expectLater(subject.hasListener, isTrue);
     });
 
     test('onPause unsupported', () {
@@ -212,7 +212,7 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.sink, new isInstanceOf<EventSink<int>>());
+      await expectLater(subject.sink, new isInstanceOf<EventSink<int>>());
     });
 
     test('correctly closes done Future', () async {
@@ -220,7 +220,7 @@ void main() {
 
       scheduleMicrotask(() => subject.close());
 
-      await expect(subject.done, completes);
+      await expectLater(subject.done, completes);
     });
 
     test('can be listened to multiple times', () async {
@@ -229,15 +229,15 @@ void main() {
           new BehaviorSubject<int>(seedValue: 1);
       final Stream<int> stream = subject.stream;
 
-      await expect(stream, emits(1));
-      await expect(stream, emits(1));
+      await expectLater(stream, emits(1));
+      await expectLater(stream, emits(1));
     });
 
     test('always returns the same stream', () async {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expect(subject.stream, equals(subject.stream));
+      await expectLater(subject.stream, equals(subject.stream));
     });
   });
 }

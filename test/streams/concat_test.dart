@@ -35,7 +35,7 @@ void main() {
     Stream<num> observable = new Observable<num>.concat(_getStreams());
 
     observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.concat.withEmptyStream', () async {
@@ -92,7 +92,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.concat.error.shouldThrowA', () async {

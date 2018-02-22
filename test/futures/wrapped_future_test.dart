@@ -7,7 +7,7 @@ void main() {
     AsObservableFuture<int> future =
         new AsObservableFuture<int>(new Future<int>.value(1));
 
-    await expect(future.asObservable(), emits(1));
+    await expectLater(future.asObservable(), emits(1));
   });
 
   group('WrappedFuture', () {
@@ -15,7 +15,7 @@ void main() {
       AsObservableFuture<int> future =
           new AsObservableFuture<int>(new Future<int>.value(1));
 
-      await expect(future.asStream(), emits(1));
+      await expectLater(future.asStream(), emits(1));
     });
 
     test('properly handles catchError', () async {
@@ -26,7 +26,7 @@ void main() {
         catchErrorCalled = true;
       });
 
-      await expect(catchErrorCalled, isTrue);
+      await expectLater(catchErrorCalled, isTrue);
     });
 
     test('handles then', () async {
@@ -36,11 +36,11 @@ void main() {
         thenCalled = true;
       });
 
-      await expect(thenCalled, isTrue);
+      await expectLater(thenCalled, isTrue);
     });
 
     test('handles timeout', () async {
-      await expect(
+      await expectLater(
           new AsObservableFuture<int>(
                   new Future<int>.delayed(new Duration(minutes: 1)))
               .timeout(new Duration(milliseconds: 1)),
@@ -55,7 +55,7 @@ void main() {
         whenCompleteCalled = true;
       });
 
-      await expect(whenCompleteCalled, isTrue);
+      await expectLater(whenCompleteCalled, isTrue);
     });
   });
 }

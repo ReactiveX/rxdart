@@ -20,7 +20,7 @@ void main() {
             .onErrorReturn(0)
             .asBroadcastStream();
 
-    await expect(stream.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
 
     stream.listen(expectAsync1((num result) {
       expect(result, expected);

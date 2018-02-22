@@ -10,14 +10,14 @@ void main() {
     Stream<int> stream =
         new TimerStream<int>(value, new Duration(milliseconds: 1));
 
-    await expect(stream, emitsInOrder(<dynamic>[value, emitsDone]));
+    await expectLater(stream, emitsInOrder(<dynamic>[value, emitsDone]));
   });
 
   test('TimerStream.single.subscription', () async {
     Stream<int> stream = new TimerStream<int>(1, new Duration(milliseconds: 1));
 
     stream.listen((_) {});
-    await expect(() => stream.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => stream.listen((_) {}), throwsA(isStateError));
   });
 
   test('TimerStream.pause.resume', () async {

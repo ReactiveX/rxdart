@@ -67,7 +67,7 @@ void main() {
     stream.listen(null);
     stream.listen(null);
 
-    await expect(true, true);
+    await expectLater(true, true);
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrowA', () async {

@@ -7,6 +7,6 @@ void main() {
     AsObservableFuture<int> future =
         new AsObservableFuture<int>(new Future<int>.value(1));
 
-    await expect(future.asObservable(), emits(1));
+    await expectLater(future.asObservable(), emits(1));
   });
 }

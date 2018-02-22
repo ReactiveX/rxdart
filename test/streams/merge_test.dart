@@ -15,14 +15,14 @@ void main() {
   test('rx.Observable.merge', () async {
     Stream<num> observable = new Observable<num>.merge(_getStreams());
 
-    await expect(observable, emitsInOrder(<num>[1, 2, 3, 4, 0, 1, 2]));
+    await expectLater(observable, emitsInOrder(<num>[1, 2, 3, 4, 0, 1, 2]));
   });
 
   test('rx.Observable.merge.single.subscription', () async {
     Stream<num> observable = new Observable<num>.merge(_getStreams());
 
     observable.listen((_) {});
-    await expect(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.merge.asBroadcastStream', () async {
@@ -33,7 +33,7 @@ void main() {
     observable.listen((_) {});
     observable.listen((_) {});
     // code should reach here
-    await expect(observable.isBroadcast, isTrue);
+    await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.merge.error.shouldThrowA', () async {
