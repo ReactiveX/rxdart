@@ -1675,6 +1675,15 @@ class Observable<T> extends Stream<T> {
   Observable<T> repeat(int repeatCount) =>
       transform(new RepeatStreamTransformer<T>(repeatCount));
 
+  ///
+  /// Adapt this stream to be a `Stream<R>`.
+  ///
+  /// This stream is wrapped as a `Stream<R>` which checks at run-time that
+  /// each data event emitted by this stream is also an instance of [R].
+  ///
+  @override
+  Observable<R> retype<R>() => new Observable<R>(stream.retype<R>());
+
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
   /// emitted by the source stream since the previous emission from
