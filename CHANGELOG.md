@@ -1,3 +1,9 @@
+## 0.16.0
+
+* **breaks backwards compatibility**, this release only works with Dart SDK >=2.0.0.
+* Removed old `cast` in favour of the now native Stream cast method.
+* Override `retype` to return an `Observable`.
+
 ## 0.15.1
 
 * Add `exhaustMap` map to inner observable, ignore other values until that observable completes.
