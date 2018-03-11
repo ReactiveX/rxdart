@@ -33,7 +33,7 @@ class GithubApi {
     final response = client.get(
       "$baseUrl$term",
       headers: <String, String>{
-        "Content-Type": "application/json",
+        "Accept": "application/json",
       },
     );
 
