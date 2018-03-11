@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_stream_friends/flutter_stream_friends.dart';
 import 'package:github_search/github_search_api.dart';
 import 'package:github_search/github_search_widget.dart';
 
@@ -22,17 +19,13 @@ class RxDartGithubSearchApp extends StatefulWidget {
 }
 
 class _RxDartGithubSearchAppState extends State<RxDartGithubSearchApp> {
-  ValueChangedStreamCallback<String> intent;
-  Stream<SearchModel> model;
+  SearchBloc bloc;
 
   @override
   void initState() {
     super.initState();
 
-    // Instantiate the Intent and Model in the State class so are not recreated
-    // during Hot Reload
-    intent = new ValueChangedStreamCallback<String>();
-    model = SearchModel.stream(intent, widget.api);
+    bloc = new SearchBloc(widget.api);
   }
 
   @override
@@ -44,8 +37,8 @@ class _RxDartGithubSearchAppState extends State<RxDartGithubSearchApp> {
         primarySwatch: Colors.grey,
       ),
       home: new SearchView(
-        onTextChanged: intent,
-        model: model,
+        onTextChanged: bloc.onTextChanged.add,
+        state: bloc.state,
       ),
     );
   }
