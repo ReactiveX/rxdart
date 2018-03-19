@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/src/observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 
@@ -42,8 +43,7 @@ class BehaviorSubject<T> extends Subject<T> {
     StreamController<T> controller,
     Observable<T> observable,
     this._wrapper,
-  )
-      : super(controller, observable);
+  ) : super(controller, observable);
 
   factory BehaviorSubject({
     T seedValue,
@@ -75,6 +75,8 @@ class BehaviorSubject<T> extends Subject<T> {
   void onAdd(T event) {
     _wrapper.latestValue = event;
   }
+
+  T get value => _wrapper.latestValue;
 }
 
 class _Wrapper<T> {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 typedef Future<Null> AsyncVoidCallBack();
 
@@ -18,6 +18,17 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(<int>[1, 2, 3]));
       await expectLater(subject.stream, emitsInOrder(<int>[1, 2, 3]));
       await expectLater(subject.stream, emitsInOrder(<int>[1, 2, 3]));
+    });
+
+    test('synchronously get the previous items', () async {
+      // ignore: close_sinks
+      final ReplaySubject<int> subject = new ReplaySubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(3);
+
+      await expectLater(subject.values, [1, 2, 3]);
     });
 
     test('replays the most recently emitted items up to a max size', () async {

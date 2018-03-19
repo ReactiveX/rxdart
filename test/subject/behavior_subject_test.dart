@@ -20,6 +20,17 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
+    test('can synchronously get the latest value', () async {
+      // ignore: close_sinks
+      final BehaviorSubject<int> subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(3);
+
+      await expectLater(subject.value, 3);
+    });
+
     test('emits the seed item if no new items have been emitted', () async {
       // ignore: close_sinks
       final StreamController<int> subject =
@@ -28,6 +39,14 @@ void main() {
       await expectLater(subject.stream, emits(1));
       await expectLater(subject.stream, emits(1));
       await expectLater(subject.stream, emits(1));
+    });
+
+    test('can synchronously get the initial value', () {
+      // ignore: close_sinks
+      final BehaviorSubject<int> subject =
+          new BehaviorSubject<int>(seedValue: 1);
+
+      expect(subject.value, 1);
     });
 
     test('emits done event to listeners when the subject is closed', () async {
