@@ -77,8 +77,7 @@ class ReplaySubject<T> extends Subject<T> {
     Observable<T> observable,
     this._queue,
     this._maxSize,
-  )
-      : super(controller, observable);
+  ) : super(controller, observable);
 
   @override
   void onAdd(T event) {
@@ -88,4 +87,6 @@ class ReplaySubject<T> extends Subject<T> {
 
     _queue.add(event);
   }
+
+  List<T> get values => _queue.toList(growable: false);
 }
