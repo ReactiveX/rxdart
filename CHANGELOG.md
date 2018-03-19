@@ -1,3 +1,12 @@
+## 0.16.0+2
+
+* Add `value` to `BehaviorSubject`. Allows you to get the latest value emitted by the subject if it exists.
+* Add `values` to `ReplayrSubject`. Allows you to get the values stored by the subject if any exists.
+
+## 0.16.0+1
+
+* Update Changelog
+
 ## 0.16.0
 
 * **breaks backwards compatibility**, this release only works with Dart SDK >=2.0.0.
