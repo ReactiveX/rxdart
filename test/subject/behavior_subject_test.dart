@@ -181,8 +181,8 @@ void main() {
     test('returns onCancel callback set in constructor', () async {
       final AsyncVoidCallBack onCancel = () => new Future<Null>.value(null);
       // ignore: close_sinks
-      final StreamController<int> subject = new BehaviorSubject<int>(
-          onCancel: onCancel);
+      final StreamController<int> subject =
+          new BehaviorSubject<int>(onCancel: onCancel);
 
       await expectLater(subject.onCancel, onCancel);
     });

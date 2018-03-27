@@ -36,7 +36,8 @@ void main() {
       final Comparator<String> stringLengthComparator =
           (String a, String b) => a.length - b.length;
 
-      await expectLater(new StreamMaxFuture<String>(stream, stringLengthComparator),
+      await expectLater(
+          new StreamMaxFuture<String>(stream, stringLengthComparator),
           completion("three"));
     });
 

@@ -9,7 +9,8 @@ void main() {
   test('rx.Observable.retry', () async {
     final int retries = 3;
 
-    await expectLater(new Observable<int>.retry(_getRetryStream(retries), retries),
+    await expectLater(
+        new Observable<int>.retry(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
@@ -35,7 +36,8 @@ void main() {
   test('RetryStream.emits.original.items', () async {
     final int retries = 3;
 
-    await expectLater(new RetryStream<int>(_getStreamWithExtras(retries), retries),
+    await expectLater(
+        new RetryStream<int>(_getStreamWithExtras(retries), retries),
         emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
   });
 
