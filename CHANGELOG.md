@@ -1,3 +1,7 @@
+## 0.16.1
+
+* Fix `dematerialize` method for Dart 2.
+
 ## 0.16.0+2
 
 * Add `value` to `BehaviorSubject`. Allows you to get the latest value emitted by the subject if it exists.

@@ -66,8 +66,8 @@ class AmbStream<T> extends Stream<T> {
                 onError: controller.addError, onDone: () => controller.close());
           }
         },
-        onCancel: () =>
-            Future.wait<dynamic>(subscriptions.map((StreamSubscription<T> subscription) {
+        onCancel: () => Future.wait<dynamic>(
+                subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();
 
               return new Future<dynamic>.value();
