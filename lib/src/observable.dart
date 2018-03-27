@@ -1154,12 +1154,8 @@ class Observable<T> extends Stream<T> {
   ///         .dematerialize()
   ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
   Observable<S> dematerialize<S>() {
-    // Since `dematerialize` can operate on any Observable<T>, we must
-    // ignore the type and pass it to the streamTransformer, where it
-    // will throw an Error if the stream is not a Stream<Notification<S>>
-
-    // ignore: argument_type_not_assignable
-    return transform(new DematerializeStreamTransformer<T>());
+    return cast<Notification<S>>()
+        .transform(new DematerializeStreamTransformer<S>());
   }
 
   /// WARNING: More commonly known as distinctUntilChanged in other Rx
@@ -1343,8 +1339,7 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<T> firstWhere(bool test(T element),
           {dynamic defaultValue(), T orElse()}) =>
-      new AsObservableFuture<T>(
-          stream.firstWhere(test, defaultValue: defaultValue, orElse: orElse));
+      new AsObservableFuture<T>(stream.firstWhere(test, orElse: orElse));
 
   /// Converts each emitted item into a new Stream using the given mapper
   /// function. The newly created Stream will be be listened to and begin
@@ -1463,8 +1458,7 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<T> lastWhere(bool test(T element),
           {Object defaultValue(), T orElse()}) =>
-      new AsObservableFuture<T>(
-          stream.lastWhere(test, defaultValue: defaultValue, orElse: orElse));
+      new AsObservableFuture<T>(stream.lastWhere(test, orElse: orElse));
 
   /// Adds a subscription to this stream. Returns a [StreamSubscription] which
   /// handles events from the stream using the provided [onData], [onError] and

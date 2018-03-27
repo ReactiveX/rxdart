@@ -28,7 +28,7 @@ void main() {
       subject.add(2);
       subject.add(3);
 
-      await expectLater(subject.values, [1, 2, 3]);
+      await expectLater(subject.values, <int>[1, 2, 3]);
     });
 
     test('replays the most recently emitted items up to a max size', () async {
