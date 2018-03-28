@@ -1,23 +1,22 @@
 import 'dart:async';
 
-/// Transforms a Stream so that will only emit items from the source sequence
-/// if a particular time span has passed without the source sequence emitting
-/// another item.
+/// The Delay operator modifies its source Observable by pausing for
+/// a particular increment of time (that you specify) before emitting
+/// each of the source Observable’s items.
+/// This has the effect of shifting the entire sequence of items emitted
+/// by the Observable forward in time by that specified increment.
 ///
-/// The Debounce Transformer filters out items emitted by the source Observable
-/// that are rapidly followed by another emitted item.
-///
-/// [Interactive marble diagram](http://rxmarbles.com/#debounce)
+/// [Interactive marble diagram](http://rxmarbles.com/#delay)
 ///
 /// ### Example
 ///
 ///     new Observable.fromIterable([1, 2, 3, 4])
-///       .debounce(new Duration(seconds: 1))
-///       .listen(print); // prints 4
-class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
+///       .delay(new Duration(seconds: 1))
+///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
+class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  DebounceStreamTransformer(Duration duration)
+  DelayStreamTransformer(Duration duration)
       : transformer = _buildTransformer(duration);
 
   @override
@@ -25,42 +24,40 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      T lastEvent;
+      bool onDoneCalled = false, hasNoEvents = true;
+      List<Timer> timers = <Timer>[];
       StreamController<T> controller;
       StreamSubscription<T> subscription;
-      Timer timer;
 
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(
                 (T value) {
-                  lastEvent = value;
+                  hasNoEvents = false;
 
                   try {
-                    _cancelTimerIfActive(timer);
-
+                    Timer timer;
                     timer = new Timer(duration, () {
-                      controller.add(lastEvent);
-                      lastEvent = null;
+                      controller.add(value);
+
+                      timers.remove(timer);
+
+                      if (onDoneCalled && timers.isEmpty) {
+                        controller.close();
+                      }
                     });
+
+                    timers.add(timer);
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
                 },
                 onError: controller.addError,
                 onDone: () {
-                  _cancelTimerIfActive(timer);
+                  if (hasNoEvents) controller.close();
 
-                  if (lastEvent != null) {
-                    scheduleMicrotask(() {
-                      controller.add(lastEvent);
-
-                      controller.close();
-                    });
-                  } else {
-                    controller.close();
-                  }
+                  onDoneCalled = true;
                 },
                 cancelOnError: cancelOnError);
           },
@@ -68,7 +65,7 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () {
-            _cancelTimerIfActive(timer);
+            timers.forEach(_cancelTimerIfActive);
 
             return subscription.cancel();
           });

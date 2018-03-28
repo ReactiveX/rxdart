@@ -1,3 +1,7 @@
+## 0.16.3
+
+* Adds `delay` transformer.
+
 ## 0.16.2
 
 * Fix added events to `sink` are not processed correctly by `Subjects`.
