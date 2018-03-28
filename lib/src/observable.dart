@@ -1133,6 +1133,22 @@ class Observable<T> extends Stream<T> {
   Observable<T> defaultIfEmpty(T defaultValue) =>
       transform(new DefaultIfEmptyStreamTransformer<T>(defaultValue));
 
+  /// The Delay operator modifies its source Observable by pausing for
+  /// a particular increment of time (that you specify) before emitting
+  /// each of the source Observable’s items.
+  /// This has the effect of shifting the entire sequence of items emitted
+  /// by the Observable forward in time by that specified increment.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#delay)
+  ///
+  /// ### Example
+  ///
+  ///     new Stream.fromIterable([1, 2, 3, 4])
+  ///       .transform(new DelayStreamTransformer(new Duration(seconds: 1)))
+  ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
+  Observable<T> delay(Duration duration) =>
+      transform(new DelayStreamTransformer<T>(duration));
+
   /// Converts the onData, onDone, and onError [Notification] objects from a
   /// materialized stream into normal onData, onDone, and onError events.
   ///
