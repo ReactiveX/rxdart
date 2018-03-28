@@ -1119,7 +1119,8 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.range(1, 100).debounce(new Duration(seconds: 1))
+  ///     new Observable.range(1, 100)
+  ///       .debounce(new Duration(seconds: 1))
   ///       .listen(print); // prints 100
   Observable<T> debounce(Duration duration) =>
       transform(new DebounceStreamTransformer<T>(duration));
@@ -1143,8 +1144,8 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Stream.fromIterable([1, 2, 3, 4])
-  ///       .transform(new DelayStreamTransformer(new Duration(seconds: 1)))
+  ///     new Observable.fromIterable([1, 2, 3, 4])
+  ///       .delay(new Duration(seconds: 1))
   ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
   Observable<T> delay(Duration duration) =>
       transform(new DelayStreamTransformer<T>(duration));

@@ -11,8 +11,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1, 2, 3, 4])
-///       .transform(new DebounceStreamTransformer(new Duration(seconds: 1)))
+///     new Observable.fromIterable([1, 2, 3, 4])
+///       .debounce(new Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
