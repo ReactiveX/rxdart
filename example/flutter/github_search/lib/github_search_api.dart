@@ -12,8 +12,7 @@ class GithubApi {
     Client client,
     Map<String, SearchResult> cache,
     this.baseUrl = "https://api.github.com/search/repositories?q=",
-  })
-      : this.client = client ?? new Client(),
+  })  : this.client = client ?? new Client(),
         this.cache = cache ?? <String, SearchResult>{};
 
   /// Search Github for repositories using the given term

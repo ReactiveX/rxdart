@@ -23,12 +23,13 @@ void main() {
   final keyUp = new Observable<KeyboardEvent>(document.onKeyUp);
 
   keyUp
-    // Use map() to get the keyCode
-    .map((event) => event.keyCode)
-    // Use bufferWithCount() to remember the last 10 keyCodes
-    .bufferWithCount(10, 1)
-    // Use where() to check for matching values
-    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
-    // Use listen() to display the result
-    .listen((_) => result.innerHtml = 'KONAMI!');
+      // Use map() to get the keyCode
+      .map((event) => event.keyCode)
+      // Use bufferWithCount() to remember the last 10 keyCodes
+      .bufferWithCount(10, 1)
+      // Use where() to check for matching values
+      .where((lastTenKeyCodes) =>
+          const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
+      // Use listen() to display the result
+      .listen((_) => result.innerHtml = 'KONAMI!');
 }

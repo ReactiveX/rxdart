@@ -258,5 +258,22 @@ void main() {
 
       await expectLater(subject.stream, equals(subject.stream));
     });
+
+    test('adding to sink has same behavior as adding to Subject itself',
+        () async {
+      // ignore: close_sinks
+      final BehaviorSubject<int> subject = new BehaviorSubject<int>();
+
+      subject.sink.add(1);
+
+      expect(subject.value, 1);
+
+      subject.sink.add(2);
+      subject.sink.add(3);
+
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+    });
   });
 }

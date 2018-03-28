@@ -83,8 +83,7 @@ class SearchView extends StatelessWidget {
     Key key,
     @required this.model,
     @required this.onTextChanged,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
