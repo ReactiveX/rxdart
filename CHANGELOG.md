@@ -1,3 +1,7 @@
+## 0.16.2
+
+* Fix added events to `sink` are not processed correctly by `Subjects`.
+
 ## 0.16.1
 
 * Fix `dematerialize` method for Dart 2.

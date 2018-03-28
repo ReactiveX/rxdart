@@ -233,5 +233,21 @@ void main() {
 
       await expectLater(subject.stream, equals(subject.stream));
     });
+
+    test('adding to sink has same behavior as adding to Subject itself',
+        () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new PublishSubject<int>();
+
+      scheduleMicrotask(() {
+        subject.sink.add(1);
+        subject.sink.add(2);
+        subject.sink.add(3);
+        subject.sink.close();
+      });
+
+      await expectLater(
+          subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+    });
   });
 }

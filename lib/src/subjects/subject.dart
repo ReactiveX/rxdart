@@ -22,7 +22,7 @@ abstract class Subject<T> implements StreamController<T> {
   Observable<T> get stream => observable;
 
   @override
-  StreamSink<T> get sink => controller.sink;
+  StreamSink<T> get sink => new _StreamSinkWrapper<T>(this);
 
   @override
   ControllerCallback get onListen => controller.onListen;
@@ -135,4 +135,28 @@ abstract class Subject<T> implements StreamController<T> {
 
     return controller.close();
   }
+}
+
+class _StreamSinkWrapper<T> implements StreamSink<T> {
+  final StreamController<T> _target;
+  _StreamSinkWrapper(this._target);
+
+  @override
+  void add(T data) {
+    _target.add(data);
+  }
+
+  @override
+  void addError(Object error, [StackTrace stackTrace]) {
+    _target.addError(error, stackTrace);
+  }
+
+  @override
+  Future close() => _target.close();
+
+  @override
+  Future addStream(Stream<T> source) => _target.addStream(source);
+
+  @override
+  Future get done => _target.done;
 }
