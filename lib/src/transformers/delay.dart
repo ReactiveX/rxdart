@@ -24,7 +24,7 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      bool onDoneCalled = false;
+      bool onDoneCalled = false, hasNoEvents = true;
       List<Timer> timers = <Timer>[];
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -32,26 +32,33 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T value) {
-              try {
-                Timer timer;
-                timer = new Timer(duration, () {
-                  controller.add(value);
+            subscription = input.listen(
+                (T value) {
+                  hasNoEvents = false;
 
-                  timers.remove(timer);
+                  try {
+                    Timer timer;
+                    timer = new Timer(duration, () {
+                      controller.add(value);
 
-                  if (onDoneCalled && timers.isEmpty) {
-                    controller.close();
+                      timers.remove(timer);
+
+                      if (onDoneCalled && timers.isEmpty) {
+                        controller.close();
+                      }
+                    });
+
+                    timers.add(timer);
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                });
-
-                timers.add(timer);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
+                },
                 onError: controller.addError,
-                onDone: () => onDoneCalled = true,
+                onDone: () {
+                  if (hasNoEvents) controller.close();
+
+                  onDoneCalled = true;
+                },
                 cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
