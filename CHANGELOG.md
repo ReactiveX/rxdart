@@ -1,3 +1,7 @@
+## 0.16.4
+
+* Adds `bufferWithTimeframe` transformer.
+
 ## 0.16.3
 
 * Adds `delay` transformer.

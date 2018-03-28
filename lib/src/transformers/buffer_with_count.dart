@@ -37,16 +37,19 @@ class BufferWithCountStreamTransformer<T>
 
     return new StreamTransformer<T, List<T>>.fromHandlers(
         handleData: (T data, EventSink<List<T>> sink) {
-      buffer.add(data);
+          buffer.add(data);
 
-      if (buffer.length == count) {
-        sink.add(buffer);
+          if (buffer.length == count) {
+            sink.add(buffer);
 
-        buffer = buffer.sublist(count - bufferKeep);
-      }
-    }, handleDone: (EventSink<List<T>> sink) {
-      if (buffer.isNotEmpty) sink.add(buffer);
-    });
+            buffer = buffer.sublist(count - bufferKeep);
+          }
+        },
+        handleDone: (EventSink<List<T>> sink) {
+          if (buffer.isNotEmpty) sink.add(buffer);
+        },
+        handleError: (Object error, StackTrace s, EventSink<List<T>> sink) =>
+            sink.addError(error));
   }
 
   static void assertCountAndSkip(int count, [int skip]) {

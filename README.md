@@ -108,10 +108,12 @@ var myObservable = Observable.combineLatest3(
     
 ##### Available Methods
 - [bufferWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithCount.html) / [BufferWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWithCountStreamTransformer-class.html)
+- [bufferWithTimeframe](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithTimeframe.html) / [BufferWithTimeframeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWithTimeframeStreamTransformer-class.html)
 - [cast](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/cast.html) / [CastStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/CastStreamTransformer-class.html)
 - [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) (alias for `asyncExpand`)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
 - [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DebounceStreamTransformer-class.html)
+- [delay](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/delay.html) / [DelayStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DelayStreamTransformer-class.html)
 - [dematerialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/dematerialize.html) / [DematerializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DematerializeStreamTransformer-class.html)
 - [distinctUnique](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/distinctUnique.html) / [DistinctUniqueStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DistinctUniqueStreamTransformer-class.html)
 - [doOnCancel](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnCancel.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DoStreamTransformer-class.html)
