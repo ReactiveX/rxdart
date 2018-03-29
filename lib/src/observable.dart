@@ -1948,6 +1948,19 @@ class Observable<T> extends Stream<T> {
   Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
       transform(new WindowWithCountStreamTransformer<T>(count, skip));
 
+  /// Creates an Observable where each item is a Stream containing the items
+  /// from the source sequence, sampled on a time frame.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+  ///       .windowWithTimeframe(const Duration(milliseconds: 220))
+  ///       .doOnData((_) => print('next window'))
+  ///       .flatMap((bufferedStream) => bufferedStream)
+  ///       .listen((i) => print(i)); // prints next window, 0, 1, next window, 2, 3, next window, 4, 5, ...
+  Observable<Stream<T>> windowWithTimeframe(Duration timeframe) =>
+      transform(new WindowWithTimeframeStreamTransformer<T>(timeframe));
+
   /// Creates an Observable that emits when the source stream emits, combining
   /// the latest values from the two streams using the provided function.
   ///

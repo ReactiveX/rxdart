@@ -85,6 +85,8 @@ import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
 import 'transformers/window_with_count_test.dart' as window_with_count_test;
+import 'transformers/window_with_timeframe_test.dart'
+    as window_with_timeframe_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
@@ -185,6 +187,7 @@ void main() {
   tween_test.main();
   where_test.main();
   window_with_count_test.main();
+  window_with_timeframe_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
 

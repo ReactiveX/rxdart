@@ -143,6 +143,7 @@ var myObservable = Observable.combineLatest3(
 - [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html) / [TimestampStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TimestampStreamTransformer-class.html)
 - [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html) / [ThrottleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ThrottleStreamTransformer-class.html)
 - [windowWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowWithCount.html) / [WindowWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowWithCountStreamTransformer-class.html)
+- [windowWithTimeframe](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowWithTimeframe.html) / [WindowWithTimeframeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowWithTimeframeStreamTransformer-class.html)
 - [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html) / [WithLatestFromStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WithLatestFromStreamTransformer-class.html)
 - [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
 
