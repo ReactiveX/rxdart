@@ -57,7 +57,8 @@ class BufferWithTimeframeStreamTransformer<T>
                     onDone: () {
                       if (buffer.isNotEmpty) {
                         scheduleMicrotask(() {
-                          controller.add(buffer);
+                          controller.add(new List<T>.unmodifiable(buffer));
+                          buffer.clear();
                           controller.close();
                         });
                       } else {
