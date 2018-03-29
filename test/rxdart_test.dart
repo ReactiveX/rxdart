@@ -26,11 +26,13 @@ import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
+import 'transformers/buffer_time_test.dart' as buffer_with_timeframe_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
 import 'transformers/debounce_test.dart' as debounce_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
+import 'transformers/delay_test.dart' as delay_test;
 import 'transformers/dematerialize_test.dart' as dematerialize_test;
 import 'transformers/distinct_test.dart' as distinct_test;
 import 'transformers/distinct_unique_test.dart' as distinct_unique_test;
@@ -82,6 +84,7 @@ import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
 import 'transformers/window_with_count_test.dart' as window_with_count_test;
+import 'transformers/window_time_test.dart' as window_with_timeframe_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
@@ -122,11 +125,13 @@ void main() {
   async_expand_test.main();
   async_map_test.main();
   buffer_with_count_test.main();
+  buffer_with_timeframe_test.main();
   concat_map_test.main();
   concat_with_test.main();
   contains_test.main();
   debounce_test.main();
   default_if_empty_test.main();
+  delay_test.main();
   dematerialize_test.main();
   distinct_test.main();
   distinct_unique_test.main();
@@ -180,6 +185,7 @@ void main() {
   tween_test.main();
   where_test.main();
   window_with_count_test.main();
+  window_with_timeframe_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
 

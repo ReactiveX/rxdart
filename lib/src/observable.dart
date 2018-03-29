@@ -1062,6 +1062,17 @@ class Observable<T> extends Stream<T> {
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(new BufferWithCountStreamTransformer<T>(count, skip));
 
+  /// Creates an Observable where each item is a list containing the items
+  /// from the source sequence, sampled on a time frame.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
+  ///       .bufferTime(const Duration(milliseconds: 220))
+  ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
+  Observable<List<T>> bufferTime(Duration timeframe) =>
+      transform(new BufferTimeStreamTransformer<T>(timeframe));
+
   ///
   /// Adapt this stream to be a `Stream<R>`.
   ///
@@ -1936,6 +1947,19 @@ class Observable<T> extends Stream<T> {
   ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
   Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
       transform(new WindowWithCountStreamTransformer<T>(count, skip));
+
+  /// Creates an Observable where each item is a Stream containing the items
+  /// from the source sequence, sampled on a time frame.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+  ///       .windowTime(const Duration(milliseconds: 220))
+  ///       .doOnData((_) => print('next window'))
+  ///       .flatMap((bufferedStream) => bufferedStream)
+  ///       .listen((i) => print(i)); // prints next window, 0, 1, next window, 2, 3, next window, 4, 5, ...
+  Observable<Stream<T>> windowTime(Duration timeframe) =>
+      transform(new WindowTimeStreamTransformer<T>(timeframe));
 
   /// Creates an Observable that emits when the source stream emits, combining
   /// the latest values from the two streams using the provided function.

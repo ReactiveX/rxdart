@@ -1,3 +1,8 @@
+## 0.16.4
+
+* Adds `bufferTime` transformer.
+* Adds `windowTime` transformer.
+
 ## 0.16.3
 
 * Adds `delay` transformer.

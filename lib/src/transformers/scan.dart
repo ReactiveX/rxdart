@@ -27,10 +27,12 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
 
     return new StreamTransformer<T, S>.fromHandlers(
         handleData: (T data, EventSink<S> sink) {
-      acc = accumulator(acc, data, index++);
+          acc = accumulator(acc, data, index++);
 
-      sink.add(acc);
-    });
+          sink.add(acc);
+        },
+        handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+            sink.addError(error));
   }
 }
 
