@@ -21,30 +21,31 @@ import 'package:rxdart/src/transformers/buffer.dart';
 ///     new Stream.fromIterable([1, 2, 3, 4])
 ///       .transform(new BufferWithCountStreamTransformer(2, 1))
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-class BufferWithCountStreamTransformer<T>
-    extends StreamTransformerBase<T, List<T>> {
-  final int count, skip;
+class BufferWhenStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
+  final Stream<dynamic> sampler;
 
-  BufferWithCountStreamTransformer(this.count, [this.skip]);
+  BufferWhenStreamTransformer(this.sampler);
 
   @override
   Stream<List<T>> bind(Stream<T> stream) =>
-      _buildTransformer<T>(count, skip).bind(stream);
+      _buildTransformer<T>(sampler).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      int count, int skip) {
-    assertCountAndSkip(count, skip);
+      Stream<dynamic> sampler) {
+    assertOnStream(sampler);
 
     return new StreamTransformer<T, List<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
 
+      assertBroadcastMode(input, sampler, controller);
+
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new BufferStreamTransformer<T>(onCount(count, skip)))
+                .transform(new BufferStreamTransformer<T>(onStream(sampler)))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,
@@ -59,14 +60,17 @@ class BufferWithCountStreamTransformer<T>
     });
   }
 
-  static void assertCountAndSkip(int count, [int skip]) {
-    final int skipAmount = skip == null ? count : skip;
+  static void assertOnStream(Stream<dynamic> sampler) {
+    if (sampler == null) {
+      throw new ArgumentError('sampler cannot be null');
+    }
+  }
 
-    if (count == null) {
-      throw new ArgumentError('count cannot be null');
-    } else if (skipAmount <= 0 || skipAmount > count) {
-      throw new ArgumentError(
-          'skip has to be greater than zero and smaller than count');
+  static void assertBroadcastMode<T>(Stream<T> input, Stream<dynamic> sampler,
+      StreamController<List<T>> controller) {
+    if (input.isBroadcast && !sampler.isBroadcast) {
+      controller.addError(
+          new StateError('sampler should also be a broadcast stream'));
     }
   }
 }

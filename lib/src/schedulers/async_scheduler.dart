@@ -27,20 +27,23 @@ StreamScheduler<S> Function(
 
 StreamScheduler<S> Function(
         Stream<T> stream, StreamBufferHandler<T, S>, StreamBufferHandler<S, S>)
-    onTime<T, S>(Duration duration, [int skip]) => (Stream<T> stream,
+    onStream<T, S>(Stream<dynamic> onStream, [int skip]) => (Stream<T> stream,
             StreamBufferHandler<T, S> bufferHandler,
             StreamBufferHandler<S, S> scheduleHandler) =>
-        new _OnTimeImpl<T, S>(
-            stream, bufferHandler, scheduleHandler, duration, skip);
+        new _OnStreamImpl<T, S>(
+            stream, bufferHandler, scheduleHandler, onStream, skip);
 
-class _OnTimeImpl<T, S> implements StreamScheduler<S> {
+class _OnStreamImpl<T, S> implements StreamScheduler<S> {
   @override
   final Stream<S> onSchedule;
 
-  _OnTimeImpl._(this.onSchedule);
+  _OnStreamImpl._(this.onSchedule);
 
-  factory _OnTimeImpl(Stream<T> stream, StreamBufferHandler<T, S> bufferHandler,
-      StreamBufferHandler<S, S> scheduleHandler, Duration duration,
+  factory _OnStreamImpl(
+      Stream<T> stream,
+      StreamBufferHandler<T, S> bufferHandler,
+      StreamBufferHandler<S, S> scheduleHandler,
+      Stream<dynamic> onStream,
       [int skip]) {
     final doneController = new StreamController<bool>();
 
@@ -50,25 +53,17 @@ class _OnTimeImpl<T, S> implements StreamScheduler<S> {
     };
     Stream<dynamic> ticker;
 
-    if (duration == null) {
+    if (onStream == null) {
       onDone();
 
       ticker = new ErrorStream<ArgumentError>(
-          new ArgumentError('timeframe cannot be null'));
+          new ArgumentError('onStream cannot be null'));
     } else {
-      ticker = new Stream<Null>.periodic(duration).transform<Null>(
+      ticker = onStream.transform<Null>(
           new TakeUntilStreamTransformer(doneController.stream));
     }
 
     final scheduler = stream
-        .transform(
-            new StreamTransformer<T, T>.fromHandlers(handleData: (data, sink) {
-          if (duration == null) {
-            onDone();
-          } else {
-            sink.add(data);
-          }
-        }))
         .transform(new DoStreamTransformer(onDone: onDone))
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
@@ -82,7 +77,7 @@ class _OnTimeImpl<T, S> implements StreamScheduler<S> {
             },
             handleError: (error, s, sink) => sink.addError(error, s)));
 
-    return new _OnTimeImpl._(scheduler);
+    return new _OnStreamImpl._(scheduler);
   }
 }
 

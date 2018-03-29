@@ -106,12 +106,10 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferTime.error.shouldThrowB', () async {
-    Stream<List<num>> observableWithError = getStream(4).bufferTime(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((ArgumentError e, StackTrace s) {
-          expect(e, isArgumentError);
-        }));
+  test('rx.Observable.bufferTime.error.shouldThrowB', () {
+    expect(
+        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .bufferTime(null),
+        throwsArgumentError);
   });
 }

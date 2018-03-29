@@ -1068,7 +1068,7 @@ class Observable<T> extends Stream<T> {
   ///     Observable.range(1, 4).bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
-      buffer(onCount(count, skip));
+      transform(new BufferWithCountStreamTransformer<T>(count, skip));
 
   /// Creates an Observable where each item is a list containing the items
   /// from the source sequence, sampled on a time frame.
@@ -1078,8 +1078,11 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .bufferTime(const Duration(milliseconds: 220))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Observable<List<T>> bufferTime(Duration timeframe) =>
-      buffer(onTime(timeframe));
+  Observable<List<T>> bufferTime(Duration duration) =>
+      transform(new BufferTimeStreamTransformer<T>(duration));
+
+  Observable<List<T>> bufferWhen(Stream<dynamic> other) =>
+      transform(new BufferWhenStreamTransformer<T>(other));
 
   ///
   /// Adapt this stream to be a `Stream<R>`.

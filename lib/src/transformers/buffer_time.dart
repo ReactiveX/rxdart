@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/do.dart';
-import 'package:rxdart/src/transformers/sample.dart';
-import 'package:rxdart/src/transformers/take_until.dart';
+import 'package:rxdart/src/schedulers/async_scheduler.dart';
+
+import 'package:rxdart/src/transformers/buffer.dart';
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -28,43 +28,22 @@ class BufferTimeStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
         (Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
-      List<T> buffer;
+      Stream<dynamic> ticker;
+
+      if (input.isBroadcast) {
+        ticker = new Stream<Null>.periodic(duration).asBroadcastStream();
+      } else {
+        ticker = new Stream<Null>.periodic(duration);
+      }
 
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
-            /// needed to close the periodic [Stream] in sample
-            /// otherwise, this [Stream] would never close
-            /// and the onDone event would never trigger
-            final doneController = new StreamController<bool>();
-            buffer = <T>[];
-
-            List<T> addToBuffer(T event) => buffer..add(event);
-
             subscription = input
-                .transform(new DoStreamTransformer(onDone: () {
-                  doneController.add(true);
-                  doneController.close();
-                }))
-                .map(addToBuffer)
-                .transform(new SampleStreamTransformer(
-                    new Stream<Null>.periodic(duration).transform<Null>(
-                        new TakeUntilStreamTransformer(doneController.stream))))
-                .listen(
-                    (buffer) {
-                      controller.add(new List<T>.unmodifiable(buffer));
-                      buffer.clear();
-                    },
+                .transform(new BufferStreamTransformer<T>(onStream(ticker)))
+                .listen(controller.add,
                     onError: controller.addError,
-                    onDone: () {
-                      if (buffer.isNotEmpty) {
-                        controller.add(new List<T>.unmodifiable(buffer));
-                        buffer.clear();
-                        controller.close();
-                      } else {
-                        controller.close();
-                      }
-                    },
+                    onDone: controller.close,
                     cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>

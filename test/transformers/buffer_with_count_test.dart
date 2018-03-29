@@ -98,24 +98,16 @@ void main() {
   });
 
   test('rx.Observable.bufferWithCount.skip.shouldThrowB', () {
-    Stream<List<num>> observableWithError =
-        new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .bufferWithCount(2, 100);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
+    expect(
+        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .bufferWithCount(2, 100),
+        throwsArgumentError);
   });
 
   test('rx.Observable.bufferWithCount.skip.shouldThrowC', () {
-    Stream<List<num>> observableWithError =
-        new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .bufferWithCount(null);
-
-    observableWithError.listen(null,
-        onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
+    expect(
+        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+            .bufferWithCount(null),
+        throwsArgumentError);
   });
 }
