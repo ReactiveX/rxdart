@@ -1046,8 +1046,11 @@ class Observable<T> extends Stream<T> {
   Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
       new Observable<S>(stream.asyncMap(convert));
 
-  Observable<List<T>> buffer(StreamSchedulerType<T> scheduler) => transform(
-      new BufferStreamTransformer<T>((Stream<T> stream) => scheduler(stream)));
+  Observable<List<T>> buffer(StreamSchedulerType<T, List<T>> scheduler) =>
+      transform(new BufferStreamTransformer<T>((Stream<T> stream,
+              StreamBufferHandler<T, List<T>> bufferHandler,
+              StreamBufferHandler<List<T>, List<T>> scheduleHandler) =>
+          scheduler(stream, bufferHandler, scheduleHandler)));
 
   /// Creates an Observable where each item is a list containing the items
   /// from the source sequence, in batches of [count].
@@ -1065,7 +1068,7 @@ class Observable<T> extends Stream<T> {
   ///     Observable.range(1, 4).bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
-      transform(new BufferWithCountStreamTransformer<T>(count, skip));
+      buffer(onCount(count, skip));
 
   /// Creates an Observable where each item is a list containing the items
   /// from the source sequence, sampled on a time frame.
