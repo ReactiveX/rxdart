@@ -1,7 +1,5 @@
 import 'dart:async';
 
-/// Deprecated: Use RaceStream
-///
 /// Given two or more source streams, emit all of the items from only
 /// the first of these streams to emit an item or notification.
 ///
@@ -9,16 +7,15 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new AmbStream([
+///     new RaceStream([
 ///       new TimerStream(1, new Duration(days: 1)),
 ///       new TimerStream(2, new Duration(days: 2)),
 ///       new TimerStream(3, new Duration(seconds: 3))
 ///     ]).listen(print); // prints 3
-@deprecated
-class AmbStream<T> extends Stream<T> {
+class RaceStream<T> extends Stream<T> {
   final StreamController<T> controller;
 
-  AmbStream(Iterable<Stream<T>> streams)
+  RaceStream(Iterable<Stream<T>> streams)
       : controller = _buildController(streams);
 
   @override

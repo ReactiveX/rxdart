@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/transformers.dart';
 
-/// Deprecated: Please use [WindowCountStreamTransformer].
-///
 /// Creates an Observable where each item is a Stream containing the items
 /// from the source sequence, in batches of count.
 ///
@@ -13,15 +11,14 @@ import 'package:rxdart/transformers.dart';
 /// ### Example
 ///
 ///     new RangeStream(1, 4)
-///      .transform(new WindowWithCountStreamTransformer(3))
+///      .transform(new WindowCountStreamTransformer(3))
 ///      .transform(new FlatMapStreamTransformer((i) => i))
 ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
-@deprecated
-class WindowWithCountStreamTransformer<T>
+class WindowCountStreamTransformer<T>
     extends StreamTransformerBase<T, Stream<T>> {
   final StreamTransformer<T, Stream<T>> transformer;
 
-  WindowWithCountStreamTransformer(int count, [int skip])
+  WindowCountStreamTransformer(int count, [int skip])
       : transformer = _buildTransformer(count, skip);
 
   @override

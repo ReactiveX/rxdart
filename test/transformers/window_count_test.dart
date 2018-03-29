@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.windowWithCount.noSkip', () async {
+  test('rx.Observable.windowCount.noSkip', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -12,7 +12,7 @@ void main() {
     int count = 0;
 
     Stream<Stream<int>> stream =
-        new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).windowWithCount(2);
+        new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).windowCount(2);
 
     stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -25,9 +25,9 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.windowWithCount.reusable', () async {
-    final WindowWithCountStreamTransformer<int> transformer =
-        new WindowWithCountStreamTransformer<int>(2);
+  test('rx.Observable.windowCount.reusable', () async {
+    final WindowCountStreamTransformer<int> transformer =
+        new WindowCountStreamTransformer<int>(2);
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -63,7 +63,7 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.windowWithCount.skip', () async {
+  test('rx.Observable.windowCount.skip', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[2, 3],
@@ -74,7 +74,7 @@ void main() {
 
     Stream<Stream<int>> stream =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .windowWithCount(2, 1);
+            .windowCount(2, 1);
 
     stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches
@@ -87,10 +87,10 @@ void main() {
     }, count: 4));
   });
 
-  test('rx.Observable.windowWithCount.asBroadcastStream', () async {
+  test('rx.Observable.windowCount.asBroadcastStream', () async {
     Stream<Stream<int>> stream = new Observable<int>(
             new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .windowWithCount(2);
+        .windowCount(2);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -99,10 +99,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.windowWithCount.error.shouldThrowA', () async {
+  test('rx.Observable.windowCount.error.shouldThrowA', () async {
     Stream<Stream<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .windowWithCount(2);
+            .windowCount(2);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -110,19 +110,19 @@ void main() {
     }));
   });
 
-  test('rx.Observable.windowWithCount.skip.shouldThrowB', () {
+  test('rx.Observable.windowCount.skip.shouldThrowB', () {
     expect(
         () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .windowWithCount(2, 100),
+            .windowCount(2, 100),
         throwsArgumentError);
   });
 
-  test('rx.Observable.windowWithCount.error.shouldThrowC', () {
-    expect(() => new Observable<num>.just(1).windowWithCount(null),
+  test('rx.Observable.windowCount.error.shouldThrowC', () {
+    expect(() => new Observable<num>.just(1).windowCount(null),
         throwsArgumentError);
   });
 
-  test('rx.Observable.windowWithCount.pause.resume', () async {
+  test('rx.Observable.windowCount.pause.resume', () async {
     StreamSubscription<Stream<int>> subscription;
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
@@ -131,7 +131,7 @@ void main() {
     int count = 0;
     Stream<Stream<int>> stream =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .windowWithCount(2);
+            .windowCount(2);
 
     subscription = stream.listen(expectAsync1((Stream<int> result) {
       // test to see if the combined output matches

@@ -1,5 +1,9 @@
 library test.rx;
 
+import 'futures/as_observable_future_test.dart' as as_observable_future_test;
+import 'futures/stream_max_test.dart' as stream_max_test;
+import 'futures/stream_min_test.dart' as stream_min_test;
+import 'futures/wrapped_future_test.dart' as wrapped_future_test;
 import 'streams/amb_test.dart' as amb_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
@@ -14,19 +18,23 @@ import 'streams/just_test.dart' as just_test;
 import 'streams/merge_test.dart' as merge_test;
 import 'streams/never_test.dart' as never_test;
 import 'streams/periodic_test.dart' as periodic_test;
+import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
-
+import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
+import 'subject/publish_subject_test.dart' as publish_subject_test;
+import 'subject/replay_subject_test.dart' as replay_subject_test;
 import 'transformers/any_test.dart' as any_test;
 import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
+import 'transformers/buffer_count_test.dart' as buffer_count_test;
+import 'transformers/buffer_time_test.dart' as buffer_time_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
-import 'transformers/buffer_time_test.dart' as buffer_with_timeframe_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
@@ -73,6 +81,7 @@ import 'transformers/skip_while_test.dart' as skip_while_test;
 import 'transformers/start_with_many_test.dart' as start_with_many_test;
 import 'transformers/start_with_test.dart' as start_with_test;
 import 'transformers/switch_if_empty_test.dart' as switch_if_empty_test;
+import 'transformers/switch_map_test.dart' as switch_map_test;
 import 'transformers/take_until_test.dart' as take_until_test;
 import 'transformers/take_while_test.dart' as take_while_test;
 import 'transformers/throttle_test.dart' as throttle_test;
@@ -83,19 +92,11 @@ import 'transformers/to_list_test.dart' as to_list_test;
 import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
+import 'transformers/window_count_test.dart' as window_count_test;
+import 'transformers/window_time_test.dart' as window_time_test;
 import 'transformers/window_with_count_test.dart' as window_with_count_test;
-import 'transformers/window_time_test.dart' as window_with_timeframe_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
-
-import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
-import 'subject/publish_subject_test.dart' as publish_subject_test;
-import 'subject/replay_subject_test.dart' as replay_subject_test;
-
-import 'futures/as_observable_future_test.dart' as as_observable_future_test;
-import 'futures/stream_max_test.dart' as stream_max_test;
-import 'futures/stream_min_test.dart' as stream_min_test;
-import 'futures/wrapped_future_test.dart' as wrapped_future_test;
 
 void main() {
   // Streams
@@ -114,6 +115,7 @@ void main() {
   never_test.main();
   periodic_test.main();
   range_test.main();
+  race_test.main();
   retry_test.main();
   stream_test.main();
   zip_test.main();
@@ -124,8 +126,9 @@ void main() {
   as_broadcast_stream.main();
   async_expand_test.main();
   async_map_test.main();
+  buffer_count_test.main();
+  buffer_time_test.main();
   buffer_with_count_test.main();
-  buffer_with_timeframe_test.main();
   concat_map_test.main();
   concat_with_test.main();
   contains_test.main();
@@ -172,6 +175,7 @@ void main() {
   start_with_many_test.main();
   start_with_test.main();
   switch_if_empty_test.main();
+  switch_map_test.main();
   take_until_test.main();
   take_while_test.main();
   throttle_test.main();
@@ -184,8 +188,9 @@ void main() {
   timer_test.main();
   tween_test.main();
   where_test.main();
+  window_count_test.main();
+  window_time_test.main();
   window_with_count_test.main();
-  window_with_timeframe_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
 

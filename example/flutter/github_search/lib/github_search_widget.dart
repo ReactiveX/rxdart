@@ -1,12 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:github_search/github_search_api.dart';
-import 'package:github_search/empty_result_widget.dart';
-import 'package:github_search/search_error_widget.dart';
-import 'package:github_search/search_intro_widget.dart';
-import 'package:github_search/search_loading_widget.dart';
-import 'package:github_search/search_result_widget.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -45,10 +38,10 @@ class SearchModel {
         // Wait for the user to stop typing for 250ms before running a search
         .debounce(const Duration(milliseconds: 250))
         // Call the Github api with the given search term and convert it to a
-        // Model. If another search term is entered, flatMapLatest will ensure
+        // Model. If another search term is entered, switchMap will ensure
         // the previous search is discarded so we don't deliver stale results
         // to the View.
-        .flatMapLatest(_buildSearch(api))
+        .switchMap(_buildSearch(api))
         // The initial state of the model.
         .startWith(new SearchModel.initial());
   }

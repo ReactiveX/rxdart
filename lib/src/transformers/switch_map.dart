@@ -1,12 +1,10 @@
 import 'dart:async';
 
-/// Deprecated: Use SwitchMapStreamTransformer.
-///
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be be listened to and begin
 /// emitting items, and any previously created Stream will stop emitting.
 ///
-/// The flatMapLatest operator is similar to the flatMap and concatMap
+/// The switchMap operator is similar to the flatMap and concatMap
 /// methods, but it only emits items from the most recently created Stream.
 ///
 /// This can be useful when you only want the very latest state from
@@ -15,15 +13,14 @@ import 'dart:async';
 /// ### Example
 ///
 ///     new Stream.fromIterable([4, 3, 2, 1])
-///       .transform(new FlatMapLatestStreamTransformer((i) =>
+///       .transform(new SwitchMapStreamTransformer((i) =>
 ///         new Stream.fromFuture(
 ///           new Future.delayed(new Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
-@deprecated
-class FlatMapLatestStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
+class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
-  FlatMapLatestStreamTransformer(Stream<S> mapper(T value))
+  SwitchMapStreamTransformer(Stream<S> mapper(T value))
       : transformer = _buildTransformer(mapper);
 
   @override

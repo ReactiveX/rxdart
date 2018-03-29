@@ -38,9 +38,11 @@ class GithubApi {
 
     return new Observable<Response>.fromFuture(response)
         .where((response) => response != null)
-        .map((response) => JSON.decode(response.body))
-        .map((body) => body['items'])
-        .map((items) => new SearchResult.fromJson(items));
+        .map<Map<String, dynamic>>(
+            (response) => json.decode(response.body) as Map<String, dynamic>)
+        .map<List<Map<String, dynamic>>>(
+            (body) => body['items'] as List<Map<String, dynamic>>)
+        .map<SearchResult>((items) => new SearchResult.fromJson(items));
   }
 }
 
