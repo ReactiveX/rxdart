@@ -1,7 +1,7 @@
 library rx_transformers;
 
 export 'package:rxdart/src/transformers/buffer_with_count.dart';
-export 'package:rxdart/src/transformers/buffer_with_timeframe.dart';
+export 'package:rxdart/src/transformers/buffer_time.dart';
 export 'package:rxdart/src/transformers/debounce.dart';
 export 'package:rxdart/src/transformers/default_if_empty.dart';
 export 'package:rxdart/src/transformers/delay.dart';
@@ -28,7 +28,7 @@ export 'package:rxdart/src/transformers/throttle.dart';
 export 'package:rxdart/src/transformers/time_interval.dart';
 export 'package:rxdart/src/transformers/timestamp.dart';
 export 'package:rxdart/src/transformers/window_with_count.dart';
-export 'package:rxdart/src/transformers/window_with_timeframe.dart';
+export 'package:rxdart/src/transformers/window_time.dart';
 export 'package:rxdart/src/transformers/with_latest_from.dart';
 export 'package:rxdart/src/utils/type_token.dart';
 export 'package:rxdart/src/utils/notification.dart';

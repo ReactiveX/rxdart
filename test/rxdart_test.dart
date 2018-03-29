@@ -26,8 +26,7 @@ import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
-import 'transformers/buffer_with_timeframe_test.dart'
-    as buffer_with_timeframe_test;
+import 'transformers/buffer_time_test.dart' as buffer_with_timeframe_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
@@ -85,8 +84,7 @@ import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
 import 'transformers/window_with_count_test.dart' as window_with_count_test;
-import 'transformers/window_with_timeframe_test.dart'
-    as window_with_timeframe_test;
+import 'transformers/window_time_test.dart' as window_with_timeframe_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 

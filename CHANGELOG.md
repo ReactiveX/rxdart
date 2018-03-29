@@ -1,7 +1,7 @@
 ## 0.16.4
 
-* Adds `bufferWithTimeframe` transformer.
-* Adds `windowWithTimeframe` transformer.
+* Adds `bufferTime` transformer.
+* Adds `windowTime` transformer.
 
 ## 0.16.3
 

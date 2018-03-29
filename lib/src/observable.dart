@@ -1068,10 +1068,10 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .bufferWithTimeframe(const Duration(milliseconds: 220))
+  ///       .bufferTime(const Duration(milliseconds: 220))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Observable<List<T>> bufferWithTimeframe(Duration timeframe) =>
-      transform(new BufferWithTimeframeStreamTransformer<T>(timeframe));
+  Observable<List<T>> bufferTime(Duration timeframe) =>
+      transform(new BufferTimeStreamTransformer<T>(timeframe));
 
   ///
   /// Adapt this stream to be a `Stream<R>`.
@@ -1954,12 +1954,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
-  ///       .windowWithTimeframe(const Duration(milliseconds: 220))
+  ///       .windowTime(const Duration(milliseconds: 220))
   ///       .doOnData((_) => print('next window'))
   ///       .flatMap((bufferedStream) => bufferedStream)
   ///       .listen((i) => print(i)); // prints next window, 0, 1, next window, 2, 3, next window, 4, 5, ...
-  Observable<Stream<T>> windowWithTimeframe(Duration timeframe) =>
-      transform(new WindowWithTimeframeStreamTransformer<T>(timeframe));
+  Observable<Stream<T>> windowTime(Duration timeframe) =>
+      transform(new WindowTimeStreamTransformer<T>(timeframe));
 
   /// Creates an Observable that emits when the source stream emits, combining
   /// the latest values from the two streams using the provided function.

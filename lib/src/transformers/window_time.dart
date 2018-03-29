@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/buffer_with_timeframe.dart';
+import 'package:rxdart/src/transformers/buffer_time.dart';
 
 /// Creates an Observable where each item is a Stream containing the items
 /// from the source sequence, sampled on a time frame.
@@ -8,15 +8,15 @@ import 'package:rxdart/src/transformers/buffer_with_timeframe.dart';
 /// ### Example
 ///
 ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
-///       .windowWithTimeframe(const Duration(milliseconds: 220))
+///       .windowTime(const Duration(milliseconds: 220))
 ///       .doOnData((_) => print('next window'))
 ///       .flatMap((bufferedStream) => bufferedStream)
 ///       .listen((i) => print(i)); // prints next window, 0, 1, next window, 2, 3, next window, 4, 5, ...
-class WindowWithTimeframeStreamTransformer<T>
+class WindowTimeStreamTransformer<T>
     extends StreamTransformerBase<T, Stream<T>> {
   final StreamTransformer<T, Stream<T>> transformer;
 
-  WindowWithTimeframeStreamTransformer(Duration duration)
+  WindowTimeStreamTransformer(Duration duration)
       : transformer = _buildTransformer(duration);
 
   @override
@@ -24,7 +24,7 @@ class WindowWithTimeframeStreamTransformer<T>
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
       Duration duration) {
-    BufferWithTimeframeStreamTransformer.assertTimeframe(duration);
+    BufferTimeStreamTransformer.assertTimeframe(duration);
 
     return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
@@ -35,8 +35,7 @@ class WindowWithTimeframeStreamTransformer<T>
           sync: true,
           onListen: () {
             subscription = input
-                .transform(
-                    new BufferWithTimeframeStreamTransformer<T>(duration))
+                .transform(new BufferTimeStreamTransformer<T>(duration))
                 .listen((Iterable<T> value) {
               controller.add(new Stream<T>.fromIterable(value));
             },

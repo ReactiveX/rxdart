@@ -15,7 +15,7 @@ Observable<int> getStream(int n) => new Observable((int n) async* {
     }(n));
 
 void main() {
-  test('rx.Observable.windowWithTimeframe', () async {
+  test('rx.Observable.windowTime', () async {
     const expectedOutput = const [
       const [0, 1],
       const [2, 3]
@@ -23,7 +23,7 @@ void main() {
     int count = 0;
 
     getStream(4)
-        .windowWithTimeframe(const Duration(milliseconds: 220))
+        .windowTime(const Duration(milliseconds: 220))
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
@@ -34,12 +34,12 @@ void main() {
         }, count: 2));
   });
 
-  test('rx.Observable.windowWithTimeframe', () async {
+  test('rx.Observable.windowTime', () async {
     const expectedOutput = const [0, 1, 2, 3];
     final controller = new StreamController<int>();
 
     new Observable(controller.stream)
-        .windowWithTimeframe(const Duration(days: 1))
+        .windowTime(const Duration(days: 1))
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
@@ -55,9 +55,9 @@ void main() {
     scheduleMicrotask(controller.close);
   });
 
-  test('rx.Observable.windowWithTimeframe.reusable', () async {
-    final transformer = new WindowWithTimeframeStreamTransformer<int>(
-        const Duration(milliseconds: 220));
+  test('rx.Observable.windowTime.reusable', () async {
+    final transformer =
+        new WindowTimeStreamTransformer<int>(const Duration(milliseconds: 220));
     const expectedOutput = const [
       const [0, 1],
       const [2, 3]
@@ -89,10 +89,10 @@ void main() {
         }, count: 2));
   });
 
-  test('rx.Observable.windowWithTimeframe.asBroadcastStream', () async {
+  test('rx.Observable.windowTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
-        .windowWithTimeframe(const Duration(milliseconds: 220));
+        .windowTime(const Duration(milliseconds: 220));
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -101,10 +101,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.windowWithTimeframe.error.shouldThrowA', () async {
+  test('rx.Observable.windowTime.error.shouldThrowA', () async {
     Stream<Stream<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .windowWithTimeframe(const Duration(milliseconds: 220));
+            .windowTime(const Duration(milliseconds: 220));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -112,7 +112,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.windowWithTimeframe.skip.shouldThrowB', () {
-    expect(() => getStream(4).windowWithTimeframe(null), throwsArgumentError);
+  test('rx.Observable.windowTime.skip.shouldThrowB', () {
+    expect(() => getStream(4).windowTime(null), throwsArgumentError);
   });
 }

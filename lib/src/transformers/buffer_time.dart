@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/transformers/do.dart';
+import 'package:rxdart/src/transformers/sample.dart';
+import 'package:rxdart/src/transformers/take_until.dart';
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -8,13 +10,12 @@ import 'package:rxdart/src/observable.dart';
 /// ### Example
 ///
 ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-///       .bufferWithTimeframe(const Duration(milliseconds: 220))
+///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-class BufferWithTimeframeStreamTransformer<T>
-    extends StreamTransformerBase<T, List<T>> {
+class BufferTimeStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
   final Duration timeframe;
 
-  BufferWithTimeframeStreamTransformer(this.timeframe);
+  BufferTimeStreamTransformer(this.timeframe);
 
   @override
   Stream<List<T>> bind(Stream<T> stream) =>
@@ -40,14 +41,15 @@ class BufferWithTimeframeStreamTransformer<T>
 
             List<T> addToBuffer(T event) => buffer..add(event);
 
-            subscription = new Observable(input)
-                .doOnDone(() {
+            subscription = input
+                .transform(new DoStreamTransformer(onDone: () {
                   doneController.add(true);
                   doneController.close();
-                })
+                }))
                 .map(addToBuffer)
-                .sample(new Observable<Null>.periodic(duration)
-                    .takeUntil(doneController.stream))
+                .transform(new SampleStreamTransformer(
+                    new Stream<Null>.periodic(duration).transform<Null>(
+                        new TakeUntilStreamTransformer(doneController.stream))))
                 .listen(
                     (buffer) {
                       controller.add(new List<T>.unmodifiable(buffer));
@@ -56,11 +58,9 @@ class BufferWithTimeframeStreamTransformer<T>
                     onError: controller.addError,
                     onDone: () {
                       if (buffer.isNotEmpty) {
-                        scheduleMicrotask(() {
-                          controller.add(new List<T>.unmodifiable(buffer));
-                          buffer.clear();
-                          controller.close();
-                        });
+                        controller.add(new List<T>.unmodifiable(buffer));
+                        buffer.clear();
+                        controller.close();
                       } else {
                         controller.close();
                       }
@@ -78,7 +78,7 @@ class BufferWithTimeframeStreamTransformer<T>
 
   static void assertTimeframe(Duration timeframe) {
     if (timeframe == null) {
-      throw new ArgumentError('count cannot be null');
+      throw new ArgumentError('timeframe cannot be null');
     }
   }
 }

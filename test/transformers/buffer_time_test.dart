@@ -15,7 +15,7 @@ Observable<int> getStream(int n) => new Observable((int n) async* {
     }(n));
 
 void main() {
-  test('rx.Observable.bufferWithTimeframe', () async {
+  test('rx.Observable.bufferTime', () async {
     const expectedOutput = const [
       const [0, 1],
       const [2, 3]
@@ -23,7 +23,7 @@ void main() {
     int count = 0;
 
     getStream(4)
-        .bufferWithTimeframe(const Duration(milliseconds: 220))
+        .bufferTime(const Duration(milliseconds: 220))
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(
@@ -33,12 +33,12 @@ void main() {
         }, count: 2));
   });
 
-  test('rx.Observable.bufferWithTimeframe', () async {
+  test('rx.Observable.bufferTime', () async {
     const expectedOutput = const [0, 1, 2, 3];
     final controller = new StreamController<int>();
 
     new Observable(controller.stream)
-        .bufferWithTimeframe(const Duration(days: 1))
+        .bufferTime(const Duration(days: 1))
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(const IterableEquality<int>().equals(result, expectedOutput),
@@ -53,9 +53,9 @@ void main() {
     scheduleMicrotask(controller.close);
   });
 
-  test('rx.Observable.bufferWithTimeframe.reusable', () async {
-    final transformer = new BufferWithTimeframeStreamTransformer<int>(
-        const Duration(milliseconds: 220));
+  test('rx.Observable.bufferTime.reusable', () async {
+    final transformer =
+        new BufferTimeStreamTransformer<int>(const Duration(milliseconds: 220));
     const expectedOutput = const [
       const [0, 1],
       const [2, 3]
@@ -83,10 +83,10 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferWithTimeframe.asBroadcastStream', () async {
+  test('rx.Observable.bufferTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
-        .bufferWithTimeframe(const Duration(milliseconds: 220));
+        .bufferTime(const Duration(milliseconds: 220));
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -95,10 +95,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.bufferWithTimeframe.error.shouldThrowA', () async {
+  test('rx.Observable.bufferTime.error.shouldThrowA', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .bufferWithTimeframe(const Duration(milliseconds: 220));
+            .bufferTime(const Duration(milliseconds: 220));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -106,7 +106,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferWithTimeframe.skip.shouldThrowB', () {
-    expect(() => getStream(4).bufferWithTimeframe(null), throwsArgumentError);
+  test('rx.Observable.bufferTime.skip.shouldThrowB', () {
+    expect(() => getStream(4).bufferTime(null), throwsArgumentError);
   });
 }
