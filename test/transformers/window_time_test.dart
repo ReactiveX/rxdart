@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'package:collection/collection.dart';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 Observable<int> getStream(int n) => new Observable((int n) async* {
       int k = 0;
@@ -27,10 +26,7 @@ void main() {
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(
-              const IterableEquality<int>()
-                  .equals(result, expectedOutput[count++]),
-              isTrue);
+          expect(result, expectedOutput[count++]);
         }, count: 2));
   });
 
@@ -43,8 +39,7 @@ void main() {
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(const IterableEquality<int>().equals(result, expectedOutput),
-              isTrue);
+          expect(result, expectedOutput);
         }, count: 1));
 
     controller.add(0);
@@ -70,10 +65,7 @@ void main() {
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(
-              const IterableEquality<int>()
-                  .equals(result, expectedOutput[countA++]),
-              isTrue);
+          expect(result, expectedOutput[countA++]);
         }, count: 2));
 
     Stream<Stream<int>> streamB = getStream(4).transform(transformer);
@@ -82,10 +74,7 @@ void main() {
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(
-              const IterableEquality<int>()
-                  .equals(result, expectedOutput[countB++]),
-              isTrue);
+          expect(result, expectedOutput[countB++]);
         }, count: 2));
   });
 

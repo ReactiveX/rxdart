@@ -71,7 +71,7 @@ class SearchBloc {
               isLoading: false,
             );
           })
-      .onErrorReturn(new SearchState.error())
+          .onErrorReturn(new SearchState.error())
           .startWith(new SearchState.loading());
     };
   }

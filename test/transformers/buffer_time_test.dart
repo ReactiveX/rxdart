@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'package:collection/collection.dart';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => new Observable((int n) async* {
+Observable<int> getStream(int n) => new Observable<int>((int n) async* {
       int k = 0;
 
       while (k < n) {
@@ -16,9 +15,9 @@ Observable<int> getStream(int n) => new Observable((int n) async* {
 
 void main() {
   test('rx.Observable.bufferTime', () async {
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int count = 0;
 
@@ -26,23 +25,19 @@ void main() {
         .bufferTime(const Duration(milliseconds: 220))
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(
-              const IterableEquality<int>()
-                  .equals(result, expectedOutput[count++]),
-              isTrue);
+          expect(result, expectedOutput[count++]);
         }, count: 2));
   });
 
   test('rx.Observable.bufferTime', () async {
-    const expectedOutput = const [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    const List<int> expectedOutput = const <int>[0, 1, 2, 3];
+    final StreamController<int> controller = new StreamController<int>();
 
-    new Observable(controller.stream)
+    new Observable<int>(controller.stream)
         .bufferTime(const Duration(days: 1))
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
-          expect(const IterableEquality<int>().equals(result, expectedOutput),
-              isTrue);
+          expect(result, expectedOutput);
         }, count: 1));
 
     controller.add(0);
@@ -66,20 +61,14 @@ void main() {
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
-      expect(
-          const IterableEquality<int>()
-              .equals(result, expectedOutput[countA++]),
-          isTrue);
+      expect(result, expectedOutput[countA++]);
     }, count: 2));
 
     Stream<List<int>> streamB = getStream(4).transform(transformer);
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
-      expect(
-          const IterableEquality<int>()
-              .equals(result, expectedOutput[countB++]),
-          isTrue);
+      expect(result, expectedOutput[countB++]);
     }, count: 2));
   });
 
