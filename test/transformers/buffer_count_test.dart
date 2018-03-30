@@ -21,6 +21,27 @@ void main() {
     }, count: 2));
   });
 
+  test('rx.Observable.bufferCount.skip', () async {
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[1, 2],
+      const <int>[2, 3],
+      const <int>[3, 4],
+      const <int>[4]
+    ];
+    int count = 0;
+
+    Stream<List<int>> stream = Observable.range(1, 4).bufferCount(2, 1);
+
+    stream.listen(expectAsync1((List<int> result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[count].length, result.length);
+      expect(expectedOutput[count][0], result[0]);
+      if (expectedOutput[count].length > 1)
+        expect(expectedOutput[count][1], result[1]);
+      count++;
+    }, count: 4));
+  });
+
   test('rx.Observable.bufferCount.reusable', () async {
     final BufferCountStreamTransformer<int> transformer =
         new BufferCountStreamTransformer<int>(2);
@@ -51,27 +72,6 @@ void main() {
       expect(expectedOutput[countB][1], result[1]);
       countB++;
     }, count: 2));
-  });
-
-  test('rx.Observable.bufferCount.skip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[
-      const <int>[1, 2],
-      const <int>[2, 3],
-      const <int>[3, 4],
-      const <int>[4]
-    ];
-    int count = 0;
-
-    Stream<List<int>> stream = Observable.range(1, 4).bufferCount(2, 1);
-
-    stream.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[count].length, result.length);
-      expect(expectedOutput[count][0], result[0]);
-      if (expectedOutput[count].length > 1)
-        expect(expectedOutput[count][1], result[1]);
-      count++;
-    }, count: 4));
   });
 
   test('rx.Observable.bufferCount.asBroadcastStream', () async {

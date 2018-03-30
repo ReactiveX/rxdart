@@ -63,8 +63,12 @@ SamplerBloc<S> Function(
     onFuture<T, S>(Future<dynamic> onFuture()) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
-        new _OnFutureBloc<T, S>(
-            stream, bufferHandler, scheduleHandler, onFuture);
+        new _OnStreamBloc<T, S>(
+            stream, bufferHandler, scheduleHandler, _onFutureSampler(onFuture));
+
+Stream<dynamic> _onFutureSampler(Future<dynamic> onFuture()) async* {
+  while (true) yield await onFuture();
+}
 
 /// Higher order function implementation for [_OnTestBloc]
 /// which matches the method signature of buffer and window.
@@ -89,6 +93,8 @@ class _OnStreamBloc<T, S> implements SamplerBloc<S> {
   factory _OnStreamBloc(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, Stream<dynamic> onStream) {
     final doneController = new StreamController<bool>();
+    final Stream<dynamic> ticker = onStream
+        .transform<Null>(new TakeUntilStreamTransformer(doneController.stream));
 
     var onDone = () {
       if (doneController.isClosed) return;
@@ -96,8 +102,6 @@ class _OnStreamBloc<T, S> implements SamplerBloc<S> {
       doneController.add(true);
       doneController.close();
     };
-    final Stream<dynamic> ticker = onStream
-        .transform<Null>(new TakeUntilStreamTransformer(doneController.stream));
 
     final scheduler = stream
         .transform(new DoStreamTransformer(onDone: onDone, onCancel: onDone))
@@ -114,36 +118,6 @@ class _OnStreamBloc<T, S> implements SamplerBloc<S> {
             handleError: (error, s, sink) => sink.addError(error, s)));
 
     return new _OnStreamBloc._(scheduler);
-  }
-}
-
-/// A buffer strategy where each item is a sequence containing the items
-/// from the source sequence, batched whenever [onFuture] completes.
-class _OnFutureBloc<T, S> implements SamplerBloc<S> {
-  @override
-  final Stream<S> state;
-
-  _OnFutureBloc._(this.state);
-
-  factory _OnFutureBloc(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
-      OnDataTransform<S, S> scheduleHandler, Future<dynamic> onFuture()) {
-    Future<S> Function(S) onFutureHandler() =>
-        (data) => onFuture().then((dynamic _) => data);
-
-    final scheduler = stream
-        .transform(new StreamTransformer<T, S>.fromHandlers(
-            handleData: (data, sink) {
-              bufferHandler(data, sink, 0);
-            },
-            handleError: (error, s, sink) => sink.addError(error, s)))
-        .asyncMap(onFutureHandler())
-        .transform(new StreamTransformer<S, S>.fromHandlers(
-            handleData: (data, sink) {
-              scheduleHandler(data, sink, 0);
-            },
-            handleError: (error, s, sink) => sink.addError(error, s)));
-
-    return new _OnFutureBloc._(scheduler);
   }
 }
 

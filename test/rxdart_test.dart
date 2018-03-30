@@ -33,6 +33,7 @@ import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
 import 'transformers/buffer_count_test.dart' as buffer_count_test;
+import 'transformers/buffer_future_test.dart' as buffer_future_test;
 import 'transformers/buffer_time_test.dart' as buffer_time_test;
 import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
@@ -127,6 +128,7 @@ void main() {
   async_expand_test.main();
   async_map_test.main();
   buffer_count_test.main();
+  buffer_future_test.main();
   buffer_time_test.main();
   buffer_with_count_test.main();
   concat_map_test.main();

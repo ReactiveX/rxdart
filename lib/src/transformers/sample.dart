@@ -27,29 +27,32 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamSubscription<dynamic> sampleSubscription;
       T currentValue;
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        if (currentValue != null) {
+          controller.add(currentValue);
+        }
+
+        controller.close();
+      }
+
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
             try {
               subscription = input.listen((T value) {
                 currentValue = value;
-              }, onError: controller.addError);
+              }, onError: controller.addError, onDone: onDone);
 
-              sampleSubscription = sampleStream.listen(
-                  (dynamic _) {
-                    if (currentValue != null) {
-                      controller.add(currentValue);
-                      currentValue = null;
-                    }
-                  },
+              sampleSubscription = sampleStream.listen((dynamic _) {
+                if (currentValue != null) {
+                  controller.add(currentValue);
+                  currentValue = null;
+                }
+              },
                   onError: controller.addError,
-                  onDone: () {
-                    if (currentValue != null) {
-                      controller.add(currentValue);
-                    }
-
-                    controller.close();
-                  },
+                  onDone: onDone,
                   cancelOnError: cancelOnError);
             } catch (e, s) {
               controller.addError(e, s);
