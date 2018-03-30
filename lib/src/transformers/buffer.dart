@@ -36,9 +36,8 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
               buffer.add(data);
               sink.add(buffer);
             }, (data, sink, [int skip]) {
-              skip ??= 0;
               sink.add(new List<T>.unmodifiable(data));
-              buffer = data.sublist(data.length - skip);
+              buffer = data.sublist(data.length - (skip ?? 0));
             }).onSample.listen(controller.add, onError: controller.addError,
                 onDone: () {
               if (buffer.isNotEmpty)

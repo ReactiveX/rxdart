@@ -35,18 +35,9 @@ StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTime<T, S>(Duration duration) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) {
-          Stream<Null> ticker;
-
-          if (stream.isBroadcast) {
-            ticker = new Stream<Null>.periodic(duration).asBroadcastStream();
-          } else {
-            ticker = new Stream<Null>.periodic(duration);
-          }
-
-          return new _OnStreamImpl<T, S>(
-              stream, bufferHandler, scheduleHandler, ticker);
-        };
+            OnDataTransform<S, S> scheduleHandler) =>
+        new _OnStreamImpl<T, S>(stream, bufferHandler, scheduleHandler,
+            new Stream<Null>.periodic(duration));
 
 StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
