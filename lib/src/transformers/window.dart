@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/schedulers/async_scheduler.dart';
+import 'package:rxdart/src/samplers/samplers.dart';
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -11,7 +11,7 @@ import 'package:rxdart/src/schedulers/async_scheduler.dart';
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
-  final StreamSamplerType<T, Stream<T>> scheduler;
+  final SamplerBlocBuilder<T, Stream<T>> scheduler;
 
   WindowStreamTransformer(this.scheduler);
 
@@ -20,7 +20,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       _buildTransformer<T>(scheduler).bind(stream);
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
-      StreamSamplerType<T, Stream<T>> scheduler) {
+      SamplerBlocBuilder<T, Stream<T>> scheduler) {
     assertScheduler(scheduler);
 
     return new StreamTransformer<T, Stream<T>>(
@@ -38,7 +38,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
             }, (data, sink, [int skip]) {
               sink.add(data);
               buffer = buffer.sublist(buffer.length - (skip ?? 0));
-            }).onSample.listen(controller.add, onError: controller.addError,
+            }).state.listen(controller.add, onError: controller.addError,
                 onDone: () {
               if (buffer.isNotEmpty)
                 controller.add(new Stream<T>.fromIterable(buffer));
@@ -54,7 +54,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
     });
   }
 
-  static void assertScheduler<T>(StreamSamplerType<T, Stream<T>> scheduler) {
+  static void assertScheduler<T>(SamplerBlocBuilder<T, Stream<T>> scheduler) {
     if (scheduler == null) {
       throw new ArgumentError('scheduler cannot be null');
     }

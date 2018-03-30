@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/transformers.dart';
 
-import 'package:rxdart/src/schedulers/async_scheduler.dart';
+import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
 /// Creates an Observable where each item is a Stream containing the items
 /// from the source sequence, in batches of count.

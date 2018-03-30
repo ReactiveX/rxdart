@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/schedulers/async_scheduler.dart';
+import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
 import 'package:rxdart/src/transformers/buffer.dart';
 

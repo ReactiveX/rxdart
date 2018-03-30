@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/transformers.dart';
 
-import 'package:rxdart/src/schedulers/async_scheduler.dart';
+import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
 /// Deprecated: Please use [WindowCountStreamTransformer].
 ///

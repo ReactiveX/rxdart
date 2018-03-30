@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:rxdart/futures.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
-
-import 'package:rxdart/src/schedulers/async_scheduler.dart';
+import 'package:rxdart/samplers.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.
@@ -1064,7 +1063,7 @@ class Observable<T> extends Stream<T> {
   Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
       new Observable<S>(stream.asyncMap(convert));
 
-  Observable<List<T>> buffer(StreamSamplerType<T, List<T>> scheduler) =>
+  Observable<List<T>> buffer(SamplerBlocBuilder<T, List<T>> scheduler) =>
       transform(new BufferStreamTransformer<T>((Stream<T> stream,
               OnDataTransform<T, List<T>> bufferHandler,
               OnDataTransform<List<T>, List<T>> scheduleHandler) =>
