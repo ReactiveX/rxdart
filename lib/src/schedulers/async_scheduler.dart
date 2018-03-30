@@ -75,7 +75,7 @@ class _OnStreamImpl<T, S> implements StreamSampler<S> {
     }
 
     final scheduler = stream
-        .transform(new DoStreamTransformer(onDone: onDone))
+        .transform(new DoStreamTransformer(onDone: onDone, onCancel: onDone))
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
               bufferHandler(data, sink, skip);
