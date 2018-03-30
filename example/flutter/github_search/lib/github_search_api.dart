@@ -1,52 +1,44 @@
+import 'dart:async';
 import 'dart:convert';
-
-import 'package:http/http.dart';
-import 'package:rxdart/rxdart.dart';
+import 'dart:io';
 
 class GithubApi {
   final String baseUrl;
   final Map<String, SearchResult> cache;
-  final Client client;
+  final HttpClient client;
 
   GithubApi({
-    Client client,
+    HttpClient client,
     Map<String, SearchResult> cache,
     this.baseUrl = "https://api.github.com/search/repositories?q=",
-  })  : this.client = client ?? new Client(),
+  })  : this.client = client ?? new HttpClient(),
         this.cache = cache ?? <String, SearchResult>{};
 
   /// Search Github for repositories using the given term
-  Observable<SearchResult> search(String term) {
+  Future<SearchResult> search(String term) async {
     if (term.isEmpty) {
-      return new Observable<SearchResult>.just(new SearchResult.noTerm());
+      return new SearchResult.noTerm();
     } else if (cache.containsKey(term)) {
-      return new Observable<SearchResult>.just(cache[term]);
+      return cache[term];
     } else {
-      return _fetchResults(term).doOnData((SearchResult result) {
-        cache[term] = result;
-      });
+      final result = await _fetchResults(term);
+
+      cache[term] = result;
+
+      return result;
     }
   }
 
-  Observable<SearchResult> _fetchResults(String term) {
-    final response = client.get(
-      "$baseUrl$term",
-      headers: <String, String>{
-        "Accept": "application/json",
-      },
-    );
+  Future<SearchResult> _fetchResults(String term) async {
+    final request = await new HttpClient().getUrl(Uri.parse("$baseUrl$term"));
+    final response = await request.close();
+    final results = json.decode(await response.transform(utf8.decoder).join());
 
-    return new Observable<Response>.fromFuture(response)
-        .where((response) => response != null)
-        .map<Map<String, dynamic>>(
-            (response) => json.decode(response.body) as Map<String, dynamic>)
-        .map<List<Map<String, dynamic>>>(
-            (body) => body['items'] as List<Map<String, dynamic>>)
-        .map<SearchResult>((items) => new SearchResult.fromJson(items));
+    return new SearchResult.fromJson(results['items']);
   }
 }
 
-enum SearchResultKind { NO_TERM, EMPTY, POPULATED }
+enum SearchResultKind { noTerm, empty, populated }
 
 class SearchResult {
   final SearchResultKind kind;
@@ -55,24 +47,26 @@ class SearchResult {
   SearchResult(this.kind, this.items);
 
   factory SearchResult.noTerm() =>
-      new SearchResult(SearchResultKind.NO_TERM, <SearchResultItem>[]);
+      new SearchResult(SearchResultKind.noTerm, <SearchResultItem>[]);
 
-  factory SearchResult.fromJson(List<Map<String, Object>> json) {
-    final items = json.map((Map<String, Object> item) {
+  factory SearchResult.fromJson(dynamic json) {
+    final items = (json as List)
+        .cast<Map<String, Object>>()
+        .map((Map<String, Object> item) {
       return new SearchResultItem.fromJson(item);
     }).toList();
 
     return new SearchResult(
-      items.isEmpty ? SearchResultKind.EMPTY : SearchResultKind.POPULATED,
+      items.isEmpty ? SearchResultKind.empty : SearchResultKind.populated,
       items,
     );
   }
 
-  bool get isPopulated => kind == SearchResultKind.POPULATED;
+  bool get isPopulated => kind == SearchResultKind.populated;
 
-  bool get isEmpty => kind == SearchResultKind.EMPTY;
+  bool get isEmpty => kind == SearchResultKind.empty;
 
-  bool get isNoTerm => kind == SearchResultKind.NO_TERM;
+  bool get isNoTerm => kind == SearchResultKind.noTerm;
 }
 
 class SearchResultItem {
