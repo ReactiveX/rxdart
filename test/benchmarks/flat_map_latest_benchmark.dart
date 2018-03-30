@@ -2,15 +2,15 @@ import 'package:benchmark_harness/benchmark_harness.dart';
 
 import 'benchmark_utils.dart';
 
-void main() => FlatMapLatestBenchmark.main();
+void main() => SwitchMapBenchmark.main();
 
-class FlatMapLatestBenchmark extends BenchmarkBase {
-  FlatMapLatestBenchmark() : super("flatMapLatest");
+class SwitchMapBenchmark extends BenchmarkBase {
+  SwitchMapBenchmark() : super("switchMap");
 
-  static void main() => new FlatMapLatestBenchmark().report();
+  static void main() => new SwitchMapBenchmark().report();
 
   @override
   void run() {
-    range().flatMapLatest((int i) => range()).listen(null);
+    range().switchMap((int i) => range()).listen(null);
   }
 }

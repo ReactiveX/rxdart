@@ -76,6 +76,8 @@ class Observable<T> extends Stream<T> {
 
   Observable(this.stream);
 
+  /// Deprecated: please use [Observable.race].
+  ///
   /// Given two or more source [streams], emit all of the items from only
   /// the first of these [streams] to emit an item or notification.
   ///
@@ -88,8 +90,9 @@ class Observable<T> extends Stream<T> {
   ///       new Observable.timer(2, new Duration(days: 2)),
   ///       new Observable.timer(3, new Duration(seconds: 1))
   ///     ]).listen(print); // prints 3
+  @deprecated
   factory Observable.amb(Iterable<Stream<T>> streams) =>
-      new Observable<T>(new AmbStream<T>(streams));
+      new Observable<T>(new RaceStream<T>(streams));
 
   @override
   AsObservableFuture<bool> any(bool test(T element)) =>
@@ -572,6 +575,21 @@ class Observable<T> extends Stream<T> {
           [T computation(int computationCount)]) =>
       new Observable<T>((new Stream<T>.periodic(period, computation)));
 
+  /// Given two or more source [streams], emit all of the items from only
+  /// the first of these [streams] to emit an item or notification.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#amb)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.race([
+  ///       new Observable.timer(1, new Duration(days: 1)),
+  ///       new Observable.timer(2, new Duration(days: 2)),
+  ///       new Observable.timer(3, new Duration(seconds: 1))
+  ///     ]).listen(print); // prints 3
+  factory Observable.race(Iterable<Stream<T>> streams) =>
+      new Observable<T>(new RaceStream<T>(streams));
+
   /// Returns an Observable that emits a sequence of Integers within a specified
   /// range.
   ///
@@ -1052,6 +1070,26 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
+  ///     Observable.range(1, 4).bufferCount(2)
+  ///       .listen(print); // prints [1, 2], [3, 4]
+  ///
+  /// ### Example with skip
+  ///
+  ///     Observable.range(1, 4).bufferCount(2, 1)
+  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
+  Observable<List<T>> bufferCount(int count, [int skip]) =>
+      transform(new BufferCountStreamTransformer<T>(count, skip));
+
+  /// Deprecated: Please use [bufferCount]
+  ///
+  /// Creates an Observable where each item is a list containing the items
+  /// from the source sequence, in batches of [count].
+  ///
+  /// If [skip] is provided, each group will start where the previous group
+  /// ended minus the [skip] value.
+  ///
+  /// ### Example
+  ///
   ///     Observable.range(1, 4).bufferWithCount(2)
   ///       .listen(print); // prints [1, 2], [3, 4]
   ///
@@ -1060,7 +1098,7 @@ class Observable<T> extends Stream<T> {
   ///     Observable.range(1, 4).bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
-      transform(new BufferWithCountStreamTransformer<T>(count, skip));
+      transform(new BufferCountStreamTransformer<T>(count, skip));
 
   /// Creates an Observable where each item is a list containing the items
   /// from the source sequence, sampled on a time frame.
@@ -1386,7 +1424,9 @@ class Observable<T> extends Stream<T> {
   Observable<S> flatMap<S>(Stream<S> mapper(T value)) =>
       transform(new FlatMapStreamTransformer<T, S>(mapper));
 
-  /// Converts each emitted item into a new Stream using the given mapper
+  /// Deprecated: Please use [switchMap] instead.
+  ///
+  /// This is the old name of this method This Converts each emitted item into a new Stream using the given mapper
   /// function. The newly created Stream will be be listened to and begin
   /// emitting items, and any previously created Stream will stop emitting.
   ///
@@ -1402,8 +1442,9 @@ class Observable<T> extends Stream<T> {
   ///       .flatMapLatest((i) =>
   ///         new Observable.timer(i, new Duration(minutes: i))
   ///       .listen(print); // prints 1
+  @deprecated
   Observable<S> flatMapLatest<S>(Stream<S> mapper(T value)) =>
-      transform(new FlatMapLatestStreamTransformer<T, S>(mapper));
+      transform(new SwitchMapStreamTransformer<T, S>(mapper));
 
   @override
   AsObservableFuture<S> fold<S>(
@@ -1818,6 +1859,25 @@ class Observable<T> extends Stream<T> {
   Observable<T> switchIfEmpty(Stream<T> fallbackStream) =>
       transform(new SwitchIfEmptyStreamTransformer<T>(fallbackStream));
 
+  /// Converts each emitted item into a new Stream using the given mapper
+  /// function. The newly created Stream will be be listened to and begin
+  /// emitting items, and any previously created Stream will stop emitting.
+  ///
+  /// The switchMap operator is similar to the flatMap and concatMap methods,
+  /// but it only emits items from the most recently created Stream.
+  ///
+  /// This can be useful when you only want the very latest state from
+  /// asynchronous APIs, for example.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(4, 1)
+  ///       .switchMap((i) =>
+  ///         new Observable.timer(i, new Duration(minutes: i))
+  ///       .listen(print); // prints 1
+  Observable<S> switchMap<S>(Stream<S> mapper(T value)) =>
+      transform(new SwitchMapStreamTransformer<T, S>(mapper));
+
   /// Provides at most the first `n` values of this stream.
   /// Forwards the first n data events of this stream, and all error events, to
   /// the returned stream, and ends with a done event.
@@ -1933,6 +1993,8 @@ class Observable<T> extends Stream<T> {
   Observable<T> where(bool test(T event)) =>
       new Observable<T>(stream.where(test));
 
+  /// Deprecated: Please use [windowCount]
+  ///
   /// Creates an Observable where each item is a Stream containing the items
   /// from the source sequence, in batches of [count].
   ///
@@ -1945,8 +2007,24 @@ class Observable<T> extends Stream<T> {
   ///      .windowWithCount(3)
   ///      .flatMap((i) => i)
   ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
+  @deprecated
   Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
-      transform(new WindowWithCountStreamTransformer<T>(count, skip));
+      transform(new WindowCountStreamTransformer<T>(count, skip));
+
+  /// Creates an Observable where each item is a Stream containing the items
+  /// from the source sequence, in batches of [count].
+  ///
+  /// If [skip] is provided, each group will start where the previous group
+  /// ended minus the [skip] value.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 4)
+  ///      .windowCount(3)
+  ///      .flatMap((i) => i)
+  ///      .listen(expectAsync1(print, count: 4)); // prints 1, 2, 3, 4
+  Observable<Stream<T>> windowCount(int count, [int skip]) =>
+      transform(new WindowCountStreamTransformer<T>(count, skip));
 
   /// Creates an Observable where each item is a Stream containing the items
   /// from the source sequence, sampled on a time frame.

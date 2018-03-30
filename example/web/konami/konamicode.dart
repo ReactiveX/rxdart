@@ -25,8 +25,8 @@ void main() {
   keyUp
       // Use map() to get the keyCode
       .map((event) => event.keyCode)
-      // Use bufferWithCount() to remember the last 10 keyCodes
-      .bufferWithCount(10, 1)
+      // Use bufferCount() to remember the last 10 keyCodes
+      .bufferCount(10, 1)
       // Use where() to check for matching values
       .where((lastTenKeyCodes) =>
           const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))

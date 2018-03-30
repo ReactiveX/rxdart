@@ -1,4 +1,5 @@
 import 'dart:html';
+
 import 'package:rxdart/rxdart.dart';
 
 // Side note: To maintain readability, this example was not formatted using dart_fmt.
@@ -13,8 +14,8 @@ void main() {
       // Use map() to calculate the left and top properties on mouseDown
       .map((event) => new Point<num>(event.client.x - dragTarget.offset.left,
           event.client.y - dragTarget.offset.top))
-      // Use flatMapLatest() to get the mouse position on each mouseMove
-      .flatMapLatest((startPosition) {
+      // Use switchMap() to get the mouse position on each mouseMove
+      .switchMap((startPosition) {
     return mouseMove
         // Use map() to calculate the left and top properties on each mouseMove
         .map((event) => new Point<num>(

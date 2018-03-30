@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:github_search/github_search_api.dart';
 import 'package:github_search/empty_result_widget.dart';
+import 'package:github_search/github_search_api.dart';
 import 'package:github_search/search_error_widget.dart';
 import 'package:github_search/search_intro_widget.dart';
 import 'package:github_search/search_loading_widget.dart';
@@ -10,87 +10,95 @@ import 'package:github_search/search_result_widget.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-// The Model represents the data the View requires. The View consumes a Stream
-// of Models. The view rebuilds every time the Stream emits a new Model!
+// The State represents the data the View requires. The View consumes a Stream
+// of States. The view rebuilds every time the Stream emits a new State!
 //
-// The Model Stream will emit new Models depending on the State of the app: The
+// The State Stream will emit new States depending on the situation: The
 // initial state, loading states, the list of results, and any errors that
 // happen.
 //
-// The Model Stream responds to input from the View by accepting a
+// The State Stream responds to input from the View by accepting a
 // Stream<String>. We call this Stream the onTextChanged "intent".
-class SearchModel {
+class SearchState {
   final SearchResult result;
   final bool hasError;
   final bool isLoading;
 
-  SearchModel({
+  SearchState({
     this.result,
     this.hasError = false,
     this.isLoading = false,
   });
 
-  factory SearchModel.initial() =>
-      new SearchModel(result: new SearchResult.noTerm());
+  factory SearchState.initial() =>
+      new SearchState(result: new SearchResult.noTerm());
 
-  factory SearchModel.loading() => new SearchModel(isLoading: true);
+  factory SearchState.loading() => new SearchState(isLoading: true);
 
-  static Stream<SearchModel> stream(
-    Stream<String> onTextChanged,
-    GithubApi api,
-  ) {
-    return new Observable<String>(onTextChanged)
+  factory SearchState.error() => new SearchState(hasError: true);
+}
+
+class SearchBloc {
+  final Sink<String> onTextChanged;
+  final Stream<SearchState> state;
+
+  SearchBloc._(this.onTextChanged, this.state);
+
+  factory SearchBloc(GithubApi api) {
+    final onTextChanged = new StreamController<String>();
+    final state = new Observable<String>(onTextChanged.stream)
         // If the text has not changed, do not perform a new search
         .distinct()
         // Wait for the user to stop typing for 250ms before running a search
         .debounce(const Duration(milliseconds: 250))
         // Call the Github api with the given search term and convert it to a
-        // Model. If another search term is entered, flatMapLatest will ensure
+        // State. If another search term is entered, flatMapLatest will ensure
         // the previous search is discarded so we don't deliver stale results
         // to the View.
-        .flatMapLatest(_buildSearch(api))
-        // The initial state of the model.
-        .startWith(new SearchModel.initial());
+        .switchMap(_buildSearch(api))
+        // The initial state to deliver to the screen.
+        .startWith(new SearchState.initial());
+
+    return new SearchBloc._(onTextChanged, state);
   }
 
-  static Stream<SearchModel> Function(String) _buildSearch(GithubApi api) {
+  static Stream<SearchState> Function(String) _buildSearch(GithubApi api) {
     return (String term) {
-      return api
-          .search(term)
-          .map((SearchResult result) {
-            return new SearchModel(
+      return new Observable<SearchResult>.fromFuture(api.search(term))
+          .map<SearchState>((SearchResult result) {
+            return new SearchState(
               result: result,
               isLoading: false,
             );
           })
-          .onErrorReturn(new SearchModel(hasError: true))
-          .startWith(new SearchModel.loading());
+      .onErrorReturn(new SearchState.error())
+          .startWith(new SearchState.loading());
     };
   }
 }
 
-// The View in a Stream-based architecture takes two arguments: The Model Stream
+// The View in a Stream-based architecture takes two arguments: The State Stream
 // and the onTextChanged callback. In our case, the onTextChanged callback will
 // emit the latest String to a Stream<String> whenever it is called.
 //
-// The Model will use the Stream<String> to send new search requests to the
+// The State will use the Stream<String> to send new search requests to the
 // GithubApi.
-class SearchView extends StatelessWidget {
-  final Stream<SearchModel> model;
+class SearchScreen extends StatelessWidget {
+  final Stream<SearchState> state;
   final ValueChanged<String> onTextChanged;
 
-  SearchView({
+  SearchScreen({
     Key key,
-    @required this.model,
+    @required this.state,
     @required this.onTextChanged,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<SearchModel>(
-      stream: model,
-      initialData: new SearchModel.initial(),
-      builder: (BuildContext context, AsyncSnapshot<SearchModel> snapshot) {
+    return new StreamBuilder<SearchState>(
+      stream: state,
+      initialData: new SearchState.initial(),
+      builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
         final model = snapshot.data;
 
         return new Scaffold(
@@ -101,7 +109,7 @@ class SearchView extends StatelessWidget {
                   padding: new EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
                   child: new TextField(
                     decoration: new InputDecoration(
-                      hideDivider: true,
+                      border: InputBorder.none,
                       hintText: 'Search Github...',
                     ),
                     style: new TextStyle(

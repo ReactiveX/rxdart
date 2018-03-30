@@ -1,3 +1,10 @@
+## 0.16.5
+
+* Renames `amb` to `race`
+* Renames `flatMapLatest` to `switchMap`
+* Renames `bufferWithCount` to `bufferCount`
+* Renames `windowWithCount` to `windowCount`
+
 ## 0.16.4
 
 * Adds `bufferTime` transformer.

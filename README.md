@@ -36,7 +36,7 @@ void main() {
 
   keyUp
     .map((event) => event.keyCode)
-    .bufferWithCount(10, 1)
+    .bufferCount(10, 1)
     .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
     .listen((_) => result.innerHtml = 'KONAMI!');
 }
@@ -72,7 +72,6 @@ var myObservable = new Observable(myStream);
 ```
 
 #### Available Factory Methods
-- [amb](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.amb.html) / [AmbStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/AmbStream-class.html)
 - [concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/ConcatStream-class.html)
 - [concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/ConcatEagerStream-class.html)
 - [defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html) / [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/DeferStream-class.html)
@@ -81,6 +80,7 @@ var myObservable = new Observable(myStream);
 - [merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html) / [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/MergeStream-class.html)
 - [never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html) / [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/NeverStream-class.html)
 - [periodic](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.periodic.html)
+- [race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.race.html) / [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/RaceStream-class.html)
 - [retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html) / [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/RetryStream-class.html)
 - [timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html) / [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx_streams/TimerStream-class.html)
 
@@ -107,7 +107,7 @@ var myObservable = Observable.combineLatest3(
 ### Transformations
     
 ##### Available Methods
-- [bufferWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWithCount.html) / [BufferWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWithCountStreamTransformer-class.html)
+- [bufferCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferCount.html) / [BufferCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferCountStreamTransformer-class.html)
 - [bufferTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTime.html) / [BufferTimeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferTimeStreamTransformer-class.html)
 - [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) (alias for `asyncExpand`)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
@@ -125,7 +125,6 @@ var myObservable = Observable.combineLatest3(
 - [doOnResume](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnResume.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DoStreamTransformer-class.html)
 - [exhaustMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/exhaustMap.html) / [ExhaustMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ExhaustMapStreamTransformer-class.html)
 - [flatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMap.html) / [FlatMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/FlatMapStreamTransformer-class.html)
-- [flatMapLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMapLatest.html) / [FlatMapLatestStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/FlatMapLatestStreamTransformer-class.html)
 - [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html) / [IntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/IntervalStreamTransformer-class.html)
 - [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html) / [MaterializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/MaterializeStreamTransformer-class.html)
 - [mergeWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mergeWith.html)
@@ -137,11 +136,12 @@ var myObservable = Observable.combineLatest3(
 - [skipUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/skipUntil.html) / [SkipUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/SkipUntilStreamTransformer-class.html)
 - [startWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWith.html) / [StartWithStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/StartWithStreamTransformer-class.html)
 - [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html) / [StartWithManyStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/StartWithManyStreamTransformer-class.html) 
+- [switchMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/switchMap.html) / [SwitchMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/SwitchMapStreamTransformer-class.html)
 - [takeUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/takeUntil.html) / [TakeUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TakeUntilStreamTransformer-class.html)
 - [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html) / [TimeIntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TimeIntervalStreamTransformer-class.html)
 - [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html) / [TimestampStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TimestampStreamTransformer-class.html)
 - [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html) / [ThrottleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ThrottleStreamTransformer-class.html)
-- [windowWithCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowWithCount.html) / [WindowWithCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowWithCountStreamTransformer-class.html)
+- [windowCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowCount.html) / [WindowCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowCountStreamTransformer-class.html)
 - [windowTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTime.html) / [WindowTimeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowTimeStreamTransformer-class.html)
 - [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html) / [WithLatestFromStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WithLatestFromStreamTransformer-class.html)
 - [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
@@ -151,7 +151,7 @@ A full list of all methods and properties including those provided by the Dart S
 ###### Usage
 ```Dart
 var myObservable = new Observable(myStream)
-    .bufferWithCount(5)
+    .bufferCount(5)
     .distinct();
 ```
 

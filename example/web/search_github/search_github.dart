@@ -24,17 +24,17 @@ void main() {
       .debounce(const Duration(milliseconds: 250))
       // Use doOnData() to clear resultsField
       .doOnData((_) => resultsField.innerHtml = '')
-      // Use flatMapLatest() to call the gitHub API
+      // Use switchMap to call the gitHub API
       // When a new search term follows a previous term quite fast, it's possible the server is still
       // looking for the previous one. Since we're only interested in the results of the very last search term entered,
-      // flatMapLatest() will cancel the previous request, and notify use of the last result that comes in.
+      // switchMap will cancel the previous request, and notify use of the last result that comes in.
       // Normal flatMap() would give us all previous results as well.
-      .flatMapLatest((term) {
+      .switchMap((term) {
     // Use Observable.fromFuture() to cast _searchGithubFor() to an Observable
     return new Observable.fromFuture(_searchGithubFor(term))
         .where((request) => request != null)
         .map((request) =>
-            JSON.decode(request.responseText) as Map<String, dynamic>)
+            json.decode(request.responseText) as Map<String, dynamic>)
         .map((body) => body['items'] as List<Map<String, dynamic>>)
         .map((items) => items.map((item) => {
               "fullName": item['full_name'].toString(),

@@ -84,11 +84,10 @@ class SearchResultWidget extends StatelessWidget {
       new MaterialPageRoute<Null>(
         builder: (BuildContext context) {
           return new Scaffold(
+            resizeToAvoidBottomPadding: false,
             body: new GestureDetector(
               key: new Key(item.avatarUrl),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () => Navigator.pop(context),
               child: new SizedBox.expand(
                 child: new Hero(
                   tag: item.fullName,
