@@ -1,6 +1,5 @@
 library rx_transformers;
 
-
 export 'package:rxdart/src/transformers/buffer_count.dart';
 export 'package:rxdart/src/transformers/buffer_time.dart';
 export 'package:rxdart/src/transformers/buffer_with_count.dart';

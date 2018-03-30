@@ -1,11 +1,24 @@
 import 'dart:async';
 
-import 'package:rxdart/src/samplers/samplers.dart';
+import 'package:rxdart/src/samplers/utils.dart';
 
 import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/sample.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
 
+/// Higher order function signature which matches the method signature
+/// of buffer and window.
+typedef SamplerBloc<S> BufferBlocBuilder<T, S>(Stream<T> stream,
+    OnDataTransform<T, S> bufferHandler, OnDataTransform<S, S> scheduleHandler);
+
+/// Higher order function implementation for [_OnCountBloc]
+/// which matches the method signature of buffer and window.
+///
+/// Each item is a sequence containing the items
+/// from the source sequence, in batches of [count].
+///
+/// If [skip] is provided, each group will start where the previous group
+/// ended minus the [skip] value.
 SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onCount<T, S>(int count, [int skip]) => (Stream<T> stream,
@@ -14,6 +27,11 @@ SamplerBloc<S> Function(
         new _OnCountBloc<T, S>(
             stream, bufferHandler, scheduleHandler, count, skip);
 
+/// Higher order function implementation for [_OnStreamBloc]
+/// which matches the method signature of buffer and window.
+///
+/// Each item is a sequence containing the items
+/// from the source sequence, sampled on [onStream].
 SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onStream<T, S>(Stream<dynamic> onStream) => (Stream<T> stream,
@@ -22,6 +40,11 @@ SamplerBloc<S> Function(
         new _OnStreamBloc<T, S>(
             stream, bufferHandler, scheduleHandler, onStream);
 
+/// Higher order function implementation for [_OnStreamBloc]
+/// which matches the method signature of buffer and window.
+///
+/// Each item is a sequence containing the items
+/// from the source sequence, sampled on a time frame with [duration].
 SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTime<T, S>(Duration duration) => (Stream<T> stream,
@@ -30,6 +53,11 @@ SamplerBloc<S> Function(
         new _OnStreamBloc<T, S>(stream, bufferHandler, scheduleHandler,
             new Stream<Null>.periodic(duration));
 
+/// Higher order function implementation for [_OnFutureBloc]
+/// which matches the method signature of buffer and window.
+///
+/// Each item is a sequence containing the items
+/// from the source sequence, batched whenever [onFuture] completes.
 SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onFuture<T, S>(Future<dynamic> onFuture()) => (Stream<T> stream,
@@ -38,6 +66,11 @@ SamplerBloc<S> Function(
         new _OnFutureBloc<T, S>(
             stream, bufferHandler, scheduleHandler, onFuture);
 
+/// Higher order function implementation for [_OnTestBloc]
+/// which matches the method signature of buffer and window.
+///
+/// Each item is a sequence containing the items
+/// from the source sequence, batched whenever [onTest] passes.
 SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTest<T, S>(bool onTest(T event)) => (Stream<T> stream,
@@ -45,6 +78,8 @@ SamplerBloc<S> Function(
             OnDataTransform<S, S> scheduleHandler) =>
         new _OnTestBloc<T, S>(stream, bufferHandler, scheduleHandler, onTest);
 
+/// A buffer strategy where each item is a sequence containing the items
+/// from the source sequence, sampled on [onStream].
 class _OnStreamBloc<T, S> implements SamplerBloc<S> {
   @override
   final Stream<S> state;
@@ -82,6 +117,8 @@ class _OnStreamBloc<T, S> implements SamplerBloc<S> {
   }
 }
 
+/// A buffer strategy where each item is a sequence containing the items
+/// from the source sequence, batched whenever [onFuture] completes.
 class _OnFutureBloc<T, S> implements SamplerBloc<S> {
   @override
   final Stream<S> state;
@@ -110,6 +147,11 @@ class _OnFutureBloc<T, S> implements SamplerBloc<S> {
   }
 }
 
+/// A buffer strategy where each item is a sequence containing the items
+/// from the source sequence, in batches of [count].
+///
+/// If [skip] is provided, each group will start where the previous group
+/// ended minus the [skip] value.
 class _OnCountBloc<T, S> implements SamplerBloc<S> {
   @override
   final Stream<S> state;
@@ -152,6 +194,8 @@ class _OnCountBloc<T, S> implements SamplerBloc<S> {
   }
 }
 
+/// A buffer strategy where each item is a sequence containing the items
+/// from the source sequence, batched whenever [onTest] passes.
 class _OnTestBloc<T, S> implements SamplerBloc<S> {
   @override
   final Stream<S> state;

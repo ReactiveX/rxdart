@@ -4,7 +4,6 @@ import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
 import 'package:rxdart/src/transformers/buffer.dart';
 
-
 /// Deprecated: Use BufferCountStreamTransformer
 ///
 /// Creates an Observable where each item is a list containing the items

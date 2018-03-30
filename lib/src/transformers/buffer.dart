@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/samplers/samplers.dart';
+import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -11,7 +11,7 @@ import 'package:rxdart/src/samplers/samplers.dart';
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
-  final SamplerBlocBuilder<T, List<T>> scheduler;
+  final BufferBlocBuilder<T, List<T>> scheduler;
 
   BufferStreamTransformer(this.scheduler);
 
@@ -20,7 +20,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       _buildTransformer<T>(scheduler).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      SamplerBlocBuilder<T, List<T>> scheduler) {
+      BufferBlocBuilder<T, List<T>> scheduler) {
     assertScheduler(scheduler);
 
     return new StreamTransformer<T, List<T>>(
@@ -54,7 +54,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
     });
   }
 
-  static void assertScheduler<T>(SamplerBlocBuilder<T, List<T>> scheduler) {
+  static void assertScheduler<T>(BufferBlocBuilder<T, List<T>> scheduler) {
     if (scheduler == null) {
       throw new ArgumentError('scheduler cannot be null');
     }

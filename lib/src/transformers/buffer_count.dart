@@ -36,27 +36,27 @@ class BufferCountStreamTransformer<T>
     assertCountAndSkip(count, skip);
 
     return new StreamTransformer<T, List<T>>(
-            (Stream<T> input, bool cancelOnError) {
-          StreamController<List<T>> controller;
-          StreamSubscription<List<T>> subscription;
+        (Stream<T> input, bool cancelOnError) {
+      StreamController<List<T>> controller;
+      StreamSubscription<List<T>> subscription;
 
-          controller = new StreamController<List<T>>(
-              sync: true,
-              onListen: () {
-                subscription = input
-                    .transform(new BufferStreamTransformer<T>(onCount(count, skip)))
-                    .listen(controller.add,
+      controller = new StreamController<List<T>>(
+          sync: true,
+          onListen: () {
+            subscription = input
+                .transform(new BufferStreamTransformer<T>(onCount(count, skip)))
+                .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,
                     cancelOnError: cancelOnError);
-              },
-              onPause: ([Future<dynamic> resumeSignal]) =>
-                  subscription.pause(resumeSignal),
-              onResume: () => subscription.resume(),
-              onCancel: () => subscription.cancel());
+          },
+          onPause: ([Future<dynamic> resumeSignal]) =>
+              subscription.pause(resumeSignal),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
 
-          return controller.stream.listen(null);
-        });
+      return controller.stream.listen(null);
+    });
   }
 
   static void assertCountAndSkip(int count, [int skip]) {
