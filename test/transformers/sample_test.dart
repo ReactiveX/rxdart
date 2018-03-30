@@ -37,6 +37,23 @@ void main() {
     await expectLater(observable, emits(1));
   });
 
+  test('rx.Observable.sample.shouldClose', () async {
+    const List<int> expectedOutput = const <int>[0, 1, 2, 3];
+    final StreamController<int> controller = new StreamController<int>();
+    int index = 0;
+
+    new Observable<int>(controller.stream)
+        .sample(new Stream<Null>.empty()) // should trigger onDone
+        .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
+
+    controller.add(0);
+    controller.add(1);
+    controller.add(2);
+    controller.add(3);
+
+    scheduleMicrotask(controller.close);
+  });
+
   test('rx.Observable.sample.asBroadcastStream', () async {
     Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
         .sample(_getSampleStream().asBroadcastStream());
