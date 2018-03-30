@@ -78,8 +78,8 @@ void main() {
         .bufferTime(const Duration(milliseconds: 220));
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(expectAsync1((List<int> result) {}, count: 2));
+    stream.listen(expectAsync1((List<int> result) {}, count: 2));
     // code should reach here
     await expectLater(true, true);
   });

@@ -1105,6 +1105,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.range(1, 4).bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
+  @deprecated
   Observable<List<T>> bufferWithCount(int count, [int skip]) =>
       transform(new BufferCountStreamTransformer<T>(count, skip));
 

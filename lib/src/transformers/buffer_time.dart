@@ -28,19 +28,12 @@ class BufferTimeStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
         (Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
-      Stream<dynamic> ticker;
-
-      if (input.isBroadcast) {
-        ticker = new Stream<Null>.periodic(duration).asBroadcastStream();
-      } else {
-        ticker = new Stream<Null>.periodic(duration);
-      }
 
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new BufferStreamTransformer<T>(onStream(ticker)))
+                .transform(new BufferStreamTransformer<T>(onTime(duration)))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,

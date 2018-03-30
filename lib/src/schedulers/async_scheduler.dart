@@ -33,6 +33,23 @@ StreamSampler<S> Function(
 
 StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
+    onTime<T, S>(Duration duration) => (Stream<T> stream,
+            OnDataTransform<T, S> bufferHandler,
+            OnDataTransform<S, S> scheduleHandler) {
+          Stream<Null> ticker;
+
+          if (stream.isBroadcast) {
+            ticker = new Stream<Null>.periodic(duration).asBroadcastStream();
+          } else {
+            ticker = new Stream<Null>.periodic(duration);
+          }
+
+          return new _OnStreamImpl<T, S>(
+              stream, bufferHandler, scheduleHandler, ticker);
+        };
+
+StreamSampler<S> Function(
+        Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onFuture<T, S>(Future<dynamic> onFuture()) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
@@ -57,20 +74,13 @@ class _OnStreamImpl<T, S> implements StreamSampler<S> {
     final doneController = new StreamController<bool>();
 
     var onDone = () {
+      if (doneController.isClosed) return;
+
       doneController.add(true);
       doneController.close();
     };
-    Stream<dynamic> ticker;
-
-    if (onStream == null) {
-      onDone();
-
-      ticker = new ErrorStream<ArgumentError>(
-          new ArgumentError('onStream cannot be null'));
-    } else {
-      ticker = onStream.transform<Null>(
-          new TakeUntilStreamTransformer(doneController.stream));
-    }
+    final Stream<dynamic> ticker = onStream
+        .transform<Null>(new TakeUntilStreamTransformer(doneController.stream));
 
     final scheduler = stream
         .transform(new DoStreamTransformer(onDone: onDone, onCancel: onDone))
