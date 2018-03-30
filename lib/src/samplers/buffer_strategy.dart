@@ -66,8 +66,11 @@ SamplerBloc<S> Function(
         new _OnStreamBloc<T, S>(
             stream, bufferHandler, scheduleHandler, _onFutureSampler(onFuture));
 
+/// transforms [onFuture] into a sampler [Stream] by recursively awaiting
+/// the next [Future]
 Stream<dynamic> _onFutureSampler(Future<dynamic> onFuture()) async* {
-  while (true) yield await onFuture();
+  yield await onFuture();
+  yield* _onFutureSampler(onFuture);
 }
 
 /// Higher order function implementation for [_OnTestBloc]
