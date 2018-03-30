@@ -34,9 +34,7 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            subscription = input.listen((T data) {
-              controller.add(data);
-            },
+            subscription = input.listen(controller.add,
                 onError: controller.addError,
                 onDone: controller.close,
                 cancelOnError: cancelOnError);

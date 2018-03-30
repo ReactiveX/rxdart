@@ -4,6 +4,8 @@ import 'package:rxdart/futures.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
+import 'package:rxdart/src/schedulers/async_scheduler.dart';
+
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.
 ///
@@ -1062,6 +1064,12 @@ class Observable<T> extends Stream<T> {
   Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
       new Observable<S>(stream.asyncMap(convert));
 
+  Observable<List<T>> buffer(StreamSamplerType<T, List<T>> scheduler) =>
+      transform(new BufferStreamTransformer<T>((Stream<T> stream,
+              OnDataTransform<T, List<T>> bufferHandler,
+              OnDataTransform<List<T>, List<T>> scheduleHandler) =>
+          scheduler(stream, bufferHandler, scheduleHandler)));
+
   /// Creates an Observable where each item is a list containing the items
   /// from the source sequence, in batches of [count].
   ///
@@ -1108,8 +1116,17 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .bufferTime(const Duration(milliseconds: 220))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Observable<List<T>> bufferTime(Duration timeframe) =>
-      transform(new BufferTimeStreamTransformer<T>(timeframe));
+  Observable<List<T>> bufferTime(Duration duration) =>
+      transform(new BufferTimeStreamTransformer<T>(duration));
+
+  Observable<List<T>> bufferWhen(Stream<dynamic> other) =>
+      transform(new BufferWhenStreamTransformer<T>(other));
+
+  Observable<List<T>> bufferFuture(Future<dynamic> onFuture()) =>
+      transform(new BufferFutureStreamTransformer<T>(onFuture));
+
+  Observable<List<T>> bufferTest(bool onTest(T event)) =>
+      transform(new BufferTestStreamTransformer<T>(onTest));
 
   ///
   /// Adapt this stream to be a `Stream<R>`.

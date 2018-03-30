@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:rxdart/src/schedulers/async_scheduler.dart';
+
+import 'package:rxdart/src/transformers/buffer.dart';
+
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, in batches of count.
 ///
@@ -19,8 +23,7 @@ import 'dart:async';
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
 class BufferCountStreamTransformer<T>
     extends StreamTransformerBase<T, List<T>> {
-  final int count;
-  final int skip;
+  final int count, skip;
 
   BufferCountStreamTransformer(this.count, [this.skip]);
 
@@ -28,28 +31,32 @@ class BufferCountStreamTransformer<T>
   Stream<List<T>> bind(Stream<T> stream) =>
       _buildTransformer<T>(count, skip).bind(stream);
 
-  static StreamTransformer<T, List<T>> _buildTransformer<T>(int count,
-      [int skip]) {
+  static StreamTransformer<T, List<T>> _buildTransformer<T>(
+      int count, int skip) {
     assertCountAndSkip(count, skip);
 
-    final int bufferKeep = count - ((skip == null) ? count : skip);
-    List<T> buffer = <T>[];
+    return new StreamTransformer<T, List<T>>(
+            (Stream<T> input, bool cancelOnError) {
+          StreamController<List<T>> controller;
+          StreamSubscription<List<T>> subscription;
 
-    return new StreamTransformer<T, List<T>>.fromHandlers(
-        handleData: (T data, EventSink<List<T>> sink) {
-          buffer.add(data);
+          controller = new StreamController<List<T>>(
+              sync: true,
+              onListen: () {
+                subscription = input
+                    .transform(new BufferStreamTransformer<T>(onCount(count, skip)))
+                    .listen(controller.add,
+                    onError: controller.addError,
+                    onDone: controller.close,
+                    cancelOnError: cancelOnError);
+              },
+              onPause: ([Future<dynamic> resumeSignal]) =>
+                  subscription.pause(resumeSignal),
+              onResume: () => subscription.resume(),
+              onCancel: () => subscription.cancel());
 
-          if (buffer.length == count) {
-            sink.add(buffer);
-
-            buffer = buffer.sublist(count - bufferKeep);
-          }
-        },
-        handleDone: (EventSink<List<T>> sink) {
-          if (buffer.isNotEmpty) sink.add(buffer);
-        },
-        handleError: (Object error, StackTrace s, EventSink<List<T>> sink) =>
-            sink.addError(error));
+          return controller.stream.listen(null);
+        });
   }
 
   static void assertCountAndSkip(int count, [int skip]) {
