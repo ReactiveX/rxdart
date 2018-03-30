@@ -1046,10 +1046,10 @@ class Observable<T> extends Stream<T> {
   Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
       new Observable<S>(stream.asyncMap(convert));
 
-  Observable<List<T>> buffer(StreamSchedulerType<T, List<T>> scheduler) =>
+  Observable<List<T>> buffer(StreamSamplerType<T, List<T>> scheduler) =>
       transform(new BufferStreamTransformer<T>((Stream<T> stream,
-              StreamBufferHandler<T, List<T>> bufferHandler,
-              StreamBufferHandler<List<T>, List<T>> scheduleHandler) =>
+              OnDataTransform<T, List<T>> bufferHandler,
+              OnDataTransform<List<T>, List<T>> scheduleHandler) =>
           scheduler(stream, bufferHandler, scheduleHandler)));
 
   /// Creates an Observable where each item is a list containing the items
@@ -1083,6 +1083,12 @@ class Observable<T> extends Stream<T> {
 
   Observable<List<T>> bufferWhen(Stream<dynamic> other) =>
       transform(new BufferWhenStreamTransformer<T>(other));
+
+  Observable<List<T>> bufferFuture(Future<dynamic> onFuture()) =>
+      transform(new BufferFutureStreamTransformer<T>(onFuture));
+
+  Observable<List<T>> bufferTest(bool onTest(T event)) =>
+      transform(new BufferTestStreamTransformer<T>(onTest));
 
   ///
   /// Adapt this stream to be a `Stream<R>`.

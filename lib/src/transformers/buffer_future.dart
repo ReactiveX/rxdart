@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:rxdart/src/schedulers/async_scheduler.dart';
 
+import 'package:rxdart/src/transformers/buffer.dart';
+
+typedef Future<dynamic> OnFuture();
+
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
 ///
@@ -10,41 +14,35 @@ import 'package:rxdart/src/schedulers/async_scheduler.dart';
 ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
-  final StreamSamplerType<T, List<T>> scheduler;
+class BufferFutureStreamTransformer<T>
+    extends StreamTransformerBase<T, List<T>> {
+  final OnFuture onFutureFunction;
 
-  BufferStreamTransformer(this.scheduler);
+  BufferFutureStreamTransformer(this.onFutureFunction);
 
   @override
   Stream<List<T>> bind(Stream<T> stream) =>
-      _buildTransformer<T>(scheduler).bind(stream);
+      _buildTransformer<T>(onFutureFunction).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      StreamSamplerType<T, List<T>> scheduler) {
-    assertScheduler(scheduler);
+      OnFuture onFutureFunction) {
+    assertFuture(onFutureFunction);
 
     return new StreamTransformer<T, List<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
-      List<T> buffer = <T>[];
 
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
-            subscription = scheduler(input, (data, sink, [int skip]) {
-              buffer.add(data);
-              sink.add(buffer);
-            }, (data, sink, [int skip]) {
-              skip ??= 0;
-              sink.add(new List<T>.unmodifiable(data));
-              buffer = data.sublist(data.length - skip);
-            }).onSample.listen(controller.add, onError: controller.addError,
-                onDone: () {
-              if (buffer.isNotEmpty)
-                controller.add(new List<T>.unmodifiable(buffer));
-              controller.close();
-            }, cancelOnError: cancelOnError);
+            subscription = input
+                .transform(
+                    new BufferStreamTransformer<T>(onFuture(onFutureFunction)))
+                .listen(controller.add,
+                    onError: controller.addError,
+                    onDone: controller.close,
+                    cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
@@ -55,9 +53,9 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
     });
   }
 
-  static void assertScheduler<T>(StreamSamplerType<T, List<T>> scheduler) {
-    if (scheduler == null) {
-      throw new ArgumentError('scheduler cannot be null');
+  static void assertFuture(OnFuture onFuture) {
+    if (onFuture == null) {
+      throw new ArgumentError('onFuture cannot be null');
     }
   }
 }
