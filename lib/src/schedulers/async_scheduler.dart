@@ -25,27 +25,26 @@ StreamSampler<S> Function(
 
 StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onStream<T, S>(Stream<dynamic> onStream, [int skip]) => (Stream<T> stream,
+    onStream<T, S>(Stream<dynamic> onStream) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
         new _OnStreamImpl<T, S>(
-            stream, bufferHandler, scheduleHandler, onStream, skip);
+            stream, bufferHandler, scheduleHandler, onStream);
 
 StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onFuture<T, S>(Future<dynamic> onFuture(), [int skip]) => (Stream<T> stream,
+    onFuture<T, S>(Future<dynamic> onFuture()) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
         new _OnFutureImpl<T, S>(
-            stream, bufferHandler, scheduleHandler, onFuture, skip);
+            stream, bufferHandler, scheduleHandler, onFuture);
 
 StreamSampler<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onTest<T, S>(bool onTest(T event), [int skip]) => (Stream<T> stream,
+    onTest<T, S>(bool onTest(T event)) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
-        new _OnTestImpl<T, S>(
-            stream, bufferHandler, scheduleHandler, onTest, skip);
+        new _OnTestImpl<T, S>(stream, bufferHandler, scheduleHandler, onTest);
 
 class _OnStreamImpl<T, S> implements StreamSampler<S> {
   @override
@@ -54,8 +53,7 @@ class _OnStreamImpl<T, S> implements StreamSampler<S> {
   _OnStreamImpl._(this.onSample);
 
   factory _OnStreamImpl(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
-      OnDataTransform<S, S> scheduleHandler, Stream<dynamic> onStream,
-      [int skip]) {
+      OnDataTransform<S, S> scheduleHandler, Stream<dynamic> onStream) {
     final doneController = new StreamController<bool>();
 
     var onDone = () {
@@ -78,13 +76,13 @@ class _OnStreamImpl<T, S> implements StreamSampler<S> {
         .transform(new DoStreamTransformer(onDone: onDone, onCancel: onDone))
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
-              bufferHandler(data, sink, skip);
+              bufferHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)))
         .transform(new SampleStreamTransformer(ticker))
         .transform(new StreamTransformer<S, S>.fromHandlers(
             handleData: (data, sink) {
-              scheduleHandler(data, sink, skip);
+              scheduleHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)));
 
@@ -99,21 +97,20 @@ class _OnFutureImpl<T, S> implements StreamSampler<S> {
   _OnFutureImpl._(this.onSample);
 
   factory _OnFutureImpl(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
-      OnDataTransform<S, S> scheduleHandler, Future<dynamic> onFuture(),
-      [int skip]) {
+      OnDataTransform<S, S> scheduleHandler, Future<dynamic> onFuture()) {
     Future<S> Function(S) onFutureHandler() =>
         (S data) => onFuture().then((dynamic _) => data);
 
     final scheduler = stream
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
-              bufferHandler(data, sink, skip);
+              bufferHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)))
         .asyncMap(onFutureHandler())
         .transform(new StreamTransformer<S, S>.fromHandlers(
             handleData: (data, sink) {
-              scheduleHandler(data, sink, skip);
+              scheduleHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)));
 
@@ -170,21 +167,20 @@ class _OnTestImpl<T, S> implements StreamSampler<S> {
   _OnTestImpl._(this.onSample);
 
   factory _OnTestImpl(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
-      OnDataTransform<S, S> scheduleHandler, bool onTest(T event),
-      [int skip]) {
+      OnDataTransform<S, S> scheduleHandler, bool onTest(T event)) {
     bool testResult = false;
 
     final scheduler = stream
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
               testResult = onTest(data);
-              bufferHandler(data, sink, skip);
+              bufferHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)))
         .where((_) => testResult)
         .transform(new StreamTransformer<S, S>.fromHandlers(
             handleData: (data, sink) {
-              scheduleHandler(data, sink, skip);
+              scheduleHandler(data, sink, 0);
             },
             handleError: (error, s, sink) => sink.addError(error, s)));
 
