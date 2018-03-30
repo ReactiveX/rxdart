@@ -4,7 +4,7 @@ import 'package:rxdart/src/schedulers/async_scheduler.dart';
 
 import 'package:rxdart/src/transformers/buffer.dart';
 
-typedef bool OnTest<T>(T event);
+typedef bool _OnTest<T>(T event);
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -15,7 +15,7 @@ typedef bool OnTest<T>(T event);
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class BufferTestStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
-  final OnTest<T> onTestFunction;
+  final _OnTest<T> onTestFunction;
 
   BufferTestStreamTransformer(this.onTestFunction);
 
@@ -24,7 +24,7 @@ class BufferTestStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       _buildTransformer<T>(onTestFunction).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      OnTest<T> onTestFunction) {
+      _OnTest<T> onTestFunction) {
     assertTest(onTestFunction);
 
     return new StreamTransformer<T, List<T>>(
@@ -52,7 +52,7 @@ class BufferTestStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
     });
   }
 
-  static void assertTest<T>(OnTest<T> onTestFunction) {
+  static void assertTest<T>(_OnTest<T> onTestFunction) {
     if (onTestFunction == null) {
       throw new ArgumentError('onTestFunction cannot be null');
     }

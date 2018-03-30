@@ -2057,6 +2057,15 @@ class Observable<T> extends Stream<T> {
   Observable<Stream<T>> windowTime(Duration timeframe) =>
       transform(new WindowTimeStreamTransformer<T>(timeframe));
 
+  Observable<Stream<T>> windowWhen(Stream<dynamic> other) =>
+      transform(new WindowWhenStreamTransformer<T>(other));
+
+  Observable<Stream<T>> windowFuture(Future<dynamic> onFuture()) =>
+      transform(new WindowFutureStreamTransformer<T>(onFuture));
+
+  Observable<Stream<T>> windowTest(bool onTest(T event)) =>
+      transform(new WindowTestStreamTransformer<T>(onTest));
+
   /// Creates an Observable that emits when the source stream emits, combining
   /// the latest values from the two streams using the provided function.
   ///

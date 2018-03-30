@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/schedulers/async_scheduler.dart';
 
-import 'package:rxdart/src/transformers/buffer.dart';
+import 'package:rxdart/src/transformers/window.dart';
 
 typedef Future<dynamic> _OnFuture();
 
@@ -14,31 +14,31 @@ typedef Future<dynamic> _OnFuture();
 ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-class BufferFutureStreamTransformer<T>
-    extends StreamTransformerBase<T, List<T>> {
+class WindowFutureStreamTransformer<T>
+    extends StreamTransformerBase<T, Stream<T>> {
   final _OnFuture onFutureFunction;
 
-  BufferFutureStreamTransformer(this.onFutureFunction);
+  WindowFutureStreamTransformer(this.onFutureFunction);
 
   @override
-  Stream<List<T>> bind(Stream<T> stream) =>
+  Stream<Stream<T>> bind(Stream<T> stream) =>
       _buildTransformer<T>(onFutureFunction).bind(stream);
 
-  static StreamTransformer<T, List<T>> _buildTransformer<T>(
+  static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
       _OnFuture onFutureFunction) {
     assertFuture(onFutureFunction);
 
-    return new StreamTransformer<T, List<T>>(
+    return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
-      StreamController<List<T>> controller;
-      StreamSubscription<List<T>> subscription;
+      StreamController<Stream<T>> controller;
+      StreamSubscription<Stream<T>> subscription;
 
-      controller = new StreamController<List<T>>(
+      controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             subscription = input
                 .transform(
-                    new BufferStreamTransformer<T>(onFuture(onFutureFunction)))
+                    new WindowStreamTransformer<T>(onFuture(onFutureFunction)))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,

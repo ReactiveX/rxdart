@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:rxdart/src/schedulers/async_scheduler.dart';
 
-import 'package:rxdart/src/transformers/buffer.dart';
+import 'package:rxdart/src/transformers/window.dart';
 
-typedef Future<dynamic> _OnFuture();
+typedef bool _OnTest<T>(T event);
 
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
@@ -14,31 +14,31 @@ typedef Future<dynamic> _OnFuture();
 ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-class BufferFutureStreamTransformer<T>
-    extends StreamTransformerBase<T, List<T>> {
-  final _OnFuture onFutureFunction;
+class WindowTestStreamTransformer<T>
+    extends StreamTransformerBase<T, Stream<T>> {
+  final _OnTest<T> onTestFunction;
 
-  BufferFutureStreamTransformer(this.onFutureFunction);
+  WindowTestStreamTransformer(this.onTestFunction);
 
   @override
-  Stream<List<T>> bind(Stream<T> stream) =>
-      _buildTransformer<T>(onFutureFunction).bind(stream);
+  Stream<Stream<T>> bind(Stream<T> stream) =>
+      _buildTransformer<T>(onTestFunction).bind(stream);
 
-  static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      _OnFuture onFutureFunction) {
-    assertFuture(onFutureFunction);
+  static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
+      _OnTest<T> onTestFunction) {
+    assertTest(onTestFunction);
 
-    return new StreamTransformer<T, List<T>>(
+    return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
-      StreamController<List<T>> controller;
-      StreamSubscription<List<T>> subscription;
+      StreamController<Stream<T>> controller;
+      StreamSubscription<Stream<T>> subscription;
 
-      controller = new StreamController<List<T>>(
+      controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             subscription = input
                 .transform(
-                    new BufferStreamTransformer<T>(onFuture(onFutureFunction)))
+                    new WindowStreamTransformer<T>(onTest(onTestFunction)))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,
@@ -53,9 +53,9 @@ class BufferFutureStreamTransformer<T>
     });
   }
 
-  static void assertFuture(_OnFuture onFuture) {
-    if (onFuture == null) {
-      throw new ArgumentError('onFuture cannot be null');
+  static void assertTest<T>(_OnTest<T> onTestFunction) {
+    if (onTestFunction == null) {
+      throw new ArgumentError('onTestFunction cannot be null');
     }
   }
 }
