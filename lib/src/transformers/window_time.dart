@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/src/transformers/buffer_time.dart';
+import 'package:rxdart/src/schedulers/async_scheduler.dart';
+
+import 'package:rxdart/src/transformers/window.dart';
 
 /// Creates an Observable where each item is a Stream containing the items
 /// from the source sequence, sampled on a time frame.
@@ -14,34 +16,32 @@ import 'package:rxdart/src/transformers/buffer_time.dart';
 ///       .listen((i) => print(i)); // prints next window, 0, 1, next window, 2, 3, next window, 4, 5, ...
 class WindowTimeStreamTransformer<T>
     extends StreamTransformerBase<T, Stream<T>> {
-  final StreamTransformer<T, Stream<T>> transformer;
+  final Duration timeframe;
 
-  WindowTimeStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+  WindowTimeStreamTransformer(this.timeframe);
 
   @override
-  Stream<Stream<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Stream<T>> bind(Stream<T> stream) =>
+      _buildTransformer<T>(timeframe).bind(stream);
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
       Duration duration) {
-    BufferTimeStreamTransformer.assertTimeframe(duration);
+    assertTimeframe(duration);
 
     return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Stream<T>> controller;
-      StreamSubscription<Iterable<T>> subscription;
+      StreamSubscription<Stream<T>> subscription;
 
       controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new BufferTimeStreamTransformer<T>(duration))
-                .listen((Iterable<T> value) {
-              controller.add(new Stream<T>.fromIterable(value));
-            },
-                    cancelOnError: cancelOnError,
+                .transform(new WindowStreamTransformer<T>(onTime(duration)))
+                .listen(controller.add,
                     onError: controller.addError,
-                    onDone: controller.close);
+                    onDone: controller.close,
+                    cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
@@ -50,5 +50,11 @@ class WindowTimeStreamTransformer<T>
 
       return controller.stream.listen(null);
     });
+  }
+
+  static void assertTimeframe(Duration timeframe) {
+    if (timeframe == null) {
+      throw new ArgumentError('timeframe cannot be null');
+    }
   }
 }

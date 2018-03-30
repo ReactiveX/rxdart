@@ -36,6 +36,7 @@ export 'package:rxdart/src/transformers/take_until.dart';
 export 'package:rxdart/src/transformers/throttle.dart';
 export 'package:rxdart/src/transformers/time_interval.dart';
 export 'package:rxdart/src/transformers/timestamp.dart';
+export 'package:rxdart/src/transformers/window.dart';
 export 'package:rxdart/src/transformers/window_count.dart';
 export 'package:rxdart/src/transformers/window_time.dart';
 export 'package:rxdart/src/transformers/window_with_count.dart';

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/transformers.dart';
 
+import 'package:rxdart/src/schedulers/async_scheduler.dart';
+
 /// Deprecated: Please use [WindowCountStreamTransformer].
 ///
 /// Creates an Observable where each item is a Stream containing the items
@@ -19,34 +21,32 @@ import 'package:rxdart/transformers.dart';
 @deprecated
 class WindowWithCountStreamTransformer<T>
     extends StreamTransformerBase<T, Stream<T>> {
-  final StreamTransformer<T, Stream<T>> transformer;
+  final int count, skip;
 
-  WindowWithCountStreamTransformer(int count, [int skip])
-      : transformer = _buildTransformer(count, skip);
+  WindowWithCountStreamTransformer(this.count, [this.skip]);
 
   @override
-  Stream<Stream<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Stream<T>> bind(Stream<T> stream) =>
+      _buildTransformer<T>(count, skip).bind(stream);
 
-  static StreamTransformer<T, Stream<T>> _buildTransformer<T>(int count,
-      [int skip]) {
-    BufferCountStreamTransformer.assertCountAndSkip(count, skip);
+  static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
+      int count, int skip) {
+    assertCountAndSkip(count, skip);
 
     return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Stream<T>> controller;
-      StreamSubscription<Iterable<T>> subscription;
+      StreamSubscription<Stream<T>> subscription;
 
       controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new BufferCountStreamTransformer<T>(count, skip))
-                .listen((Iterable<T> value) {
-              controller.add(new Stream<T>.fromIterable(value));
-            },
-                    cancelOnError: cancelOnError,
+                .transform(new WindowStreamTransformer<T>(onCount(count, skip)))
+                .listen(controller.add,
                     onError: controller.addError,
-                    onDone: controller.close);
+                    onDone: controller.close,
+                    cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
@@ -55,5 +55,16 @@ class WindowWithCountStreamTransformer<T>
 
       return controller.stream.listen(null);
     });
+  }
+
+  static void assertCountAndSkip(int count, [int skip]) {
+    final int skipAmount = skip == null ? count : skip;
+
+    if (count == null) {
+      throw new ArgumentError('count cannot be null');
+    } else if (skipAmount <= 0 || skipAmount > count) {
+      throw new ArgumentError(
+          'skip has to be greater than zero and smaller than count');
+    }
   }
 }
