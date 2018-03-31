@@ -36,10 +36,10 @@ void main() {
 
     new Observable<int>(controller.stream)
         .bufferFuture(() => new Future<Null>.delayed(const Duration(days: 1)))
-        .listen(expectAsync1((List<int> result) {
-          // test to see if the combined output matches
-          expect(result, expectedOutput);
-        }, count: 1));
+        .listen(
+            expectAsync1((List<int> result) => expect(result, expectedOutput),
+                count: 1),
+            onDone: expectAsync0(() => expect(true, isTrue)));
 
     controller.add(0);
     controller.add(1);

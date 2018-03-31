@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
+import 'package:rxdart/src/transformers/do.dart';
+
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
 ///
@@ -29,6 +31,14 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       StreamSubscription<List<T>> subscription;
       List<T> buffer = <T>[];
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        if (buffer.isNotEmpty) controller.add(new List<T>.unmodifiable(buffer));
+
+        controller.close();
+      }
+
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
@@ -38,12 +48,10 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
             }, (data, sink, [int skip]) {
               sink.add(new List<T>.unmodifiable(data));
               buffer = data.sublist(data.length - (skip ?? 0));
-            }).state.listen(controller.add, onError: controller.addError,
-                onDone: () {
-              if (buffer.isNotEmpty)
-                controller.add(new List<T>.unmodifiable(buffer));
-              controller.close();
-            }, cancelOnError: cancelOnError);
+            }).state.listen(controller.add,
+                onError: controller.addError,
+                onDone: onDone,
+                cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

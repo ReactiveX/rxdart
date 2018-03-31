@@ -35,6 +35,14 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
 
         controller.close();
+        sampleSubscription?.cancel();
+      }
+
+      void onSample() {
+        if (currentValue != null) {
+          controller.add(currentValue);
+          currentValue = null;
+        }
       }
 
       controller = new StreamController<T>(
@@ -43,14 +51,13 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
             try {
               subscription = input.listen((T value) {
                 currentValue = value;
-              }, onError: controller.addError, onDone: onDone);
-
-              sampleSubscription = sampleStream.listen((dynamic _) {
-                if (currentValue != null) {
-                  controller.add(currentValue);
-                  currentValue = null;
-                }
               },
+                  onError: controller.addError,
+                  onDone: onDone,
+                  cancelOnError: cancelOnError);
+
+              sampleSubscription = sampleStream.listen(
+                  (dynamic _) => onSample(),
                   onError: controller.addError,
                   onDone: onDone,
                   cancelOnError: cancelOnError);
@@ -61,12 +68,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
-          onCancel: () {
-            return Future.wait<dynamic>(<Future<dynamic>>[
-              subscription.cancel(),
-              sampleSubscription.cancel()
-            ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
-          });
+          onCancel: () => subscription.cancel());
 
       return controller.stream.listen(null);
     });
