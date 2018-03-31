@@ -25,8 +25,10 @@ void main() {
     final Observable<int> observableB =
         new Observable<int>(_getStream()).transform(transformer);
 
-    await expectLater(observableA, emitsInOrder(const <int>[0, 2, 4]));
-    await expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]));
+    await Future.wait<dynamic>([
+      expectLater(observableA, emitsInOrder(const <int>[0, 2, 4])),
+      expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]))
+    ]);
   });
 
   test('rx.Observable.sample.onDone', () async {
