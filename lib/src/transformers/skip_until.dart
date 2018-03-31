@@ -62,16 +62,8 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () async {
-            final Completer<Null> completer = new Completer<Null>();
-
-            scheduleMicrotask(() async {
-              await otherSubscription?.cancel();
-              await subscription?.cancel();
-
-              completer.complete();
-            });
-
-            return completer.future;
+            await otherSubscription?.cancel();
+            await subscription?.cancel();
           });
 
       return controller.stream.listen(null);
