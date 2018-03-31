@@ -49,22 +49,32 @@ SamplerBloc<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTime<T, S>(Duration duration) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) =>
-        new _OnStreamBloc<T, S>(stream, bufferHandler, scheduleHandler,
-            new Stream<Null>.periodic(duration));
+            OnDataTransform<S, S> scheduleHandler) {
+          if (duration == null) {
+            throw new ArgumentError('duration cannot be null');
+          }
+
+          return new _OnStreamBloc<T, S>(stream, bufferHandler, scheduleHandler,
+              new Stream<Null>.periodic(duration));
+        };
 
 /// Higher order function implementation for [_OnFutureBloc]
 /// which matches the method signature of buffer and window.
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onFuture] completes.
-SamplerBloc<S> Function(
-        Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onFuture<T, S>(Future<dynamic> onFuture()) => (Stream<T> stream,
-            OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) =>
-        new _OnStreamBloc<T, S>(
-            stream, bufferHandler, scheduleHandler, _onFutureSampler(onFuture));
+SamplerBloc<S> Function(Stream<T> stream, OnDataTransform<T, S>,
+    OnDataTransform<S, S>) onFuture<T, S>(
+        Future<dynamic> onFuture()) =>
+    (Stream<T> stream, OnDataTransform<T, S> bufferHandler,
+        OnDataTransform<S, S> scheduleHandler) {
+      if (onFuture == null) {
+        throw new ArgumentError('onFuture cannot be null');
+      }
+
+      return new _OnStreamBloc<T, S>(
+          stream, bufferHandler, scheduleHandler, _onFutureSampler(onFuture));
+    };
 
 /// transforms [onFuture] into a sampler [Stream] by recursively awaiting
 /// the next [Future]
@@ -96,6 +106,10 @@ class _OnStreamBloc<T, S> implements SamplerBloc<S> {
   factory _OnStreamBloc(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, Stream<dynamic> onStream) {
     final doneController = new StreamController<bool>();
+    if (onStream == null) {
+      throw new ArgumentError('onStream cannot be null');
+    }
+
     final Stream<dynamic> ticker = onStream
         .transform<Null>(new TakeUntilStreamTransformer(doneController.stream));
 
@@ -179,6 +193,10 @@ class _OnTestBloc<T, S> implements SamplerBloc<S> {
   factory _OnTestBloc(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, bool onTest(T event)) {
     bool testResult = false;
+
+    if (onTest == null) {
+      throw new ArgumentError('onTest cannot be null');
+    }
 
     final scheduler = stream
         .transform(new StreamTransformer<T, S>.fromHandlers(
