@@ -54,8 +54,8 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () async {
-            await otherSubscription.cancel();
-            await subscription.cancel();
+            await otherSubscription?.cancel();
+            await subscription?.cancel();
           });
 
       return controller.stream.listen(null);

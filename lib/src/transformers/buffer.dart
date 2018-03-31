@@ -42,18 +42,22 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       controller = new StreamController<List<T>>(
           sync: true,
           onListen: () {
-            subscription = scheduler(
-                input.transform(new DoStreamTransformer(onDone: onDone)),
-                (data, sink, [int skip]) {
-              buffer.add(data);
-              sink.add(buffer);
-            }, (data, sink, [int skip]) {
-              sink.add(new List<T>.unmodifiable(data));
-              buffer = data.sublist(data.length - (skip ?? 0));
-            }).state.listen(controller.add,
-                onError: controller.addError,
-                onDone: onDone,
-                cancelOnError: cancelOnError);
+            try {
+              subscription = scheduler(
+                  input.transform(new DoStreamTransformer(onDone: onDone)),
+                  (data, sink, [int skip]) {
+                buffer.add(data);
+                sink.add(buffer);
+              }, (data, sink, [int skip]) {
+                sink.add(new List<T>.unmodifiable(data));
+                buffer = data.sublist(data.length - (skip ?? 0));
+              }).state.listen(controller.add,
+                  onError: controller.addError,
+                  onDone: onDone,
+                  cancelOnError: cancelOnError);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

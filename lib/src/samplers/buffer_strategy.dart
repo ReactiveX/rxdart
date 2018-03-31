@@ -140,22 +140,19 @@ class _OnCountBloc<T, S> implements SamplerBloc<S> {
       [int skip]) {
     var eventIndex = 0;
 
+    skip ??= 0;
+
+    if (count == null) {
+      throw new ArgumentError('count cannot be null');
+    } else if (skip > count) {
+      throw new ArgumentError('skip cannot be greater than count');
+    }
+
     final scheduler = stream
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (data, sink) {
-              skip ??= 0;
-
-              if (count == null) {
-                sink.addError(new ArgumentError('count cannot be null'));
-                sink.close();
-              } else if (skip > count) {
-                sink.addError(
-                    new ArgumentError('skip cannot be greater than count'));
-                sink.close();
-              } else {
-                eventIndex++;
-                bufferHandler(data, sink, skip);
-              }
+              eventIndex++;
+              bufferHandler(data, sink, skip);
             },
             handleError: (error, s, sink) => sink.addError(error, s)))
         .where((_) => eventIndex % count == 0)

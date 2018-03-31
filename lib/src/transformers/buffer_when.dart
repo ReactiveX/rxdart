@@ -69,8 +69,7 @@ class BufferWhenStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
   static void assertBroadcastMode<T>(Stream<T> input, Stream<dynamic> sampler,
       StreamController<List<T>> controller) {
     if (input.isBroadcast && !sampler.isBroadcast) {
-      controller.addError(
-          new StateError('sampler should also be a broadcast stream'));
+      throw (new StateError('sampler should also be a broadcast stream'));
     }
   }
 }
