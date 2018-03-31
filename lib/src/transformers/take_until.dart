@@ -31,16 +31,24 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        controller.close();
+      }
+
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(controller.add,
                 onError: controller.addError,
-                onDone: controller.close,
+                onDone: onDone,
                 cancelOnError: cancelOnError);
 
-            otherSubscription = otherStream.listen((_) => controller.close(),
-                onError: controller.addError, cancelOnError: cancelOnError);
+            otherSubscription = otherStream.listen((_) => onDone(),
+                onError: controller.addError,
+                cancelOnError: cancelOnError,
+                onDone: onDone);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

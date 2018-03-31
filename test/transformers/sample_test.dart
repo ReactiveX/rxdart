@@ -38,9 +38,7 @@ void main() {
   });
 
   test('rx.Observable.sample.shouldClose', () async {
-    const List<int> expectedOutput = const <int>[0, 1, 2, 3];
     final StreamController<int> controller = new StreamController<int>();
-    int index = 0;
 
     new Observable<int>(controller.stream)
         .sample(new Stream<Null>.empty()) // should trigger onDone
