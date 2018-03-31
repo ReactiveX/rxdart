@@ -35,7 +35,7 @@ void main() {
     final StreamController<int> controller = new StreamController<int>();
 
     new Observable<int>(controller.stream)
-        .bufferFuture(() => new Future<Null>.delayed(const Duration(days: 1)))
+        .bufferFuture(() => new Future<Null>.delayed(const Duration(seconds: 3)))
         .listen(
             expectAsync1((List<int> result) => expect(result, expectedOutput),
                 count: 1),
@@ -47,7 +47,7 @@ void main() {
     controller.add(3);
 
     scheduleMicrotask(controller.close);
-  }, skip: 'unknown issue which causes the script to hang!');
+  });
 
   test('rx.Observable.bufferFuture.reusable', () async {
     final transformer = new BufferFutureStreamTransformer<int>(

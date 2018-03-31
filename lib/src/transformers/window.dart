@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
+import 'package:rxdart/src/transformers/do.dart';
+
 /// Creates an Observable where each item is a list containing the items
 /// from the source sequence, sampled on a time frame.
 ///
@@ -29,21 +31,30 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       StreamSubscription<Stream<T>> subscription;
       List<T> buffer = <T>[];
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        if (buffer.isNotEmpty)
+          controller.add(new Stream<T>.fromIterable(buffer));
+
+        controller.close();
+      }
+
       controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
-            subscription = scheduler(input, (data, sink, [int skip]) {
+            subscription = scheduler(
+                input.transform(new DoStreamTransformer(onDone: onDone)),
+                (data, sink, [int skip]) {
               buffer.add(data);
               sink.add(new Stream<T>.fromIterable(buffer));
             }, (data, sink, [int skip]) {
               sink.add(data);
               buffer = buffer.sublist(buffer.length - (skip ?? 0));
-            }).state.listen(controller.add, onError: controller.addError,
-                onDone: () {
-              if (buffer.isNotEmpty)
-                controller.add(new Stream<T>.fromIterable(buffer));
-              controller.close();
-            }, cancelOnError: cancelOnError);
+            }).state.listen(controller.add,
+                onError: controller.addError,
+                onDone: onDone,
+                cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),

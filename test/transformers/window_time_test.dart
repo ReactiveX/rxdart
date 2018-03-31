@@ -35,7 +35,7 @@ void main() {
     final controller = new StreamController<int>();
 
     new Observable(controller.stream)
-        .windowTime(const Duration(days: 1))
+        .windowTime(const Duration(seconds: 3))
         .asyncMap((buffer) => buffer.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches

@@ -34,7 +34,7 @@ void main() {
     final StreamController<int> controller = new StreamController<int>();
 
     new Observable<int>(controller.stream)
-        .bufferTime(const Duration(days: 1))
+        .bufferTime(const Duration(seconds: 3))
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput);

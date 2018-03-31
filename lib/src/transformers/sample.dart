@@ -71,8 +71,16 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
           onCancel: () async {
-            await sampleSubscription.cancel();
-            await subscription.cancel();
+            final Completer completer = new Completer<Null>();
+
+            scheduleMicrotask(() async {
+              await sampleSubscription.cancel();
+              await subscription.cancel();
+
+              completer.complete();
+            });
+
+            return completer.future;
           });
 
       return controller.stream.listen(null);
