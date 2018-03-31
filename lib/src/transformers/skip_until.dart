@@ -35,7 +35,6 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
         if (controller.isClosed) return;
 
         controller.close();
-        otherSubscription?.cancel();
       }
 
       controller = new StreamController<T>(
@@ -62,7 +61,10 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+          onCancel: () async {
+            await otherSubscription.cancel();
+            await subscription.cancel();
+          });
 
       return controller.stream.listen(null);
     });
