@@ -43,18 +43,22 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       controller = new StreamController<Stream<T>>(
           sync: true,
           onListen: () {
-            subscription = scheduler(
-                input.transform(new DoStreamTransformer(onDone: onDone)),
-                (data, sink, [int skip]) {
-              buffer.add(data);
-              sink.add(new Stream<T>.fromIterable(buffer));
-            }, (data, sink, [int skip]) {
-              sink.add(data);
-              buffer = buffer.sublist(buffer.length - (skip ?? 0));
-            }).state.listen(controller.add,
-                onError: controller.addError,
-                onDone: onDone,
-                cancelOnError: cancelOnError);
+            try {
+              subscription = scheduler(
+                  input.transform(new DoStreamTransformer(onDone: onDone)),
+                  (data, sink, [int skip]) {
+                buffer.add(data);
+                sink.add(new Stream<T>.fromIterable(buffer));
+              }, (data, sink, [int skip]) {
+                sink.add(data);
+                buffer = buffer.sublist(buffer.length - (skip ?? 0));
+              }).state.listen(controller.add,
+                  onError: controller.addError,
+                  onDone: onDone,
+                  cancelOnError: cancelOnError);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
