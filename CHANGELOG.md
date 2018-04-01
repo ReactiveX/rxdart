@@ -1,3 +1,22 @@
+## 0.16.6
+
+* Rework for `buffer` and `window`, allow to schedule using a sampler
+* added `buffer`
+* added `bufferFuture`
+* added `bufferTest`
+* added `bufferTime`
+* added `bufferWhen`
+* added `window`
+* added `windowFuture`
+* added `windowTest`
+* added `windowTime`
+* added `windowWhen`
+* added `onCount` sampler for `buffer` and `window`
+* added `onFuture` sampler for `buffer` and `window`
+* added `onTest` sampler for `buffer` and `window`
+* added `onTime` sampler for `buffer` and `window`
+* added `onStream` sampler for `buffer` and `window`
+
 ## 0.16.5
 
 * Renames `amb` to `race`
