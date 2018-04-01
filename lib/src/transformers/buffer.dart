@@ -44,7 +44,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
           onListen: () {
             try {
               subscription = scheduler(
-                  input.transform(new DoStreamTransformer(onDone: onDone)),
+                  input,
                   (data, sink, [int skip]) {
                 buffer.add(data);
                 sink.add(buffer);

@@ -22,7 +22,7 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.windowCount.noSkip.asBuffer', () async {
+  test('rx.Observable.windowCount.noSkip.asWindow', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -62,7 +62,7 @@ void main() {
     }, count: 4));
   });
 
-  test('rx.Observable.windowCount.skip.asBuffer', () async {
+  test('rx.Observable.windowCount.skip.asWindow', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[2, 3],
@@ -120,7 +120,7 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.windowCount.reusable.asBuffer', () async {
+  test('rx.Observable.windowCount.reusable.asWindow', () async {
     final WindowStreamTransformer<int> transformer =
         new WindowStreamTransformer<int>(onCount(2));
     const List<List<int>> expectedOutput = const <List<int>>[
@@ -168,7 +168,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.windowCount.asBroadcastStream.asBuffer', () async {
+  test('rx.Observable.windowCount.asBroadcastStream.asWindow', () async {
     Stream<List<int>> stream =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
             .window(onCount(2))
@@ -194,7 +194,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.windowCount.error.shouldThrowA.asBuffer', () async {
+  test('rx.Observable.windowCount.error.shouldThrowA.asWindow', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .window(onCount(2))
@@ -213,7 +213,7 @@ void main() {
         throwsArgumentError);
   });
 
-  test('rx.Observable.windowCount.skip.shouldThrowB.asBuffer', () {
+  test('rx.Observable.windowCount.skip.shouldThrowB.asWindow', () {
     // when using window, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .window(onCount(2, 100))
@@ -229,20 +229,12 @@ void main() {
         throwsArgumentError);
   });
 
-  test('rx.Observable.windowCount.skip.shouldThrowC.asBuffer', () {
+  test('rx.Observable.windowCount.skip.shouldThrowC.asWindow', () {
     // when using window, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .window(onCount(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
-    }));
-  });
-
-  test('rx.Observable.windowCount.skip.shouldThrowD.asBuffer', () {
-    // when using window, onCount is created asynchronously
-    new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).window(null).listen(
-        null, onError: expectAsync2((NoSuchMethodError e, StackTrace s) {
-      expect(e, isNoSuchMethodError);
     }));
   });
 }

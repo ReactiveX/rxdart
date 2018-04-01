@@ -4,15 +4,17 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.bufferTest', () async {
+  test('rx.Observable.windowTest', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        Observable.range(1, 4).bufferTest((int i) => i % 2 == 0);
+    Stream<List<int>> stream = Observable
+        .range(1, 4)
+        .windowTest((int i) => i % 2 == 0)
+        .asyncMap((s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -22,15 +24,17 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferTest.asBuffer', () async {
+  test('rx.Observable.windowTest.asWindow', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        Observable.range(1, 4).buffer(onTest((int i) => i % 2 == 0));
+    Stream<List<int>> stream = Observable
+        .range(1, 4)
+        .window(onTest((int i) => i % 2 == 0))
+        .asyncMap((s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -40,9 +44,9 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferTest.reusable', () async {
-    final BufferTestStreamTransformer<int> transformer =
-        new BufferTestStreamTransformer<int>((int i) => i % 2 == 0);
+  test('rx.Observable.windowTest.reusable', () async {
+    final WindowTestStreamTransformer<int> transformer =
+        new WindowTestStreamTransformer<int>((int i) => i % 2 == 0);
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -51,7 +55,8 @@ void main() {
 
     Stream<List<int>> streamA =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
+            .transform(transformer)
+            .asyncMap((s) => s.toList());
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -62,7 +67,8 @@ void main() {
 
     Stream<List<int>> streamB =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
+            .transform(transformer)
+            .asyncMap((s) => s.toList());
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -72,9 +78,9 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferTest.reusable.asBuffer', () async {
-    final BufferStreamTransformer<int> transformer =
-        new BufferStreamTransformer<int>(onTest((int i) => i % 2 == 0));
+  test('rx.Observable.windowTest.reusable.asWindow', () async {
+    final WindowStreamTransformer<int> transformer =
+        new WindowStreamTransformer<int>(onTest((int i) => i % 2 == 0));
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -83,7 +89,8 @@ void main() {
 
     Stream<List<int>> streamA =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
+            .transform(transformer)
+            .asyncMap((s) => s.toList());
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -94,7 +101,8 @@ void main() {
 
     Stream<List<int>> streamB =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
+            .transform(transformer)
+            .asyncMap((s) => s.toList());
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -104,10 +112,12 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferTest.asBroadcastStream', () async {
-    Stream<List<int>> stream = new Observable<int>(
-            new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .bufferTest((int i) => i % 2 == 0);
+  test('rx.Observable.windowTest.asBroadcastStream', () async {
+    Stream<List<int>> stream =
+        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+            .windowTest((int i) => i % 2 == 0)
+            .asyncMap((s) => s.toList())
+            .asBroadcastStream();
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -116,10 +126,12 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.bufferTest.asBroadcastStream.asBuffer', () async {
-    Stream<List<int>> stream = new Observable<int>(
-            new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .buffer(onTest((int i) => i % 2 == 0));
+  test('rx.Observable.windowTest.asBroadcastStream.asWindow', () async {
+    Stream<List<int>> stream =
+        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+            .window(onTest((int i) => i % 2 == 0))
+            .asyncMap((s) => s.toList())
+            .asBroadcastStream();
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -128,10 +140,11 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.bufferTest.error.shouldThrowA', () async {
+  test('rx.Observable.windowTest.error.shouldThrowA', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .bufferTest((num i) => i % 2 == 0);
+            .windowTest((num i) => i % 2 == 0)
+            .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -139,10 +152,11 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferTest.error.shouldThrowA.asBuffer', () async {
+  test('rx.Observable.windowTest.error.shouldThrowA.asWindow', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .buffer(onTest((num i) => i % 2 == 0));
+            .window(onTest((num i) => i % 2 == 0))
+            .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -150,17 +164,17 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferTest.skip.shouldThrowB', () {
+  test('rx.Observable.windowTest.skip.shouldThrowB', () {
     expect(
         () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .bufferTest(null),
+            .windowTest(null),
         throwsArgumentError);
   });
 
-  test('rx.Observable.bufferTest.skip.shouldThrowB.asBuffer', () {
-    // when using buffer, onCount is created asynchronously
+  test('rx.Observable.windowTest.skip.shouldThrowB.asWindow', () {
+    // when using window, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .buffer(onTest(null))
+        .window(onTest(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));

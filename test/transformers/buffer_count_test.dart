@@ -221,12 +221,4 @@ void main() {
       expect(e, isArgumentError);
     }));
   });
-
-  test('rx.Observable.bufferCount.skip.shouldThrowD.asBuffer', () {
-    // when using buffer, onCount is created asynchronously
-    new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).buffer(null).listen(
-        null, onError: expectAsync2((NoSuchMethodError e, StackTrace s) {
-      expect(e, isNoSuchMethodError);
-    }));
-  });
 }
