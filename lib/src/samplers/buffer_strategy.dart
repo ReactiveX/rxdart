@@ -8,7 +8,7 @@ import 'package:rxdart/src/transformers/take_until.dart';
 
 /// Higher order function signature which matches the method signature
 /// of buffer and window.
-typedef StreamView<S> SamplerBuilder<T, S>(Stream<T> stream,
+typedef Stream<S> SamplerBuilder<T, S>(Stream<T> stream,
     OnDataTransform<T, S> bufferHandler, OnDataTransform<S, S> scheduleHandler);
 
 /// Higher order function implementation for [_OnCountSampler]
@@ -19,7 +19,7 @@ typedef StreamView<S> SamplerBuilder<T, S>(Stream<T> stream,
 ///
 /// If [skip] is provided, each group will start where the previous group
 /// ended minus the [skip] value.
-StreamView<S> Function(
+Stream<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onCount<T, S>(int count, [int skip]) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -32,7 +32,7 @@ StreamView<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
-StreamView<S> Function(
+Stream<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onStream<T, S>(Stream<dynamic> onStream) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -45,7 +45,7 @@ StreamView<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on a time frame with [duration].
-StreamView<S> Function(
+Stream<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTime<T, S>(Duration duration) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -63,7 +63,7 @@ StreamView<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onFuture] completes.
-StreamView<S> Function(Stream<T> stream, OnDataTransform<T, S>,
+Stream<S> Function(Stream<T> stream, OnDataTransform<T, S>,
     OnDataTransform<S, S>) onFuture<T, S>(
         Future<dynamic> onFuture()) =>
     (Stream<T> stream, OnDataTransform<T, S> bufferHandler,
@@ -88,7 +88,7 @@ Stream<dynamic> _onFutureSampler(Future<dynamic> onFuture()) async* {
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onTest] passes.
-StreamView<S> Function(
+Stream<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTest<T, S>(bool onTest(T event)) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
