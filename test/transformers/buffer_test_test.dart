@@ -4,14 +4,15 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.bufferCount.noSkip', () async {
+  test('rx.Observable.bufferTest', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
     ];
     int count = 0;
 
-    Stream<List<int>> stream = Observable.range(1, 4).bufferCount(2);
+    Stream<List<int>> stream =
+        Observable.range(1, 4).bufferTest((int i) => i % 2 == 0);
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -21,14 +22,15 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferCount.noSkip.asBuffer', () async {
+  test('rx.Observable.bufferTest.asBuffer', () async {
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
     ];
     int count = 0;
 
-    Stream<List<int>> stream = Observable.range(1, 4).buffer(onCount(2));
+    Stream<List<int>> stream =
+        Observable.range(1, 4).buffer(onTest((int i) => i % 2 == 0));
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -38,51 +40,9 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferCount.skip', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[
-      const <int>[1, 2],
-      const <int>[2, 3],
-      const <int>[3, 4],
-      const <int>[4]
-    ];
-    int count = 0;
-
-    Stream<List<int>> stream = Observable.range(1, 4).bufferCount(2, 1);
-
-    stream.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[count].length, result.length);
-      expect(expectedOutput[count][0], result[0]);
-      if (expectedOutput[count].length > 1)
-        expect(expectedOutput[count][1], result[1]);
-      count++;
-    }, count: 4));
-  });
-
-  test('rx.Observable.bufferCount.skip.asBuffer', () async {
-    const List<List<int>> expectedOutput = const <List<int>>[
-      const <int>[1, 2],
-      const <int>[2, 3],
-      const <int>[3, 4],
-      const <int>[4]
-    ];
-    int count = 0;
-
-    Stream<List<int>> stream = Observable.range(1, 4).buffer(onCount(2, 1));
-
-    stream.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[count].length, result.length);
-      expect(expectedOutput[count][0], result[0]);
-      if (expectedOutput[count].length > 1)
-        expect(expectedOutput[count][1], result[1]);
-      count++;
-    }, count: 4));
-  });
-
-  test('rx.Observable.bufferCount.reusable', () async {
+  test('rx.Observable.bufferTest.reusable', () async {
     final BufferStreamTransformer<int> transformer =
-        new BufferStreamTransformer<int>(onCount(2));
+        new BufferStreamTransformer<int>(onTest((int i) => i % 2 == 0));
     const List<List<int>> expectedOutput = const <List<int>>[
       const <int>[1, 2],
       const <int>[3, 4]
@@ -112,10 +72,10 @@ void main() {
     }, count: 2));
   });
 
-  test('rx.Observable.bufferCount.asBroadcastStream', () async {
+  test('rx.Observable.bufferTest.asBroadcastStream', () async {
     Stream<List<int>> stream = new Observable<int>(
             new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .bufferCount(2);
+        .bufferTest((int i) => i % 2 == 0);
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -124,10 +84,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.bufferCount.asBroadcastStream.asBuffer', () async {
+  test('rx.Observable.bufferTest.asBroadcastStream.asBuffer', () async {
     Stream<List<int>> stream = new Observable<int>(
             new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .buffer(onCount(2));
+        .buffer(onTest((int i) => i % 2 == 0));
 
     // listen twice on same stream
     stream.listen((_) {});
@@ -136,10 +96,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.bufferCount.error.shouldThrowA', () async {
+  test('rx.Observable.bufferTest.error.shouldThrowA', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .bufferCount(2);
+            .bufferTest((num i) => i % 2 == 0);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -147,10 +107,10 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferCount.error.shouldThrowA.asBuffer', () async {
+  test('rx.Observable.bufferTest.error.shouldThrowA.asBuffer', () async {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
-            .buffer(onCount(2));
+            .buffer(onTest((num i) => i % 2 == 0));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -158,33 +118,17 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferCount.skip.shouldThrowB', () {
+  test('rx.Observable.bufferTest.skip.shouldThrowB', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .bufferCount(2, 100)
+        .bufferTest(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
-  test('rx.Observable.bufferCount.skip.shouldThrowB.asBuffer', () {
+  test('rx.Observable.bufferTest.skip.shouldThrowB.asBuffer', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .buffer(onCount(2, 100))
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
-  });
-
-  test('rx.Observable.bufferCount.skip.shouldThrowC', () {
-    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .bufferCount(null)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
-  });
-
-  test('rx.Observable.bufferCount.skip.shouldThrowC.asBuffer', () {
-    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .buffer(onCount(null))
+        .buffer(onTest(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));

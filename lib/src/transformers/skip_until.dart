@@ -31,6 +31,12 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       StreamSubscription<S> otherSubscription;
       bool goTime = false;
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        controller.close();
+      }
+
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
@@ -40,23 +46,24 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
               }
             },
                 onError: controller.addError,
-                onDone: controller.close,
+                onDone: onDone,
                 cancelOnError: cancelOnError);
 
             otherSubscription = otherStream.listen((_) {
               goTime = true;
 
               otherSubscription.cancel();
-            }, onError: controller.addError, cancelOnError: cancelOnError);
+            },
+                onError: controller.addError,
+                cancelOnError: cancelOnError,
+                onDone: onDone);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
-          onCancel: () {
-            return Future.wait<dynamic>(<Future<dynamic>>[
-              subscription.cancel(),
-              otherSubscription.cancel()
-            ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
+          onCancel: () async {
+            await otherSubscription?.cancel();
+            await subscription?.cancel();
           });
 
       return controller.stream.listen(null);

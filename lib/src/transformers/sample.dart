@@ -13,43 +13,58 @@ import 'dart:async';
 class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  SampleStreamTransformer(Stream<dynamic> sampleStream)
-      : transformer = _buildTransformer(sampleStream);
+  SampleStreamTransformer(Stream<dynamic> sampleStream,
+      {bool sampleOnValueOnly: true})
+      : transformer = _buildTransformer(sampleStream,
+            sampleOnValueOnly: sampleOnValueOnly);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      Stream<dynamic> sampleStream) {
+      Stream<dynamic> sampleStream,
+      {bool sampleOnValueOnly: true}) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<dynamic> sampleSubscription;
       T currentValue;
+      bool hasValue = false;
+
+      void onDone() {
+        if (controller.isClosed) return;
+
+        if (hasValue) {
+          hasValue = false;
+          controller.add(currentValue);
+        }
+
+        controller.close();
+      }
+
+      void onSample(dynamic _) {
+        if (hasValue || !sampleOnValueOnly) {
+          controller.add(currentValue);
+          hasValue = false;
+          currentValue = null;
+        }
+      }
 
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
             try {
               subscription = input.listen((T value) {
+                hasValue = true;
                 currentValue = value;
-              }, onError: controller.addError);
-
-              sampleSubscription = sampleStream.listen(
-                  (dynamic _) {
-                    if (currentValue != null) {
-                      controller.add(currentValue);
-                      currentValue = null;
-                    }
-                  },
+              },
                   onError: controller.addError,
-                  onDone: () {
-                    if (currentValue != null) {
-                      controller.add(currentValue);
-                    }
+                  onDone: onDone,
+                  cancelOnError: cancelOnError);
 
-                    controller.close();
-                  },
+              sampleSubscription = sampleStream.listen(onSample,
+                  onError: controller.addError,
+                  onDone: onDone,
                   cancelOnError: cancelOnError);
             } catch (e, s) {
               controller.addError(e, s);
@@ -58,11 +73,9 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onPause: ([Future<dynamic> resumeSignal]) =>
               subscription.pause(resumeSignal),
           onResume: () => subscription.resume(),
-          onCancel: () {
-            return Future.wait<dynamic>(<Future<dynamic>>[
-              subscription.cancel(),
-              sampleSubscription.cancel()
-            ].where((Future<dynamic> cancelFuture) => cancelFuture != null));
+          onCancel: () async {
+            await sampleSubscription.cancel();
+            await subscription.cancel();
           });
 
       return controller.stream.listen(null);

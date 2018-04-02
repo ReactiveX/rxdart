@@ -107,8 +107,12 @@ var myObservable = Observable.combineLatest3(
 ### Transformations
     
 ##### Available Methods
+- [buffer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/buffer.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferStreamTransformer-class.html)
 - [bufferCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferCount.html) / [BufferCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferCountStreamTransformer-class.html)
+- [bufferFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferFuture.html) / [BufferFutureStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferFutureStreamTransformer-class.html)
+- [bufferTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTest.html) / [BufferTestStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferTestStreamTransformer-class.html)
 - [bufferTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTime.html) / [BufferTimeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferTimeStreamTransformer-class.html)
+- [bufferWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferWhen.html) / [BufferWhenStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/BufferWhenStreamTransformer-class.html)
 - [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) (alias for `asyncExpand`)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
 - [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/DebounceStreamTransformer-class.html)
@@ -141,8 +145,12 @@ var myObservable = Observable.combineLatest3(
 - [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html) / [TimeIntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TimeIntervalStreamTransformer-class.html)
 - [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html) / [TimestampStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/TimestampStreamTransformer-class.html)
 - [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html) / [ThrottleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/ThrottleStreamTransformer-class.html)
+- [window](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/window.html) / [WindowStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowStreamTransformer-class.html)
 - [windowCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowCount.html) / [WindowCountStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowCountStreamTransformer-class.html)
+- [windowFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowFuture.html) / [WindowFutureStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowFutureStreamTransformer-class.html)
+- [windowTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTest.html) / [WindowTestStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowTestStreamTransformer-class.html)
 - [windowTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTime.html) / [WindowTimeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowTimeStreamTransformer-class.html)
+- [windowWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowWhen.html) / [WindowWhenStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WindowWhenStreamTransformer-class.html)
 - [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html) / [WithLatestFromStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/WithLatestFromStreamTransformer-class.html)
 - [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
 

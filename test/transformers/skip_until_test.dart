@@ -40,6 +40,12 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.skipUntil.shouldClose', () async {
+    new Observable<int>(_getStream())
+        .skipUntil(new Stream<Null>.empty())
+        .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
+  });
+
   test('rx.Observable.skipUntil.reusable', () async {
     final SkipUntilStreamTransformer<int, int> transformer =
         new SkipUntilStreamTransformer<int, int>(
