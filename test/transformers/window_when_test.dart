@@ -89,33 +89,6 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.windowWhen.reusable', () async {
-    final transformer = new WindowWhenStreamTransformer<int>(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
-            .asBroadcastStream());
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
-    ];
-    int countA = 0, countB = 0;
-
-    Stream<List<int>> streamA =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
-
-    streamA.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countA++]);
-    }, count: 2));
-
-    Stream<List<int>> streamB =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
-
-    streamB.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countB++]);
-    }, count: 2));
-  }, skip: 'todo: investigate why this test makes the process hang');
-
-  test('rx.Observable.windowWhen.reusable.asWindow', () async {
     final transformer = new WindowStreamTransformer<int>(onStream(
         new Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream()));
@@ -197,14 +170,14 @@ void main() {
   });
 
   test('rx.Observable.windowWhen.error.shouldThrowB', () {
-    expect(
-        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .windowWhen(null),
-        throwsArgumentError);
+    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+        .windowWhen(null)
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.windowWhen.error.shouldThrowB.asWindow', () {
-    // when using window, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .window(onStream(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {

@@ -38,7 +38,6 @@ import 'transformers/buffer_future_test.dart' as buffer_future_test;
 import 'transformers/buffer_test_test.dart' as buffer_test_test;
 import 'transformers/buffer_time_test.dart' as buffer_time_test;
 import 'transformers/buffer_when_test.dart' as buffer_when_test;
-import 'transformers/buffer_with_count_test.dart' as buffer_with_count_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
@@ -102,7 +101,6 @@ import 'transformers/window_future_test.dart' as window_future_test;
 import 'transformers/window_test_test.dart' as window_test_test;
 import 'transformers/window_time_test.dart' as window_time_test;
 import 'transformers/window_when_test.dart' as window_when_test;
-import 'transformers/window_with_count_test.dart' as window_with_count_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
@@ -140,7 +138,6 @@ void main() {
   buffer_test_test.main();
   buffer_time_test.main();
   buffer_when_test.main();
-  buffer_with_count_test.main();
   concat_map_test.main();
   concat_with_test.main();
   contains_test.main();
@@ -206,7 +203,6 @@ void main() {
   window_test_test.main();
   window_time_test.main();
   window_when_test.main();
-  window_with_count_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
 

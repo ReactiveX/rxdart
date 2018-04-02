@@ -41,38 +41,6 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.reusable', () async {
-    final BufferTestStreamTransformer<int> transformer =
-        new BufferTestStreamTransformer<int>((int i) => i % 2 == 0);
-    const List<List<int>> expectedOutput = const <List<int>>[
-      const <int>[1, 2],
-      const <int>[3, 4]
-    ];
-    int countA = 0, countB = 0;
-
-    Stream<List<int>> streamA =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
-
-    streamA.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[countA][0], result[0]);
-      expect(expectedOutput[countA][1], result[1]);
-      countA++;
-    }, count: 2));
-
-    Stream<List<int>> streamB =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-            .transform(transformer);
-
-    streamB.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(expectedOutput[countB][0], result[0]);
-      expect(expectedOutput[countB][1], result[1]);
-      countB++;
-    }, count: 2));
-  });
-
-  test('rx.Observable.bufferTest.reusable.asBuffer', () async {
     final BufferStreamTransformer<int> transformer =
         new BufferStreamTransformer<int>(onTest((int i) => i % 2 == 0));
     const List<List<int>> expectedOutput = const <List<int>>[
@@ -151,14 +119,14 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.skip.shouldThrowB', () {
-    expect(
-        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .bufferTest(null),
-        throwsArgumentError);
+    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+        .bufferTest(null)
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.bufferTest.skip.shouldThrowB.asBuffer', () {
-    // when using buffer, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .buffer(onTest(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {

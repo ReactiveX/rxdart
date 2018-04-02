@@ -11,6 +11,6 @@ typedef void OnDataTransform<T, S>(T event, EventSink<S> sink, [int skip]);
 /// via the [state] getter.
 ///
 /// This is a generic interface that other bloc strategies can implement.
-abstract class SamplerBloc<T> {
+abstract class OnSampler<T> {
   Stream<T> get state;
 }

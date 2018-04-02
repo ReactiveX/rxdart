@@ -46,6 +46,49 @@ void main() {
         }, count: 2));
   });
 
+  test('rx.Observable.bufferFuture.sampleBeforeEvent.shouldEmit', () async {
+    const List<List<String>> expectedOutput = const <List<String>>[
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>['done']
+    ];
+    int count = 0;
+
+    new Observable.fromFuture(
+            new Future<Null>.delayed(const Duration(milliseconds: 200))
+                .then((_) => 'done'))
+        .bufferFuture(
+            () => new Future<Null>.delayed(const Duration(milliseconds: 40)))
+        .listen(expectAsync1((List<String> result) {
+          // test to see if the combined output matches
+          expect(result, expectedOutput[count++]);
+        }, count: 5));
+  });
+
+  test('rx.Observable.bufferFuture.sampleBeforeEvent.shouldEmit.asBuffer',
+      () async {
+    const List<List<String>> expectedOutput = const <List<String>>[
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>['done']
+    ];
+    int count = 0;
+
+    new Observable.fromFuture(
+            new Future<Null>.delayed(const Duration(milliseconds: 200))
+                .then((_) => 'done'))
+        .buffer(onFuture(
+            () => new Future<Null>.delayed(const Duration(milliseconds: 40))))
+        .listen(expectAsync1((List<String> result) {
+          // test to see if the combined output matches
+          expect(result, expectedOutput[count++]);
+        }, count: 5));
+  });
+
   test('rx.Observable.bufferFuture.shouldClose', () async {
     const List<int> expectedOutput = const <int>[0, 1, 2, 3];
     final StreamController<int> controller = new StreamController<int>();
@@ -87,30 +130,6 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.reusable', () async {
-    final transformer = new BufferFutureStreamTransformer<int>(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
-    ];
-    int countA = 0, countB = 0;
-
-    Stream<List<int>> streamA = getStream(4).transform(transformer);
-
-    streamA.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countA++]);
-    }, count: 2));
-
-    Stream<List<int>> streamB = getStream(4).transform(transformer);
-
-    streamB.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countB++]);
-    }, count: 2));
-  });
-
-  test('rx.Observable.bufferFuture.reusable.asBuffer', () async {
     final transformer = new BufferStreamTransformer<int>(onFuture(
         () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
     const expectedOutput = const [
@@ -180,14 +199,14 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowB', () {
-    expect(
-        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .bufferFuture(null),
-        throwsArgumentError);
+    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+        .bufferFuture(null)
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowB.asFuture', () {
-    // when using buffer, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .buffer(onFuture(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {

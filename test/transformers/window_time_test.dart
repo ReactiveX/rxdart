@@ -87,32 +87,6 @@ void main() {
   });
 
   test('rx.Observable.windowTime.reusable', () async {
-    final transformer =
-        new WindowTimeStreamTransformer<int>(const Duration(milliseconds: 220));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
-    ];
-    int countA = 0, countB = 0;
-
-    Stream<List<int>> streamA =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
-
-    streamA.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countA++]);
-    }, count: 2));
-
-    Stream<List<int>> streamB =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
-
-    streamB.listen(expectAsync1((List<int> result) {
-      // test to see if the combined output matches
-      expect(result, expectedOutput[countB++]);
-    }, count: 2));
-  });
-
-  test('rx.Observable.windowTime.reusable.asWindow', () async {
     final transformer = new WindowStreamTransformer<int>(
         onTime(const Duration(milliseconds: 220)));
     const expectedOutput = const [
@@ -189,14 +163,14 @@ void main() {
   });
 
   test('rx.Observable.windowTime.error.shouldThrowB', () {
-    expect(
-        () => new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-            .windowTime(null),
-        throwsArgumentError);
+    new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
+        .windowTime(null)
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
   });
 
   test('rx.Observable.windowTime.error.shouldThrowB.asWindow', () {
-    // when using window, onCount is created asynchronously
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
         .window(onTime(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {

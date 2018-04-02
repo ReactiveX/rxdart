@@ -13,7 +13,7 @@ import 'package:rxdart/src/transformers/do.dart';
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
-  final BufferBlocBuilder<T, Stream<T>> scheduler;
+  final SamplerBuilder<T, Stream<T>> scheduler;
 
   WindowStreamTransformer(this.scheduler);
 
@@ -22,7 +22,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       _buildTransformer<T>(scheduler).bind(stream);
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
-      BufferBlocBuilder<T, Stream<T>> scheduler) {
+      SamplerBuilder<T, Stream<T>> scheduler) {
     assertScheduler(scheduler);
 
     return new StreamTransformer<T, Stream<T>>(
@@ -69,7 +69,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
     });
   }
 
-  static void assertScheduler<T>(BufferBlocBuilder<T, Stream<T>> scheduler) {
+  static void assertScheduler<T>(SamplerBuilder<T, Stream<T>> scheduler) {
     if (scheduler == null) {
       throw new ArgumentError('scheduler cannot be null');
     }

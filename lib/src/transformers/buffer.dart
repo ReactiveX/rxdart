@@ -13,7 +13,7 @@ import 'package:rxdart/src/transformers/do.dart';
 ///       .bufferTime(const Duration(milliseconds: 220))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
-  final BufferBlocBuilder<T, List<T>> scheduler;
+  final SamplerBuilder<T, List<T>> scheduler;
 
   BufferStreamTransformer(this.scheduler);
 
@@ -22,7 +22,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       _buildTransformer<T>(scheduler).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      BufferBlocBuilder<T, List<T>> scheduler) {
+      SamplerBuilder<T, List<T>> scheduler) {
     assertScheduler(scheduler);
 
     return new StreamTransformer<T, List<T>>(
@@ -43,14 +43,12 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
           sync: true,
           onListen: () {
             try {
-              subscription = scheduler(
-                  input,
-                  (data, sink, [int skip]) {
+              subscription = scheduler(input, (data, sink, [int skip]) {
                 buffer.add(data);
                 sink.add(buffer);
-              }, (data, sink, [int skip]) {
-                sink.add(new List<T>.unmodifiable(data));
-                buffer = data.sublist(data.length - (skip ?? 0));
+              }, (_, sink, [int skip]) {
+                sink.add(new List<T>.unmodifiable(buffer));
+                buffer = buffer.sublist(buffer.length - (skip ?? 0));
               }).state.listen(controller.add,
                   onError: controller.addError,
                   onDone: onDone,
@@ -68,7 +66,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
     });
   }
 
-  static void assertScheduler<T>(BufferBlocBuilder<T, List<T>> scheduler) {
+  static void assertScheduler<T>(SamplerBuilder<T, List<T>> scheduler) {
     if (scheduler == null) {
       throw new ArgumentError('scheduler cannot be null');
     }

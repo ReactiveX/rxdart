@@ -13,14 +13,17 @@ import 'dart:async';
 class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  SampleStreamTransformer(Stream<dynamic> sampleStream)
-      : transformer = _buildTransformer(sampleStream);
+  SampleStreamTransformer(Stream<dynamic> sampleStream,
+      {bool sampleOnValueOnly: true})
+      : transformer = _buildTransformer(sampleStream,
+            sampleOnValueOnly: sampleOnValueOnly);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      Stream<dynamic> sampleStream) {
+      Stream<dynamic> sampleStream,
+      {bool sampleOnValueOnly: true}) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
@@ -40,7 +43,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       }
 
       void onSample(dynamic _) {
-        if (hasValue) {
+        if (hasValue || !sampleOnValueOnly) {
           controller.add(currentValue);
           hasValue = false;
           currentValue = null;
