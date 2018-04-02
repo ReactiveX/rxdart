@@ -45,6 +45,13 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamSubscription<T> switchSubscription;
       bool hasEvent = false;
 
+      void onDone() {
+        if (controller.isClosed) return;
+
+        controller.close();
+        switchSubscription?.cancel();
+      }
+
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
@@ -60,7 +67,7 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
                       controller.add(value);
                     },
                         onError: controller.addError,
-                        onDone: controller.close,
+                        onDone: onDone,
                         cancelOnError: cancelOnError);
                   }
                 },
@@ -74,12 +81,7 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
             defaultSubscription?.resume();
             switchSubscription?.resume();
           },
-          onCancel: () {
-            return Future.wait<dynamic>(<Future<dynamic>>[
-              defaultSubscription?.cancel(),
-              switchSubscription?.cancel()
-            ]);
-          });
+          onCancel: () => defaultSubscription?.cancel());
 
       return controller.stream.listen(null);
     });

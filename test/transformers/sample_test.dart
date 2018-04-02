@@ -25,8 +25,10 @@ void main() {
     final Observable<int> observableB =
         new Observable<int>(_getStream()).transform(transformer);
 
-    await expectLater(observableA, emitsInOrder(const <int>[0, 2, 4]));
-    await expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]));
+    await Future.wait<dynamic>([
+      expectLater(observableA, emitsInOrder(const <int>[0, 2, 4])),
+      expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]))
+    ]);
   });
 
   test('rx.Observable.sample.onDone', () async {
@@ -35,6 +37,21 @@ void main() {
             .sample(new Observable<int>.empty());
 
     await expectLater(observable, emits(1));
+  });
+
+  test('rx.Observable.sample.shouldClose', () async {
+    final StreamController<int> controller = new StreamController<int>();
+
+    new Observable<int>(controller.stream)
+        .sample(new Stream<Null>.empty()) // should trigger onDone
+        .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
+
+    controller.add(0);
+    controller.add(1);
+    controller.add(2);
+    controller.add(3);
+
+    scheduleMicrotask(controller.close);
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {

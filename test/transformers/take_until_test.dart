@@ -40,6 +40,12 @@ void main() {
         }, count: expectedOutput.length));
   });
 
+  test('rx.Observable.takeUntil.shouldClose', () async {
+    new Observable<int>(_getStream())
+        .takeUntil(new Stream<Null>.empty())
+        .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
+  });
+
   test('rx.Observable.takeUntil.reusable', () async {
     final TakeUntilStreamTransformer<int, int> transformer =
         new TakeUntilStreamTransformer<int, int>(
