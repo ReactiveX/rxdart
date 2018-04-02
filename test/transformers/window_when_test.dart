@@ -48,6 +48,29 @@ void main() {
         }, count: 2));
   });
 
+  test('rx.Observable.windowWhen.sampleBeforeEvent.shouldEmit.asBuffer',
+      () async {
+    const List<List<String>> expectedOutput = const <List<String>>[
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>[],
+      const <String>['done']
+    ];
+    int count = 0;
+
+    new Observable.fromFuture(
+            new Future<Null>.delayed(const Duration(milliseconds: 200))
+                .then((_) => 'done'))
+        .window(onStream(
+            new Stream<Null>.periodic(const Duration(milliseconds: 40))))
+        .asyncMap((s) => s.toList())
+        .listen(expectAsync1((List<String> result) {
+          // test to see if the combined output matches
+          expect(result, expectedOutput[count++]);
+        }, count: 5));
+  });
+
   test('rx.Observable.windowWhen.shouldClose', () async {
     const List<int> expectedOutput = const <int>[0, 1, 2, 3];
     final StreamController<int> controller = new StreamController<int>();

@@ -1096,7 +1096,7 @@ class Observable<T> extends Stream<T> {
   ///       .buffer(onStream(new Stream.periodic(const Duration(milliseconds: 220), (int i) => i)))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
   ///
-  /// You can create your own sampler by implementing [Sampler]
+  /// You can create your own sampler by extending [StreamView]
   /// should the above samplers be insufficient for your use case.
   Observable<List<T>> buffer(SamplerBuilder<T, List<T>> sampler) =>
       transform(new BufferStreamTransformer<T>((Stream<T> stream,
@@ -2114,7 +2114,7 @@ class Observable<T> extends Stream<T> {
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
   ///
-  /// You can create your own sampler by implementing [Sampler]
+  /// You can create your own sampler by extending [StreamView]
   /// should the above samplers be insufficient for your use case.
   Observable<Stream<T>> window(SamplerBuilder<T, Stream<T>> sampler) =>
       transform(new WindowStreamTransformer<T>((Stream<T> stream,

@@ -8,7 +8,7 @@ import 'package:rxdart/src/transformers/take_until.dart';
 
 /// Higher order function signature which matches the method signature
 /// of buffer and window.
-typedef OnSampler<S> SamplerBuilder<T, S>(Stream<T> stream,
+typedef StreamView<S> SamplerBuilder<T, S>(Stream<T> stream,
     OnDataTransform<T, S> bufferHandler, OnDataTransform<S, S> scheduleHandler);
 
 /// Higher order function implementation for [_OnCountSampler]
@@ -19,7 +19,7 @@ typedef OnSampler<S> SamplerBuilder<T, S>(Stream<T> stream,
 ///
 /// If [skip] is provided, each group will start where the previous group
 /// ended minus the [skip] value.
-OnSampler<S> Function(
+StreamView<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onCount<T, S>(int count, [int skip]) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -32,7 +32,7 @@ OnSampler<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
-OnSampler<S> Function(
+StreamView<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onStream<T, S>(Stream<dynamic> onStream) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -45,7 +45,7 @@ OnSampler<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on a time frame with [duration].
-OnSampler<S> Function(
+StreamView<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTime<T, S>(Duration duration) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -63,7 +63,7 @@ OnSampler<S> Function(
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onFuture] completes.
-OnSampler<S> Function(Stream<T> stream, OnDataTransform<T, S>,
+StreamView<S> Function(Stream<T> stream, OnDataTransform<T, S>,
     OnDataTransform<S, S>) onFuture<T, S>(
         Future<dynamic> onFuture()) =>
     (Stream<T> stream, OnDataTransform<T, S> bufferHandler,
@@ -88,7 +88,7 @@ Stream<dynamic> _onFutureSampler(Future<dynamic> onFuture()) async* {
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onTest] passes.
-OnSampler<S> Function(
+StreamView<S> Function(
         Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
     onTest<T, S>(bool onTest(T event)) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
@@ -98,11 +98,9 @@ OnSampler<S> Function(
 
 /// A buffer strategy where each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
-class _OnStreamSampler<T, S> implements OnSampler<S> {
+class _OnStreamSampler<T, S> extends StreamView<S> {
   @override
-  final Stream<S> state;
-
-  _OnStreamSampler._(this.state);
+  _OnStreamSampler._(Stream<S> state) : super(state);
 
   factory _OnStreamSampler(
       Stream<T> stream,
@@ -148,11 +146,9 @@ class _OnStreamSampler<T, S> implements OnSampler<S> {
 ///
 /// If [skip] is provided, each group will start where the previous group
 /// ended minus the [skip] value.
-class _OnCountSampler<T, S> implements OnSampler<S> {
+class _OnCountSampler<T, S> extends StreamView<S> {
   @override
-  final Stream<S> state;
-
-  _OnCountSampler._(this.state);
+  _OnCountSampler._(Stream<S> state) : super(state);
 
   factory _OnCountSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, int count,
@@ -189,11 +185,9 @@ class _OnCountSampler<T, S> implements OnSampler<S> {
 
 /// A buffer strategy where each item is a sequence containing the items
 /// from the source sequence, batched whenever [onTest] passes.
-class _OnTestSampler<T, S> implements OnSampler<S> {
+class _OnTestSampler<T, S> extends StreamView<S> {
   @override
-  final Stream<S> state;
-
-  _OnTestSampler._(this.state);
+  _OnTestSampler._(Stream<S> state) : super(state);
 
   factory _OnTestSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, bool onTest(T event)) {
