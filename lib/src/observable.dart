@@ -458,6 +458,26 @@ class Observable<T> extends Stream<T> {
   factory Observable.defer(Stream<T> streamFactory(), {bool reusable: false}) =>
       new Observable<T>(new DeferStream<T>(streamFactory, reusable: reusable));
 
+  /// Creates an Observable from a [callback] function.
+  /// Each time a new subscription is made the callback function is executed 
+  /// and its result emitted immideately  
+  ///   
+  /// The returned Observable is therefore a cold Observable.
+  /// 
+  factory Observable.fromCallback(T callBack()) =>
+      new Observable<T>.defer(() => new Observable<T>.just(callBack()), reusable: true);
+
+
+  /// Creates an Observable from  an asynchronous function [asyncFun] function.
+  /// Each time a new subscription is made the asynchronous function is called. 
+  /// Its result will be emited as soon as the function returns. 
+  ///   
+  /// The returned Observable is therefore a cold Observable.
+  /// 
+  factory Observable.fromAsync(Future<T> asyncFun()) =>
+      new Observable<T>.defer(() => asyncFun().asStream(), reusable: true);
+
+
   /// Returns an observable sequence that emits an [error], then immediately
   /// completes.
   ///
