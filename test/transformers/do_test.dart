@@ -30,7 +30,7 @@ void main() {
         () async {
       int count = 0;
       final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
-      final Stream<int> stream = subject.stream.doOnError(
+      final Stream<int> stream = subject.doOnError(
         (dynamic e, dynamic s) => count++,
       );
 
@@ -62,7 +62,7 @@ void main() {
       int count = 0;
       final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
       final Observable<int> observable =
-          subject.stream.doOnCancel(() => count++);
+          subject.doOnCancel(() => count++);
 
       observable.listen(null);
       await observable.listen(null).cancel();
