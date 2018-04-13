@@ -16,10 +16,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   final Observable<T> observable;
   bool _isAddingStreamItems = false;
 
-  Subject(this.controller, this.observable):super(observable);
-
-  @override
-  Observable<T> get stream => this;
+  Subject(StreamController<T> controller, this.observable): this.controller = controller,super(observable);
 
   @override
   StreamSink<T> get sink => new _StreamSinkWrapper<T>(this);
