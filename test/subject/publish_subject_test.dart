@@ -23,6 +23,21 @@ void main() {
           subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
+    test('emits items to every subscriber that subscribe directly to the Subject', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new PublishSubject<int>();
+
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+        subject.add(3);
+        subject.close();
+      });
+
+      await expectLater(
+          subject, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+    });
+
     test('emits done event to listeners when the subject is closed', () async {
       final StreamController<int> subject = new PublishSubject<int>();
 
