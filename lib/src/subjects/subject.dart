@@ -30,6 +30,9 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   }
 
   @override
+  Observable<T> get stream => super.stream as Observable<T>;
+
+  @override
   ControllerCallback get onPause =>
       throw new UnsupportedError("Subjects do not support pause callbacks");
 

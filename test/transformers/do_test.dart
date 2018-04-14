@@ -30,7 +30,7 @@ void main() {
         () async {
       int count = 0;
       final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
-      final Stream<int> stream = subject.doOnError(
+      final Stream<int> stream = subject.stream.doOnError(
         (dynamic e, dynamic s) => count++,
       );
 
