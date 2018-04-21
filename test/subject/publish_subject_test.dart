@@ -23,6 +23,21 @@ void main() {
           subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
+    test('emits items to every subscriber that subscribe directly to the Subject', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new PublishSubject<int>();
+
+      scheduleMicrotask(() {
+        subject.add(1);
+        subject.add(2);
+        subject.add(3);
+        subject.close();
+      });
+
+      await expectLater(
+          subject, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+    });
+
     test('emits done event to listeners when the subject is closed', () async {
       final StreamController<int> subject = new PublishSubject<int>();
 
@@ -35,6 +50,18 @@ void main() {
       await expectLater(subject.isClosed, isTrue);
     });
 
+    test('emits done event to listeners when the subject is closed (listen directly on Subject)', () async {
+      final StreamController<int> subject = new PublishSubject<int>();
+
+      await expectLater(subject.isClosed, isFalse);
+
+      scheduleMicrotask(() => subject.add(1));
+      scheduleMicrotask(() => subject.close());
+
+      await expectLater(subject, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(subject.isClosed, isTrue);
+    });
+
     test('emits error events to subscribers', () async {
       // ignore: close_sinks
       final StreamController<int> subject = new PublishSubject<int>();
@@ -42,6 +69,15 @@ void main() {
       scheduleMicrotask(() => subject.addError(new Exception()));
 
       await expectLater(subject.stream, emitsError(isException));
+    });
+
+    test('emits error events to subscribers (listen directly on Subject)', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new PublishSubject<int>();
+
+      scheduleMicrotask(() => subject.addError(new Exception()));
+
+      await expectLater(subject, emitsError(isException));
     });
 
     test('emits the items from addStream', () async {

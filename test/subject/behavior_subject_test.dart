@@ -20,6 +20,19 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
+    test('emits the most recently emitted item to every subscriber that subscribe to the subject directly', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(3);
+
+      await expectLater(subject, emits(3));
+      await expectLater(subject, emits(3));
+      await expectLater(subject, emits(3));
+    });
+
     test('can synchronously get the latest value', () async {
       // ignore: close_sinks
       final BehaviorSubject<int> subject = new BehaviorSubject<int>();

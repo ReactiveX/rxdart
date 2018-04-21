@@ -11,15 +11,13 @@ import 'package:rxdart/src/observable.dart';
 /// Please see `PublishSubject` for the simplest example of how to
 /// extend from this class, or `BehaviorSubject` for a slightly more
 /// complex example.
-abstract class Subject<T> implements StreamController<T> {
+abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   final StreamController<T> controller;
-  final Observable<T> observable;
+  
   bool _isAddingStreamItems = false;
+  Observable<T> _observable;
 
-  Subject(this.controller, this.observable);
-
-  @override
-  Observable<T> get stream => observable;
+  Subject(StreamController<T> controller, Observable<T> observable): this._observable= observable, this.controller = controller,super(observable);
 
   @override
   StreamSink<T> get sink => new _StreamSinkWrapper<T>(this);
@@ -31,6 +29,9 @@ abstract class Subject<T> implements StreamController<T> {
   set onListen(void onListenHandler()) {
     controller.onListen = onListenHandler;
   }
+
+  @override
+  Observable<T> get stream  => _observable;
 
   @override
   ControllerCallback get onPause =>

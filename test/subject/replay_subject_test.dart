@@ -20,6 +20,19 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(<int>[1, 2, 3]));
     });
 
+    test('replays the previously emitted items to every subscriber that directly subscribes to the Subject', () async {
+      // ignore: close_sinks
+      final StreamController<int> subject = new ReplaySubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(3);
+
+      await expectLater(subject, emitsInOrder(<int>[1, 2, 3]));
+      await expectLater(subject, emitsInOrder(<int>[1, 2, 3]));
+      await expectLater(subject, emitsInOrder(<int>[1, 2, 3]));
+    });
+
     test('synchronously get the previous items', () async {
       // ignore: close_sinks
       final ReplaySubject<int> subject = new ReplaySubject<int>();
@@ -30,6 +43,7 @@ void main() {
 
       await expectLater(subject.values, <int>[1, 2, 3]);
     });
+
 
     test('replays the most recently emitted items up to a max size', () async {
       // ignore: close_sinks
