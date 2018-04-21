@@ -10,6 +10,7 @@ before_install:
 script:
   - set -e
   - sh tool/check_format.sh
+  - dartanalyzer --fatal-infos --fatal-warnings ./
   - pub run test test/rxdart_test.dart
   - pub get --packages-dir
   - pub global activate coverage

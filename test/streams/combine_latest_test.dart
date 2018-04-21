@@ -1,12 +1,14 @@
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 Stream<int> get streamA => new Stream<int>.periodic(
     const Duration(milliseconds: 1), (int count) => count).take(3);
+
 Stream<int> get streamB =>
     new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+
 Stream<bool> get streamC {
   final StreamController<bool> controller = new StreamController<bool>()
     ..add(true)

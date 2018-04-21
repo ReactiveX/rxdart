@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 Stream<num> getDelayedStream(int delay, num value) async* {
   final Completer<dynamic> completer = new Completer<dynamic>();
@@ -22,6 +22,7 @@ void main() {
     final Stream<num> last = getDelayedStream(70, 3);
     int expected = 1;
 
+    // ignore: deprecated_member_use
     new Observable<num>.amb(<Stream<num>>[first, second, last])
         .listen(expectAsync1((num result) {
       // test to see if the combined output matches
@@ -32,6 +33,7 @@ void main() {
   test('rx.Observable.amb.single.subscription', () async {
     final Stream<num> first = getDelayedStream(50, 1);
 
+    // ignore: deprecated_member_use
     Observable<num> observable = new Observable<num>.amb(<Stream<num>>[first]);
 
     observable.listen(null);
@@ -44,6 +46,7 @@ void main() {
     final Stream<num> last = getDelayedStream(70, 3);
 
     Stream<num> observable =
+        // ignore: deprecated_member_use
         new Observable<num>.amb(<Stream<num>>[first, second, last])
             .asBroadcastStream();
 
@@ -55,14 +58,17 @@ void main() {
   });
 
   test('rx.Observable.amb.shouldThrowA', () {
+    // ignore: deprecated_member_use
     expect(() => new Observable<num>.amb(null), throwsArgumentError);
   });
 
   test('rx.Observable.amb.shouldThrowB', () {
+    // ignore: deprecated_member_use
     expect(() => new Observable<num>.amb(<Stream<num>>[]), throwsArgumentError);
   });
 
   test('rx.Observable.amb.shouldThrowC', () async {
+    // ignore: deprecated_member_use
     Stream<num> observable = new Observable<num>.amb(
         <Stream<num>>[new ErrorStream<num>(new Exception('oh noes!'))]);
 

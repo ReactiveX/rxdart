@@ -56,7 +56,7 @@ void main() {
     ];
     int count = 0;
 
-    new Observable.fromFuture(
+    new Observable<String>.fromFuture(
             new Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .bufferFuture(
@@ -78,7 +78,7 @@ void main() {
     ];
     int count = 0;
 
-    new Observable.fromFuture(
+    new Observable<String>.fromFuture(
             new Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .buffer(onFuture(
@@ -130,11 +130,12 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(onFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    final StreamTransformer<int, List<int>> transformer =
+        new BufferStreamTransformer<int>(onFuture(
+            () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int countA = 0, countB = 0;
 
@@ -154,8 +155,10 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.asBroadcastStream', () async {
-    final stream = getStream(4).asBroadcastStream().bufferFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
+    final Stream<List<int>> stream = getStream(4)
+        .asBroadcastStream()
+        .bufferFuture(
+            () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
 
     // listen twice on same stream
     stream.listen(expectAsync1((List<int> result) {}, count: 2));
@@ -165,8 +168,9 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.asBroadcastStream.asBuffer', () async {
-    final stream = getStream(4).asBroadcastStream().buffer(onFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
+    final Stream<List<int>> stream = getStream(4).asBroadcastStream().buffer(
+        onFuture(
+            () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
 
     // listen twice on same stream
     stream.listen(expectAsync1((List<int> result) {}, count: 2));
@@ -181,7 +185,7 @@ void main() {
             () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
 
     observableWithError.listen(null,
-        onError: expectAsync2((Exception e, StackTrace s) {
+        onError: expectAsync2((Object e, StackTrace s) {
       expect(e, isException);
     }));
   });
@@ -193,14 +197,14 @@ void main() {
                 new Future<Null>.delayed(const Duration(milliseconds: 220))));
 
     observableWithError.listen(null,
-        onError: expectAsync2((Exception e, StackTrace s) {
+        onError: expectAsync2((Object e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowB', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .bufferFuture(null)
+        .bufferFuture<Null>(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
@@ -208,7 +212,7 @@ void main() {
 
   test('rx.Observable.bufferFuture.error.shouldThrowB.asFuture', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .buffer(onFuture(null))
+        .buffer(onFuture<int, List<int>, Null>(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));

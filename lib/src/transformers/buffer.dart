@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
 
-import 'package:rxdart/src/transformers/do.dart';
-
 /// Creates an Observable where each item is a [List] containing the items
 /// from the source sequence, batched by the [sampler].
 ///
@@ -70,10 +68,14 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
           sync: true,
           onListen: () {
             try {
-              subscription = scheduler(input, (data, sink, [int skip]) {
+              subscription = scheduler(input, (
+                T data,
+                EventSink<List<T>> sink, [
+                int skip,
+              ]) {
                 buffer.add(data);
                 sink.add(buffer);
-              }, (_, sink, [int skip]) {
+              }, (_, EventSink<List<T>> sink, [int skip]) {
                 sink.add(new List<T>.unmodifiable(buffer));
                 buffer = buffer.sublist(buffer.length - (skip ?? 0));
               }).listen(controller.add,

@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/streams/error.dart';
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('ErrorStream', () async {

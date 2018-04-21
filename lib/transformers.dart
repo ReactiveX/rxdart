@@ -1,7 +1,7 @@
 library rx_transformers;
 
-export 'package:rxdart/src/transformers/buffer_with_count.dart';
 export 'package:rxdart/src/transformers/buffer.dart';
+export 'package:rxdart/src/transformers/buffer_with_count.dart';
 export 'package:rxdart/src/transformers/buffer_with_count.dart';
 export 'package:rxdart/src/transformers/debounce.dart';
 export 'package:rxdart/src/transformers/default_if_empty.dart';

@@ -56,7 +56,7 @@ void main() {
     ];
     int count = 0;
 
-    new Observable.fromFuture(
+    new Observable<String>.fromFuture(
             new Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .bufferWhen(new Stream<Null>.periodic(const Duration(milliseconds: 40)))
@@ -77,7 +77,7 @@ void main() {
     ];
     int count = 0;
 
-    new Observable.fromFuture(
+    new Observable<String>.fromFuture(
             new Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .buffer(onStream(
@@ -127,12 +127,13 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.bufferWhen.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(onStream(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
-            .asBroadcastStream()));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    final StreamTransformer<int, List<int>> transformer =
+        new BufferStreamTransformer<int>(onStream(
+            new Stream<Null>.periodic(const Duration(milliseconds: 220))
+                .asBroadcastStream()));
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int countA = 0, countB = 0;
 
@@ -152,8 +153,9 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.bufferWhen.asBroadcastStream', () async {
-    final stream = getStream(4).asBroadcastStream().bufferWhen(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
+    final Stream<List<int>> stream = getStream(4)
+        .asBroadcastStream()
+        .bufferWhen(new Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream());
 
     // listen twice on same stream
@@ -164,8 +166,8 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.bufferWhen.asBroadcastStream.asBuffer', () async {
-    final stream = getStream(4).asBroadcastStream().buffer(onStream(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
+    final Stream<List<int>> stream = getStream(4).asBroadcastStream().buffer(
+        onStream(new Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream()));
 
     // listen twice on same stream
@@ -200,7 +202,7 @@ void main() {
 
   test('rx.Observable.bufferWhen.error.shouldThrowB', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .bufferWhen(null)
+        .bufferWhen<Null>(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
@@ -208,7 +210,7 @@ void main() {
 
   test('rx.Observable.bufferWhen.error.shouldThrowB.asBuffer', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .buffer(onStream(null))
+        .buffer(onStream<int, List<int>, Null>(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));

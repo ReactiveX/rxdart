@@ -23,7 +23,7 @@ void main() {
 
     getStream(4)
         .windowTime(const Duration(milliseconds: 220))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -39,7 +39,7 @@ void main() {
 
     getStream(4)
         .window(onTime(const Duration(milliseconds: 220)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -52,7 +52,7 @@ void main() {
 
     new Observable<int>(controller.stream)
         .windowTime(const Duration(seconds: 3))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput);
@@ -72,7 +72,7 @@ void main() {
 
     new Observable<int>(controller.stream)
         .window(onTime(const Duration(seconds: 3)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput);
@@ -87,24 +87,27 @@ void main() {
   });
 
   test('rx.Observable.windowTime.reusable', () async {
-    final transformer = new WindowStreamTransformer<int>(
-        onTime(const Duration(milliseconds: 220)));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    final StreamTransformer<int, Stream<int>> transformer =
+        new WindowStreamTransformer<int>(
+            onTime(const Duration(milliseconds: 220)));
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int countA = 0, countB = 0;
 
-    Stream<List<int>> streamA =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
+    Stream<List<int>> streamA = getStream(4)
+        .transform(transformer)
+        .asyncMap((Stream<int> s) => s.toList());
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[countA++]);
     }, count: 2));
 
-    Stream<List<int>> streamB =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
+    Stream<List<int>> streamB = getStream(4)
+        .transform(transformer)
+        .asyncMap((Stream<int> s) => s.toList());
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -113,9 +116,9 @@ void main() {
   });
 
   test('rx.Observable.windowTime.asBroadcastStream', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .windowTime(const Duration(milliseconds: 220))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -126,9 +129,9 @@ void main() {
   });
 
   test('rx.Observable.windowTime.asBroadcastStream.asWindow', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .window(onTime(const Duration(milliseconds: 220)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -142,7 +145,7 @@ void main() {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .windowTime(const Duration(milliseconds: 220))
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -154,7 +157,7 @@ void main() {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .window(onTime(const Duration(milliseconds: 220)))
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

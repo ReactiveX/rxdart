@@ -3,7 +3,7 @@ analyzer:
     implicit-casts: false
     implicit-dynamic: false
   exclude:
-    - 'example/flutter/**'
+    - 'example/**'
 linter:
   rules:
     - always_declare_return_types

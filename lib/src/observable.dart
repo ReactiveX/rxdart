@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:rxdart/futures.dart';
+import 'package:rxdart/samplers.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
-import 'package:rxdart/samplers.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.
@@ -1120,8 +1120,8 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.range(1, 4).bufferCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-  Observable<List<T>> bufferCount(int count, [int skip]) =>
-      transform(new BufferStreamTransformer<T>(onCount(count, skip)));
+  Observable<List<T>> bufferCount(int count, [int skip]) => transform(
+      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
 
   /// Deprecated: Please use [bufferCount]
   ///
@@ -1142,8 +1142,8 @@ class Observable<T> extends Stream<T> {
   ///       .bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   @deprecated
-  Observable<List<T>> bufferWithCount(int count, [int skip]) =>
-      transform(new BufferStreamTransformer<T>(onCount(count, skip)));
+  Observable<List<T>> bufferWithCount(int count, [int skip]) => transform(
+      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
@@ -1153,8 +1153,8 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .bufferFuture(() => new Future.delayed(const Duration(milliseconds: 220)))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Observable<List<T>> bufferFuture(Future<dynamic> onFutureHandler()) =>
-      transform(new BufferStreamTransformer<T>(onFuture(onFutureHandler)));
+  Observable<List<T>> bufferFuture<O>(Future<O> onFutureHandler()) => transform(
+      new BufferStreamTransformer<T>(onFuture<T, List<T>, O>(onFutureHandler)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onTestHandler] passes.
@@ -1164,8 +1164,8 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .bufferTest((i) => i % 2 == 0)
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
-  Observable<List<T>> bufferTest(bool onTestHandler(T event)) =>
-      transform(new BufferStreamTransformer<T>(onTest(onTestHandler)));
+  Observable<List<T>> bufferTest(bool onTestHandler(T event)) => transform(
+      new BufferStreamTransformer<T>(onTest<T, List<T>>(onTestHandler)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, sampled on a time frame with [duration].
@@ -1186,7 +1186,7 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .bufferWhen(new Stream.periodic(const Duration(milliseconds: 220), (int i) => i))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Observable<List<T>> bufferWhen(Stream<dynamic> other) =>
+  Observable<List<T>> bufferWhen<O>(Stream<O> other) =>
       transform(new BufferStreamTransformer<T>(onStream(other)));
 
   ///
@@ -2183,7 +2183,7 @@ class Observable<T> extends Stream<T> {
   ///       .doOnData((_) => print('next window'))
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  Observable<Stream<T>> windowFuture(Future<dynamic> onFutureHandler()) =>
+  Observable<Stream<T>> windowFuture<O>(Future<O> onFutureHandler()) =>
       transform(new WindowStreamTransformer<T>(onFuture(onFutureHandler)));
 
   /// Creates an Observable where each item is a [Stream] containing the items
@@ -2222,7 +2222,7 @@ class Observable<T> extends Stream<T> {
   ///       .doOnData((_) => print('next window'))
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  Observable<Stream<T>> windowWhen(Stream<dynamic> other) =>
+  Observable<Stream<T>> windowWhen<O>(Stream<O> other) =>
       transform(new WindowStreamTransformer<T>(onStream(other)));
 
   /// Creates an Observable that emits when the source stream emits, combining

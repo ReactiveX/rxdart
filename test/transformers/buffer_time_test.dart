@@ -83,11 +83,12 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(
-        onTime(const Duration(milliseconds: 220)));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    final StreamTransformer<int, List<int>> transformer =
+        new BufferStreamTransformer<int>(
+            onTime(const Duration(milliseconds: 220)));
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int countA = 0, countB = 0;
 
@@ -107,7 +108,7 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.asBroadcastStream', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .asBroadcastStream()
         .bufferTime(const Duration(milliseconds: 220));
 
@@ -119,7 +120,7 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.asBroadcastStream.asBuffer', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .asBroadcastStream()
         .buffer(onTime(const Duration(milliseconds: 220)));
 

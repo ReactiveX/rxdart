@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/type_token.dart';
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart';
 
 Stream<dynamic> _getStream() {
   StreamController<dynamic> controller = new StreamController<dynamic>();

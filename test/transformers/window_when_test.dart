@@ -24,7 +24,7 @@ void main() {
     getStream(4)
         .windowWhen(
             new Stream<Null>.periodic(const Duration(milliseconds: 220)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -41,7 +41,7 @@ void main() {
     getStream(4)
         .window(onStream(
             new Stream<Null>.periodic(const Duration(milliseconds: 220))))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(expectAsync1((List<int> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -59,12 +59,12 @@ void main() {
     ];
     int count = 0;
 
-    new Observable.fromFuture(
+    new Observable<String>.fromFuture(
             new Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .window(onStream(
             new Stream<Null>.periodic(const Duration(milliseconds: 40))))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<String> s) => s.toList())
         .listen(expectAsync1((List<String> result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -77,7 +77,7 @@ void main() {
 
     new Observable<int>(controller.stream)
         .windowWhen(new Stream<Null>.periodic(const Duration(seconds: 3)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(
             expectAsync1((List<int> result) => expect(result, expectedOutput),
                 count: 1),
@@ -97,7 +97,7 @@ void main() {
 
     new Observable<int>(controller.stream)
         .window(onStream(new Stream<Null>.periodic(const Duration(seconds: 3))))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .listen(
             expectAsync1((List<int> result) => expect(result, expectedOutput),
                 count: 1),
@@ -112,25 +112,28 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.windowWhen.reusable', () async {
-    final transformer = new WindowStreamTransformer<int>(onStream(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
-            .asBroadcastStream()));
-    const expectedOutput = const [
-      const [0, 1],
-      const [2, 3]
+    final StreamTransformer<int, Stream<int>> transformer =
+        new WindowStreamTransformer<int>(onStream(
+            new Stream<Null>.periodic(const Duration(milliseconds: 220))
+                .asBroadcastStream()));
+    const List<List<int>> expectedOutput = const <List<int>>[
+      const <int>[0, 1],
+      const <int>[2, 3]
     ];
     int countA = 0, countB = 0;
 
-    Stream<List<int>> streamA =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
+    Stream<List<int>> streamA = getStream(4)
+        .transform(transformer)
+        .asyncMap((Stream<int> s) => s.toList());
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[countA++]);
     }, count: 2));
 
-    Stream<List<int>> streamB =
-        getStream(4).transform(transformer).asyncMap((s) => s.toList());
+    Stream<List<int>> streamB = getStream(4)
+        .transform(transformer)
+        .asyncMap((Stream<int> s) => s.toList());
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -139,10 +142,10 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.windowWhen.asBroadcastStream', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .windowWhen(
             new Stream<Null>.periodic(const Duration(milliseconds: 220)))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -153,10 +156,10 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.windowWhen.asBroadcastStream.asWindow', () async {
-    final stream = getStream(4)
+    final Stream<List<int>> stream = getStream(4)
         .window(onStream(
             new Stream<Null>.periodic(const Duration(milliseconds: 220))))
-        .asyncMap((s) => s.toList())
+        .asyncMap((Stream<int> s) => s.toList())
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -171,7 +174,7 @@ void main() {
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .windowWhen(
                 new Stream<Null>.periodic(const Duration(milliseconds: 220)))
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -184,7 +187,7 @@ void main() {
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .window(onStream(
                 new Stream<Null>.periodic(const Duration(milliseconds: 220))))
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -194,7 +197,7 @@ void main() {
 
   test('rx.Observable.windowWhen.error.shouldThrowB', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .windowWhen(null)
+        .windowWhen<Null>(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
@@ -202,7 +205,7 @@ void main() {
 
   test('rx.Observable.windowWhen.error.shouldThrowB.asWindow', () {
     new Observable<int>.fromIterable(<int>[1, 2, 3, 4])
-        .window(onStream(null))
+        .window(onStream<int, Stream<int>, Null>(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));

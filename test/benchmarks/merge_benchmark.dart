@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
-
 import 'package:rxdart/rxdart.dart';
 
 import 'benchmark_utils.dart';
