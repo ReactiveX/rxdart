@@ -1,3 +1,8 @@
+## 0.16.7
+
+* Fix new buffer and window implementation for Flutter + Dart 2
+* Subject now implements the Observable interface
+
 ## 0.16.6
 
 * Rework for `buffer` and `window`, allow to schedule using a sampler
