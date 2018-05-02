@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/src/samplers/utils.dart';
-
 import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/sample.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
@@ -20,12 +19,24 @@ typedef Stream<S> SamplerBuilder<T, S>(Stream<T> stream,
 /// If [skip] is provided, each group will start where the previous group
 /// ended minus the [skip] value.
 Stream<S> Function(
-        Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onCount<T, S>(int count, [int skip]) => (Stream<T> stream,
-            OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) =>
-        new _OnCountSampler<T, S>(
-            stream, bufferHandler, scheduleHandler, count, skip);
+  Stream<T> stream,
+  OnDataTransform<T, S>,
+  OnDataTransform<S, S>,
+) onCount<T, S>(int count, [int skip]) {
+  return (
+    Stream<T> stream,
+    OnDataTransform<T, S> bufferHandler,
+    OnDataTransform<S, S> scheduleHandler,
+  ) {
+    return new _OnCountSampler<T, S>(
+      stream,
+      bufferHandler,
+      scheduleHandler,
+      count,
+      skip,
+    );
+  };
+}
 
 /// Higher order function implementation for [_OnStreamSampler]
 /// which matches the method signature of buffer and window.
@@ -33,12 +44,23 @@ Stream<S> Function(
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
 Stream<S> Function(
-        Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onStream<T, S>(Stream<dynamic> onStream) => (Stream<T> stream,
-            OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) =>
-        new _OnStreamSampler<T, S>(
-            stream, bufferHandler, scheduleHandler, onStream);
+  Stream<T> stream,
+  OnDataTransform<T, S>,
+  OnDataTransform<S, S>,
+) onStream<T, S, O>(Stream<O> onStream) {
+  return (
+    Stream<T> stream,
+    OnDataTransform<T, S> bufferHandler,
+    OnDataTransform<S, S> scheduleHandler,
+  ) {
+    return new _OnStreamSampler<T, S, O>(
+      stream,
+      bufferHandler,
+      scheduleHandler,
+      onStream,
+    );
+  };
+}
 
 /// Higher order function implementation for [_OnStreamSampler]
 /// which matches the method signature of buffer and window.
@@ -46,39 +68,59 @@ Stream<S> Function(
 /// Each item is a sequence containing the items
 /// from the source sequence, sampled on a time frame with [duration].
 Stream<S> Function(
-        Stream<T> stream, OnDataTransform<T, S>, OnDataTransform<S, S>)
-    onTime<T, S>(Duration duration) => (Stream<T> stream,
-            OnDataTransform<T, S> bufferHandler,
-            OnDataTransform<S, S> scheduleHandler) {
-          if (duration == null) {
-            throw new ArgumentError('duration cannot be null');
-          }
+  Stream<T> stream,
+  OnDataTransform<T, S>,
+  OnDataTransform<S, S>,
+) onTime<T, S>(Duration duration) {
+  return (
+    Stream<T> stream,
+    OnDataTransform<T, S> bufferHandler,
+    OnDataTransform<S, S> scheduleHandler,
+  ) {
+    if (duration == null) {
+      throw new ArgumentError('duration cannot be null');
+    }
 
-          return new _OnStreamSampler<T, S>(stream, bufferHandler,
-              scheduleHandler, new Stream<Null>.periodic(duration));
-        };
+    return new _OnStreamSampler<T, S, Null>(
+      stream,
+      bufferHandler,
+      scheduleHandler,
+      new Stream<Null>.periodic(duration),
+    );
+  };
+}
 
 /// Higher order function implementation for [_OnStreamSampler]
 /// which matches the method signature of buffer and window.
 ///
 /// Each item is a sequence containing the items
 /// from the source sequence, batched whenever [onFuture] completes.
-Stream<S> Function(Stream<T> stream, OnDataTransform<T, S>,
-    OnDataTransform<S, S>) onFuture<T, S>(
-        Future<dynamic> onFuture()) =>
-    (Stream<T> stream, OnDataTransform<T, S> bufferHandler,
-        OnDataTransform<S, S> scheduleHandler) {
-      if (onFuture == null) {
-        throw new ArgumentError('onFuture cannot be null');
-      }
+Stream<S> Function(
+  Stream<T> stream,
+  OnDataTransform<T, S>,
+  OnDataTransform<S, S>,
+) onFuture<T, S, O>(Future<O> onFuture()) {
+  return (
+    Stream<T> stream,
+    OnDataTransform<T, S> bufferHandler,
+    OnDataTransform<S, S> scheduleHandler,
+  ) {
+    if (onFuture == null) {
+      throw new ArgumentError('onFuture cannot be null');
+    }
 
-      return new _OnStreamSampler<T, S>(
-          stream, bufferHandler, scheduleHandler, _onFutureSampler(onFuture));
-    };
+    return new _OnStreamSampler<T, S, O>(
+      stream,
+      bufferHandler,
+      scheduleHandler,
+      _onFutureSampler(onFuture),
+    );
+  };
+}
 
 /// transforms [onFuture] into a sampler [Stream] by recursively awaiting
 /// the next [Future]
-Stream<dynamic> _onFutureSampler(Future<dynamic> onFuture()) async* {
+Stream<O> _onFutureSampler<O>(Future<O> onFuture()) async* {
   yield await onFuture();
   yield* _onFutureSampler(onFuture);
 }
@@ -98,7 +140,7 @@ Stream<S> Function(
 
 /// A buffer strategy where each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
-class _OnStreamSampler<T, S> extends StreamView<S> {
+class _OnStreamSampler<T, S, O> extends StreamView<S> {
   @override
   _OnStreamSampler._(Stream<S> state) : super(state);
 
@@ -106,43 +148,45 @@ class _OnStreamSampler<T, S> extends StreamView<S> {
       Stream<T> stream,
       OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler,
-      Stream<dynamic> onStream) {
-    final doneController = new StreamController<bool>();
+      Stream<O> onStream) {
+    final StreamController<bool> doneController = new StreamController<bool>();
     if (onStream == null) {
       throw new ArgumentError('onStream cannot be null');
     }
 
-    final Stream<dynamic> ticker = onStream
-        .transform<Null>(new TakeUntilStreamTransformer(doneController.stream));
+    final Stream<dynamic> ticker = onStream.transform<dynamic>(
+        new TakeUntilStreamTransformer<Null, dynamic>(doneController.stream));
 
-    var onDone = () {
+    void onDone() {
       if (doneController.isClosed) return;
 
       doneController.add(true);
       doneController.close();
-    };
+    }
 
-    final scheduler = stream
-        .transform(new DoStreamTransformer(onDone: onDone, onCancel: onDone))
+    final Stream<S> scheduler = stream
+        .transform(new DoStreamTransformer<T>(onDone: onDone, onCancel: onDone))
         .transform(new StreamTransformer<T, S>.fromHandlers(
-            handleData: (data, sink) {
+            handleData: (T data, EventSink<S> sink) {
               bufferHandler(data, sink, 0);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)))
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)))
         .transform(
-            new SampleStreamTransformer(ticker, sampleOnValueOnly: false))
+            new SampleStreamTransformer<S>(ticker, sampleOnValueOnly: false))
         .transform(new StreamTransformer<S, S>.fromHandlers(
-            handleData: (data, sink) {
+            handleData: (S data, EventSink<S> sink) {
               scheduleHandler(data, sink, 0);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)));
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)));
 
-    return new _OnStreamSampler._(scheduler);
+    return new _OnStreamSampler<T, S, O>._(scheduler);
   }
 }
 
 /// A buffer strategy where each item is a sequence containing the items
-/// from the source sequence, in batches of [count].
+/// from the source sequence, in batches of the specified count.
 ///
 /// If [skip] is provided, each group will start where the previous group
 /// ended minus the [skip] value.
@@ -153,7 +197,7 @@ class _OnCountSampler<T, S> extends StreamView<S> {
   factory _OnCountSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, int count,
       [int skip]) {
-    var eventIndex = 0;
+    int eventIndex = 0;
 
     skip ??= 0;
 
@@ -163,21 +207,23 @@ class _OnCountSampler<T, S> extends StreamView<S> {
       throw new ArgumentError('skip cannot be greater than count');
     }
 
-    final scheduler = stream
-        .transform(new StreamTransformer<T, S>.fromHandlers(
-            handleData: (data, sink) {
+    final Stream<S> scheduler = stream
+        .transform<S>(new StreamTransformer<T, S>.fromHandlers(
+            handleData: (T data, EventSink<S> sink) {
               eventIndex++;
               bufferHandler(data, sink, skip);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)))
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)))
         .where((_) => eventIndex % count == 0)
-        .transform(new StreamTransformer<S, S>.fromHandlers(
-            handleData: (data, sink) {
+        .transform<S>(new StreamTransformer<S, S>.fromHandlers(
+            handleData: (S data, EventSink<S> sink) {
               skip ??= 0;
               eventIndex -= skip;
               scheduleHandler(data, sink, skip);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)));
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)));
 
     return new _OnCountSampler<T, S>._(scheduler);
   }
@@ -197,19 +243,21 @@ class _OnTestSampler<T, S> extends StreamView<S> {
       throw new ArgumentError('onTest cannot be null');
     }
 
-    final scheduler = stream
-        .transform(new StreamTransformer<T, S>.fromHandlers(
-            handleData: (data, sink) {
+    final Stream<S> scheduler = stream
+        .transform<S>(new StreamTransformer<T, S>.fromHandlers(
+            handleData: (T data, EventSink<S> sink) {
               testResult = onTest(data);
               bufferHandler(data, sink, 0);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)))
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)))
         .where((_) => testResult)
-        .transform(new StreamTransformer<S, S>.fromHandlers(
-            handleData: (data, sink) {
+        .transform<S>(new StreamTransformer<S, S>.fromHandlers(
+            handleData: (S data, EventSink<S> sink) {
               scheduleHandler(data, sink, 0);
             },
-            handleError: (error, s, sink) => sink.addError(error, s)));
+            handleError: (Object error, StackTrace s, EventSink<S> sink) =>
+                sink.addError(error, s)));
 
     return new _OnTestSampler<T, S>._(scheduler);
   }

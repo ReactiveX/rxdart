@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
-
 import 'package:rxdart/src/transformers/do.dart';
 
 /// Creates an Observable where each item is a [Stream] containing the items
@@ -82,11 +81,11 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
           onListen: () {
             try {
               subscription = scheduler(
-                  input.transform(new DoStreamTransformer(onDone: onDone)),
-                  (data, sink, [int skip]) {
+                  input.transform(new DoStreamTransformer<T>(onDone: onDone)),
+                  (T data, EventSink<Stream<T>> sink, [int skip]) {
                 buffer.add(data);
                 sink.add(new Stream<T>.fromIterable(buffer));
-              }, (_, sink, [int skip]) {
+              }, (_, EventSink<Stream<T>> sink, [int skip]) {
                 sink.add(new Stream<T>.fromIterable(buffer));
                 buffer = buffer.sublist(buffer.length - (skip ?? 0));
               }).listen(controller.add,

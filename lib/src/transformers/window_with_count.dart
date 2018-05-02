@@ -1,10 +1,9 @@
 import 'dart:async';
 
+import 'package:rxdart/src/samplers/buffer_strategy.dart';
 import 'package:rxdart/transformers.dart';
 
-import 'package:rxdart/src/samplers/buffer_strategy.dart';
-
-/// Deprecated: Please use [WindowCountStreamTransformer].
+/// Deprecated: Please use WindowCountStreamTransformer.
 ///
 /// Creates an Observable where each item is a Stream containing the items
 /// from the source sequence, in batches of count.

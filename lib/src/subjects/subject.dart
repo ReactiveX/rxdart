@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/src/observable.dart';
 
 /// The base for all Subjects. If you'd like to create a new Subject,
@@ -140,6 +141,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
 
 class _StreamSinkWrapper<T> implements StreamSink<T> {
   final StreamController<T> _target;
+
   _StreamSinkWrapper(this._target);
 
   @override
@@ -153,11 +155,11 @@ class _StreamSinkWrapper<T> implements StreamSink<T> {
   }
 
   @override
-  Future close() => _target.close();
+  Future<dynamic> close() => _target.close();
 
   @override
-  Future addStream(Stream<T> source) => _target.addStream(source);
+  Future<dynamic> addStream(Stream<T> source) => _target.addStream(source);
 
   @override
-  Future get done => _target.done;
+  Future<dynamic> get done => _target.done;
 }

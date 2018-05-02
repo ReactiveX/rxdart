@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/src/futures/wrapped_future.dart';
 
 /// Converts a Stream into a Future that completes with the largest item emitted

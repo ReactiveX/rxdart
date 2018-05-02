@@ -1,7 +1,8 @@
 import 'dart:async';
+
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/observable.dart';
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 22), (int count) => count).take(7);

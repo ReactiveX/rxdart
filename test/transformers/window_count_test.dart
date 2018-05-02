@@ -11,8 +11,10 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        Observable.range(1, 4).windowCount(2).asyncMap((s) => s.toList());
+    Stream<List<int>> stream = Observable
+        .range(1, 4)
+        .windowCount(2)
+        .asyncMap((Stream<int> s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -29,8 +31,10 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        Observable.range(1, 4).window(onCount(2)).asyncMap((s) => s.toList());
+    Stream<List<int>> stream = Observable
+        .range(1, 4)
+        .window(onCount(2))
+        .asyncMap((Stream<int> s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -49,8 +53,10 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream =
-        Observable.range(1, 4).windowCount(2, 1).asyncMap((s) => s.toList());
+    Stream<List<int>> stream = Observable
+        .range(1, 4)
+        .windowCount(2, 1)
+        .asyncMap((Stream<int> s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -74,7 +80,7 @@ void main() {
     Stream<List<int>> stream = Observable
         .range(1, 4)
         .window(onCount(2, 1))
-        .asyncMap((s) => s.toList());
+        .asyncMap((Stream<int> s) => s.toList());
 
     stream.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -98,7 +104,7 @@ void main() {
     Stream<List<int>> streamA =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
             .transform(transformer)
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<int> s) => s.toList());
 
     streamA.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -110,7 +116,7 @@ void main() {
     Stream<List<int>> streamB =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
             .transform(transformer)
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<int> s) => s.toList());
 
     streamB.listen(expectAsync1((List<int> result) {
       // test to see if the combined output matches
@@ -124,7 +130,7 @@ void main() {
     Stream<List<int>> stream =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
             .windowCount(2)
-            .asyncMap((s) => s.toList())
+            .asyncMap((Stream<int> s) => s.toList())
             .asBroadcastStream();
 
     // listen twice on same stream
@@ -138,7 +144,7 @@ void main() {
     Stream<List<int>> stream =
         new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
             .window(onCount(2))
-            .asyncMap((s) => s.toList())
+            .asyncMap((Stream<int> s) => s.toList())
             .asBroadcastStream();
 
     // listen twice on same stream
@@ -152,7 +158,7 @@ void main() {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .windowCount(2)
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -164,7 +170,7 @@ void main() {
     Stream<List<num>> observableWithError =
         new Observable<num>(new ErrorStream<num>(new Exception()))
             .window(onCount(2))
-            .asyncMap((s) => s.toList());
+            .asyncMap((Stream<num> s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

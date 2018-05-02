@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 Stream<int> _getStream() {
   return new Stream<int>.fromIterable(<int>[1, 2, 3]);

@@ -23,6 +23,7 @@ import 'dart:collection';
 /// `hashCode`, you should generally also to supply the other.
 class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
+
   DistinctUniqueStreamTransformer({bool equals(T e1, T e2), int hashCode(T e)})
       : transformer = _buildTransformer(equals, hashCode);
 

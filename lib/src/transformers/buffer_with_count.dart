@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
-
 import 'package:rxdart/src/transformers/buffer.dart';
 
 /// Deprecated: Use BufferCountStreamTransformer

@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/futures/as_observable_future.dart';
 import 'package:rxdart/src/futures/stream_min_future.dart';
 import 'package:test/test.dart';
-import 'package:rxdart/rxdart.dart';
 
 void main() {
   test('rx.Observable.min', () async {

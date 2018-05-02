@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:test/test.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:test/test.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 20), (int count) => count).take(5);
+
 Stream<int> _getSampleStream() => new Stream<int>.periodic(
     const Duration(milliseconds: 35), (int count) => count).take(10);
 
@@ -25,7 +26,7 @@ void main() {
     final Observable<int> observableB =
         new Observable<int>(_getStream()).transform(transformer);
 
-    await Future.wait<dynamic>([
+    await Future.wait<dynamic>(<Future<dynamic>>[
       expectLater(observableA, emitsInOrder(const <int>[0, 2, 4])),
       expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]))
     ]);
