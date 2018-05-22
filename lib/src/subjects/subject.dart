@@ -14,11 +14,12 @@ import 'package:rxdart/src/observable.dart';
 /// complex example.
 abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   final StreamController<T> controller;
-  
-  bool _isAddingStreamItems = false;
-  Observable<T> _observable;
 
-  Subject(StreamController<T> controller, Observable<T> observable): this._observable= observable, this.controller = controller,super(observable);
+  bool _isAddingStreamItems = false;
+
+  Subject(StreamController<T> controller, Observable<T> observable)
+      : this.controller = controller,
+        super(observable);
 
   @override
   StreamSink<T> get sink => new _StreamSinkWrapper<T>(this);
@@ -32,7 +33,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   }
 
   @override
-  Observable<T> get stream  => _observable;
+  Observable<T> get stream => this;
 
   @override
   ControllerCallback get onPause =>

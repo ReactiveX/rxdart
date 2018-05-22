@@ -11,6 +11,7 @@ export 'package:rxdart/src/streams/never.dart';
 export 'package:rxdart/src/streams/race.dart';
 export 'package:rxdart/src/streams/range.dart';
 export 'package:rxdart/src/streams/retry.dart';
+export 'package:rxdart/src/streams/switch_latest.dart';
 export 'package:rxdart/src/streams/timer.dart';
 export 'package:rxdart/src/streams/tween.dart';
 export 'package:rxdart/src/streams/zip.dart';
