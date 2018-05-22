@@ -72,7 +72,9 @@ import 'transformers/merge_with_test.dart' as merge_with_test;
 import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_resume_next_test.dart'
     as on_error_resume_next_test;
+import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
+import 'transformers/on_error_return_with_test.dart' as on_error_return_with_test;
 import 'transformers/reduce_test.dart' as reduce_test;
 import 'transformers/repeat_test.dart' as repeat_test;
 import 'transformers/sample_test.dart' as sample_test;
@@ -173,7 +175,9 @@ void main() {
   merge_with_test.main();
   of_type_test.main();
   on_error_resume_next_test.main();
+  on_error_resume_test.main();
   on_error_return_test.main();
+  on_error_return_with_test.main();
   reduce_test.main();
   repeat_test.main();
   sample_test.main();
