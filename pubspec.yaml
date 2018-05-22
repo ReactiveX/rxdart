@@ -13,6 +13,7 @@ dev_dependencies:
   benchmark_harness: ">=1.0.0 <2.0.0"
   coverage: ^0.9.2
   stack_trace: "^1.9.2"
+  fake_async: ^1.0.0
 web:
   compiler:
     debug: dartdevc
