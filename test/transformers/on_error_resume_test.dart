@@ -60,18 +60,22 @@ void main() {
   });
 
   test('rx.Observable.onErrorResumeNext.pause.resume', () async {
+    final OnErrorResumeStreamTransformer<num> transformer =
+        new OnErrorResumeStreamTransformer<num>((dynamic e) => _getStream());
+    final List<num> exp = <num>[50] + expected;
     StreamSubscription<num> subscription;
     int count = 0;
 
-    subscription = new Observable<num>(new ErrorStream<num>(new Exception()))
-        .onErrorResumeNext(_getStream())
-        .listen(expectAsync1((num result) {
-          expect(result, expected[count++]);
+    subscription = new Observable<num>.merge(<Stream<num>>[
+      new Observable<num>.just(50),
+      new ErrorStream<num>(new Exception()),
+    ]).transform(transformer).listen(expectAsync1((num result) {
+          expect(result, exp[count++]);
 
-          if (count == expected.length) {
+          if (count == exp.length) {
             subscription.cancel();
           }
-        }, count: expected.length));
+        }, count: exp.length));
 
     subscription.pause();
     subscription.resume();
@@ -90,6 +94,13 @@ void main() {
               // The code should reach this point
               expect(true, true);
             }, count: 1));
+  });
+
+  test('rx.Observable.onErrorResumeNext.noErrors.close', () async {
+    expect(
+      new Observable<num>.empty().onErrorResumeNext(_getStream()),
+      emitsDone,
+    );
   });
 
   test('OnErrorResumeStreamTransformer.reusable', () async {
