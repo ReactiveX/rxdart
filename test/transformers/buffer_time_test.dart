@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
@@ -167,5 +168,16 @@ void main() {
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
+  });
+
+  test('rx.Observable.bufferTime.stopsPeriodicTimer', () {
+    fakeAsync((FakeAsync fakeAsync) {
+      final PublishSubject<int> subject = new PublishSubject<int>();
+      subject.bufferTime(const Duration(milliseconds: 500)).listen((_) {});
+      fakeAsync.elapse(const Duration(seconds: 1));
+      subject.close();
+      fakeAsync.flushTimers(timeout: const Duration(seconds: 1));
+      expect(fakeAsync.periodicTimerCount, isZero);
+    });
   });
 }
