@@ -78,6 +78,24 @@ void main() {
             <Matcher>[emitsError(new isInstanceOf<RetryError>()), emitsDone]));
   });
 
+  test('RetryStream.error.capturesErrors', () async {
+    Stream<int> observableWithError =
+    new RetryStream<int>(_getRetryStream(3), 2);
+
+    await expectLater(
+        observableWithError,
+        emitsInOrder(<Matcher>[
+          emitsError(
+            predicate<RetryError>((RetryError a) {
+              return a.errors.length == 3 &&
+                  a.errors.every((ErrorAndStacktrace es) =>
+                  es.error != null && es.stacktrace != null);
+            }),
+          ),
+          emitsDone,
+        ]));
+  });
+
   test('RetryStream.pause.resume', () async {
     StreamSubscription<int> subscription;
     int retries = 3;
