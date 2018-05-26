@@ -1803,13 +1803,40 @@ class Observable<T> extends Stream<T> {
   /// the source Observable. Instead of passing the error through to any
   /// listeners, it replaces it with another Stream of items.
   ///
+  /// If you need to perform logic based on the type of error that was emitted,
+  /// please consider using [onErrorResume].
+  ///
   /// ### Example
   ///
   ///     new Observable.error(new Exception())
   ///       .onErrorResumeNext(new Observable.fromIterable([1, 2, 3]))
   ///       .listen(print); // prints 1, 2, 3
-  Observable<T> onErrorResumeNext(Stream<T> recoveryStream) =>
-      transform(new OnErrorResumeNextStreamTransformer<T>(recoveryStream));
+  Observable<T> onErrorResumeNext(Stream<T> recoveryStream) => transform(
+      new OnErrorResumeStreamTransformer<T>((dynamic e) => recoveryStream));
+
+  /// Intercepts error events and switches to a recovery stream created by the
+  /// provided [recoveryFn].
+  ///
+  /// The onErrorResume operator intercepts an onError notification from
+  /// the source Observable. Instead of passing the error through to any
+  /// listeners, it replaces it with another Stream of items created by the
+  /// [recoveryFn].
+  ///
+  /// The [recoveryFn] receives the emitted error and returns a Stream. You can
+  /// perform logic in the [recoveryFn] to return different Streams based on the
+  /// type of error that was emitted.
+  ///
+  /// If you do not need to perform logic based on the type of error that was
+  /// emitted, please consider using [onErrorResumeNext] or [onErrorReturn].
+  ///
+  /// ### Example
+  ///
+  ///     new Observable<int>.error(new Exception())
+  ///       .onErrorResume((dynamic e) =>
+  ///           new Observable.just(e is StateError ? 1 : 0)
+  ///       .listen(print); // prints 0
+  Observable<T> onErrorResume(Stream<T> Function(dynamic error) recoveryFn) =>
+      transform(new OnErrorResumeStreamTransformer<T>(recoveryFn));
 
   /// instructs an Observable to emit a particular item when it encounters an
   /// error, and then terminate normally
@@ -1818,14 +1845,40 @@ class Observable<T> extends Stream<T> {
   /// the source Observable. Instead of passing it through to any observers, it
   /// replaces it with a given item, and then terminates normally.
   ///
+  /// If you need to perform logic based on the type of error that was emitted,
+  /// please consider using [onErrorReturnWith].
+  ///
   /// ### Example
   ///
   ///     new Observable.error(new Exception())
   ///       .onErrorReturn(1)
   ///       .listen(print); // prints 1
   Observable<T> onErrorReturn(T returnValue) =>
-      transform(new OnErrorResumeNextStreamTransformer<T>(
-          new Observable<T>.just(returnValue)));
+      transform(new OnErrorResumeStreamTransformer<T>(
+          (dynamic e) => new Observable<T>.just(returnValue)));
+
+  /// instructs an Observable to emit a particular item created by the
+  /// [returnFn] when it encounters an error, and then terminate normally.
+  ///
+  /// The onErrorReturnWith operator intercepts an onError notification from
+  /// the source Observable. Instead of passing it through to any observers, it
+  /// replaces it with a given item, and then terminates normally.
+  ///
+  /// The [returnFn] receives the emitted error and returns a Stream. You can
+  /// perform logic in the [returnFn] to return different Streams based on the
+  /// type of error that was emitted.
+  ///
+  /// If you do not need to perform logic based on the type of error that was
+  /// emitted, please consider using [onErrorReturn].
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.error(new Exception())
+  ///       .onErrorReturnWith((e) => e is Exception ? 1 : 0)
+  ///       .listen(print); // prints 1
+  Observable<T> onErrorReturnWith(T Function(dynamic error) returnFn) =>
+      transform(new OnErrorResumeStreamTransformer<T>(
+          (dynamic e) => new Observable<T>.just(returnFn(e))));
 
   @override
   AsObservableFuture<dynamic> pipe(StreamConsumer<T> streamConsumer) =>

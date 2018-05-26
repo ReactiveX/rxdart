@@ -1,33 +1,36 @@
 import 'dart:async';
 
-/// Deprecated: Please use OnErrorResumeStreamTransformer.
+/// Intercepts error events and switches to a recovery stream created by the
+/// provided recoveryFn function.
 ///
-/// Intercepts error events and switches to the given recovery stream in
-/// that case
-///
-/// The OnErrorResumeNextStreamTransformer intercepts an onError notification from
+/// The OnErrorResumeStreamTransformer intercepts an onError notification from
 /// the source Stream. Instead of passing the error through to any
-/// listeners, it replaces it with another Stream of items.
+/// listeners, it replaces it with another Stream of items created by the
+/// recoveryFn.
+///
+/// The recoveryFn receives the emitted error and returns a Stream. You can
+/// perform logic in the recoveryFn to return different Streams based on the
+/// type of error that was emitted.
 ///
 /// ### Example
 ///
-///     new ErrorStream(new Exception())
-///       .transform(new OnErrorResumeNextStreamTransformer(
-///         new Observable.fromIterable([1, 2, 3])))
-///       .listen(print); // prints 1, 2, 3
-@deprecated
-class OnErrorResumeNextStreamTransformer<T>
-    extends StreamTransformerBase<T, T> {
+///     new Observable<int>.error(new Exception())
+///       .onErrorResume((dynamic e) =>
+///           new Observable.just(e is StateError ? 1 : 0)
+///       .listen(print); // prints 0
+class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  OnErrorResumeNextStreamTransformer(Stream<T> recoveryStream)
-      : transformer = _buildTransformer(recoveryStream);
+  OnErrorResumeStreamTransformer(
+      Stream<T> Function(dynamic error) recoveryFn)
+      : transformer = _buildTransformer(recoveryFn);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      Stream<T> recoveryStream) {
+    Stream<T> Function(dynamic error) recoveryFn,
+  ) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamSubscription<T> inputSubscription;
       StreamSubscription<T> recoverySubscription;
@@ -43,17 +46,23 @@ class OnErrorResumeNextStreamTransformer<T>
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            inputSubscription =
-                input.listen(controller.add, onError: (dynamic e, dynamic s) {
-              shouldCloseController = false;
+            inputSubscription = input.listen(
+              controller.add,
+              onError: (dynamic e, dynamic s) {
+                shouldCloseController = false;
 
-              recoverySubscription = recoveryStream.listen(controller.add,
+                recoverySubscription = recoveryFn(e).listen(
+                  controller.add,
                   onError: controller.addError,
                   onDone: controller.close,
-                  cancelOnError: cancelOnError);
+                  cancelOnError: cancelOnError,
+                );
 
-              inputSubscription.cancel();
-            }, onDone: safeClose, cancelOnError: cancelOnError);
+                inputSubscription.cancel();
+              },
+              onDone: safeClose,
+              cancelOnError: cancelOnError,
+            );
           },
           onPause: ([Future<dynamic> resumeSignal]) {
             inputSubscription?.pause(resumeSignal);
