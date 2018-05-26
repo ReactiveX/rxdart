@@ -22,6 +22,7 @@ import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/stream_test.dart' as stream_test;
+import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -124,6 +125,7 @@ void main() {
   race_test.main();
   retry_test.main();
   stream_test.main();
+  switch_latest_test.main();
   zip_test.main();
 
   // StreamTransformers

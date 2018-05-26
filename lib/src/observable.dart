@@ -73,9 +73,9 @@ import 'package:rxdart/transformers.dart';
 /// please know that `onListen` will only be called the first time the
 /// broadcast stream is listened to.
 class Observable<T> extends Stream<T> {
-  final Stream<T> stream;
+  final Stream<T> _stream;
 
-  Observable(this.stream);
+  Observable(Stream<T> stream) : this._stream = stream;
 
   /// Deprecated: please use [Observable.race].
   ///
@@ -97,7 +97,7 @@ class Observable<T> extends Stream<T> {
 
   @override
   AsObservableFuture<bool> any(bool test(T element)) =>
-      new AsObservableFuture<bool>(stream.any(test));
+      new AsObservableFuture<bool>(_stream.any(test));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -624,6 +624,33 @@ class Observable<T> extends Stream<T> {
     return new Observable<T>(new RetryStream<T>(streamFactory, count));
   }
 
+  /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
+  /// single Observable that emits the items emitted by the
+  /// most-recently-emitted of those Streams.
+  ///
+  /// This Observable will unsubscribe from the previously-emitted Stream when
+  /// a new Stream is emitted from the source Stream and subscribe to the new
+  /// Stream.
+  ///
+  /// ### Example
+  ///
+  /// ```dart
+  /// final switchLatestStream = new SwitchLatestStream<String>(
+  ///   new Stream.fromIterable(<Stream<String>>[
+  ///     new Observable.timer('A', new Duration(seconds: 2)),
+  ///     new Observable.timer('B', new Duration(seconds: 1)),
+  ///     new Observable.just('C'),
+  ///   ]),
+  /// );
+  ///
+  /// // Since the first two Streams do not emit data for 1-2 seconds, and the
+  /// // 3rd Stream will be emitted before that time, only data from the 3rd
+  /// // Stream will be emitted to the listener.
+  /// switchLatestStream.listen(print); // prints 'C'
+  /// ```
+  factory Observable.switchLatest(Stream<Stream<T>> streams) =>
+      new Observable<T>(new SwitchLatestStream<T>(streams));
+
   /// Emits the given value after a specified amount of time.
   ///
   /// ### Example
@@ -1027,7 +1054,7 @@ class Observable<T> extends Stream<T> {
           {void onListen(StreamSubscription<T> subscription),
           void onCancel(StreamSubscription<T> subscription)}) =>
       new Observable<T>(
-          stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+          _stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are
@@ -1049,7 +1076,7 @@ class Observable<T> extends Stream<T> {
   ///       .listen(print); // prints 4, 3, 2, 1
   @override
   Observable<S> asyncExpand<S>(Stream<S> mapper(T value)) =>
-      new Observable<S>(stream.asyncExpand(mapper));
+      new Observable<S>(_stream.asyncExpand(mapper));
 
   /// Creates an Observable with each data event of this stream asynchronously
   /// mapped to a new event.
@@ -1061,7 +1088,7 @@ class Observable<T> extends Stream<T> {
   /// The returned stream is a broadcast stream if this stream is.
   @override
   Observable<S> asyncMap<S>(FutureOr<S> convert(T value)) =>
-      new Observable<S>(stream.asyncMap(convert));
+      new Observable<S>(_stream.asyncMap(convert));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched by the [sampler].
@@ -1197,7 +1224,7 @@ class Observable<T> extends Stream<T> {
   /// each data event emitted by this stream is also an instance of [R].
   ///
   @override
-  Observable<R> cast<R>() => new Observable<R>(stream.cast<R>());
+  Observable<R> cast<R>() => new Observable<R>(_stream.cast<R>());
 
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are
@@ -1218,7 +1245,7 @@ class Observable<T> extends Stream<T> {
   ///         new Observable.timer(i, new Duration(minutes: i))
   ///       .listen(print); // prints 4, 3, 2, 1
   Observable<S> concatMap<S>(Stream<S> mapper(T value)) =>
-      new Observable<S>(stream.asyncExpand(mapper));
+      new Observable<S>(_stream.asyncExpand(mapper));
 
   /// Returns an Observable that emits all items from the current Observable,
   /// then emits all items from the given observable, one after the next.
@@ -1229,11 +1256,11 @@ class Observable<T> extends Stream<T> {
   ///         .concatWith([new Observable.just(2)])
   ///         .listen(print); // prints 1, 2
   Observable<T> concatWith(Iterable<Stream<T>> other) => new Observable<T>(
-      new ConcatStream<T>(<Stream<T>>[stream]..addAll(other)));
+      new ConcatStream<T>(<Stream<T>>[_stream]..addAll(other)));
 
   @override
   AsObservableFuture<bool> contains(Object needle) =>
-      new AsObservableFuture<bool>(stream.contains(needle));
+      new AsObservableFuture<bool>(_stream.contains(needle));
 
   /// Creates an Observable that will only emit items from the source sequence
   /// if a particular time span has passed without the source sequence emitting
@@ -1319,7 +1346,7 @@ class Observable<T> extends Stream<T> {
   /// [Interactive marble diagram](http://rxmarbles.com/#distinctUntilChanged)
   @override
   Observable<T> distinct([bool equals(T previous, T next)]) =>
-      new Observable<T>(stream.distinct(equals));
+      new Observable<T>(_stream.distinct(equals));
 
   /// WARNING: More commonly known as distinct in other Rx implementations.
   /// Creates an Observable where data events are skipped if they have already
@@ -1438,15 +1465,15 @@ class Observable<T> extends Stream<T> {
 
   @override
   AsObservableFuture<S> drain<S>([S futureValue]) =>
-      new AsObservableFuture<S>(stream.drain(futureValue));
+      new AsObservableFuture<S>(_stream.drain(futureValue));
 
   @override
   AsObservableFuture<T> elementAt(int index) =>
-      new AsObservableFuture<T>(stream.elementAt(index));
+      new AsObservableFuture<T>(_stream.elementAt(index));
 
   @override
   AsObservableFuture<bool> every(bool test(T element)) =>
-      new AsObservableFuture<bool>(stream.every(test));
+      new AsObservableFuture<bool>(_stream.every(test));
 
   /// Converts items from the source stream into a new Stream using a given
   /// mapper. It ignores all items from the source stream until the new stream
@@ -1475,15 +1502,15 @@ class Observable<T> extends Stream<T> {
   /// individually call convert and expand the events.
   @override
   Observable<S> expand<S>(Iterable<S> convert(T value)) =>
-      new Observable<S>(stream.expand(convert));
+      new Observable<S>(_stream.expand(convert));
 
   @override
-  AsObservableFuture<T> get first => new AsObservableFuture<T>(stream.first);
+  AsObservableFuture<T> get first => new AsObservableFuture<T>(_stream.first);
 
   @override
   AsObservableFuture<T> firstWhere(bool test(T element),
           {dynamic defaultValue(), T orElse()}) =>
-      new AsObservableFuture<T>(stream.firstWhere(test, orElse: orElse));
+      new AsObservableFuture<T>(_stream.firstWhere(test, orElse: orElse));
 
   /// Converts each emitted item into a new Stream using the given mapper
   /// function. The newly created Stream will be be listened to and begin
@@ -1527,11 +1554,11 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<S> fold<S>(
           S initialValue, S combine(S previous, T element)) =>
-      new AsObservableFuture<S>(stream.fold(initialValue, combine));
+      new AsObservableFuture<S>(_stream.fold(initialValue, combine));
 
   @override
   AsObservableFuture<dynamic> forEach(void action(T element)) =>
-      new AsObservableFuture<dynamic>(stream.forEach(action));
+      new AsObservableFuture<dynamic>(_stream.forEach(action));
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
@@ -1560,7 +1587,7 @@ class Observable<T> extends Stream<T> {
   /// individually perform the test and handle the error.
   @override
   Observable<T> handleError(Function onError, {bool test(dynamic error)}) =>
-      new Observable<T>(stream.handleError(onError, test: test));
+      new Observable<T>(_stream.handleError(onError, test: test));
 
   /// Creates an Observable where all emitted items are ignored, only the
   /// error / completed notifications are passed
@@ -1588,24 +1615,24 @@ class Observable<T> extends Stream<T> {
 
   @override
   bool get isBroadcast {
-    return (stream != null) ? stream.isBroadcast : false;
+    return (_stream != null) ? _stream.isBroadcast : false;
   }
 
   @override
   AsObservableFuture<bool> get isEmpty =>
-      new AsObservableFuture<bool>(stream.isEmpty);
+      new AsObservableFuture<bool>(_stream.isEmpty);
 
   @override
   AsObservableFuture<String> join([String separator = ""]) =>
-      new AsObservableFuture<String>(stream.join(separator));
+      new AsObservableFuture<String>(_stream.join(separator));
 
   @override
-  AsObservableFuture<T> get last => new AsObservableFuture<T>(stream.last);
+  AsObservableFuture<T> get last => new AsObservableFuture<T>(_stream.last);
 
   @override
   AsObservableFuture<T> lastWhere(bool test(T element),
           {Object defaultValue(), T orElse()}) =>
-      new AsObservableFuture<T>(stream.lastWhere(test, orElse: orElse));
+      new AsObservableFuture<T>(_stream.lastWhere(test, orElse: orElse));
 
   /// Adds a subscription to this stream. Returns a [StreamSubscription] which
   /// handles events from the stream using the provided [onData], [onError] and
@@ -1647,13 +1674,13 @@ class Observable<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return stream.listen(onData,
+    return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
   AsObservableFuture<int> get length =>
-      new AsObservableFuture<int>(stream.length);
+      new AsObservableFuture<int>(_stream.length);
 
   /// Maps values from a source sequence through a function and emits the
   /// returned values.
@@ -1663,7 +1690,7 @@ class Observable<T> extends Stream<T> {
   /// error.
   @override
   Observable<S> map<S>(S convert(T event)) =>
-      new Observable<S>(stream.map(convert));
+      new Observable<S>(_stream.map(convert));
 
   /// Converts the onData, on Done, and onError events into [Notification]
   /// objects that are passed into the downstream onData listener.
@@ -1702,7 +1729,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     print(max); // prints "looooooong"
   AsObservableFuture<T> max([Comparator<T> comparator]) =>
-      new AsObservableFuture<T>(new StreamMaxFuture<T>(stream, comparator));
+      new AsObservableFuture<T>(new StreamMaxFuture<T>(_stream, comparator));
 
   /// Combines the items emitted by multiple streams into a single stream of
   /// items. The items are emitted in the order they are emitted by their
@@ -1714,7 +1741,7 @@ class Observable<T> extends Stream<T> {
   ///         .mergeWith([new Observable.just(2)])
   ///         .listen(print); // prints 2, 1
   Observable<T> mergeWith(Iterable<Stream<T>> streams) => new Observable<T>(
-      new MergeStream<T>(<Stream<T>>[stream]..addAll(streams)));
+      new MergeStream<T>(<Stream<T>>[_stream]..addAll(streams)));
 
   /// Converts a Stream into a Future that completes with the smallest item
   /// emitted by the Stream.
@@ -1735,7 +1762,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     print(min); // prints "short"
   AsObservableFuture<T> min([Comparator<T> comparator]) =>
-      new AsObservableFuture<T>(new StreamMinFuture<T>(stream, comparator));
+      new AsObservableFuture<T>(new StreamMinFuture<T>(_stream, comparator));
 
   /// Filters a sequence so that only events of a given type pass
   ///
@@ -1801,11 +1828,11 @@ class Observable<T> extends Stream<T> {
 
   @override
   AsObservableFuture<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
-      new AsObservableFuture<dynamic>(stream.pipe(streamConsumer));
+      new AsObservableFuture<dynamic>(_stream.pipe(streamConsumer));
 
   @override
   AsObservableFuture<T> reduce(T combine(T previous, T element)) =>
-      new AsObservableFuture<T>(stream.reduce(combine));
+      new AsObservableFuture<T>(_stream.reduce(combine));
 
   /// Creates an Observable that repeats the source's elements the specified
   /// number of times.
@@ -1816,14 +1843,14 @@ class Observable<T> extends Stream<T> {
   Observable<T> repeat(int repeatCount) =>
       transform(new RepeatStreamTransformer<T>(repeatCount));
 
-  ///
   /// Adapt this stream to be a `Stream<R>`.
   ///
   /// This stream is wrapped as a `Stream<R>` which checks at run-time that
   /// each data event emitted by this stream is also an instance of [R].
-  ///
   @override
-  Observable<R> retype<R>() => new Observable<R>(stream.retype<R>());
+  @deprecated
+  Observable<R> retype<R>() =>
+      new Observable<R>(_stream.retype<R>()); // ignore: deprecated_member_use
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
@@ -1852,11 +1879,11 @@ class Observable<T> extends Stream<T> {
       transform(new ScanStreamTransformer<T, S>(accumulator, seed));
 
   @override
-  AsObservableFuture<T> get single => new AsObservableFuture<T>(stream.single);
+  AsObservableFuture<T> get single => new AsObservableFuture<T>(_stream.single);
 
   @override
   AsObservableFuture<T> singleWhere(bool test(T element), {T orElse()}) =>
-      new AsObservableFuture<T>(stream.singleWhere(test, orElse: orElse));
+      new AsObservableFuture<T>(_stream.singleWhere(test, orElse: orElse));
 
   /// Skips the first count data events from this stream.
   ///
@@ -1864,7 +1891,7 @@ class Observable<T> extends Stream<T> {
   /// broadcast stream, the events are only counted from the time the returned
   /// stream is listened to.
   @override
-  Observable<T> skip(int count) => new Observable<T>(stream.skip(count));
+  Observable<T> skip(int count) => new Observable<T>(_stream.skip(count));
 
   /// Starts emitting items only after the given stream emits an item.
   ///
@@ -1891,7 +1918,7 @@ class Observable<T> extends Stream<T> {
   /// stream is listened to.
   @override
   Observable<T> skipWhile(bool test(T element)) =>
-      new Observable<T>(stream.skipWhile(test));
+      new Observable<T>(_stream.skipWhile(test));
 
   /// Prepends a value to the source Observable.
   ///
@@ -1974,7 +2001,7 @@ class Observable<T> extends Stream<T> {
   /// broadcast stream, the events are only counted from the time the returned
   /// stream is listened to
   @override
-  Observable<T> take(int count) => new Observable<T>(stream.take(count));
+  Observable<T> take(int count) => new Observable<T>(_stream.take(count));
 
   /// Returns the values from the source observable sequence until the other
   /// observable sequence produces a value.
@@ -2008,7 +2035,7 @@ class Observable<T> extends Stream<T> {
   /// stream is listened to.
   @override
   Observable<T> takeWhile(bool test(T element)) =>
-      new Observable<T>(stream.takeWhile(test));
+      new Observable<T>(_stream.takeWhile(test));
 
   /// Returns an Observable that emits only the first item emitted by the source
   /// Observable during sequential time windows of a specified duration.
@@ -2040,7 +2067,7 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<T> timeout(Duration timeLimit,
           {void onTimeout(EventSink<T> sink)}) =>
-      new Observable<T>(stream.timeout(timeLimit, onTimeout: onTimeout));
+      new Observable<T>(_stream.timeout(timeLimit, onTimeout: onTimeout));
 
   /// Wraps each item emitted by the source Observable in a [Timestamped] object
   /// that includes the emitted item and the time when the item was emitted.
@@ -2060,16 +2087,16 @@ class Observable<T> extends Stream<T> {
 
   @override
   AsObservableFuture<List<T>> toList() =>
-      new AsObservableFuture<List<T>>(stream.toList());
+      new AsObservableFuture<List<T>>(_stream.toList());
 
   @override
   AsObservableFuture<Set<T>> toSet() =>
-      new AsObservableFuture<Set<T>>(stream.toSet());
+      new AsObservableFuture<Set<T>>(_stream.toSet());
 
   /// Filters the elements of an observable sequence based on the test.
   @override
   Observable<T> where(bool test(T event)) =>
-      new Observable<T>(stream.where(test));
+      new Observable<T>(_stream.where(test));
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence, batched by the [sampler].
@@ -2254,7 +2281,7 @@ class Observable<T> extends Stream<T> {
   Observable<R> zipWith<S, R>(Stream<S> other, R zipper(T t, S s)) =>
       new Observable<R>(
           new ZipStream<R, T, S, Null, Null, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[stream, other],
+              <Stream<dynamic>>[_stream, other],
               (
                       [T a,
                       S b,
