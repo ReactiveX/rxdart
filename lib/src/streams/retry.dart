@@ -8,7 +8,8 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// If the retry count is not specified, it retries indefinitely. If the retry
 /// count is met, but the Stream has not terminated successfully, a
-/// `RetryError` will be thrown.
+/// `RetryError` will be thrown. The RetryError will contain all of the Errors
+/// and StackTraces that caused the failure.
 ///
 /// ### Example
 ///
@@ -27,12 +28,17 @@ class RetryStream<T> extends Stream<T> {
   StreamController<T> controller;
   StreamSubscription<T> subscription;
   bool _isUsed = false;
+  List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
   RetryStream(this.streamFactory, [this.count]);
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+  StreamSubscription<T> listen(
+    void onData(T event), {
+    Function onError,
+    void onDone(),
+    bool cancelOnError,
+  }) {
     if (_isUsed) throw new StateError("Stream has already been listened to.");
     _isUsed = true;
 
@@ -44,20 +50,26 @@ class RetryStream<T> extends Stream<T> {
         onResume: () => subscription.resume(),
         onCancel: () => subscription.cancel());
 
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller.stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 
   void retry() {
-    subscription =
-        streamFactory().listen(controller.add, onError: (dynamic e, dynamic s) {
+    subscription = streamFactory().listen(controller.add,
+        onError: (dynamic e, StackTrace s) {
       subscription.cancel();
 
       if (count == retryStep) {
-        controller.addError(new RetryError(count));
+        controller.addError(
+            new RetryError(count, _errors..add(new ErrorAndStacktrace(e, s))));
         controller.close();
       } else {
         retryStep++;
+        _errors.add(new ErrorAndStacktrace(e, s));
         retry();
       }
     }, onDone: controller.close, cancelOnError: false);
@@ -66,10 +78,34 @@ class RetryStream<T> extends Stream<T> {
 
 class RetryError extends Error {
   final String message;
+  final List<ErrorAndStacktrace> errors;
 
-  RetryError(int count)
+  RetryError(int count, this.errors)
       : message = 'Received an error after attempting $count retries';
 
   @override
   String toString() => message;
+}
+
+class ErrorAndStacktrace {
+  final dynamic error;
+  final StackTrace stacktrace;
+
+  ErrorAndStacktrace(this.error, this.stacktrace);
+
+  @override
+  String toString() {
+    return 'ErrorAndStacktrace{error: $error, stacktrace: $stacktrace}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ErrorAndStacktrace &&
+          runtimeType == other.runtimeType &&
+          error == other.error &&
+          stacktrace == other.stacktrace;
+
+  @override
+  int get hashCode => error.hashCode ^ stacktrace.hashCode;
 }
