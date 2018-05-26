@@ -30,6 +30,16 @@ void main() {
         }, count: expected.length));
   });
 
+  test('rx.Observable.onErrorResume.correctError', () async {
+    final Exception exception = new Exception();
+
+    expect(
+      new Observable<dynamic>(new ErrorStream<num>(exception))
+          .onErrorResume((dynamic e) => new Observable<dynamic>.just(e)),
+      emits(exception),
+    );
+  });
+
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
     Stream<num> stream =
         new Observable<num>(new ErrorStream<num>(new Exception()))
