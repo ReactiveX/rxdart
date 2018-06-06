@@ -66,6 +66,12 @@ class RaceStream<T> extends Stream<T> {
                 onError: controller.addError, onDone: () => controller.close());
           }
         },
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+            .where((subscription) => subscription != null)
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () => subscriptions
+            .where((subscription) => subscription != null)
+            .forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(
                 subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();

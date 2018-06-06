@@ -80,6 +80,10 @@ class CombineLatestStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
                 });
           }
         },
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () =>
+            subscriptions.forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions
             .map((StreamSubscription<dynamic> subscription) =>
                 subscription.cancel())
