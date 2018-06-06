@@ -21,8 +21,7 @@ import 'dart:async';
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  OnErrorResumeStreamTransformer(
-      Stream<T> Function(dynamic error) recoveryFn)
+  OnErrorResumeStreamTransformer(Stream<T> Function(dynamic error) recoveryFn)
       : transformer = _buildTransformer(recoveryFn);
 
   @override

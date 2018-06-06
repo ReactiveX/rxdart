@@ -70,11 +70,13 @@ class AmbStream<T> extends Stream<T> {
           }
         },
         onPause: ([Future<dynamic> resumeSignal]) => subscriptions
-            .where((subscription) => subscription != null)
-            .forEach((subscription) => subscription.pause(resumeSignal)),
+            .where((StreamSubscription<T> subscription) => subscription != null)
+            .forEach((StreamSubscription<T> subscription) =>
+                subscription.pause(resumeSignal)),
         onResume: () => subscriptions
-            .where((subscription) => subscription != null)
-            .forEach((subscription) => subscription.resume()),
+            .where((StreamSubscription<T> subscription) => subscription != null)
+            .forEach(
+                (StreamSubscription<T> subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(
                 subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();
