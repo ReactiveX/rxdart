@@ -77,4 +77,22 @@ void main() {
         onError: expectAsync2(
             (Exception e, StackTrace s) => expect(e, isException)));
   });
+
+  test('rx.Observable.amb.pause.resume', () async {
+    final Stream<num> first = getDelayedStream(50, 1);
+    final Stream<num> second = getDelayedStream(60, 2);
+    final Stream<num> last = getDelayedStream(70, 3);
+
+    StreamSubscription<num> subscription;
+    // ignore: deprecated_member_use
+    subscription = new Observable<num>.amb(<Stream<num>>[first, second, last])
+        .listen(expectAsync1((num value) {
+      expect(value, 1);
+
+      subscription.cancel();
+    }, count: 1));
+
+    subscription
+        .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
 }

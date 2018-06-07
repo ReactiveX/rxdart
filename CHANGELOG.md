@@ -1,3 +1,7 @@
+## 0.16.8
+
+* Adds onPause and onResume on `amb`/`race`, `combineLatest`, `concat`, `concat_eager`, `merge`  and `zip`
+
 ## 0.16.7
 
 * Fix new buffer and window implementation for Flutter + Dart 2

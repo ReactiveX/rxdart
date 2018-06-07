@@ -306,14 +306,12 @@ void main() {
         throwsArgumentError);
   });*/
 
-  test('rx.Observable.zip.pause.resume', () async {
+  test('rx.Observable.zip.pause.resume.A', () async {
     StreamSubscription<int> subscription;
-    Stream<int> observableWithError = Observable.zip2(
-        new Observable<int>.just(1),
-        new Observable<int>.just(2),
-        (int a, int b) => a + b);
+    Stream<int> stream = Observable.zip2(new Observable<int>.just(1),
+        new Observable<int>.just(2), (int a, int b) => a + b);
 
-    subscription = observableWithError.listen(expectAsync1((int value) {
+    subscription = stream.listen(expectAsync1((int value) {
       expect(value, 3);
 
       subscription.cancel();
@@ -321,5 +319,32 @@ void main() {
 
     subscription.pause();
     subscription.resume();
+  });
+
+  test('rx.Observable.zip.pause.resume.B', () async {
+    final Stream<num> first = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[1, 2, 3, 4][index]);
+    final Stream<num> second = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[5, 6, 7, 8][index]);
+    final Stream<num> last = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[9, 10, 11, 12][index]);
+
+    StreamSubscription<Iterable<num>> subscription;
+    // ignore: deprecated_member_use
+    subscription = Observable
+        .zip3(first, second, last, (num a, num b, num c) => <num>[a, b, c])
+        .listen(expectAsync1((Iterable<num> value) {
+          expect(value.elementAt(0), 1);
+          expect(value.elementAt(1), 5);
+          expect(value.elementAt(2), 9);
+
+          subscription.cancel();
+        }, count: 1));
+
+    subscription
+        .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));
   });
 }

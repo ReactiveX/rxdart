@@ -326,4 +326,32 @@ void main() {
     expect(() => new CombineLatestStream<num>(<Stream<num>>[], null),
         throwsArgumentError);
   });*/
+
+  test('rx.Observable.combineLatest.pause.resume', () async {
+    final Stream<num> first = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[1, 2, 3, 4][index]);
+    final Stream<num> second = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[5, 6, 7, 8][index]);
+    final Stream<num> last = new Stream<num>.periodic(
+        const Duration(milliseconds: 10),
+        (int index) => const <num>[9, 10, 11, 12][index]);
+
+    StreamSubscription<Iterable<num>> subscription;
+    // ignore: deprecated_member_use
+    subscription = Observable
+        .combineLatest3(
+            first, second, last, (num a, num b, num c) => <num>[a, b, c])
+        .listen(expectAsync1((Iterable<num> value) {
+          expect(value.elementAt(0), 1);
+          expect(value.elementAt(1), 5);
+          expect(value.elementAt(2), 9);
+
+          subscription.cancel();
+        }, count: 1));
+
+    subscription
+        .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
 }

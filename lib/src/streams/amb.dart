@@ -35,8 +35,7 @@ class AmbStream<T> extends Stream<T> {
       throw new ArgumentError('provide at least 1 stream');
     }
 
-    final List<StreamSubscription<T>> subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final List<StreamSubscription<T>> subscriptions = <StreamSubscription<T>>[];
     bool isDisambiguated = false;
 
     StreamController<T> controller;
@@ -47,10 +46,10 @@ class AmbStream<T> extends Stream<T> {
           void doUpdate(int i, T value) {
             try {
               if (!isDisambiguated)
-                for (int k = 0, len = subscriptions.length; k < len; k++) {
+                for (int k = subscriptions.length - 1; k >= 0; k--) {
                   if (k != i) {
                     subscriptions[k].cancel();
-                    subscriptions[k] = null;
+                    subscriptions.removeAt(k);
                   }
                 }
 
@@ -65,10 +64,16 @@ class AmbStream<T> extends Stream<T> {
           for (int i = 0, len = streams.length; i < len; i++) {
             Stream<T> stream = streams.elementAt(i);
 
-            subscriptions[i] = stream.listen((T value) => doUpdate(i, value),
-                onError: controller.addError, onDone: () => controller.close());
+            subscriptions.add(stream.listen((T value) => doUpdate(i, value),
+                onError: controller.addError,
+                onDone: () => controller.close()));
           }
         },
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
+            (StreamSubscription<T> subscription) =>
+                subscription.pause(resumeSignal)),
+        onResume: () => subscriptions.forEach(
+            (StreamSubscription<T> subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(
                 subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();

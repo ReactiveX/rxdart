@@ -64,6 +64,9 @@ class ConcatStream<T> extends Stream<T> {
 
           moveNext();
         },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription?.pause(resumeSignal),
+        onResume: () => subscription?.resume(),
         onCancel: () => subscription.cancel());
 
     return controller;

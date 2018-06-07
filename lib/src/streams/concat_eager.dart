@@ -62,6 +62,11 @@ class ConcatEagerStream<T> extends Stream<T> {
             if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
           }
         },
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
+            (StreamSubscription<T> subscription) =>
+                subscription.pause(resumeSignal)),
+        onResume: () => subscriptions.forEach(
+            (StreamSubscription<T> subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions
             .map((StreamSubscription<T> subscription) => subscription.cancel())
             .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
