@@ -1,6 +1,13 @@
-## 0.16.8
+## 0.17.0
 
-* Adds onPause and onResume on `amb`/`race`, `combineLatest`, `concat`, `concat_eager`, `merge`  and `zip`
+* Breaking Change: `stream` property on Observable is now private.
+  * Avoids API confusion
+  * Simplifies Subject implementation
+  * Require folks who are overriding the `stream` property to use a `super` constructor instead 
+* Adds proper onPause and onResume handling for `amb`/`race`, `combineLatest`, `concat`, `concat_eager`, `merge`  and `zip`
+* Add `switchLatest` operator
+* Add errors and stacktraces to RetryError class
+* Add `onErrorResume` and `onErrorRetryWith` operators. These allow folks to return a specific stream or value depending on the error that occurred. 
 
 ## 0.16.7
 
