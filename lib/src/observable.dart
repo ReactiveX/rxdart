@@ -1530,6 +1530,23 @@ class Observable<T> extends Stream<T> {
   Observable<S> flatMap<S>(Stream<S> mapper(T value)) =>
       transform(new FlatMapStreamTransformer<T, S>(mapper));
 
+  /// Converts each item into a new Stream. The Stream must return an
+  /// Iterable. Then, each item from the Iterable will be emitted one by one.
+  ///
+  /// Use case: you may have an API that returns a list of items, such as
+  /// a Stream<List<String>>. However, you might want to operate on the individual items
+  /// rather than the list itself. This is the job of `flatMapIterable`.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 4)
+  ///       .flatMapIterable((i) =>
+  ///         new Observable.just([i])
+  ///       .listen(print); // prints 1, 2, 3, 4
+  Observable<S> flatMapIterable<S>(Stream<Iterable<S>> mapper(T value)) =>
+      transform(new FlatMapStreamTransformer<T, Iterable<S>>(mapper))
+          .expand((Iterable<S> iterable) => iterable);
+
   /// Deprecated: Please use [switchMap] instead.
   ///
   /// This is the old name of this method This Converts each emitted item into a new Stream using the given mapper
@@ -1896,17 +1913,6 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
   Observable<T> repeat(int repeatCount) =>
       transform(new RepeatStreamTransformer<T>(repeatCount));
-
-  /// Deprecated. Please use [cast] instead.
-  ///
-  /// Adapt this stream to be a `Stream<R>`.
-  ///
-  /// This stream is wrapped as a `Stream<R>` which checks at run-time that
-  /// each data event emitted by this stream is also an instance of [R].
-  @override
-  @deprecated
-  Observable<R> retype<R>() =>
-      new Observable<R>(_stream.retype<R>()); // ignore: deprecated_member_use
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)

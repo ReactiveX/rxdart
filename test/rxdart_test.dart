@@ -56,6 +56,7 @@ import 'transformers/exhaust_map_test.dart' as exhaust_map_test;
 import 'transformers/expand_test.dart' as expand_test;
 import 'transformers/first_test.dart' as first_test;
 import 'transformers/first_where_test.dart' as first_where_test;
+import 'transformers/flat_map_iterable_test.dart' as flat_map_iterable_test;
 import 'transformers/flat_map_latest_test.dart' as flat_map_latest_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
 import 'transformers/fold_test.dart' as fold_test;
@@ -74,7 +75,8 @@ import 'transformers/on_error_resume_next_test.dart'
     as on_error_resume_next_test;
 import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
-import 'transformers/on_error_return_with_test.dart' as on_error_return_with_test;
+import 'transformers/on_error_return_with_test.dart'
+    as on_error_return_with_test;
 import 'transformers/reduce_test.dart' as reduce_test;
 import 'transformers/repeat_test.dart' as repeat_test;
 import 'transformers/sample_test.dart' as sample_test;
@@ -162,6 +164,7 @@ void main() {
   first_where_test.main();
   flat_map_latest_test.main();
   flat_map_test.main();
+  flat_map_iterable_test.main();
   fold_test.main();
   for_each_test.main();
   handle_error_test.main();
