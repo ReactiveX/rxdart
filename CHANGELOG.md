@@ -1,3 +1,8 @@
+## 0.18.0
+
+* Breaking Change: remove `retype` method, deprecated as part of Dart 2.
+* Add `flatMapIterable`
+
 ## 0.17.0
 
 * Breaking Change: `stream` property on Observable is now private.
