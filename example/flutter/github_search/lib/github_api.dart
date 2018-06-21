@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-class GithubApi {
+abstract class GithubApi {
+  Future<SearchResult> search(String term);
+}
+
+class FlutterGithubApi implements GithubApi {
   final String baseUrl;
   final Map<String, SearchResult> cache;
   final HttpClient client;
 
-  GithubApi({
+  FlutterGithubApi({
     HttpClient client,
     Map<String, SearchResult> cache,
     this.baseUrl = "https://api.github.com/search/repositories?q=",

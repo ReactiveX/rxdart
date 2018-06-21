@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:github_search/github_search_api.dart';
+import 'package:github_search/github_api.dart';
 
 class SearchResultWidget extends StatelessWidget {
   final SearchResult result;
