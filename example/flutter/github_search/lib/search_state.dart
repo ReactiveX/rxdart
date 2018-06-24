@@ -27,3 +27,20 @@ class SearchState {
 
   factory SearchState.error() => new SearchState(hasError: true);
 }
+
+class SearchStateReplacement {}
+
+class SearchLoading {}
+
+class SearchError implements SearchStateReplacement {}
+
+class SearchNoTerm implements SearchStateReplacement {}
+
+class SearchPopulated implements SearchStateReplacement {
+  final SearchResult result;
+
+  SearchPopulated(this.result);
+}
+
+class SearchEmpty implements SearchStateReplacement {}
+

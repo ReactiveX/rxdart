@@ -10,6 +10,7 @@ class SearchBloc {
 
   factory SearchBloc(GithubApi api) {
     final onTextChanged = new PublishSubject<String>();
+
     final state = onTextChanged
         // If the text has not changed, do not perform a new search
         .distinct()

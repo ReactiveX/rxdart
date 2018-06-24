@@ -2,20 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-abstract class GithubApi {
-  Future<SearchResult> search(String term);
-}
+import 'package:http/http.dart' as http;
 
-class FlutterGithubApi implements GithubApi {
+class GithubApi {
   final String baseUrl;
   final Map<String, SearchResult> cache;
-  final HttpClient client;
+  final http.Client client;
 
-  FlutterGithubApi({
+  GithubApi({
     HttpClient client,
     Map<String, SearchResult> cache,
     this.baseUrl = "https://api.github.com/search/repositories?q=",
-  })  : this.client = client ?? new HttpClient(),
+  })  : this.client = client ?? new http.Client(),
         this.cache = cache ?? <String, SearchResult>{};
 
   /// Search Github for repositories using the given term
@@ -34,9 +32,8 @@ class FlutterGithubApi implements GithubApi {
   }
 
   Future<SearchResult> _fetchResults(String term) async {
-    final request = await new HttpClient().getUrl(Uri.parse("$baseUrl$term"));
-    final response = await request.close();
-    final results = json.decode(await response.transform(utf8.decoder).join());
+    final response = await client.get(Uri.parse("$baseUrl$term"));
+    final results = json.decode(response.body);
 
     return new SearchResult.fromJson(results['items']);
   }

@@ -18,7 +18,7 @@ class SearchScreen extends StatefulWidget {
   final GithubApi api;
 
   SearchScreen({Key key, GithubApi api})
-      : this.api = api ?? FlutterGithubApi(),
+      : this.api = api ?? GithubApi(),
         super(key: key);
 
   @override
