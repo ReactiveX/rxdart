@@ -9,6 +9,10 @@ profile
 
 DerivedData/
 build/
+Runner/GeneratedPluginRegistrant.h
+GeneratedPluginRegistrant.m
+
+.generated/
 
 *.pbxuser
 *.mode1v3
@@ -30,8 +34,12 @@ Icon?
 .tags*
 
 /Flutter/app.flx
-/Flutter/app.dylib
 /Flutter/app.zip
+/Flutter/flutter_assets/
+/Flutter/App.framework
 /Flutter/Flutter.framework
 /Flutter/Generated.xcconfig
 /ServiceDefinitions.json
+
+Pods/
+.symlinks/

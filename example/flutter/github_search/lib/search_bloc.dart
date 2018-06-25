@@ -33,10 +33,7 @@ class SearchBloc {
     onTextChanged.close();
   }
 
-  static Stream<SearchState> _search(
-    String term,
-    GithubApi api,
-  ) async* {
+  static Stream<SearchState> _search(String term, GithubApi api) async* {
     if (term.isEmpty) {
       yield SearchNoTerm();
     } else {
