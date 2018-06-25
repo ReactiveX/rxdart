@@ -9,7 +9,7 @@ class SearchBloc {
   final Stream<SearchState> state;
 
   factory SearchBloc(GithubApi api) {
-    final onTextChanged = new PublishSubject<String>();
+    final onTextChanged = PublishSubject<String>();
 
     final state = onTextChanged
         // If the text has not changed, do not perform a new search
@@ -22,9 +22,9 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .startWith(new SearchNoTerm());
+        .startWith(SearchNoTerm());
 
-    return new SearchBloc._(onTextChanged, state);
+    return SearchBloc._(onTextChanged, state);
   }
 
   SearchBloc._(this.onTextChanged, this.state);

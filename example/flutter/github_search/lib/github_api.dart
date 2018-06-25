@@ -13,7 +13,7 @@ class GithubApi {
     HttpClient client,
     Map<String, SearchResult> cache,
     this.baseUrl = "https://api.github.com/search/repositories?q=",
-  })  : this.client = client ?? new http.Client(),
+  })  : this.client = client ?? http.Client(),
         this.cache = cache ?? <String, SearchResult>{};
 
   /// Search Github for repositories using the given term
@@ -33,7 +33,7 @@ class GithubApi {
     final response = await client.get(Uri.parse("$baseUrl$term"));
     final results = json.decode(response.body);
 
-    return new SearchResult.fromJson(results['items']);
+    return SearchResult.fromJson(results['items']);
   }
 }
 
@@ -46,10 +46,10 @@ class SearchResult {
     final items = (json as List)
         .cast<Map<String, Object>>()
         .map((Map<String, Object> item) {
-      return new SearchResultItem.fromJson(item);
+      return SearchResultItem.fromJson(item);
     }).toList();
 
-    return new SearchResult(items);
+    return SearchResult(items);
   }
 
   bool get isPopulated => items.isNotEmpty;
@@ -65,7 +65,7 @@ class SearchResultItem {
   SearchResultItem(this.fullName, this.url, this.avatarUrl);
 
   factory SearchResultItem.fromJson(Map<String, Object> json) {
-    return new SearchResultItem(
+    return SearchResultItem(
       json['full_name'] as String,
       json["html_url"] as String,
       (json["owner"] as Map<String, Object>)["avatar_url"] as String,

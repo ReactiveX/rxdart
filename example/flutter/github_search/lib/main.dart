@@ -3,7 +3,7 @@ import 'package:github_search/github_api.dart';
 import 'package:github_search/search_widget.dart';
 
 void main(GithubApi api) {
-  runApp(new SearchApp(api: api));
+  runApp(SearchApp(api: api));
 }
 
 class SearchApp extends StatefulWidget {
@@ -12,20 +12,19 @@ class SearchApp extends StatefulWidget {
   SearchApp({Key key, this.api}) : super(key: key);
 
   @override
-  _RxDartGithubSearchAppState createState() =>
-      new _RxDartGithubSearchAppState();
+  _RxDartGithubSearchAppState createState() => _RxDartGithubSearchAppState();
 }
 
 class _RxDartGithubSearchAppState extends State<SearchApp> {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'RxDart Github Search',
-      theme: new ThemeData(
+      theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
       ),
-      home: new SearchScreen(api: widget.api),
+      home: SearchScreen(api: widget.api),
     );
   }
 }

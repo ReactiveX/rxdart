@@ -7,24 +7,24 @@ class EmptyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
       opacity: visible ? 1.0 : 0.0,
-      child: new Container(
+      child: Container(
         alignment: FractionalOffset.center,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Icon(
+            Icon(
               Icons.warning,
               color: Colors.yellow[200],
               size: 80.0,
             ),
-            new Container(
-              padding: new EdgeInsets.only(top: 16.0),
-              child: new Text(
+            Container(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
                 "No results",
-                style: new TextStyle(color: Colors.yellow[100]),
+                style: TextStyle(color: Colors.yellow[100]),
               ),
             )
           ],

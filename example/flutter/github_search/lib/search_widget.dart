@@ -23,7 +23,7 @@ class SearchScreen extends StatefulWidget {
 
   @override
   SearchScreenState createState() {
-    return new SearchScreenState();
+    return SearchScreenState();
   }
 }
 
@@ -34,7 +34,7 @@ class SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
 
-    bloc = new SearchBloc(widget.api);
+    bloc = SearchBloc(widget.api);
   }
 
   @override
@@ -45,24 +45,24 @@ class SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder<SearchState>(
+    return StreamBuilder<SearchState>(
       stream: bloc.state,
-      initialData: new SearchNoTerm(),
+      initialData: SearchNoTerm(),
       builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
         final state = snapshot.data;
 
-        return new Scaffold(
-          body: new Stack(
+        return Scaffold(
+          body: Stack(
             children: <Widget>[
-              new Flex(direction: Axis.vertical, children: <Widget>[
-                new Container(
-                  padding: new EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
-                  child: new TextField(
-                    decoration: new InputDecoration(
+              Flex(direction: Axis.vertical, children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
+                  child: TextField(
+                    decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Search Github...',
                     ),
-                    style: new TextStyle(
+                    style: TextStyle(
                       fontSize: 36.0,
                       fontFamily: "Hind",
                       decoration: TextDecoration.none,
@@ -70,26 +70,26 @@ class SearchScreenState extends State<SearchScreen> {
                     onChanged: bloc.onTextChanged.add,
                   ),
                 ),
-                new Expanded(
-                  child: new Stack(
+                Expanded(
+                  child: Stack(
                     children: <Widget>[
                       // Fade in an intro screen if no term has been entered
-                      new SearchIntro(visible: state is SearchNoTerm),
+                      SearchIntro(visible: state is SearchNoTerm),
 
                       // Fade in an Empty Result screen if the search contained
                       // no items
-                      new EmptyWidget(visible: state is SearchEmpty),
+                      EmptyWidget(visible: state is SearchEmpty),
 
                       // Fade in a loading screen when results are being fetched
                       // from Github
-                      new LoadingWidget(visible: state is SearchLoading),
+                      LoadingWidget(visible: state is SearchLoading),
 
                       // Fade in an error if something went wrong when fetching
                       // the results
-                      new SearchErrorWidget(visible: state is SearchError),
+                      SearchErrorWidget(visible: state is SearchError),
 
                       // Fade in the Result if available
-                      new SearchResultWidget(
+                      SearchResultWidget(
                         items:
                             state is SearchPopulated ? state.result.items : [],
                       ),

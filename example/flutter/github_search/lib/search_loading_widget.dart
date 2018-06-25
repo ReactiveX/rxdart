@@ -7,12 +7,12 @@ class LoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
       opacity: visible ? 1.0 : 0.0,
-      child: new Container(
+      child: Container(
         alignment: FractionalOffset.center,
-        child: new CircularProgressIndicator(),
+        child: CircularProgressIndicator(),
       ),
     );
   }
