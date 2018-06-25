@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:github_search/github_api.dart';
 
 class SearchResultWidget extends StatelessWidget {
-  final SearchResult result;
+  final List<SearchResultItem> items;
+  final bool visible;
 
-  SearchResultWidget(this.result);
+  SearchResultWidget({Key key, @required this.items, bool visible})
+      : this.visible = visible ?? items.isNotEmpty,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new AnimatedOpacity(
       duration: new Duration(milliseconds: 300),
-      opacity: result != null && result.isPopulated ? 1.0 : 0.0,
+      opacity: visible ? 1.0 : 0.0,
       child: new ListView.builder(
-        itemCount: result?.items?.length ?? 0,
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = result.items[index];
+          final item = items[index];
+
           return new InkWell(
             onTap: () => showItem(context, item),
             child: new Container(

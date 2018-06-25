@@ -10,7 +10,7 @@ class MockGithubApi extends Mock implements GithubApi {}
 
 void main() {
   group('SearchBloc', () {
-    test('starts with an initial state', () {
+    test('starts with an initial no term state', () {
       final api = MockGithubApi();
       final bloc = SearchBloc(api);
 
@@ -24,8 +24,8 @@ void main() {
       final api = MockGithubApi();
       final bloc = SearchBloc(api);
 
-      when(api.search('T')).thenAnswer((_) async => SearchResult(
-          SearchResultKind.populated, [SearchResultItem('A', 'B', 'C')]));
+      when(api.search('T')).thenAnswer(
+          (_) async => SearchResult([SearchResultItem('A', 'B', 'C')]));
 
       scheduleMicrotask(() {
         bloc.onTextChanged.add('T');
@@ -33,7 +33,7 @@ void main() {
 
       expect(
         bloc.state,
-        emitsInOrder([noTerm, loading, results]),
+        emitsInOrder([noTerm, loading, populated]),
       );
     });
 
@@ -41,15 +41,13 @@ void main() {
       final api = MockGithubApi();
       final bloc = SearchBloc(api);
 
-      when(api.search('')).thenAnswer((_) async => SearchResult.noTerm());
-
       scheduleMicrotask(() {
         bloc.onTextChanged.add('');
       });
 
       expect(
         bloc.state,
-        emitsInOrder([noTerm, loading, noTerm]),
+        emitsInOrder([noTerm, noTerm]),
       );
     });
 
@@ -57,8 +55,7 @@ void main() {
       final api = MockGithubApi();
       final bloc = SearchBloc(api);
 
-      when(api.search('T'))
-          .thenAnswer((_) async => SearchResult(SearchResultKind.empty, []));
+      when(api.search('T')).thenAnswer((_) async => SearchResult([]));
 
       scheduleMicrotask(() {
         bloc.onTextChanged.add('T');
@@ -102,14 +99,12 @@ void main() {
   });
 }
 
-final noTerm = predicate<SearchState>((state) => state.result.isNoTerm);
+const noTerm = isInstanceOf<SearchNoTerm>();
 
-final empty = predicate<SearchState>(
-    (state) => state.result != null && state.result.isEmpty);
+const loading = isInstanceOf<SearchLoading>();
 
-final loading = predicate<SearchState>((state) => state.isLoading);
+const empty = isInstanceOf<SearchEmpty>();
 
-final results = predicate<SearchState>(
-    (state) => state.result != null && state.result.isPopulated);
+const populated = isInstanceOf<SearchPopulated>();
 
-final error = predicate<SearchState>((state) => state.hasError);
+const error = isInstanceOf<SearchError>();

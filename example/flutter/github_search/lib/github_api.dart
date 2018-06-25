@@ -18,9 +18,7 @@ class GithubApi {
 
   /// Search Github for repositories using the given term
   Future<SearchResult> search(String term) async {
-    if (term.isEmpty) {
-      return new SearchResult.noTerm();
-    } else if (cache.containsKey(term)) {
+    if (cache.containsKey(term)) {
       return cache[term];
     } else {
       final result = await _fetchResults(term);
@@ -39,16 +37,10 @@ class GithubApi {
   }
 }
 
-enum SearchResultKind { noTerm, empty, populated }
-
 class SearchResult {
-  final SearchResultKind kind;
   final List<SearchResultItem> items;
 
-  SearchResult(this.kind, this.items);
-
-  factory SearchResult.noTerm() =>
-      new SearchResult(SearchResultKind.noTerm, <SearchResultItem>[]);
+  SearchResult(this.items);
 
   factory SearchResult.fromJson(dynamic json) {
     final items = (json as List)
@@ -57,17 +49,12 @@ class SearchResult {
       return new SearchResultItem.fromJson(item);
     }).toList();
 
-    return new SearchResult(
-      items.isEmpty ? SearchResultKind.empty : SearchResultKind.populated,
-      items,
-    );
+    return new SearchResult(items);
   }
 
-  bool get isPopulated => kind == SearchResultKind.populated;
+  bool get isPopulated => items.isNotEmpty;
 
-  bool get isEmpty => kind == SearchResultKind.empty;
-
-  bool get isNoTerm => kind == SearchResultKind.noTerm;
+  bool get isEmpty => items.isEmpty;
 }
 
 class SearchResultItem {

@@ -47,9 +47,9 @@ class SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return new StreamBuilder<SearchState>(
       stream: bloc.state,
-      initialData: new SearchState.initial(),
+      initialData: new SearchNoTerm(),
       builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
-        final model = snapshot.data;
+        final state = snapshot.data;
 
         return new Scaffold(
           body: new Stack(
@@ -74,22 +74,25 @@ class SearchScreenState extends State<SearchScreen> {
                   child: new Stack(
                     children: <Widget>[
                       // Fade in an intro screen if no term has been entered
-                      new SearchIntroWidget(model.result?.isNoTerm ?? false),
+                      new SearchIntro(visible: state is SearchNoTerm),
 
                       // Fade in an Empty Result screen if the search contained
                       // no items
-                      new EmptyResultWidget(model.result?.isEmpty ?? false),
+                      new EmptyWidget(visible: state is SearchEmpty),
 
                       // Fade in a loading screen when results are being fetched
                       // from Github
-                      new SearchLoadingWidget(model.isLoading ?? false),
+                      new LoadingWidget(visible: state is SearchLoading),
 
                       // Fade in an error if something went wrong when fetching
                       // the results
-                      new SearchErrorWidget(model.hasError ?? false),
+                      new SearchErrorWidget(visible: state is SearchError),
 
                       // Fade in the Result if available
-                      new SearchResultWidget(model.result),
+                      new SearchResultWidget(
+                        items:
+                            state is SearchPopulated ? state.result.items : [],
+                      ),
                     ],
                   ),
                 )

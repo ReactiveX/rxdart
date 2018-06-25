@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class EmptyResultWidget extends StatelessWidget {
-  final bool isEmpty;
+class EmptyWidget extends StatelessWidget {
+  final bool visible;
 
-  EmptyResultWidget(this.isEmpty);
+  const EmptyWidget({Key key, this.visible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new AnimatedOpacity(
       duration: new Duration(milliseconds: 300),
-      opacity: isEmpty ? 1.0 : 0.0,
+      opacity: visible ? 1.0 : 0.0,
       child: new Container(
         alignment: FractionalOffset.center,
         child: new Column(

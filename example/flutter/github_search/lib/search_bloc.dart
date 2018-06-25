@@ -22,7 +22,7 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .startWith(new SearchState.initial());
+        .startWith(new SearchNoTerm());
 
     return new SearchBloc._(onTextChanged, state);
   }
@@ -37,15 +37,22 @@ class SearchBloc {
     String term,
     GithubApi api,
   ) async* {
-    yield SearchState.loading();
+    if (term.isEmpty) {
+      yield SearchNoTerm();
+    } else {
+      yield SearchLoading();
 
-    try {
-      yield SearchState(
-        result: await api.search(term),
-        isLoading: false,
-      );
-    } catch (e) {
-      yield SearchState.error();
+      try {
+        final result = await api.search(term);
+
+        if (result.isEmpty) {
+          yield SearchEmpty();
+        } else {
+          yield SearchPopulated(result);
+        }
+      } catch (e) {
+        yield SearchError();
+      }
     }
   }
 }
