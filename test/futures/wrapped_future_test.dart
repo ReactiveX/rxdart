@@ -45,7 +45,7 @@ void main() {
           new AsObservableFuture<int>(
                   new Future<int>.delayed(new Duration(minutes: 1)))
               .timeout(new Duration(milliseconds: 1)),
-          throwsA(new isInstanceOf<TimeoutException>()));
+          throwsA(new TypeMatcher<TimeoutException>()));
     });
 
     test('handles whenComplete callbacks', () async {

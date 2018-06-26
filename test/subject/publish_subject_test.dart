@@ -23,7 +23,9 @@ void main() {
           subject.stream, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
-    test('emits items to every subscriber that subscribe directly to the Subject', () async {
+    test(
+        'emits items to every subscriber that subscribe directly to the Subject',
+        () async {
       // ignore: close_sinks
       final StreamController<int> subject = new PublishSubject<int>();
 
@@ -34,8 +36,7 @@ void main() {
         subject.close();
       });
 
-      await expectLater(
-          subject, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
+      await expectLater(subject, emitsInOrder(<dynamic>[1, 2, 3, emitsDone]));
     });
 
     test('emits done event to listeners when the subject is closed', () async {
@@ -50,7 +51,9 @@ void main() {
       await expectLater(subject.isClosed, isTrue);
     });
 
-    test('emits done event to listeners when the subject is closed (listen directly on Subject)', () async {
+    test(
+        'emits done event to listeners when the subject is closed (listen directly on Subject)',
+        () async {
       final StreamController<int> subject = new PublishSubject<int>();
 
       await expectLater(subject.isClosed, isFalse);
@@ -71,7 +74,8 @@ void main() {
       await expectLater(subject.stream, emitsError(isException));
     });
 
-    test('emits error events to subscribers (listen directly on Subject)', () async {
+    test('emits error events to subscribers (listen directly on Subject)',
+        () async {
       // ignore: close_sinks
       final StreamController<int> subject = new PublishSubject<int>();
 
@@ -240,7 +244,7 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new PublishSubject<int>();
 
-      await expectLater(subject.sink, new isInstanceOf<EventSink<int>>());
+      await expectLater(subject.sink, new TypeMatcher<EventSink<int>>());
     });
 
     test('correctly closes done Future', () async {

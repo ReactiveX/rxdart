@@ -75,7 +75,7 @@ void main() {
     await expectLater(
         observableWithError,
         emitsInOrder(
-            <Matcher>[emitsError(new isInstanceOf<RetryError>()), emitsDone]));
+            <Matcher>[emitsError(new TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryStream.error.capturesErrors', () async {

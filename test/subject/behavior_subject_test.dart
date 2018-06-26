@@ -20,7 +20,9 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
-    test('emits the most recently emitted item to every subscriber that subscribe to the subject directly', () async {
+    test(
+        'emits the most recently emitted item to every subscriber that subscribe to the subject directly',
+        () async {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
@@ -244,7 +246,7 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new BehaviorSubject<int>();
 
-      await expectLater(subject.sink, new isInstanceOf<EventSink<int>>());
+      await expectLater(subject.sink, new TypeMatcher<EventSink<int>>());
     });
 
     test('correctly closes done Future', () async {
