@@ -21,7 +21,7 @@ void main() {
     await expectLater(
         new Observable<String>.fromIterable(<String>["one", "two", "three"])
             .max((String a, String b) => a.length - b.length),
-        new isInstanceOf<AsObservableFuture<String>>());
+        new TypeMatcher<AsObservableFuture<String>>());
   });
 
   group('MaxFuture', () {

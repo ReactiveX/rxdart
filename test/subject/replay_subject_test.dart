@@ -20,7 +20,9 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(<int>[1, 2, 3]));
     });
 
-    test('replays the previously emitted items to every subscriber that directly subscribes to the Subject', () async {
+    test(
+        'replays the previously emitted items to every subscriber that directly subscribes to the Subject',
+        () async {
       // ignore: close_sinks
       final StreamController<int> subject = new ReplaySubject<int>();
 
@@ -43,7 +45,6 @@ void main() {
 
       await expectLater(subject.values, <int>[1, 2, 3]);
     });
-
 
     test('replays the most recently emitted items up to a max size', () async {
       // ignore: close_sinks
@@ -240,7 +241,7 @@ void main() {
       // ignore: close_sinks
       final StreamController<int> subject = new ReplaySubject<int>();
 
-      await expectLater(subject.sink, new isInstanceOf<EventSink<int>>());
+      await expectLater(subject.sink, new TypeMatcher<EventSink<int>>());
     });
 
     test('correctly closes done Future', () async {

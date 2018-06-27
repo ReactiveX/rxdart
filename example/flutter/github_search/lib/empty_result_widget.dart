@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 
-class EmptyResultWidget extends StatelessWidget {
-  final bool isEmpty;
+class EmptyWidget extends StatelessWidget {
+  final bool visible;
 
-  EmptyResultWidget(this.isEmpty);
+  const EmptyWidget({Key key, this.visible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
-      opacity: isEmpty ? 1.0 : 0.0,
-      child: new Container(
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: visible ? 1.0 : 0.0,
+      child: Container(
         alignment: FractionalOffset.center,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Icon(
+            Icon(
               Icons.warning,
               color: Colors.yellow[200],
               size: 80.0,
             ),
-            new Container(
-              padding: new EdgeInsets.only(top: 16.0),
-              child: new Text(
+            Container(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
                 "No results",
-                style: new TextStyle(color: Colors.yellow[100]),
+                style: TextStyle(color: Colors.yellow[100]),
               ),
             )
           ],

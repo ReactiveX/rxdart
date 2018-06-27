@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class SearchLoadingWidget extends StatelessWidget {
-  final bool isLoading;
+class LoadingWidget extends StatelessWidget {
+  final bool visible;
 
-  SearchLoadingWidget(this.isLoading);
+  const LoadingWidget({Key key, this.visible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
-      opacity: isLoading ? 1.0 : 0.0,
-      child: new Container(
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: visible ? 1.0 : 0.0,
+      child: Container(
         alignment: FractionalOffset.center,
-        child: new CircularProgressIndicator(),
+        child: CircularProgressIndicator(),
       ),
     );
   }

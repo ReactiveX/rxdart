@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:github_search/github_search_api.dart';
+import 'package:github_search/github_api.dart';
 
 class SearchResultWidget extends StatelessWidget {
-  final SearchResult result;
+  final List<SearchResultItem> items;
+  final bool visible;
 
-  SearchResultWidget(this.result);
+  SearchResultWidget({Key key, @required this.items, bool visible})
+      : this.visible = visible ?? items.isNotEmpty,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
-      opacity: result != null && result.isPopulated ? 1.0 : 0.0,
-      child: new ListView.builder(
-        itemCount: result?.items?.length ?? 0,
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: visible ? 1.0 : 0.0,
+      child: ListView.builder(
+        itemCount: items.length,
         itemBuilder: (context, index) {
-          final item = result.items[index];
-          return new InkWell(
+          final item = items[index];
+
+          return InkWell(
             onTap: () => showItem(context, item),
-            child: new Container(
+            child: Container(
               alignment: FractionalOffset.center,
-              margin: new EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
-              child: new Row(
+              margin: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  new Container(
-                    margin: new EdgeInsets.only(right: 16.0),
-                    child: new Hero(
+                  Container(
+                    margin: EdgeInsets.only(right: 16.0),
+                    child: Hero(
                       tag: item.fullName,
-                      child: new ClipOval(
-                        child: new Image.network(
+                      child: ClipOval(
+                        child: Image.network(
                           item.avatarUrl,
                           width: 56.0,
                           height: 56.0,
@@ -36,30 +40,30 @@ class SearchResultWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  new Expanded(
-                    child: new Column(
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        new Container(
-                          margin: new EdgeInsets.only(
+                        Container(
+                          margin: EdgeInsets.only(
                             top: 6.0,
                             bottom: 4.0,
                           ),
-                          child: new Text(
+                          child: Text(
                             "${item.fullName}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: new TextStyle(
+                            style: TextStyle(
                               fontFamily: "Montserrat",
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        new Container(
-                          child: new Text(
+                        Container(
+                          child: Text(
                             "${item.url}",
-                            style: new TextStyle(
+                            style: TextStyle(
                               fontFamily: "Hind",
                             ),
                             maxLines: 1,
@@ -81,17 +85,17 @@ class SearchResultWidget extends StatelessWidget {
   void showItem(BuildContext context, SearchResultItem item) {
     Navigator.push(
       context,
-      new MaterialPageRoute<Null>(
+      MaterialPageRoute<Null>(
         builder: (BuildContext context) {
-          return new Scaffold(
+          return Scaffold(
             resizeToAvoidBottomPadding: false,
-            body: new GestureDetector(
-              key: new Key(item.avatarUrl),
+            body: GestureDetector(
+              key: Key(item.avatarUrl),
               onTap: () => Navigator.pop(context),
-              child: new SizedBox.expand(
-                child: new Hero(
+              child: SizedBox.expand(
+                child: Hero(
                   tag: item.fullName,
-                  child: new Image.network(
+                  child: Image.network(
                     item.avatarUrl,
                     width: MediaQuery.of(context).size.width,
                     height: 300.0,

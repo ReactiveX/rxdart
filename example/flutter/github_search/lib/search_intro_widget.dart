@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 
-class SearchIntroWidget extends StatelessWidget {
-  final bool isVisible;
+class SearchIntro extends StatelessWidget {
+  final bool visible;
 
-  SearchIntroWidget(this.isVisible);
+  const SearchIntro({Key key, this.visible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedOpacity(
-      duration: new Duration(milliseconds: 300),
-      opacity: isVisible ? 1.0 : 0.0,
-      child: new Container(
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: visible ? 1.0 : 0.0,
+      child: Container(
         alignment: FractionalOffset.center,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            new Icon(Icons.info, color: Colors.green[200], size: 80.0),
-            new Container(
-              padding: new EdgeInsets.only(top: 16.0),
-              child: new Text(
+            Icon(Icons.info, color: Colors.green[200], size: 80.0),
+            Container(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
                 "Enter a search term to begin",
-                style: new TextStyle(
+                style: TextStyle(
                   color: Colors.green[100],
                 ),
               ),
