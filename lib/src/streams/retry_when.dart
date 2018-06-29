@@ -16,51 +16,51 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Example
 ///
-///  #1#
-///  new RetryWhenStream<int>(
-///    () => new Stream<int>.fromIterable(<int>[1]),
-///    (dynamic error, StackTrace s) => throw error,
-///  ).listen(print); // Prints 1
+/// ### Basic Example
+/// new RetryWhenStream<int>(
+///   () => new Stream<int>.fromIterable(<int>[1]),
+///   (dynamic error, StackTrace s) => throw error,
+/// ).listen(print); // Prints 1
 ///
 ///
-///  #2#
-///  new RetryWhenStream<int>(
-///    () => new Observable<int>
-///        .periodic(const Duration(seconds: 1), (int i) => i)
-///        .map((int i) => i == 2 ? throw 'exception' : i),
-///    (dynamic e, StackTrace s) {
-///      return new Observable<String>
-///          .timer('random value', const Duration(milliseconds: 200));
-///    },
-///  ).take(4).listen(print); // Prints 0, 1, 0, 1
+/// ### Periodic Example
+/// new RetryWhenStream<int>(
+///   () => new Observable<int>
+///       .periodic(const Duration(seconds: 1), (int i) => i)
+///       .map((int i) => i == 2 ? throw 'exception' : i),
+///   (dynamic e, StackTrace s) {
+///     return new Observable<String>
+///         .timer('random value', const Duration(milliseconds: 200));
+///   },
+/// ).take(4).listen(print); // Prints 0, 1, 0, 1
 ///
 ///
-///  #3#
-///  bool errorHappened = false;
-///  new RetryWhenStream(
-///    () => new Observable
-///        .periodic(const Duration(seconds: 1), (i) => i)
-///        .map((i) {
-///          if (i == 3 && !errorHappened) {
-///            throw 'We can take this. Please restart.';
-///          } else if (i == 4) {
-///            throw 'It\'s enough.';
-///          } else {
-///            return i;
-///          }
-///        }),
-///    (e, s) {
-///      errorHappened = true;
-///      if (e == 'We can take this. Please restart.') {
-///        return new Observable.just('Ok. Here you go!');
-///      } else {
-///        return new Observable.error(e);
-///      }
-///    },
-///  ).listen(
-///    print,
-///    onError: (e, s) => print(e),
-///  );
+/// ### Complex Example
+/// bool errorHappened = false;
+/// new RetryWhenStream(
+///   () => new Observable
+///       .periodic(const Duration(seconds: 1), (i) => i)
+///       .map((i) {
+///         if (i == 3 && !errorHappened) {
+///           throw 'We can take this. Please restart.';
+///         } else if (i == 4) {
+///           throw 'It\'s enough.';
+///         } else {
+///           return i;
+///         }
+///       }),
+///   (e, s) {
+///     errorHappened = true;
+///     if (e == 'We can take this. Please restart.') {
+///       return new Observable.just('Ok. Here you go!');
+///     } else {
+///       return new Observable.error(e);
+///     }
+///   },
+/// ).listen(
+///   print,
+///   onError: (e, s) => print(e),
+/// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
 class RetryWhenStream<T> extends Stream<T> {
   final StreamFactory<T> streamFactory;
   final RetryWhenStreamFactory retryWhenFactory;
