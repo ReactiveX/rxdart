@@ -14,16 +14,16 @@ import 'package:rxdart/src/streams/utils.dart';
 /// thrown. The RetryError will contain all of the [Error]s and
 /// [StackTrace]s that caused the failure.
 ///
-/// ### Example
-///
 /// ### Basic Example
+/// ```dart
 /// new RetryWhenStream<int>(
 ///   () => new Stream<int>.fromIterable(<int>[1]),
 ///   (dynamic error, StackTrace s) => throw error,
 /// ).listen(print); // Prints 1
-///
+/// ```
 ///
 /// ### Periodic Example
+/// ```dart
 /// new RetryWhenStream<int>(
 ///   () => new Observable<int>
 ///       .periodic(const Duration(seconds: 1), (int i) => i)
@@ -33,9 +33,10 @@ import 'package:rxdart/src/streams/utils.dart';
 ///         .timer('random value', const Duration(milliseconds: 200));
 ///   },
 /// ).take(4).listen(print); // Prints 0, 1, 0, 1
-///
+/// ```
 ///
 /// ### Complex Example
+/// ```dart
 /// bool errorHappened = false;
 /// new RetryWhenStream(
 ///   () => new Observable
@@ -61,6 +62,7 @@ import 'package:rxdart/src/streams/utils.dart';
 ///   print,
 ///   onError: (e, s) => print(e),
 /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
+/// ```
 class RetryWhenStream<T> extends Stream<T> {
   final StreamFactory<T> streamFactory;
   final RetryWhenStreamFactory retryWhenFactory;
