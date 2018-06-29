@@ -21,6 +21,7 @@ import 'streams/periodic_test.dart' as periodic_test;
 import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
 import 'streams/retry_test.dart' as retry_test;
+import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
@@ -128,6 +129,7 @@ void main() {
   range_test.main();
   race_test.main();
   retry_test.main();
+  retry_when_test.main();
   stream_test.main();
   switch_latest_test.main();
   zip_test.main();
