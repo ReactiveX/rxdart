@@ -1,3 +1,7 @@
+## 0.18.1
+
+* Add `retryWhen` operator. Thanks to Razvan Lung (@long1eu)! This can be used for custom retry logic.
+
 ## 0.18.0
 
 * Breaking Change: remove `retype` method, deprecated as part of Dart 2.

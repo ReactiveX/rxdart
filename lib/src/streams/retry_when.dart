@@ -1,7 +1,3 @@
-// File created by
-// Lung Razvan <long1eu> 
-// on 29/06/2018
-
 import 'dart:async';
 
 import 'package:rxdart/src/streams/utils.dart';
@@ -75,18 +71,19 @@ class RetryWhenStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-      void onData(T event), {
-        Function onError,
-        void onDone(),
-        bool cancelOnError,
-      }) {
+    void onData(T event), {
+    Function onError,
+    void onDone(),
+    bool cancelOnError,
+  }) {
     if (_isUsed) throw new StateError('Stream has already been listened to.');
     _isUsed = true;
 
     controller = new StreamController<T>(
       sync: true,
       onListen: retry,
-      onPause: ([Future<dynamic> resumeSignal]) => subscription.pause(resumeSignal),
+      onPause: ([Future<dynamic> resumeSignal]) =>
+          subscription.pause(resumeSignal),
       onResume: () => subscription.resume(),
       onCancel: () => subscription.cancel(),
     );
@@ -107,7 +104,7 @@ class RetryWhenStream<T> extends Stream<T> {
 
         StreamSubscription<void> sub;
         sub = retryWhenFactory(e, s).listen(
-              (dynamic event) {
+          (dynamic event) {
             sub.cancel();
             _errors.add(new ErrorAndStacktrace(e, s));
             retry();

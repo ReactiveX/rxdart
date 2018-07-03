@@ -82,6 +82,7 @@ var myObservable = new Observable(myStream);
 - [periodic](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.periodic.html)
 - [race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.race.html) / [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RaceStream-class.html)
 - [retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html) / [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html)
+- [retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retryWhen.html) / [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html)
 - [switchLatest](https://wwwSwitchLatestStreamdartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html) / [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html)
 - [timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html) / [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html)
 

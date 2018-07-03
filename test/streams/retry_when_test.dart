@@ -12,28 +12,28 @@ void main() {
     );
   });
 
-  test('RetryStream', () {
+  test('RetryWhenStream', () {
     expect(
       new RetryWhenStream<int>(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
-  test('RetryStream.onDone', () {
+  test('RetryWhenStream.onDone', () {
     expect(
       new RetryWhenStream<int>(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
-  test('RetryStream.infinite.retries', () {
+  test('RetryWhenStream.infinite.retries', () {
     expect(
       new RetryWhenStream<int>(_sourceStream(1000, 2), _neverThrow).take(6),
       emitsInOrder(<dynamic>[0, 1, 0, 1, 0, 1, emitsDone]),
     );
   });
 
-  test('RetryStream.emits.original.items', () {
+  test('RetryWhenStream.emits.original.items', () {
     final int retries = 3;
 
     expect(
@@ -43,7 +43,7 @@ void main() {
     );
   });
 
-  test('RetryStream.single.subscription', () {
+  test('RetryWhenStream.single.subscription', () {
     Stream<int> stream =
         new RetryWhenStream<int>(_sourceStream(3), _neverThrow);
     try {
@@ -54,7 +54,7 @@ void main() {
     }
   });
 
-  test('RetryStream.asBroadcastStream', () {
+  test('RetryWhenStream.asBroadcastStream', () {
     Stream<int> stream = new RetryWhenStream<int>(_sourceStream(3), _neverThrow)
         .asBroadcastStream();
 
@@ -65,7 +65,7 @@ void main() {
     expect(stream.isBroadcast, isTrue);
   });
 
-  test('RetryStream.error.shouldThrow', () {
+  test('RetryWhenStream.error.shouldThrow', () {
     Stream<int> observableWithError =
         new RetryWhenStream<int>(_sourceStream(3, 0), _alwaysThrow);
 
@@ -75,7 +75,7 @@ void main() {
             <dynamic>[emitsError(new TypeMatcher<RetryError>()), emitsDone]));
   });
 
-  test('RetryStream.error.capturesErrors', () async {
+  test('RetryWhenStream.error.capturesErrors', () async {
     Stream<int> observableWithError =
         new RetryWhenStream<int>(_sourceStream(3, 0), _alwaysThrow);
 
@@ -93,7 +93,7 @@ void main() {
         ]));
   });
 
-  test('RetryStream.pause.resume', () async {
+  test('RetryWhenStream.pause.resume', () async {
     StreamSubscription<int> subscription;
 
     subscription = new RetryWhenStream<int>(_sourceStream(3), _neverThrow)
