@@ -180,8 +180,8 @@ In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
   2. Run `pub get`
-  3. Run `pub serve example/web`
-  4. Navigate to [http://localhost:8080](http://localhost:8080) in your browser
+  3. Run `pub run build_runner serve example`
+  4. Navigate to [http://localhost:8080/web/](http://localhost:8080/web/) in your browser
 
 ### Command Line Examples
 
@@ -189,7 +189,7 @@ In order to run the command line example, please follow these steps:
 
   1. Clone this repo and enter the directory
   2. Run `pub get`
-  3. Run `dart example/bin/fibonacci.dart 10`
+  3. Run `dart example/example.dart 10`
   
 ### Flutter Example
   
