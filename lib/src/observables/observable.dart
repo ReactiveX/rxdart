@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/futures.dart';
 import 'package:rxdart/samplers.dart';
+import 'package:rxdart/src/observables/replay_observable.dart';
+import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -684,7 +686,8 @@ class Observable<T> extends Stream<T> {
   /// ```
   factory Observable.retryWhen(Stream<T> streamFactory(),
       Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) {
-    return new Observable<T>(new RetryWhenStream<T>(streamFactory, retryWhenFactory));
+    return new Observable<T>(
+        new RetryWhenStream<T>(streamFactory, retryWhenFactory));
   }
 
   /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
@@ -1118,6 +1121,12 @@ class Observable<T> extends Stream<T> {
           void onCancel(StreamSubscription<T> subscription)}) =>
       new Observable<T>(
           _stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
+
+  ValueObservable<T> asValueObservable({T seedValue}) =>
+      new ValueObservable<T>.fromStream(this, seedValue: seedValue);
+
+  ReplayObservable<T> asReplayObservable({int maxSize}) =>
+      new ReplayObservable<T>.fromStream(this, maxSize: maxSize);
 
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are

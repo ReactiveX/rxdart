@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// Exactly like a normal broadcast StreamController with one exception:
