@@ -514,13 +514,22 @@ class Observable<T> extends Stream<T> {
 
   /// Creates an Observable that contains a single value
   ///
-  /// The value is emitted when the stream receives a listener.
+  /// The value is emitted when the stream receives a listener,
+  /// and done is called upon listening.
   ///
   /// ### Example
   ///
   ///      new Observable.just(1).listen(print); // prints 1
-  factory Observable.just(T data) =>
-      new Observable<T>((new Stream<T>.fromIterable(<T>[data])));
+  factory Observable.just(T data) {
+    Completer<T> completer = new Completer<T>();
+
+    //creating a timer with zero delay for a call complete in next microtask
+    new Timer(Duration(), () {
+      completer.complete(data);
+    });
+
+    return new Observable<T>.fromFuture(completer.future);
+  }
 
   /// Creates an Observable that contains no values.
   ///
