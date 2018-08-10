@@ -13,4 +13,20 @@ void main() {
       expect(actual, value);
     }, count: 1));
   });
+
+  test('rx.Observable.just.doOnDone', () async {
+    bool onDoneCalled = false;
+
+    Stream<int> observable = new Observable<int>.just(1).doOnDone(() {
+      onDoneCalled = true;
+    });
+
+    observable.listen((_) {
+      //nothing
+    });
+
+    await new Future<int>.delayed(new Duration(milliseconds: 10));
+
+    await expectLater(onDoneCalled, isTrue);
+  });
 }
