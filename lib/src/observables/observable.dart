@@ -1123,10 +1123,10 @@ class Observable<T> extends Stream<T> {
           _stream.asBroadcastStream(onListen: onListen, onCancel: onCancel));
 
   ValueObservable<T> asValueObservable({T seedValue}) =>
-      new ValueObservable<T>.fromStream(this, seedValue: seedValue);
+      new SubjectValueObservable<T>(this, seedValue: seedValue);
 
   ReplayObservable<T> asReplayObservable({int maxSize}) =>
-      new ReplayObservable<T>.fromStream(this, maxSize: maxSize);
+      new StreamReplayObservable<T>(this, maxSize: maxSize);
 
   /// Maps each emitted item to a new [Stream] using the given mapper, then
   /// subscribes to each new stream one after the next until all values are

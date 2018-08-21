@@ -5,9 +5,6 @@ import 'package:rxdart/src/subjects/replay_subject.dart';
 
 abstract class ReplayObservable<T> implements Observable<T> {
   List<T> get values;
-
-  factory ReplayObservable.fromStream(Stream<T> stream, {int maxSize}) =>
-      StreamReplayObservable<T>(stream, maxSize: maxSize);
 }
 
 class StreamReplayObservable<T> extends Observable<T>

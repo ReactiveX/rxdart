@@ -5,9 +5,6 @@ import 'package:rxdart/src/subjects/behavior_subject.dart';
 
 abstract class ValueObservable<T> implements Observable<T> {
   T get value;
-
-  factory ValueObservable.fromStream(Stream<T> stream, {T seedValue}) =>
-      SubjectValueObservable<T>(stream, seedValue: seedValue);
 }
 
 class SubjectValueObservable<T> extends Observable<T>

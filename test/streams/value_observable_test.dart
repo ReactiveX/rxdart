@@ -6,8 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('ValueObservable', () {
     test('should wrap a stream', () {
-      final ValueObservable<int> observable =
-          new ValueObservable<int>.fromStream(
+      final ValueObservable<int> observable = new SubjectValueObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       );
 
@@ -15,8 +14,7 @@ void main() {
     });
 
     test('should provide sync access to the latest value', () async {
-      final ValueObservable<int> observable =
-          new ValueObservable<int>.fromStream(
+      final ValueObservable<int> observable = new SubjectValueObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       );
 
@@ -25,8 +23,7 @@ void main() {
     });
 
     test('can provide an initial value', () async {
-      final ValueObservable<int> observable =
-          new ValueObservable<int>.fromStream(
+      final ValueObservable<int> observable = new SubjectValueObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
         seedValue: 0,
       );
@@ -36,22 +33,13 @@ void main() {
     });
 
     test('can be listened to multiple times', () async {
-      final ValueObservable<int> observable =
-          new ValueObservable<int>.fromStream(
+      final ValueObservable<int> observable = new SubjectValueObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       );
 
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
-    });
-
-    test('BehaviorSubject buffers events', () {
-      final controller = new StreamController<int>();
-
-      controller.add(1);
-
-      expect(controller.stream, emits(1));
     });
 
     test('can transform into a ValueObservable', () async {
