@@ -1,13 +1,31 @@
 import 'dart:async';
 
+import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+class MockStream<T> extends Mock implements Stream<T> {}
+
 void main() {
   group('BehaviorConnectableObservable', () {
+    test('should not emit before connecting', () {
+      final Stream<int> stream = MockStream<int>();
+      final BehaviorConnectableObservable<int> observable =
+          BehaviorConnectableObservable<int>(stream);
+
+      when(stream.listen(any, onError: anyNamed('onError'))).thenReturn(
+          new Stream<int>.fromIterable(<int>[1, 2, 3]).listen(null));
+
+      verifyNever(stream.listen(any, onError: anyNamed('onError')));
+
+      observable.connect();
+
+      verify(stream.listen(any, onError: anyNamed('onError')));
+    });
+
     test('should begin emitting items after connection', () {
       int count = 0;
-      final List<int> items = [1, 2, 3];
+      final List<int> items = <int>[1, 2, 3];
       final BehaviorConnectableObservable<int> observable =
           BehaviorConnectableObservable<int>(Stream<int>.fromIterable(items));
 
@@ -36,17 +54,6 @@ void main() {
       observable.listen(null)..cancel();
 
       expect(observable, neverEmits(anything));
-    });
-
-    test('single subscription error', () async {
-      final ConnectableObservable<int> observable =
-          BehaviorConnectableObservable<int>(
-              Stream<int>.fromIterable(<int>[1, 2, 3]));
-
-      observable.connect();
-      observable.listen(null)..cancel();
-
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
     });
 
     test('keeps emitting with an active subscription', () async {
