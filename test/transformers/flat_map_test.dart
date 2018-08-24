@@ -108,4 +108,13 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('rx.Observable.flatMap.chains', () {
+    expect(
+      Observable<int>.just(1)
+          .flatMap((int _) => Observable<int>.just(2))
+          .flatMap((int _) => Observable<int>.just(3)),
+      emitsInOrder(<dynamic>[3, emitsDone]),
+    );
+  });
 }
