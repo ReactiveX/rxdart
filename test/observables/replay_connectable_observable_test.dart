@@ -6,13 +6,16 @@ import 'package:test/test.dart';
 void main() {
   group('ReplayConnectableObservable', () {
     test('should begin emitting items after connection', () {
+      final List<int> items = [1, 2, 3];
       final ReplayConnectableObservable<int> observable =
-          ReplayConnectableObservable<int>(
-              Stream<int>.fromIterable(<int>[1, 2, 3]));
+          ReplayConnectableObservable<int>(Stream<int>.fromIterable(items));
 
       observable.connect();
 
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+      expect(observable, emitsInOrder(items));
+      observable.listen(expectAsync1((int i) {
+        expect(observable.values, items.sublist(0, i));
+      }, count: items.length));
     });
 
     test('stops emitting after the connection is cancelled', () async {
@@ -113,6 +116,17 @@ void main() {
           expect(observable.values, <int>[2, 3]);
         }
       }, count: items.length));
+    });
+
+    test('provide a function to autoconnect that stops listening', () async {
+      final Observable<int> observable =
+          Observable<int>.fromIterable(<int>[1, 2, 3])
+              .publishReplay()
+              .autoConnect(
+                  connection: (StreamSubscription<int> subscription) =>
+                      subscription.cancel());
+
+      expect(observable, neverEmits(anything));
     });
   });
 }

@@ -44,5 +44,23 @@ void main() {
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
     });
+
+    test('refcount automatically connects', () async {
+      final Observable<int> observable =
+          Observable<int>.fromIterable(<int>[1, 2, 3]).share();
+
+      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+    });
+
+    test('provide a function to autoconnect that stops listening', () async {
+      final Observable<int> observable =
+          Observable<int>.fromIterable(<int>[1, 2, 3]).publish().autoConnect(
+              connection: (StreamSubscription<int> subscription) =>
+                  subscription.cancel());
+
+      expect(observable, neverEmits(anything));
+    });
   });
 }
