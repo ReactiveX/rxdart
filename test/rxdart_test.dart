@@ -4,6 +4,12 @@ import 'futures/as_observable_future_test.dart' as as_observable_future_test;
 import 'futures/stream_max_test.dart' as stream_max_test;
 import 'futures/stream_min_test.dart' as stream_min_test;
 import 'futures/wrapped_future_test.dart' as wrapped_future_test;
+import 'observables/behavior_connectable_observable_test.dart'
+    as behavior_connectable_observable_test;
+import 'observables/publish_connectable_observable_test.dart'
+    as publish_connectable_observable_test;
+import 'observables/replay_connectable_observable_test.dart'
+    as replay_connectable_observable_test;
 import 'streams/amb_test.dart' as amb_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
@@ -227,4 +233,9 @@ void main() {
   stream_max_test.main();
   stream_min_test.main();
   wrapped_future_test.main();
+
+  // Observables
+  behavior_connectable_observable_test.main();
+  replay_connectable_observable_test.main();
+  publish_connectable_observable_test.main();
 }
