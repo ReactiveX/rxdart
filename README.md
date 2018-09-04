@@ -15,7 +15,7 @@ version 0.16.x is no longer backwards compatible and requires the Dart SDK 2.0
 
 ## How To Use RxDart
 
-### For Example: Reading the Konami Code 
+### For Example: Reading the Konami Code
 
 ```dart
 void main() {
@@ -63,7 +63,7 @@ Finally, the Observable class & operators are simple wrappers around `Stream` an
 ### Instantiation
 
 Generally speaking, creating a new Observable is either done by wrapping a Dart Stream using the top-level constructor `new Observable()`, or by calling a factory method on the Observable class.
-But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors. 
+But to better support Dart's strong mode, `combineLatest` and `zip` have been pulled apart into fixed-length constructors.
 These methods are supplied as static methods, since Dart's factory methods don't support generic types.
 
 ###### Usage
@@ -75,7 +75,11 @@ var myObservable = new Observable(myStream);
 - [concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html)
 - [concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html)
 - [defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html) / [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html)
+- [empty](https://pub.dartlang.org/documentation/rxdart/latest/rx/Observable/Observable.empty.html)
 - [error](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.error.html) / [ErrorStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ErrorStream-class.html)
+- [eventTransformed](https://pub.dartlang.org/documentation/rxdart/latest/rx/Observable/Observable.eventTransformed.html)
+- [fromFuture](https://pub.dartlang.org/documentation/rxdart/latest/rx/Observable/Observable.fromFuture.html)
+- [fromIterable](https://pub.dartlang.org/documentation/rxdart/latest/rx/Observable/Observable.fromIterable.html)
 - [just](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.just.html)
 - [merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html) / [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html)
 - [never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html) / [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html)
@@ -92,7 +96,7 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 ```
 
 ##### Available Static Methods
-- [combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) / [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combineLatest2, combineLatest... combineLatest9) 
+- [combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) / [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combineLatest2, combineLatest... combineLatest9)
 - [range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html) / [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html)
 - [tween](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/tween.html) / [TweenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TweenStream-class.html)
 - [zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html) / [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9)
@@ -100,14 +104,14 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 ###### Usage
 ```dart
 var myObservable = Observable.combineLatest3(
-    myFirstStream, 
-    mySecondStream, 
-    myThirdStream, 
+    myFirstStream,
+    mySecondStream,
+    myThirdStream,
     (firstData, secondData, thirdData) => print("$firstData $secondData $thirdData"));
 ```
 
 ### Transformations
-    
+
 ##### Available Methods
 - [buffer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/buffer.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html)
 - [bufferCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferCount.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/onCount.html)
@@ -146,7 +150,7 @@ var myObservable = Observable.combineLatest3(
 - [scan](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/scan.html) / [ScanStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ScanStreamTransformer-class.html)
 - [skipUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/skipUntil.html) / [SkipUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/SkipUntilStreamTransformer-class.html)
 - [startWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWith.html) / [StartWithStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/StartWithStreamTransformer-class.html)
-- [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html) / [StartWithManyStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/StartWithManyStreamTransformer-class.html) 
+- [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html) / [StartWithManyStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/StartWithManyStreamTransformer-class.html)
 - [switchMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/switchMap.html) / [SwitchMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/SwitchMapStreamTransformer-class.html)
 - [takeUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/takeUntil.html) / [TakeUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/TakeUntilStreamTransformer-class.html)
 - [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html) / [TimeIntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimeIntervalStreamTransformer-class.html)
@@ -175,7 +179,7 @@ var myObservable = new Observable(myStream)
 Web and command-line examples can be found in the `example` folder.
 
 ### Web Examples
- 
+
 In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
@@ -190,9 +194,9 @@ In order to run the command line example, please follow these steps:
   1. Clone this repo and enter the directory
   2. Run `pub get`
   3. Run `dart example/example.dart 10`
-  
+
 ### Flutter Example
-  
+
 #### Install Flutter
 
 In order to run the flutter example, you must have Flutter installed. For installation instructions, view the online
