@@ -35,7 +35,7 @@ class RepeatStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 onError: controller.addError,
                 onDone: () {
                   /// start repeating now
-                  while (currentLoopCount++ < count) {
+                  while (indefinitely || currentLoopCount++ < count) {
                     pastEvents.forEach(controller.add);
                   }
 
