@@ -684,7 +684,8 @@ class Observable<T> extends Stream<T> {
   /// ```
   factory Observable.retryWhen(Stream<T> streamFactory(),
       Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) {
-    return new Observable<T>(new RetryWhenStream<T>(streamFactory, retryWhenFactory));
+    return new Observable<T>(
+        new RetryWhenStream<T>(streamFactory, retryWhenFactory));
   }
 
   /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
@@ -1973,8 +1974,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
-  Observable<T> repeat(int repeatCount) =>
-      transform(new RepeatStreamTransformer<T>(repeatCount));
+  Observable<T> repeat({int count = 1, bool indefinitely = false}) => transform(
+      new RepeatStreamTransformer<T>(count: count, indefinitely: indefinitely));
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
