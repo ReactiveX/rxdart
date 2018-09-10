@@ -64,7 +64,7 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (!hasMainEvent)
+                  if (!hasMainEvent || streams.isEmpty)
                     controller.close();
                   else
                     closeAfterNextEvent = true;
