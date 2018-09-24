@@ -35,7 +35,7 @@ void main() {
 
     test('stops emitting after the connection is cancelled', () async {
       final ConnectableObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).publishBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).publishValue();
 
       observable.connect()..cancel(); // ignore: unawaited_futures
 

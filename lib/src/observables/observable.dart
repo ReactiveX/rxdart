@@ -2460,7 +2460,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ```
   /// final source = Observable.fromIterable([1, 2, 3]);
-  /// final connectable = source.publishBehavior();
+  /// final connectable = source.publishValue();
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
@@ -2479,7 +2479,7 @@ class Observable<T> extends Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableObservable<T> publishBehavior({T seedValue}) =>
+  ValueConnectableObservable<T> publishValue({T seedValue}) =>
       ValueConnectableObservable<T>(this, seedValue: seedValue);
 
   /// Convert the current Observable into a [ReplayConnectableObservable]
@@ -2555,7 +2555,7 @@ class Observable<T> extends Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Observable.fromIterable([1, 2, 3]).shareBehavior();
+  /// final observable = Observable.fromIterable([1, 2, 3]).shareValue();
   ///
   /// // Start listening to the source Observable. Will start printing 1, 2, 3
   /// final subscription = observable.listen(print);
@@ -2572,8 +2572,8 @@ class Observable<T> extends Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ValueObservable<T> shareBehavior({T seedValue}) =>
-      publishBehavior(seedValue: seedValue).refCount();
+  ValueObservable<T> shareValue({T seedValue}) =>
+      publishValue(seedValue: seedValue).refCount();
 
   /// Convert the current Observable into a new [ReplayObservable] that can
   /// be listened to multiple times. It will automatically begin emitting items

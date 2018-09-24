@@ -40,7 +40,7 @@ void main() {
 
     test('stops emitting after the connection is cancelled', () async {
       final ConnectableObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).publishBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).publishValue();
 
       observable.connect()..cancel(); // ignore: unawaited_futures
 
@@ -49,7 +49,7 @@ void main() {
 
     test('stops emitting after the last subscriber unsubscribes', () async {
       final Observable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
 
       observable.listen(null)..cancel(); // ignore: unawaited_futures
 
@@ -58,7 +58,7 @@ void main() {
 
     test('keeps emitting with an active subscription', () async {
       final Observable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
 
       observable.listen(null);
       observable.listen(null)..cancel(); // ignore: unawaited_futures
@@ -92,7 +92,7 @@ void main() {
 
     test('can multicast observables', () async {
       final ValueObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
 
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
@@ -101,8 +101,7 @@ void main() {
 
     test('transform Observables with initial value', () async {
       final ValueObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3])
-              .shareBehavior(seedValue: 0);
+          Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue(seedValue: 0);
 
       expect(observable.value, 0);
       expect(observable, emitsInOrder(<int>[0, 1, 2, 3]));
@@ -112,7 +111,7 @@ void main() {
       final List<int> items = <int>[1, 2, 3];
       int count = 0;
       final ValueObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
+          Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
 
       observable.listen(expectAsync1((int data) {
         expect(data, items[count]);
@@ -126,7 +125,7 @@ void main() {
     test('provide a function to autoconnect that stops listening', () async {
       final Observable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3])
-              .publishBehavior()
+              .publishValue()
               .autoConnect(
                   connection: (StreamSubscription<int> subscription) =>
                       subscription.cancel());
