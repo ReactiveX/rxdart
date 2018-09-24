@@ -40,7 +40,7 @@ void main() {
       final ConnectableObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).publishReplay();
 
-      observable.connect()..cancel();
+      observable.connect()..cancel(); // ignore: unawaited_futures
 
       expect(observable, neverEmits(anything));
     });
@@ -49,7 +49,7 @@ void main() {
       final Observable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
-      observable.listen(null)..cancel();
+      observable.listen(null)..cancel(); // ignore: unawaited_futures
 
       expect(observable, neverEmits(anything));
     });
@@ -59,7 +59,7 @@ void main() {
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
       observable.listen(null);
-      observable.listen(null)..cancel();
+      observable.listen(null)..cancel(); // ignore: unawaited_futures
 
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
     });

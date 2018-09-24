@@ -19,7 +19,7 @@ void main() {
       ..add(true)
       ..add(false)
       ..add(true)
-      ..close();
+      ..close(); // ignore: unawaited_futures
 
     Stream<List<dynamic>> observable = Observable.zip3(
         new Stream<int>.periodic(
@@ -259,17 +259,14 @@ void main() {
       ..add(true)
       ..add(false)
       ..add(true)
-      ..close();
+      ..close(); // ignore: unawaited_futures
 
-    Stream<List<dynamic>> observable = Observable
-        .zip3(
-            new Stream<int>.periodic(
-                const Duration(milliseconds: 1), (int count) => count).take(4),
-            new Stream<int>.fromIterable(
-                const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
-            testStream.stream,
-            (int a, int b, bool c) => <dynamic>[a, b, c])
-        .asBroadcastStream();
+    Stream<List<dynamic>> observable = Observable.zip3(
+        new Stream<int>.periodic(
+            const Duration(milliseconds: 1), (int count) => count).take(4),
+        new Stream<int>.fromIterable(const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]),
+        testStream.stream,
+        (int a, int b, bool c) => <dynamic>[a, b, c]).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -334,15 +331,15 @@ void main() {
 
     StreamSubscription<Iterable<num>> subscription;
     // ignore: deprecated_member_use
-    subscription = Observable
-        .zip3(first, second, last, (num a, num b, num c) => <num>[a, b, c])
+    subscription = Observable.zip3(
+            first, second, last, (num a, num b, num c) => <num>[a, b, c])
         .listen(expectAsync1((Iterable<num> value) {
-          expect(value.elementAt(0), 1);
-          expect(value.elementAt(1), 5);
-          expect(value.elementAt(2), 9);
+      expect(value.elementAt(0), 1);
+      expect(value.elementAt(1), 5);
+      expect(value.elementAt(2), 9);
 
-          subscription.cancel();
-        }, count: 1));
+      subscription.cancel();
+    }, count: 1));
 
     subscription
         .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));

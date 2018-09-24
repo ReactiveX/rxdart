@@ -37,7 +37,7 @@ void main() {
       final ConnectableObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).publishBehavior();
 
-      observable.connect()..cancel();
+      observable.connect()..cancel(); // ignore: unawaited_futures
 
       expect(observable, neverEmits(anything));
     });

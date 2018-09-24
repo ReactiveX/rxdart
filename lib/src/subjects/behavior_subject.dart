@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/behavior_observable.dart';
 import 'package:rxdart/src/observables/observable.dart';
+import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// A special StreamController that captures the latest item that has been
@@ -37,7 +37,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1
-class BehaviorSubject<T> extends Subject<T> implements BehaviorObservable<T> {
+class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
   _Wrapper<T> _wrapper;
 
   BehaviorSubject._(
@@ -78,7 +78,7 @@ class BehaviorSubject<T> extends Subject<T> implements BehaviorObservable<T> {
   }
 
   @override
-  BehaviorObservable<T> get stream => this;
+  ValueObservable<T> get stream => this;
 
   /// Get the latest value emitted by the Subject
   @override

@@ -10,8 +10,8 @@ void main() {
   group('BehaviorConnectableObservable', () {
     test('should not emit before connecting', () {
       final Stream<int> stream = MockStream<int>();
-      final BehaviorConnectableObservable<int> observable =
-          BehaviorConnectableObservable<int>(stream);
+      final ValueConnectableObservable<int> observable =
+          ValueConnectableObservable<int>(stream);
 
       when(stream.listen(any, onError: anyNamed('onError'))).thenReturn(
           new Stream<int>.fromIterable(<int>[1, 2, 3]).listen(null));
@@ -26,8 +26,8 @@ void main() {
     test('should begin emitting items after connection', () {
       int count = 0;
       final List<int> items = <int>[1, 2, 3];
-      final BehaviorConnectableObservable<int> observable =
-          BehaviorConnectableObservable<int>(Stream<int>.fromIterable(items));
+      final ValueConnectableObservable<int> observable =
+          ValueConnectableObservable<int>(Stream<int>.fromIterable(items));
 
       observable.connect();
 
@@ -42,7 +42,7 @@ void main() {
       final ConnectableObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).publishBehavior();
 
-      observable.connect()..cancel();
+      observable.connect()..cancel(); // ignore: unawaited_futures
 
       expect(observable, neverEmits(anything));
     });
@@ -51,7 +51,7 @@ void main() {
       final Observable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
 
-      observable.listen(null)..cancel();
+      observable.listen(null)..cancel(); // ignore: unawaited_futures
 
       expect(observable, neverEmits(anything));
     });
@@ -61,13 +61,13 @@ void main() {
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
 
       observable.listen(null);
-      observable.listen(null)..cancel();
+      observable.listen(null)..cancel(); // ignore: unawaited_futures
 
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
     });
 
     test('multicasts a single-subscription stream', () async {
-      final Observable<int> observable = new BehaviorConnectableObservable<int>(
+      final Observable<int> observable = new ValueConnectableObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       ).autoConnect();
 
@@ -77,7 +77,7 @@ void main() {
     });
 
     test('replays the latest item', () async {
-      final Observable<int> observable = new BehaviorConnectableObservable<int>(
+      final Observable<int> observable = new ValueConnectableObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       ).autoConnect();
 
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('can multicast observables', () async {
-      final BehaviorObservable<int> observable =
+      final ValueObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
 
       expect(observable, emitsInOrder(<int>[1, 2, 3]));
@@ -100,7 +100,7 @@ void main() {
     });
 
     test('transform Observables with initial value', () async {
-      final BehaviorObservable<int> observable =
+      final ValueObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3])
               .shareBehavior(seedValue: 0);
 
@@ -111,7 +111,7 @@ void main() {
     test('provides access to the latest value', () async {
       final List<int> items = <int>[1, 2, 3];
       int count = 0;
-      final BehaviorObservable<int> observable =
+      final ValueObservable<int> observable =
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareBehavior();
 
       observable.listen(expectAsync1((int data) {

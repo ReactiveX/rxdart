@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:rxdart/futures.dart';
 import 'package:rxdart/samplers.dart';
-import 'package:rxdart/src/observables/behavior_observable.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
+import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -2448,7 +2448,7 @@ class Observable<T> extends Stream<T> {
   /// ```
   ConnectableObservable<T> publish() => PublishConnectableObservable<T>(this);
 
-  /// Convert the current Observable into a [BehaviorConnectableObservable]
+  /// Convert the current Observable into a [ValueConnectableObservable]
   /// that can be listened to multiple times. It will not begin emitting items
   /// from the original Observable until the `connect` method is invoked.
   ///
@@ -2479,8 +2479,8 @@ class Observable<T> extends Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  BehaviorConnectableObservable<T> publishBehavior({T seedValue}) =>
-      BehaviorConnectableObservable<T>(this, seedValue: seedValue);
+  ValueConnectableObservable<T> publishBehavior({T seedValue}) =>
+      ValueConnectableObservable<T>(this, seedValue: seedValue);
 
   /// Convert the current Observable into a [ReplayConnectableObservable]
   /// that can be listened to multiple times. It will not begin emitting items
@@ -2540,7 +2540,7 @@ class Observable<T> extends Stream<T> {
   /// ```
   Observable<T> share() => publish().refCount();
 
-  /// Convert the current Observable into a new [BehaviorObservable] that can
+  /// Convert the current Observable into a new [ValueObservable] that can
   /// be listened to multiple times. It will automatically begin emitting items
   /// when first listened to, and shut down when no listeners remain.
   ///
@@ -2572,7 +2572,7 @@ class Observable<T> extends Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  BehaviorObservable<T> shareBehavior({T seedValue}) =>
+  ValueObservable<T> shareBehavior({T seedValue}) =>
       publishBehavior(seedValue: seedValue).refCount();
 
   /// Convert the current Observable into a new [ReplayObservable] that can

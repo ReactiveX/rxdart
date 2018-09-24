@@ -27,10 +27,10 @@ class ErrorAndStacktrace {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ErrorAndStacktrace &&
-              runtimeType == other.runtimeType &&
-              error == other.error &&
-              stacktrace == other.stacktrace;
+      other is ErrorAndStacktrace &&
+          runtimeType == other.runtimeType &&
+          error == other.error &&
+          stacktrace == other.stacktrace;
 
   @override
   int get hashCode => error.hashCode ^ stacktrace.hashCode;

@@ -90,20 +90,19 @@ class PublishConnectableObservable<T> extends ConnectableObservable<T> {
 /// A [ConnectableObservable] that converts a single-subscription Stream into
 /// a broadcast Stream that replays the latest value to any new listener, and
 /// provides synchronous access to the latest emitted value.
-class BehaviorConnectableObservable<T> extends ConnectableObservable<T>
-    implements BehaviorObservable<T> {
+class ValueConnectableObservable<T> extends ConnectableObservable<T>
+    implements ValueObservable<T> {
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  BehaviorConnectableObservable._(this._source, this._subject)
-      : super(_subject);
+  ValueConnectableObservable._(this._source, this._subject) : super(_subject);
 
-  factory BehaviorConnectableObservable(Stream<T> source, {T seedValue}) =>
-      BehaviorConnectableObservable<T>._(
+  factory ValueConnectableObservable(Stream<T> source, {T seedValue}) =>
+      ValueConnectableObservable<T>._(
           source, BehaviorSubject<T>(seedValue: seedValue));
 
   @override
-  BehaviorObservable<T> autoConnect({
+  ValueObservable<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
@@ -126,7 +125,7 @@ class BehaviorConnectableObservable<T> extends ConnectableObservable<T>
   }
 
   @override
-  BehaviorObservable<T> refCount() {
+  ValueObservable<T> refCount() {
     ConnectableObservableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
