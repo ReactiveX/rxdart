@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/observables/observable.dart';
+import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// A special StreamController that captures all of the items that have been
@@ -42,7 +43,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
-class ReplaySubject<T> extends Subject<T> {
+class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
   final Queue<T> _queue;
   final int _maxSize;
 
@@ -89,5 +90,6 @@ class ReplaySubject<T> extends Subject<T> {
   }
 
   /// Synchronously get the values stored in Subject. May be empty.
+  @override
   List<T> get values => _queue.toList(growable: false);
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/observables/observable.dart';
 
 /// The base for all Subjects. If you'd like to create a new Subject,
 /// extend from this class.

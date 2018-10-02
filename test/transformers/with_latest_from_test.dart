@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/observable.dart';
+import 'package:rxdart/src/observables/observable.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() => new Stream<int>.periodic(

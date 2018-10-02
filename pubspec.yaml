@@ -18,3 +18,4 @@ dev_dependencies:
   stack_trace: ^1.9.2
   build_runner: ^0.9.0
   build_web_compilers: ^0.4.0
+  mockito: ^3.0.0
