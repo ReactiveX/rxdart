@@ -15,25 +15,25 @@ import 'dart:async';
 class CompositeSubscription {
   bool _isDisposed = false;
 
-  final List<StreamSubscription> _subscriptionsList =
-      new List<StreamSubscription>();
+  final List<StreamSubscription<dynamic>> _subscriptionsList =
+      new List<StreamSubscription<dynamic>>();
 
   /// Checks if this composite is disposed. If it is, the composite can't be used again
   /// and will throw an error if you try to add more subscriptions to it.
   bool get isDisposed => _isDisposed;
 
-  CompositeSubscription add(StreamSubscription subscription) {
   /// Adds new subscription to this composite.
   /// 
   /// Throws an exception if this composite was disposed
+  CompositeSubscription add(StreamSubscription<dynamic> subscription) {
     if (isDisposed)
       throw ("This composite was disposed, try to use new instance instead");
     _subscriptionsList.add(subscription);
     return this;
   }
 
-  CompositeSubscription remove(StreamSubscription subscription) {
   /// Removes subscription from this composite.
+  CompositeSubscription remove(StreamSubscription<dynamic> subscription) {
     _subscriptionsList.remove(subscription);
     return this;
   }
@@ -42,7 +42,7 @@ class CompositeSubscription {
   /// 
   /// This composite can be reused after calling this method.
   void clear() {
-    _subscriptionsList.forEach((subscription) => subscription.cancel());
+    _subscriptionsList.forEach((StreamSubscription<dynamic> subscription) => subscription.cancel());
     _subscriptionsList.clear();
   }
 
