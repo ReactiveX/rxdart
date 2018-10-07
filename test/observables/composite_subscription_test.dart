@@ -11,8 +11,8 @@ void main() {
       final CompositeSubscription composite = CompositeSubscription();
 
       composite.add(observable.listen(null))
-              ..add(observable.listen(null))
-              ..add(observable.listen(null));
+        ..add(observable.listen(null))
+        ..add(observable.listen(null));
 
       composite.clear();
 
@@ -24,8 +24,8 @@ void main() {
       final CompositeSubscription composite = CompositeSubscription();
 
       composite.add(observable.listen(null))
-              ..add(observable.listen(null))
-              ..add(observable.listen(null));
+        ..add(observable.listen(null))
+        ..add(observable.listen(null));
 
       composite.dispose();
 
@@ -45,12 +45,13 @@ void main() {
       final Observable<int> observable =
           Observable<int>.fromIterable(<int>[value]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
-      
-      final listener = expectAsync1((int a){ expect(a, value);}, count: 1);
+
+      final listener = expectAsync1((int a) {
+        expect(a, value);
+      }, count: 1);
       final StreamSubscription<int> subscription = observable.listen(listener);
 
-      composite.add(subscription)
-              ..remove(subscription);
+      composite.add(subscription)..remove(subscription);
 
       composite.clear();
     });
@@ -59,12 +60,13 @@ void main() {
       final Observable<int> observable =
           Observable<int>.fromIterable(<int>[value]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
-      
-      final listener = expectAsync1((int a){ expect(a, value);}, count: 1);
+
+      final listener = expectAsync1((int a) {
+        expect(a, value);
+      }, count: 1);
       final StreamSubscription<int> subscription = observable.listen(listener);
 
-      composite.add(subscription)
-              ..remove(subscription);
+      composite.add(subscription)..remove(subscription);
 
       composite.dispose();
     });

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 /**
@@ -16,10 +15,10 @@ import 'dart:async';
  *      composite.clear();
  */
 class CompositeSubscription {
-
   bool _isDisposed = false;
 
-  final List<StreamSubscription> _subscriptionsList = new List<StreamSubscription>();
+  final List<StreamSubscription> _subscriptionsList =
+      new List<StreamSubscription>();
 
   /**
    * Checks if this composite is disposed. If it is, the composite can't be used again
@@ -33,7 +32,8 @@ class CompositeSubscription {
    * Throws an exception if this composite was disposed
    */
   CompositeSubscription add(StreamSubscription subscription) {
-    if (isDisposed) throw("This composite was disposed, try to use new instance instead");
+    if (isDisposed)
+      throw ("This composite was disposed, try to use new instance instead");
     _subscriptionsList.add(subscription);
     return this;
   }
@@ -45,7 +45,7 @@ class CompositeSubscription {
     _subscriptionsList.remove(subscription);
     return this;
   }
-  
+
   /**
    * Cancels all subscriptions added to this composite. Clears subscriptions collection.
    * 
