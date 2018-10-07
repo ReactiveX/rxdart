@@ -38,7 +38,7 @@ void main() {
 
       composite.dispose();
 
-      expect(() => composite.add(observable.listen(null)), throws);
+      expect(() => composite.add(observable.listen(null)), throwsA(anything));
     });
     test('should not cancel subscription on clear if it is removed from composite', () {
       const int value = 1;
@@ -46,7 +46,7 @@ void main() {
           Observable<int>.fromIterable(<int>[value]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
 
-      final listener = expectAsync1((int a) {
+      final Func1<Null, int> listener = expectAsync1((int a) {
         expect(a, value);
       }, count: 1);
       final StreamSubscription<int> subscription = observable.listen(listener);
@@ -61,7 +61,7 @@ void main() {
           Observable<int>.fromIterable(<int>[value]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
 
-      final listener = expectAsync1((int a) {
+      final Func1<Null, int> listener = expectAsync1((int a) {
         expect(a, value);
       }, count: 1);
       final StreamSubscription<int> subscription = observable.listen(listener);
