@@ -9,3 +9,4 @@ export 'package:rxdart/src/observables/value_observable.dart';
 export 'package:rxdart/streams.dart';
 export 'package:rxdart/subjects.dart';
 export 'package:rxdart/transformers.dart';
+export 'package:rxdart/src/utils/composite_subscription.dart';
