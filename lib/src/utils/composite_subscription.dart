@@ -32,8 +32,9 @@ class CompositeSubscription {
     return this;
   }
 
-  /// Removes subscription from this composite.
+  /// Cancels subscripiton and removes it from this composite.
   CompositeSubscription remove(StreamSubscription<dynamic> subscription) {
+    subscription.cancel();
     _subscriptionsList.remove(subscription);
     return this;
   }
