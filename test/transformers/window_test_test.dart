@@ -11,8 +11,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream = Observable
-        .range(1, 4)
+    Stream<List<int>> stream = Observable.range(1, 4)
         .windowTest((int i) => i % 2 == 0)
         .asyncMap((Stream<int> s) => s.toList());
 
@@ -31,8 +30,7 @@ void main() {
     ];
     int count = 0;
 
-    Stream<List<int>> stream = Observable
-        .range(1, 4)
+    Stream<List<int>> stream = Observable.range(1, 4)
         .window(onTest((int i) => i % 2 == 0))
         .asyncMap((Stream<int> s) => s.toList());
 

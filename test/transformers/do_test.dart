@@ -62,8 +62,7 @@ void main() {
         () async {
       int count = 0;
       final BehaviorSubject<int> subject = new BehaviorSubject<int>(sync: true);
-      final Observable<int> observable =
-          subject.doOnCancel(() => count++);
+      final Observable<int> observable = subject.doOnCancel(() => count++);
 
       observable.listen(null);
       await observable.listen(null).cancel();

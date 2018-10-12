@@ -1,3 +1,15 @@
+## 0.19.0
+
+  * Breaking Change: Subjects `onCancel` function now returns `void` instead of `Future` to properly comply with the `StreamController` signature.
+  * Bugfix: FlatMap operator properly calls onDone for all cases
+  * Connectable Observable: An observable that can be listened to multiple times, and does not begin emitting values until the `connect` method is called
+  * ValueObservable: A new interface that allows you to get the latest value emitted by an Observable.
+    * Implemented by BehaviorSubject
+    * Convert normal observables into ValueObservables via `publishValue` or `shareValue`
+  * ReplayObservable: A new interface that allows you to get the values emitted by an Observable.
+      * Implemented by ReplaySubject
+      * Convert normal observables into ReplayObservables via `publishReplay` or `shareReplay`  
+
 ## 0.18.1
 
 * Add `retryWhen` operator. Thanks to Razvan Lung (@long1eu)! This can be used for custom retry logic.

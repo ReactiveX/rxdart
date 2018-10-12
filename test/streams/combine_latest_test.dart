@@ -340,16 +340,15 @@ void main() {
 
     StreamSubscription<Iterable<num>> subscription;
     // ignore: deprecated_member_use
-    subscription = Observable
-        .combineLatest3(
+    subscription = Observable.combineLatest3(
             first, second, last, (num a, num b, num c) => <num>[a, b, c])
         .listen(expectAsync1((Iterable<num> value) {
-          expect(value.elementAt(0), 1);
-          expect(value.elementAt(1), 5);
-          expect(value.elementAt(2), 9);
+      expect(value.elementAt(0), 1);
+      expect(value.elementAt(1), 5);
+      expect(value.elementAt(2), 9);
 
-          subscription.cancel();
-        }, count: 1));
+      subscription.cancel();
+    }, count: 1));
 
     subscription
         .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));

@@ -109,8 +109,7 @@ void main() {
     ];
     int count = 0;
 
-    Observable
-        .zip4(
+    Observable.zip4(
             Observable.tween(0.0, 100.0, const Duration(seconds: 2),
                 intervalMs: 20),
             Observable.tween(0.0, 100.0, const Duration(seconds: 2),
@@ -132,17 +131,18 @@ void main() {
   });
 
   test('rx.Observable.tween.single.subscription', () async {
-    Observable<double> observable = Observable
-        .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20);
+    Observable<double> observable = Observable.tween(
+        0.0, 100.0, const Duration(seconds: 2),
+        intervalMs: 20);
 
     observable.listen((_) {});
     await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.tween.asBroadcast', () async {
-    Observable<double> observable = Observable
-        .tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)
-        .asBroadcastStream();
+    Observable<double> observable =
+        Observable.tween(0.0, 100.0, const Duration(seconds: 2), intervalMs: 20)
+            .asBroadcastStream();
 
     observable.listen((_) {});
     observable.listen((_) {});

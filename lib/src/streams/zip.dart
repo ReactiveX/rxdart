@@ -31,7 +31,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) =>
+          {Function onError, void onDone(), bool cancelOnError}) =>
       controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
@@ -48,9 +48,9 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
 
     StreamController<T> controller;
     final List<bool> pausedStates =
-    new List<bool>.generate(streams.length, (_) => false, growable: false);
+        new List<bool>.generate(streams.length, (_) => false, growable: false);
     final List<StreamSubscription<dynamic>> subscriptions =
-    new List<StreamSubscription<dynamic>>(streams.length);
+        new List<StreamSubscription<dynamic>>(streams.length);
 
     controller = new StreamController<T>(
         sync: true,
@@ -58,7 +58,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
           try {
             final List<dynamic> values = new List<dynamic>(streams.length);
             final List<bool> completedStatus =
-            new List<bool>.generate(streams.length, (_) => false);
+                new List<bool>.generate(streams.length, (_) => false);
 
             void doUpdate(int index, dynamic value) {
               values[index] = value;
@@ -86,7 +86,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
               Stream<dynamic> stream = streams.elementAt(i);
 
               subscriptions[i] = stream.listen(
-                      (dynamic value) => doUpdate(i, value),
+                  (dynamic value) => doUpdate(i, value),
                   onError: controller.addError,
                   onDone: () => markDone(i));
 
@@ -99,21 +99,16 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
           }
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
-            subscriptions.where((StreamSubscription<dynamic> subscription) =>
-            subscription != null).forEach(
-                    (StreamSubscription<dynamic> subscription) =>
+            subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
+                (StreamSubscription<dynamic> subscription) =>
                     subscription.pause(resumeSignal)),
         onResume: () =>
-            subscriptions.where((StreamSubscription<dynamic> subscription) =>
-            subscription != null).forEach(
-                    (StreamSubscription<dynamic> subscription) =>
+            subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
+                (StreamSubscription<dynamic> subscription) =>
                     subscription.resume()),
-        onCancel: () =>
-            Future.wait<dynamic>(subscriptions
-                .map((StreamSubscription<dynamic> subscription) =>
-                subscription.cancel())
-                .where((Future<dynamic> cancelFuture) =>
-            cancelFuture != null)));
+        onCancel: () => Future.wait<dynamic>(subscriptions
+            .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
+            .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
     return controller;
   }
@@ -165,14 +160,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
           final F f = values.elementAt(5);
           final G g = values.elementAt(6);
 
-          result = zipper(
-              a,
-              b,
-              c,
-              d,
-              e,
-              f,
-              g);
+          result = zipper(a, b, c, d, e, f, g);
           break;
         case 8:
           final C c = values.elementAt(2);
@@ -182,15 +170,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
           final G g = values.elementAt(6);
           final H h = values.elementAt(7);
 
-          result = zipper(
-              a,
-              b,
-              c,
-              d,
-              e,
-              f,
-              g,
-              h);
+          result = zipper(a, b, c, d, e, f, g, h);
           break;
         case 9:
           final C c = values.elementAt(2);
@@ -201,16 +181,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
           final H h = values.elementAt(7);
           final I i = values.elementAt(8);
 
-          result = zipper(
-              a,
-              b,
-              c,
-              d,
-              e,
-              f,
-              g,
-              h,
-              i);
+          result = zipper(a, b, c, d, e, f, g, h, i);
           break;
       }
 

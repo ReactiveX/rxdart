@@ -20,8 +20,7 @@ void main() {
 
     test('starts emitting again after previous Stream is complete', () async {
       int calls = 0;
-      final Observable<int> observable = Observable
-          .range(0, 9)
+      final Observable<int> observable = Observable.range(0, 9)
           .interval(new Duration(milliseconds: 20))
           .exhaustMap((int i) {
         calls++;
@@ -49,8 +48,7 @@ void main() {
     });
 
     test('works as a broadcast stream', () async {
-      Stream<num> stream = Observable
-          .range(0, 9)
+      Stream<num> stream = Observable.range(0, 9)
           .asBroadcastStream()
           .exhaustMap((int i) =>
               new Observable<int>.timer(i, new Duration(milliseconds: 100)));
