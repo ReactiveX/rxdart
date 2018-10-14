@@ -25,18 +25,17 @@ class CompositeSubscription {
   /// Adds new subscription to this composite.
   /// 
   /// Throws an exception if this composite was disposed
-  CompositeSubscription add(StreamSubscription<dynamic> subscription) {
+  StreamSubscription<T> add<T>(StreamSubscription<T> subscription) {
     if (isDisposed)
       throw ("This composite was disposed, try to use new instance instead");
     _subscriptionsList.add(subscription);
-    return this;
+    return subscription;
   }
 
   /// Cancels subscripiton and removes it from this composite.
-  CompositeSubscription remove(StreamSubscription<dynamic> subscription) {
+  void remove(StreamSubscription<dynamic> subscription) {
     subscription.cancel();
     _subscriptionsList.remove(subscription);
-    return this;
   }
 
   /// Cancels all subscriptions added to this composite. Clears subscriptions collection.

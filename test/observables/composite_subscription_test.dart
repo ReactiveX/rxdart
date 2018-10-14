@@ -10,7 +10,8 @@ void main() {
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
 
-      composite.add(observable.listen(null))
+      composite
+        ..add(observable.listen(null))
         ..add(observable.listen(null))
         ..add(observable.listen(null));
 
@@ -23,7 +24,8 @@ void main() {
           Observable<int>.fromIterable(<int>[1, 2, 3]).shareValue();
       final CompositeSubscription composite = CompositeSubscription();
 
-      composite.add(observable.listen(null))
+      composite
+        ..add(observable.listen(null))
         ..add(observable.listen(null))
         ..add(observable.listen(null));
 
