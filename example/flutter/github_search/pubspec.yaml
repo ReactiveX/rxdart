@@ -9,7 +9,7 @@ dependencies:
   http: "^0.11.3+16"
 
 dev_dependencies:
-  mockito: 2.2.3
+  mockito: 3.0.0
   flutter_test:
     sdk: flutter
 
