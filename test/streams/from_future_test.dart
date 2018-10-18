@@ -5,12 +5,11 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.fromFuture', () async {
-    const int value = 1;
+    const value = 1;
 
-    Stream<int> observable =
-        new Observable<int>.fromFuture(new Future<int>.value(value));
+    final observable = new Observable.fromFuture(new Future.value(value));
 
-    observable.listen(expectAsync1((int actual) {
+    observable.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
   });

@@ -32,8 +32,8 @@ class RaceStream<T> extends Stream<T> {
       throw new ArgumentError('provide at least 1 stream');
     }
 
-    final List<StreamSubscription<T>> subscriptions = <StreamSubscription<T>>[];
-    bool isDisambiguated = false;
+    final subscriptions = <StreamSubscription<T>>[];
+    var isDisambiguated = false;
 
     StreamController<T> controller;
 
@@ -43,7 +43,7 @@ class RaceStream<T> extends Stream<T> {
           void doUpdate(int i, T value) {
             try {
               if (!isDisambiguated)
-                for (int k = subscriptions.length - 1; k >= 0; k--) {
+                for (var k = subscriptions.length - 1; k >= 0; k--) {
                   if (k != i) {
                     subscriptions[k].cancel();
                     subscriptions.removeAt(k);
@@ -58,8 +58,8 @@ class RaceStream<T> extends Stream<T> {
             }
           }
 
-          for (int i = 0, len = streams.length; i < len; i++) {
-            Stream<T> stream = streams.elementAt(i);
+          for (var i = 0, len = streams.length; i < len; i++) {
+            var stream = streams.elementAt(i);
 
             subscriptions.add(stream.listen((T value) => doUpdate(i, value),
                 onError: controller.addError,

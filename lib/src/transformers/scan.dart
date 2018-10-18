@@ -22,8 +22,8 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       S accumulator(S accumulated, T value, int index),
       [S seed]) {
-    int index = 0;
-    S acc = seed;
+    var index = 0;
+    var acc = seed;
 
     return new StreamTransformer<T, S>.fromHandlers(
         handleData: (T data, EventSink<S> sink) {

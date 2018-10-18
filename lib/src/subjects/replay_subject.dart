@@ -54,13 +54,13 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
     bool sync: false,
   }) {
     // ignore: close_sinks
-    final StreamController<T> controller = new StreamController<T>.broadcast(
+    final controller = new StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final Queue<T> queue = new Queue<T>();
+    final queue = new Queue<T>();
 
     return new ReplaySubject<T>._(
       controller,

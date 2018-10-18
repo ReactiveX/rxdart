@@ -30,8 +30,7 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
       StreamController<S> controller;
       StreamSubscription<T> inputSubscription;
       StreamSubscription<S> outputSubscription;
-      bool inputClosed = false;
-      bool outputIsEmitting = false;
+      var inputClosed = false, outputIsEmitting = false;
 
       controller = new StreamController<S>(
         sync: true,

@@ -44,11 +44,11 @@ class ConcatStream<T> extends Stream<T> {
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          final int len = streams.length;
-          int index = 0;
+          final len = streams.length;
+          var index = 0;
 
           void moveNext() {
-            Stream<T> stream = streams.elementAt(index);
+            var stream = streams.elementAt(index);
             subscription?.cancel();
 
             subscription = stream.listen(controller.add,

@@ -31,7 +31,7 @@ class PublishSubject<T> extends Subject<T> {
 
   factory PublishSubject({void onListen(), void onCancel(), bool sync: false}) {
     // ignore: close_sinks
-    final StreamController<T> controller = new StreamController<T>.broadcast(
+    final controller = new StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,

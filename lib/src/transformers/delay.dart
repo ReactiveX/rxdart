@@ -24,8 +24,8 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      bool onDoneCalled = false, hasNoEvents = true;
-      List<Timer> timers = <Timer>[];
+      var onDoneCalled = false, hasNoEvents = true;
+      var timers = <Timer>[];
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 

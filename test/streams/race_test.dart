@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<num> getDelayedStream(int delay, num value) async* {
-  final Completer<dynamic> completer = new Completer<dynamic>();
+Stream<int> getDelayedStream(int delay, int value) async* {
+  final completer = new Completer<Null>();
 
   new Timer(new Duration(milliseconds: delay), () => completer.complete());
 
@@ -17,55 +17,52 @@ Stream<num> getDelayedStream(int delay, num value) async* {
 
 void main() {
   test('rx.Observable.race', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
-    int expected = 1;
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
+    var expected = 1;
 
-    new Observable<num>.race(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num result) {
+    new Observable.race([first, second, last]).listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
   });
 
   test('rx.Observable.race.single.subscription', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
+    final first = getDelayedStream(50, 1);
 
-    Observable<num> observable = new Observable<num>.race(<Stream<num>>[first]);
+    final observable = new Observable.race([first]);
 
     observable.listen(null);
-    await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
+    await expectLater(() => observable.listen(null), throwsA(isStateError));
   });
 
   test('rx.Observable.race.asBroadcastStream', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
 
-    Stream<num> observable =
-        new Observable<num>.race(<Stream<num>>[first, second, last])
-            .asBroadcastStream();
+    final observable =
+        new Observable.race([first, second, last]).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen((_) {});
-    observable.listen((_) {});
+    observable.listen(null);
+    observable.listen(null);
     // code should reach here
     await expectLater(observable.isBroadcast, isTrue);
   });
 
   test('rx.Observable.race.shouldThrowA', () {
-    expect(() => new Observable<num>.race(null), throwsArgumentError);
+    expect(() => new Observable<Null>.race(null), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowB', () {
-    expect(
-        () => new Observable<num>.race(<Stream<num>>[]), throwsArgumentError);
+    expect(() => new Observable<Null>.race(const []), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowC', () async {
-    Stream<num> observable = new Observable<num>.race(
-        <Stream<num>>[new ErrorStream<num>(new Exception('oh noes!'))]);
+    final observable =
+        new Observable.race([new ErrorStream<Null>(new Exception('oh noes!'))]);
 
     // listen twice on same stream
     observable.listen(null,
@@ -74,14 +71,14 @@ void main() {
   });
 
   test('rx.Observable.race.pause.resume', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
 
-    StreamSubscription<num> subscription;
+    StreamSubscription<int> subscription;
     // ignore: deprecated_member_use
-    subscription = new Observable<num>.race(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num value) {
+    subscription =
+        new Observable.race([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

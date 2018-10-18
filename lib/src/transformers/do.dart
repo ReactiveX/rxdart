@@ -85,7 +85,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       throw new ArgumentError("Must provide at least one handler");
     }
 
-    final Map<Stream<dynamic>, StreamSubscription<dynamic>> subscriptions =
+    final subscriptions =
         <Stream<dynamic>, StreamSubscription<dynamic>>{};
 
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
@@ -170,7 +170,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
             }
           }
         }
-        Future<dynamic> cancelFuture =
+        var cancelFuture =
             subscriptions[input].cancel() ?? new Future<dynamic>.value();
 
         return cancelFuture.whenComplete(() => subscriptions.remove(input));

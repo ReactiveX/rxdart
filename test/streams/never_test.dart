@@ -6,14 +6,12 @@ import 'package:test/test.dart';
 
 void main() {
   test('NeverStream', () async {
-    bool onDataCalled = false;
-    bool onDoneCalled = false;
-    bool onErrorCalled = false;
+    var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    Stream<int> stream = new NeverStream<int>();
+    final stream = new NeverStream<Null>();
 
-    StreamSubscription<int> subscription = stream.listen(
-        expectAsync1((int actual) {
+    final subscription = stream.listen(
+        expectAsync1((_) {
           onDataCalled = true;
         }, count: 0),
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -23,7 +21,7 @@ void main() {
           onDataCalled = true;
         }, count: 0));
 
-    await new Future<int>.delayed(new Duration(milliseconds: 10));
+    await new Future<Null>.delayed(new Duration(milliseconds: 10));
 
     await subscription.cancel();
 
@@ -35,21 +33,19 @@ void main() {
   });
 
   test('NeverStream.single.subscription', () async {
-    final NeverStream<int> stream = new NeverStream<int>();
+    final stream = new NeverStream<Null>();
 
-    stream.listen((_) {});
-    await expectLater(() => stream.listen((_) {}), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('rx.Observable.never', () async {
-    bool onDataCalled = false;
-    bool onDoneCalled = false;
-    bool onErrorCalled = false;
+    var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    Observable<int> observable = new Observable<int>.never();
+    final observable = new Observable<Null>.never();
 
-    StreamSubscription<int> subscription = observable.listen(
-        expectAsync1((int actual) {
+    final subscription = observable.listen(
+        expectAsync1((_) {
           onDataCalled = true;
         }, count: 0),
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -59,7 +55,7 @@ void main() {
           onDataCalled = true;
         }, count: 0));
 
-    await new Future<int>.delayed(new Duration(milliseconds: 10));
+    await new Future<Null>.delayed(new Duration(milliseconds: 10));
 
     await subscription.cancel();
 

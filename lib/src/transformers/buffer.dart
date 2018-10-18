@@ -54,7 +54,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
         (Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
-      List<T> buffer = <T>[];
+      var buffer = <T>[];
 
       void onDone() {
         if (controller.isClosed) return;

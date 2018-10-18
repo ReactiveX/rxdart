@@ -5,43 +5,43 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.defer', () async {
-    const int value = 1;
+    const value = 1;
 
-    Stream<int> observable = _getDeferStream();
+    final observable = _getDeferStream();
 
-    observable.listen(expectAsync1((int actual) {
+    observable.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
   });
 
   test('rx.Observable.defer.multiple.listeners', () async {
-    const int value = 1;
+    const value = 1;
 
-    Stream<int> observable = _getBroadcastDeferStream();
+    final observable = _getBroadcastDeferStream();
 
-    observable.listen(expectAsync1((int actual) {
+    observable.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
 
-    observable.listen(expectAsync1((int actual) {
+    observable.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
   });
 
   test('rx.Observable.defer.single.subscription', () async {
-    Stream<int> observable = _getDeferStream();
+    final observable = _getDeferStream();
 
     try {
-      observable.listen((_) {});
-      observable.listen((_) {});
+      observable.listen(null);
+      observable.listen(null);
     } catch (e) {
       await expectLater(e, isStateError);
     }
   });
 
   test('rx.Observable.defer.error.shouldThrow', () async {
-    Stream<int> observableWithError =
-        new Observable<int>.defer(() => _getErroneousStream());
+    final observableWithError =
+        new Observable.defer(() => _getErroneousStream());
 
     observableWithError.listen(null,
         onError: expectAsync1((Exception e) {
@@ -51,14 +51,13 @@ void main() {
 }
 
 Stream<int> _getDeferStream() =>
-    new Observable<int>.defer(() => new Observable<int>.just(1));
+    new Observable.defer(() => new Observable.just(1));
 
 Stream<int> _getBroadcastDeferStream() =>
-    new Observable<int>.defer(() => new Observable<int>.just(1))
-        .asBroadcastStream();
+    new Observable.defer(() => new Observable.just(1)).asBroadcastStream();
 
 Stream<int> _getErroneousStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   controller.addError(new Exception());
   controller.close();

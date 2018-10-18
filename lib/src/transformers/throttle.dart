@@ -26,7 +26,7 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       Timer _timer;
-      bool _closeAfterNextEvent = false;
+      var _closeAfterNextEvent = false;
 
       bool _resetTimer() {
         if (_timer != null && _timer.isActive) return false;

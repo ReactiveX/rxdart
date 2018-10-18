@@ -53,13 +53,13 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
     bool sync: false,
   }) {
     // ignore: close_sinks
-    final StreamController<T> controller = new StreamController<T>.broadcast(
+    final controller = new StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final _Wrapper<T> wrapper = new _Wrapper<T>(seedValue);
+    final wrapper = new _Wrapper<T>(seedValue);
 
     return new BehaviorSubject<T>._(
         controller,

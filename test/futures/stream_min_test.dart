@@ -30,8 +30,8 @@ void main() {
     });
 
     test('emits the minimum value from a list with a comparator', () async {
-      final Stream<String> stream =
-          new Stream<String>.fromIterable(<String>["one", "two", "three"]);
+      final stream =
+          new Stream.fromIterable(const ["one", "two", "three"]);
 
       final Comparator<String> stringLengthComparator =
           (String a, String b) => a.length - b.length;
@@ -51,8 +51,8 @@ void main() {
     });
 
     test('rx.Observable.min.error.comparator', () async {
-      Stream<ErrorComparator> stream = new Stream<ErrorComparator>.fromIterable(
-          <ErrorComparator>[new ErrorComparator(), new ErrorComparator()]);
+      final stream = new Stream.fromIterable(
+          [new ErrorComparator(), new ErrorComparator()]);
 
       await expectLater(
           new StreamMinFuture<ErrorComparator>(stream), throwsException);

@@ -43,7 +43,7 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamController<T> controller;
       StreamSubscription<T> defaultSubscription;
       StreamSubscription<T> switchSubscription;
-      bool hasEvent = false;
+      var hasEvent = false;
 
       void onDone() {
         if (controller.isClosed) return;

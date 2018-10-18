@@ -54,7 +54,7 @@ class TweenStream extends Stream<double> {
               break;
           }
 
-          final Stream<double> stream = sampleFromValues<double>(sampler,
+          final stream = sampleFromValues<double>(sampler,
               startValue, changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(_controller.add,
@@ -67,7 +67,7 @@ class TweenStream extends Stream<double> {
 
   static Stream<double> sampleFromValues<T>(Sampler sampler, double startValue,
       double changeInTime, int durationMs, int intervalMs) async* {
-    int currentTimeMs = 0;
+    var currentTimeMs = 0;
     double result;
 
     yield startValue;
@@ -99,21 +99,21 @@ Sampler get linear => (double startValue, double changeInTime,
 
 Sampler get easeIn => (double startValue, double changeInTime,
         int currentTimeMs, int durationMs) {
-      final double t = currentTimeMs / durationMs;
+      final t = currentTimeMs / durationMs;
 
       return changeInTime * t * t + startValue;
     };
 
 Sampler get easeOut => (double startValue, double changeInTime,
         int currentTimeMs, int durationMs) {
-      final double t = currentTimeMs / durationMs;
+      final t = currentTimeMs / durationMs;
 
       return -changeInTime * t * (t - 2) + startValue;
     };
 
 Sampler get easeInOut => (double startValue, double changeInTime,
         int currentTimeMs, int durationMs) {
-      double t = currentTimeMs / (durationMs / 2);
+      var t = currentTimeMs / (durationMs / 2);
 
       if (t < 1.0) return changeInTime / 2 * t * t + startValue;
 

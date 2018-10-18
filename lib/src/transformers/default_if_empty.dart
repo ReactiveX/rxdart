@@ -21,7 +21,7 @@ class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
-      bool hasEvent = false;
+      var hasEvent = false;
 
       controller = new StreamController<T>(
           sync: true,

@@ -27,7 +27,7 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onListen: () {
             subscription = input.listen((T value) {
               try {
-                final Completer<T> completer = new Completer<T>();
+                final completer = new Completer<T>();
 
                 new Timer(duration, () => completer.complete(value));
 
