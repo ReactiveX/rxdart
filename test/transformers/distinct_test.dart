@@ -1,16 +1,14 @@
-import 'dart:async';
-
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.distinct', () async {
-    final int expected = 1;
+    const expected = 1;
 
-    Stream<int> observable =
-        new Observable<int>.fromIterable(<int>[expected, expected]).distinct();
+    final observable =
+        new Observable.fromIterable(const [expected, expected]).distinct();
 
-    observable.listen(expectAsync1((int actual) {
+    observable.listen(expectAsync1((actual) {
       expect(actual, expected);
     }));
   });

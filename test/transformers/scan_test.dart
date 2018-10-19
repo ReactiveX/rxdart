@@ -5,55 +5,50 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.scan', () async {
-    const List<int> expectedOutput = const <int>[1, 3, 6, 10];
-    int count = 0;
+    const expectedOutput = [1, 3, 6, 10];
+    var count = 0;
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
-        .scan((int acc, int value, int index) =>
-            ((acc == null) ? 0 : acc) + value)
-        .listen(expectAsync1((int result) {
+    new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+        .scan((int acc, int value, int index) => (acc ?? 0) + value)
+        .listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.scan.reusable', () async {
-    final ScanStreamTransformer<int, int> transformer =
-        new ScanStreamTransformer<int, int>((int acc, int value, int index) =>
-            ((acc == null) ? 0 : acc) + value);
-    const List<int> expectedOutput = const <int>[1, 3, 6, 10];
-    int countA = 0, countB = 0;
+    final transformer = new ScanStreamTransformer<int, int>(
+        (int acc, int value, int index) => (acc ?? 0) + value);
+    const expectedOutput = [1, 3, 6, 10];
+    var countA = 0, countB = 0;
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+    new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+    new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.scan.asBroadcastStream', () async {
-    Stream<int> stream = new Observable<int>(
-            new Stream<int>.fromIterable(<int>[1, 2, 3, 4]).asBroadcastStream())
-        .scan(
-            (int acc, int value, int index) =>
-                ((acc == null) ? 0 : acc) + value,
-            0);
+    final stream = new Observable(
+            new Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
+        .scan((int acc, int value, int index) => (acc ?? 0) + value, 0);
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.scan.error.shouldThrow', () async {
-    Stream<int> observableWithError =
-        new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3, 4]))
+    final observableWithError =
+        new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
             .scan((num acc, num value, int index) {
       throw new StateError("oh noes!");
     });

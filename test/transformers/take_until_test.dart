@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
   new Timer(const Duration(milliseconds: 200), () => controller.add(2));
@@ -18,7 +18,7 @@ Stream<int> _getStream() {
 }
 
 Stream<int> _getOtherStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 250), () {
     controller.add(1);
@@ -30,56 +30,55 @@ Stream<int> _getOtherStream() {
 
 void main() {
   test('rx.Observable.takeUntil', () async {
-    const List<int> expectedOutput = const <int>[1, 2];
-    int count = 0;
+    const expectedOutput = [1, 2];
+    var count = 0;
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .takeUntil(_getOtherStream())
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.takeUntil.shouldClose', () async {
-    new Observable<int>(_getStream())
-        .takeUntil(new Stream<Null>.empty())
+    new Observable(_getStream())
+        .takeUntil(new Stream<void>.empty())
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
   });
 
   test('rx.Observable.takeUntil.reusable', () async {
-    final TakeUntilStreamTransformer<int, int> transformer =
-        new TakeUntilStreamTransformer<int, int>(
-            _getOtherStream().asBroadcastStream());
-    const List<int> expectedOutput = const <int>[1, 2];
-    int countA = 0, countB = 0;
+    final transformer = new TakeUntilStreamTransformer<int, int>(
+        _getOtherStream().asBroadcastStream());
+    const expectedOutput = [1, 2];
+    var countA = 0, countB = 0;
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
-    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
+    final stream = new Observable(_getStream().asBroadcastStream())
         .takeUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.takeUntil.error.shouldThrowA', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    final observableWithError =
+        new Observable(new ErrorStream<void>(new Exception()))
             .takeUntil(_getOtherStream());
 
     observableWithError.listen(null,
@@ -89,18 +88,18 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.error.shouldThrowB', () {
-    expect(() => new Observable<num>.just(1).takeUntil<Null>(null),
+    expect(() => new Observable.just(1).takeUntil<void>(null),
         throwsArgumentError);
   });
 
   test('rx.Observable.takeUntil.pause.resume', () async {
     StreamSubscription<int> subscription;
-    const List<int> expectedOutput = const <int>[1, 2];
-    int count = 0;
+    const expectedOutput = [1, 2];
+    var count = 0;
 
-    subscription = new Observable<int>(_getStream())
+    subscription = new Observable(_getStream())
         .takeUntil(_getOtherStream())
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
 
           if (count == expectedOutput.length) {

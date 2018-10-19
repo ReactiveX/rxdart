@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
   new Timer(const Duration(milliseconds: 200), () => controller.add(2));
@@ -19,44 +19,44 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.debounce', () async {
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .debounce(const Duration(milliseconds: 200))
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, 4);
         }, count: 1));
   });
 
   test('rx.Observable.debounce.reusable', () async {
-    final DebounceStreamTransformer<int> transformer =
+    final transformer =
         new DebounceStreamTransformer<int>(const Duration(milliseconds: 200));
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, 4);
         }, count: 1));
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, 4);
         }, count: 1));
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
-    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
+    final stream = new Observable(_getStream().asBroadcastStream())
         .debounce(const Duration(milliseconds: 200));
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.debounce.error.shouldThrowA', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    final observableWithError =
+        new Observable(new ErrorStream<void>(new Exception()))
             .debounce(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
@@ -68,25 +68,24 @@ void main() {
   /// Should also throw if the current [Zone] is unable to install a [Timer]
   test('rx.Observable.debounce.error.shouldThrowB', () async {
     runZoned(() {
-      Stream<num> observableWithError = new Observable<int>.just(1)
-          .debounce(const Duration(milliseconds: 200));
+      final observableWithError =
+          new Observable.just(1).debounce(const Duration(milliseconds: 200));
 
       observableWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },
         zoneSpecification: new ZoneSpecification(
-            createTimer: (Zone self, ZoneDelegate parent, Zone zone,
-                    Duration duration, void f()) =>
+            createTimer: (self, parent, zone, duration, void f()) =>
                 throw new Exception('Zone createTimer error')));
   });
 
   test('rx.Observable.debounce.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = new Observable<int>.fromIterable(<int>[1, 2, 3])
+    final stream = new Observable.fromIterable(const [1, 2, 3])
         .debounce(new Duration(milliseconds: 1));
 
-    subscription = stream.listen(expectAsync1((int value) {
+    subscription = stream.listen(expectAsync1((value) {
       expect(value, 3);
 
       subscription.cancel();
@@ -97,20 +96,20 @@ void main() {
   });
 
   test('rx.Observable.debounce.emits.last.item.immediately', () async {
-    List<dynamic> emissions = <dynamic>[];
-    Stopwatch stopwatch = new Stopwatch();
-    Observable<int> stream = new Observable<int>.fromIterable(<int>[1, 2, 3])
+    final emissions = <int>[];
+    final stopwatch = new Stopwatch();
+    final stream = new Observable.fromIterable(const [1, 2, 3])
         .debounce(new Duration(seconds: 100));
 
     stopwatch.start();
 
     stream.listen(
-        expectAsync1((int val) {
+        expectAsync1((val) {
           emissions.add(val);
         }, count: 1), onDone: expectAsync0(() {
       stopwatch.stop();
 
-      expect(emissions, <int>[3]);
+      expect(emissions, const [3]);
 
       // We debounce for 100 seconds. To ensure we aren't waiting that long to
       // emit the last item after the base stream completes, we expect the
@@ -123,14 +122,13 @@ void main() {
     'rx.Observable.debounce.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      Observable<int> stream =
-          new Observable<int>.fromIterable(<int>[1, 2, 3]).doOnDone(() {
+      final stream = new Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).debounce(new Duration(seconds: 10));
 
       // We expect the onData callback to be called 0 times because the
       // subscription is cancelled when the base stream ends.
-      subscription = stream.listen(expectAsync1((int val) {}, count: 0));
+      subscription = stream.listen(expectAsync1((_) {}, count: 0));
     },
     timeout: new Timeout(new Duration(seconds: 3)),
   );

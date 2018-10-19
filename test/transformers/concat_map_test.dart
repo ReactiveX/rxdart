@@ -5,11 +5,11 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.concatMap', () async {
-    const List<int> expectedOutput = const <int>[1, 1, 2, 2, 3, 3];
-    int count = 0;
+    const expectedOutput = [1, 1, 2, 2, 3, 3];
+    var count = 0;
 
-    new Observable<int>(_getStream()).concatMap(_getOtherStream).listen(
-        expectAsync1((num result) {
+    new Observable(_getStream()).concatMap(_getOtherStream).listen(
+        expectAsync1((result) {
           expect(result, expectedOutput[count++]);
         }, count: expectedOutput.length), onDone: expectAsync0(() {
       expect(true, true);
@@ -17,8 +17,8 @@ void main() {
   });
 
   test('rx.Observable.concatMap.error.shouldThrow', () async {
-    Stream<int> observableWithError =
-        new Observable<int>(new ErrorStream<int>(new Exception()))
+    final observableWithError =
+        new Observable(new ErrorStream<int>(new Exception()))
             .concatMap(_getOtherStream);
 
     observableWithError.listen(null,
@@ -29,10 +29,10 @@ void main() {
 
   test('rx.Observable.concatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = new Observable<int>.just(0)
-        .concatMap((_) => new Observable<int>.just(1));
+    final stream =
+        new Observable.just(0).concatMap((_) => new Observable.just(1));
 
-    subscription = stream.listen(expectAsync1((int value) {
+    subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
       subscription.cancel();
     }, count: 1));
@@ -45,12 +45,11 @@ void main() {
 
   test('rx.Observable.concatMap.cancel', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream =
-        new Observable<int>(_getStream()).concatMap(_getOtherStream);
+    final stream = new Observable(_getStream()).concatMap(_getOtherStream);
 
     // Cancel the subscription before any events come through
     subscription = stream.listen(
-        expectAsync1((num value) {
+        expectAsync1((value) {
           expect(true, isFalse);
         }, count: 0),
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -66,12 +65,10 @@ void main() {
   });
 }
 
-Stream<int> _getStream() {
-  return new Stream<int>.fromIterable(<int>[1, 2, 3]);
-}
+Stream<int> _getStream() => new Stream.fromIterable(const [1, 2, 3]);
 
 Stream<int> _getOtherStream(int value) {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(
       // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer

@@ -3,9 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.forEach', () async {
-    bool wasCalled = false;
+    var wasCalled = false;
 
-    await new Observable<int>.just(1).forEach((_) {
+    await new Observable.just(1).forEach((_) {
       wasCalled = true;
     });
 

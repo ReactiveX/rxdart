@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 100), () => controller.add(1));
   new Timer(const Duration(milliseconds: 200), () => controller.add(2));
@@ -19,9 +19,9 @@ Stream<int> _getStream() {
 
 void main() {
   test('rx.Observable.ignoreElements', () async {
-    bool hasReceivedEvent = false;
+    var hasReceivedEvent = false;
 
-    new Observable<int>(_getStream()).ignoreElements().listen((_) {
+    new Observable(_getStream()).ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -30,18 +30,17 @@ void main() {
   });
 
   test('rx.Observable.ignoreElements.reusable', () async {
-    final IgnoreElementsStreamTransformer<int> transformer =
-        new IgnoreElementsStreamTransformer<int>();
-    bool hasReceivedEvent = false;
+    final transformer = new IgnoreElementsStreamTransformer<int>();
+    var hasReceivedEvent = false;
 
-    new Observable<int>(_getStream()).transform(transformer).listen((_) {
+    new Observable(_getStream()).transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
           expect(hasReceivedEvent, isFalse);
         }, count: 1));
 
-    new Observable<int>(_getStream()).transform(transformer).listen((_) {
+    new Observable(_getStream()).transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -50,20 +49,20 @@ void main() {
   });
 
   test('rx.Observable.ignoreElements.asBroadcastStream', () async {
-    Stream<int> stream =
-        new Observable<int>(_getStream().asBroadcastStream()).ignoreElements();
+    final stream =
+        new Observable(_getStream().asBroadcastStream()).ignoreElements();
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.ignoreElements.pause.resume', () async {
-    bool hasReceivedEvent = false;
+    var hasReceivedEvent = false;
 
-    new Observable<int>(_getStream()).ignoreElements().listen((_) {
+    new Observable(_getStream()).ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -74,9 +73,8 @@ void main() {
   });
 
   test('rx.Observable.ignoreElements.error.shouldThrow', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
-            .ignoreElements();
+    final observableWithError =
+        new Observable(new ErrorStream<void>(new Exception())).ignoreElements();
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
