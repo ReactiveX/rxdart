@@ -24,7 +24,7 @@ class RepeatStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
     return new StreamTransformer<T, T>.fromHandlers(
         handleData: (T data, EventSink<T> sink) {
-          for (int i = 0; i < repeatCount; i++) sink.add(data);
+          for (var i = 0; i < repeatCount; i++) sink.add(data);
         },
         handleError: (Object error, StackTrace s, EventSink<T> sink) =>
             sink.addError(error));

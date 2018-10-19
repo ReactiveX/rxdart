@@ -8,20 +8,20 @@ Stream<int> _getStream() =>
 
 void main() {
   test('rx.Observable.delay', () async {
-    int value = 1;
-    new Observable<int>(_getStream())
+    var value = 1;
+    new Observable(_getStream())
         .delay(const Duration(milliseconds: 200))
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, value++);
         }, count: 4));
   });
 
   test('rx.Observable.delay.shouldBeDelayed', () async {
-    int value = 1;
-    new Observable<int>(_getStream())
+    var value = 1;
+    new Observable(_getStream())
         .delay(const Duration(milliseconds: 500))
         .timeInterval()
-        .listen(expectAsync1((TimeInterval<int> result) {
+        .listen(expectAsync1((result) {
           expect(result.value, value++);
 
           if (result.value == 1)
@@ -34,37 +34,37 @@ void main() {
   });
 
   test('rx.Observable.delay.reusable', () async {
-    final DelayStreamTransformer<int> transformer =
+    final transformer =
         new DelayStreamTransformer<int>(const Duration(milliseconds: 200));
-    int valueA = 1, valueB = 1;
+    var valueA = 1, valueB = 1;
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, valueA++);
         }, count: 4));
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((int result) {
+        .listen(expectAsync1((result) {
           expect(result, valueB++);
         }, count: 4));
   });
 
   test('rx.Observable.delay.asBroadcastStream', () async {
-    Stream<int> stream = new Observable<int>(_getStream().asBroadcastStream())
+    final stream = new Observable(_getStream().asBroadcastStream())
         .delay(const Duration(milliseconds: 200));
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.delay.error.shouldThrowA', () async {
-    Stream<num> observableWithError =
-        new Observable<num>(new ErrorStream<num>(new Exception()))
+    final observableWithError =
+        new Observable(new ErrorStream<void>(new Exception()))
             .delay(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
@@ -76,25 +76,24 @@ void main() {
   /// Should also throw if the current [Zone] is unable to install a [Timer]
   test('rx.Observable.delay.error.shouldThrowB', () async {
     runZoned(() {
-      Stream<num> observableWithError =
-          new Observable<int>.just(1).delay(const Duration(milliseconds: 200));
+      final observableWithError =
+          new Observable.just(1).delay(const Duration(milliseconds: 200));
 
       observableWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },
         zoneSpecification: new ZoneSpecification(
-            createTimer: (Zone self, ZoneDelegate parent, Zone zone,
-                    Duration duration, void f()) =>
+            createTimer: (self, parent, zone, duration, void f()) =>
                 throw new Exception('Zone createTimer error')));
   });
 
   test('rx.Observable.delay.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = new Observable<int>.fromIterable(<int>[1, 2, 3])
+    final stream = new Observable.fromIterable(const [1, 2, 3])
         .delay(new Duration(milliseconds: 1));
 
-    subscription = stream.listen(expectAsync1((int value) {
+    subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();
@@ -108,14 +107,13 @@ void main() {
     'rx.Observable.delay.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      Observable<int> stream =
-          new Observable<int>.fromIterable(<int>[1, 2, 3]).doOnDone(() {
+      final stream = new Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).delay(new Duration(seconds: 10));
 
       // We expect the onData callback to be called 0 times because the
       // subscription is cancelled when the base stream ends.
-      subscription = stream.listen(expectAsync1((int val) {}, count: 0));
+      subscription = stream.listen(expectAsync1((_) {}, count: 0));
     },
     timeout: new Timeout(new Duration(seconds: 3)),
   );

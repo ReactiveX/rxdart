@@ -29,7 +29,7 @@ void main() {
   });
 
   test('rx.Observable.error', () async {
-    Observable<int> observable = new Observable<int>.error(new Exception());
+    final observable = new Observable<int>.error(new Exception());
 
     await expectLater(
         observable,

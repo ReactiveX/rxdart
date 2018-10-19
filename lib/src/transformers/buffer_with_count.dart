@@ -62,7 +62,7 @@ class BufferWithCountStreamTransformer<T>
   }
 
   static void assertCountAndSkip(int count, [int skip]) {
-    final int skipAmount = skip == null ? count : skip;
+    final skipAmount = skip == null ? count : skip;
 
     if (count == null) {
       throw new ArgumentError('count cannot be null');

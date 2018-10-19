@@ -16,7 +16,7 @@ class TimerStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    StreamSubscription<T> subscription = controller.stream.listen(onData,
+    final subscription = controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
     new Timer(duration, () {

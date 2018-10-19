@@ -7,11 +7,10 @@ import 'package:test/test.dart';
 void main() {
   group('ExhaustMap', () {
     test('does not create a new Stream while emitting', () async {
-      int calls = 0;
-      final Observable<int> observable =
-          Observable.range(0, 9).exhaustMap((int i) {
+      var calls = 0;
+      final observable = Observable.range(0, 9).exhaustMap((i) {
         calls++;
-        return new Observable<int>.timer(i, new Duration(milliseconds: 100));
+        return new Observable.timer(i, new Duration(milliseconds: 100));
       });
 
       await expectLater(observable, emitsInOrder(<dynamic>[0, emitsDone]));
@@ -19,12 +18,12 @@ void main() {
     });
 
     test('starts emitting again after previous Stream is complete', () async {
-      int calls = 0;
-      final Observable<int> observable = Observable.range(0, 9)
+      var calls = 0;
+      final observable = Observable.range(0, 9)
           .interval(new Duration(milliseconds: 20))
-          .exhaustMap((int i) {
+          .exhaustMap((i) {
         calls++;
-        return new Observable<int>.timer(i, new Duration(milliseconds: 100));
+        return new Observable.timer(i, new Duration(milliseconds: 100));
       });
 
       await expectLater(observable, emitsInOrder(<dynamic>[0, 5, emitsDone]));
@@ -32,9 +31,8 @@ void main() {
     });
 
     test('is reusable', () async {
-      final ExhaustMapStreamTransformer<int, int> transformer =
-          new ExhaustMapStreamTransformer<int, int>((int i) =>
-              new Observable<int>.timer(i, new Duration(milliseconds: 100)));
+      final transformer = new ExhaustMapStreamTransformer(
+          (int i) => new Observable.timer(i, new Duration(milliseconds: 100)));
 
       await expectLater(
         Observable.range(0, 9).transform(transformer),
@@ -48,36 +46,32 @@ void main() {
     });
 
     test('works as a broadcast stream', () async {
-      Stream<num> stream = Observable.range(0, 9)
-          .asBroadcastStream()
-          .exhaustMap((int i) =>
-              new Observable<int>.timer(i, new Duration(milliseconds: 100)));
+      final stream = Observable.range(0, 9).asBroadcastStream().exhaustMap(
+          (i) => new Observable.timer(i, new Duration(milliseconds: 100)));
 
       await expectLater(() {
-        stream.listen((_) {});
-        stream.listen((_) {});
+        stream.listen(null);
+        stream.listen(null);
       }, returnsNormally);
     });
 
     test('should emit errors from source', () async {
-      Stream<int> observableWithError = new Observable<int>(
-              new ErrorStream<int>(new Exception()))
-          .exhaustMap((int i) =>
-              new Observable<int>.timer(i, new Duration(milliseconds: 100)));
+      final observableWithError =
+          new Observable(new ErrorStream<int>(new Exception())).exhaustMap(
+              (i) => new Observable.timer(i, new Duration(milliseconds: 100)));
 
       await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors from mapped stream', () async {
-      Stream<int> observableWithError = new Observable<int>.just(1).exhaustMap(
-          (_) => new ErrorStream<int>(new Exception('Catch me if you can!')));
+      final observableWithError = new Observable.just(1).exhaustMap(
+          (_) => new ErrorStream<void>(new Exception('Catch me if you can!')));
 
       await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors thrown in the mapper', () async {
-      Stream<int> observableWithError =
-          new Observable<int>.just(1).exhaustMap((_) {
+      final observableWithError = new Observable.just(1).exhaustMap<void>((_) {
         throw new Exception('oh noes!');
       });
 
@@ -86,10 +80,10 @@ void main() {
 
     test('can be paused and resumed', () async {
       StreamSubscription<int> subscription;
-      Observable<int> stream = Observable.range(0, 9).exhaustMap((int i) =>
-          new Observable<int>.timer(i, new Duration(milliseconds: 20)));
+      final stream = Observable.range(0, 9).exhaustMap(
+          (i) => new Observable.timer(i, new Duration(milliseconds: 20)));
 
-      subscription = stream.listen(expectAsync1((int value) {
+      subscription = stream.listen(expectAsync1((value) {
         expect(value, 0);
         subscription.cancel();
       }, count: 1));

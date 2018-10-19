@@ -9,12 +9,11 @@ class MockStream<T> extends Mock implements Stream<T> {}
 void main() {
   group('ReplayConnectableObservable', () {
     test('should not emit before connecting', () {
-      final Stream<int> stream = MockStream<int>();
-      final ReplayConnectableObservable<int> observable =
-          ReplayConnectableObservable<int>(stream);
+      final stream = MockStream<int>();
+      final observable = ReplayConnectableObservable(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError'))).thenReturn(
-          new Stream<int>.fromIterable(<int>[1, 2, 3]).listen(null));
+      when(stream.listen(any, onError: anyNamed('onError')))
+          .thenReturn(new Stream.fromIterable(const [1, 2, 3]).listen(null));
 
       verifyNever(stream.listen(any, onError: anyNamed('onError')));
 
@@ -24,9 +23,9 @@ void main() {
     });
 
     test('should begin emitting items after connection', () {
-      final List<int> items = <int>[1, 2, 3];
-      final ReplayConnectableObservable<int> observable =
-          ReplayConnectableObservable<int>(Stream<int>.fromIterable(items));
+      const items = [1, 2, 3];
+      final observable =
+          ReplayConnectableObservable(Stream.fromIterable(items));
 
       observable.connect();
 
@@ -90,27 +89,24 @@ void main() {
     });
 
     test('can multicast observables', () async {
-      final ReplayObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
+      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
 
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+      expect(observable, emitsInOrder(const <int>[1, 2, 3]));
+      expect(observable, emitsInOrder(const <int>[1, 2, 3]));
+      expect(observable, emitsInOrder(const <int>[1, 2, 3]));
     });
 
     test('only holds a certain number of values', () async {
-      final ReplayObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
+      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
 
-      expect(observable.values, <int>[]);
-      expect(observable, emitsInOrder(<int>[1, 2, 3]));
+      expect(observable.values, const <int>[]);
+      expect(observable, emitsInOrder(const <int>[1, 2, 3]));
     });
 
     test('provides access to all items', () async {
-      final List<int> items = <int>[1, 2, 3];
-      int count = 0;
-      final ReplayObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
+      const items = [1, 2, 3];
+      var count = 0;
+      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
 
       observable.listen(expectAsync1((int data) {
         expect(data, items[count]);
@@ -122,27 +118,24 @@ void main() {
     });
 
     test('provides access to a certain number of items', () async {
-      final List<int> items = <int>[1, 2, 3];
-      int count = 0;
-      final ReplayObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay(maxSize: 2);
+      const items = [1, 2, 3];
+      var count = 0;
+      final observable =
+          Observable.fromIterable(const [1, 2, 3]).shareReplay(maxSize: 2);
 
-      observable.listen(expectAsync1((int data) {
+      observable.listen(expectAsync1((data) {
         expect(data, items[count]);
         count++;
         if (count == items.length) {
-          expect(observable.values, <int>[2, 3]);
+          expect(observable.values, const <int>[2, 3]);
         }
       }, count: items.length));
     });
 
     test('provide a function to autoconnect that stops listening', () async {
-      final Observable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3])
-              .publishReplay()
-              .autoConnect(
-                  connection: (StreamSubscription<int> subscription) =>
-                      subscription.cancel());
+      final observable = Observable.fromIterable(const [1, 2, 3])
+          .publishReplay()
+          .autoConnect(connection: (subscription) => subscription.cancel());
 
       expect(observable, neverEmits(anything));
     });

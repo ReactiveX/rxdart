@@ -57,9 +57,7 @@ class SwitchLatestStream<T> extends Stream<T> {
     StreamController<T> controller;
     StreamSubscription<Stream<T>> subscription;
     StreamSubscription<T> otherSubscription;
-    bool leftClosed = false;
-    bool rightClosed = false;
-    bool hasMainEvent = false;
+    var leftClosed = false, rightClosed = false, hasMainEvent = false;
 
     controller = new StreamController<T>(
         sync: true,

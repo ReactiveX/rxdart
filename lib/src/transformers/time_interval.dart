@@ -27,7 +27,7 @@ class TimeIntervalStreamTransformer<T>
       controller = new StreamController<TimeInterval<T>>(
           sync: true,
           onListen: () {
-            Stopwatch stopwatch = new Stopwatch()..start();
+            var stopwatch = new Stopwatch()..start();
             int ems;
 
             subscription = input.listen(

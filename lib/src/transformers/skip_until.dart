@@ -29,7 +29,7 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
-      bool goTime = false;
+      var goTime = false;
 
       void onDone() {
         if (controller.isClosed) return;

@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<num> getDelayedStream(int delay, num value) async* {
-  final Completer<dynamic> completer = new Completer<dynamic>();
+  final completer = new Completer<dynamic>();
 
   new Timer(new Duration(milliseconds: delay), () => completer.complete());
 
@@ -17,38 +17,36 @@ Stream<num> getDelayedStream(int delay, num value) async* {
 
 void main() {
   test('rx.Observable.amb', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
-    int expected = 1;
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
+    var expected = 1;
 
     // ignore: deprecated_member_use
-    new Observable<num>.amb(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num result) {
+    new Observable.amb([first, second, last]).listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
   });
 
   test('rx.Observable.amb.single.subscription', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
+    final first = getDelayedStream(50, 1);
 
     // ignore: deprecated_member_use
-    Observable<num> observable = new Observable<num>.amb(<Stream<num>>[first]);
+    final observable = new Observable.amb([first]);
 
     observable.listen(null);
     await expectLater(() => observable.listen((_) {}), throwsA(isStateError));
   });
 
   test('rx.Observable.amb.asBroadcastStream', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
 
-    Stream<num> observable =
+    final observable =
         // ignore: deprecated_member_use
-        new Observable<num>.amb(<Stream<num>>[first, second, last])
-            .asBroadcastStream();
+        new Observable.amb([first, second, last]).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen((_) {});
@@ -69,8 +67,8 @@ void main() {
 
   test('rx.Observable.amb.shouldThrowC', () async {
     // ignore: deprecated_member_use
-    Stream<num> observable = new Observable<num>.amb(
-        <Stream<num>>[new ErrorStream<num>(new Exception('oh noes!'))]);
+    var observable =
+        new Observable<num>.amb([new ErrorStream(new Exception('oh noes!'))]);
 
     // listen twice on same stream
     observable.listen(null,
@@ -79,14 +77,14 @@ void main() {
   });
 
   test('rx.Observable.amb.pause.resume', () async {
-    final Stream<num> first = getDelayedStream(50, 1);
-    final Stream<num> second = getDelayedStream(60, 2);
-    final Stream<num> last = getDelayedStream(70, 3);
+    final first = getDelayedStream(50, 1),
+        second = getDelayedStream(60, 2),
+        last = getDelayedStream(70, 3);
 
     StreamSubscription<num> subscription;
     // ignore: deprecated_member_use
-    subscription = new Observable<num>.amb(<Stream<num>>[first, second, last])
-        .listen(expectAsync1((num value) {
+    subscription =
+        new Observable.amb([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

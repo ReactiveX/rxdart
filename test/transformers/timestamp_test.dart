@@ -5,63 +5,60 @@ import 'package:test/test.dart';
 
 void main() {
   test('Rx.Observable.timestamp', () async {
-    final List<int> expected = <int>[1, 2, 3];
-    int count = 0;
+    const expected = [1, 2, 3];
+    var count = 0;
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3]))
+    new Observable(new Stream.fromIterable(const [1, 2, 3]))
         .timestamp()
-        .listen(expectAsync1((Timestamped<int> result) {
+        .listen(expectAsync1((result) {
           expect(result.value, expected[count++]);
         }, count: expected.length));
   });
 
   test('Rx.Observable.timestamp.reusable', () async {
-    final TimestampStreamTransformer<int> transformer =
-        new TimestampStreamTransformer<int>();
-    final List<int> expected = <int>[1, 2, 3];
-    int countA = 0, countB = 0;
+    final transformer = new TimestampStreamTransformer<int>();
+    const expected = [1, 2, 3];
+    var countA = 0, countB = 0;
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3]))
+    new Observable(new Stream.fromIterable(const [1, 2, 3]))
         .transform(transformer)
-        .listen(expectAsync1((Timestamped<int> result) {
+        .listen(expectAsync1((result) {
           expect(result.value, expected[countA++]);
         }, count: expected.length));
 
-    new Observable<int>(new Stream<int>.fromIterable(<int>[1, 2, 3]))
+    new Observable(new Stream.fromIterable(const [1, 2, 3]))
         .transform(transformer)
-        .listen(expectAsync1((Timestamped<int> result) {
+        .listen(expectAsync1((result) {
           expect(result.value, expected[countB++]);
         }, count: expected.length));
   });
 
   test('timestampTransformer', () async {
-    final List<int> expected = <int>[1, 2, 3];
-    int count = 0;
+    const expected = [1, 2, 3];
+    var count = 0;
 
-    new Stream<int>.fromIterable(<int>[1, 2, 3])
+    new Stream.fromIterable(const [1, 2, 3])
         .transform(new TimestampStreamTransformer<int>())
-        .listen(expectAsync1((Timestamped<int> result) {
+        .listen(expectAsync1((result) {
           expect(result.value, expected[count++]);
         }, count: expected.length));
   });
 
   test('timestampTransformer.asBroadcastStream', () async {
-    Stream<Timestamped<int>> stream =
-        new Stream<int>.fromIterable(<int>[1, 2, 3])
-            .transform(new TimestampStreamTransformer<int>())
-            .asBroadcastStream();
+    final stream = new Stream.fromIterable(const [1, 2, 3])
+        .transform(new TimestampStreamTransformer<int>())
+        .asBroadcastStream();
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('timestampTransformer.error.shouldThrow', () async {
-    Stream<Timestamped<int>> streamWithError =
-        new ErrorStream<int>(new Exception())
-            .transform(new TimestampStreamTransformer<int>());
+    final streamWithError = new ErrorStream<int>(new Exception())
+        .transform(new TimestampStreamTransformer());
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -70,14 +67,13 @@ void main() {
   });
 
   test('timestampTransformer.pause.resume', () async {
-    final Stream<Timestamped<int>> stream =
-        new Stream<int>.fromIterable(<int>[1, 2, 3])
-            .transform(new TimestampStreamTransformer<int>());
-    final List<int> expected = <int>[1, 2, 3];
+    final stream = new Stream.fromIterable(const [1, 2, 3])
+        .transform(new TimestampStreamTransformer());
+    const expected = [1, 2, 3];
     StreamSubscription<Timestamped<int>> subscription;
-    int count = 0;
+    var count = 0;
 
-    subscription = stream.listen(expectAsync1((Timestamped<int> result) {
+    subscription = stream.listen(expectAsync1((result) {
       expect(result.value, expected[count++]);
 
       if (count == expected.length) {

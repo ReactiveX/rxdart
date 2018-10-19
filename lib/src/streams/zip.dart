@@ -47,18 +47,17 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
     }
 
     StreamController<T> controller;
-    final List<bool> pausedStates =
-        new List<bool>.generate(streams.length, (_) => false, growable: false);
-    final List<StreamSubscription<dynamic>> subscriptions =
-        new List<StreamSubscription<dynamic>>(streams.length);
+    final pausedStates =
+        new List.generate(streams.length, (_) => false, growable: false);
+    final subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
           try {
-            final List<dynamic> values = new List<dynamic>(streams.length);
-            final List<bool> completedStatus =
-                new List<bool>.generate(streams.length, (_) => false);
+            final values = new List<dynamic>(streams.length);
+            final completedStatus =
+                new List.generate(streams.length, (_) => false);
 
             void doUpdate(int index, dynamic value) {
               values[index] = value;
@@ -82,8 +81,8 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
                 controller.close();
             }
 
-            for (int i = 0, len = streams.length; i < len; i++) {
-              Stream<dynamic> stream = streams.elementAt(i);
+            for (var i = 0, len = streams.length; i < len; i++) {
+              var stream = streams.elementAt(i);
 
               subscriptions[i] = stream.listen(
                   (dynamic value) => doUpdate(i, value),
@@ -118,7 +117,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
       Iterable<dynamic> values,
       StreamController<T> controller) {
     try {
-      final int len = values.length;
+      final len = values.length;
       final A a = values.elementAt(0);
       final B b = values.elementAt(1);
       T result;
@@ -192,7 +191,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
   }
 
   static bool _areAllPaused(List<bool> pausedStates) {
-    for (int i = 0, len = pausedStates.length; i < len; i++) {
+    for (var i = 0, len = pausedStates.length; i < len; i++) {
       if (!pausedStates[i]) return false;
     }
 
@@ -201,7 +200,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
 
   static void _resumeAll(List<StreamSubscription<dynamic>> subscriptions,
       List<bool> pausedStates) {
-    for (int i = 0, len = subscriptions.length; i < len; i++) {
+    for (var i = 0, len = subscriptions.length; i < len; i++) {
       pausedStates[i] = false;
       subscriptions[i].resume();
     }

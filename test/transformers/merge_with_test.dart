@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.mergeWith', () async {
-    final Observable<int> delayedStream =
-        new Observable<int>.timer(1, new Duration(milliseconds: 10));
-    final Observable<int> immediateStream = new Observable<int>.just(2);
-    final List<int> expected = <int>[2, 1];
-    int count = 0;
+    final delayedStream =
+        new Observable.timer(1, new Duration(milliseconds: 10));
+    final immediateStream = new Observable.just(2);
+    const expected = [2, 1];
+    var count = 0;
 
-    new Observable<int>(delayedStream).mergeWith(
-        <Observable<int>>[immediateStream]).listen(expectAsync1((int result) {
+    new Observable(delayedStream)
+        .mergeWith([immediateStream]).listen(expectAsync1((result) {
       expect(result, expected[count++]);
     }, count: expected.length));
   });

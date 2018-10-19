@@ -7,67 +7,65 @@ import 'package:test/test.dart';
 void main() {
   test('rx.Observable.retryWhen', () {
     expect(
-      new Observable<int>.retryWhen(_sourceStream(3), _alwaysThrow),
+      new Observable.retryWhen(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream', () {
     expect(
-      new RetryWhenStream<int>(_sourceStream(3), _alwaysThrow),
+      new RetryWhenStream(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.onDone', () {
     expect(
-      new RetryWhenStream<int>(_sourceStream(3), _alwaysThrow),
+      new RetryWhenStream(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.infinite.retries', () {
     expect(
-      new RetryWhenStream<int>(_sourceStream(1000, 2), _neverThrow).take(6),
+      new RetryWhenStream(_sourceStream(1000, 2), _neverThrow).take(6),
       emitsInOrder(<dynamic>[0, 1, 0, 1, 0, 1, emitsDone]),
     );
   });
 
   test('RetryWhenStream.emits.original.items', () {
-    final int retries = 3;
+    const retries = 3;
 
     expect(
-      new RetryWhenStream<int>(_getStreamWithExtras(retries), _neverThrow)
-          .take(6),
+      new RetryWhenStream(_getStreamWithExtras(retries), _neverThrow).take(6),
       emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.single.subscription', () {
-    Stream<int> stream =
-        new RetryWhenStream<int>(_sourceStream(3), _neverThrow);
+    final stream = new RetryWhenStream(_sourceStream(3), _neverThrow);
     try {
-      stream.listen((_) {});
-      stream.listen((_) {});
+      stream.listen(null);
+      stream.listen(null);
     } catch (e) {
       expect(e, isStateError);
     }
   });
 
   test('RetryWhenStream.asBroadcastStream', () {
-    Stream<int> stream = new RetryWhenStream<int>(_sourceStream(3), _neverThrow)
-        .asBroadcastStream();
+    final stream =
+        new RetryWhenStream(_sourceStream(3), _neverThrow).asBroadcastStream();
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     expect(stream.isBroadcast, isTrue);
   });
 
   test('RetryWhenStream.error.shouldThrow', () {
-    Stream<int> observableWithError =
-        new RetryWhenStream<int>(_sourceStream(3, 0), _alwaysThrow);
+    final observableWithError =
+        new RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
         observableWithError,
@@ -76,17 +74,17 @@ void main() {
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
-    Stream<int> observableWithError =
-        new RetryWhenStream<int>(_sourceStream(3, 0), _alwaysThrow);
+    final observableWithError =
+        new RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
         observableWithError,
         emitsInOrder(<dynamic>[
           emitsError(
-            predicate<RetryError>((RetryError a) {
+            predicate<RetryError>((a) {
               return a.errors.length == 1 &&
-                  a.errors.every((ErrorAndStacktrace es) =>
-                      es.error != null && es.stacktrace != null);
+                  a.errors
+                      .every((es) => es.error != null && es.stacktrace != null);
             }),
           ),
           emitsDone,
@@ -96,8 +94,8 @@ void main() {
   test('RetryWhenStream.pause.resume', () async {
     StreamSubscription<int> subscription;
 
-    subscription = new RetryWhenStream<int>(_sourceStream(3), _neverThrow)
-        .listen(expectAsync1((int result) {
+    subscription = new RetryWhenStream(_sourceStream(3), _neverThrow)
+        .listen(expectAsync1((result) {
       expect(result, 0);
 
       subscription.cancel();
@@ -110,32 +108,31 @@ void main() {
 
 StreamFactory<int> _sourceStream(int i, [int throwAt]) {
   return throwAt == null
-      ? () => new Observable<int>.fromIterable(range(i))
-      : () => new Observable<int>.fromIterable(range(i))
-          .map((int i) => i == throwAt ? throw i : i);
+      ? () => new Observable.fromIterable(range(i))
+      : () => new Observable.fromIterable(range(i))
+          .map((i) => i == throwAt ? throw i : i);
 }
 
 Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
     new Observable<void>.error(new Error());
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) =>
-    new Observable<void>.just('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => new Observable.just('');
 
 StreamFactory<int> _getStreamWithExtras(int failCount) {
-  int count = 0;
+  var count = 0;
 
   return () {
     if (count < failCount) {
       count++;
 
       // Emit first item
-      return new Observable<int>.just(1)
+      return new Observable.just(1)
           // Emit the error
-          .concatWith(<Stream<int>>[new ErrorStream<int>(new Error())])
+          .concatWith([new ErrorStream<int>(new Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith(<Stream<int>>[new Observable<int>.just(1)]);
+          .concatWith([new Observable.just(1)]);
     } else {
-      return new Observable<int>.just(2);
+      return new Observable.just(2);
     }
   };
 }
@@ -166,7 +163,7 @@ StreamFactory<int> _getStreamWithExtras(int failCount) {
 /// from the starting point and [stop] must be less than the starting point so
 /// that it becomes the lower bound.
 Iterable<int> range(int start_or_stop, [int stop, int step]) sync* {
-  final int start = stop == null ? 0 : start_or_stop;
+  final start = stop == null ? 0 : start_or_stop;
   stop ??= start_or_stop;
   step ??= 1;
 
@@ -178,6 +175,6 @@ Iterable<int> range(int start_or_stop, [int stop, int step]) sync* {
     throw new ArgumentError('if step is negative,'
         ' stop must be less than start');
 
-  for (int value = start; step < 0 ? value > stop : value < stop; value += step)
+  for (var value = start; step < 0 ? value > stop : value < stop; value += step)
     yield value;
 }

@@ -27,14 +27,11 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       Stream<S> mapper(T value)) {
     return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      final List<Stream<S>> streams = <Stream<S>>[];
-      final List<StreamSubscription<S>> subscriptions =
-          <StreamSubscription<S>>[];
+      final subscriptions = <StreamSubscription<S>>[];
       StreamController<S> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
-      bool closeAfterNextEvent = false;
-      bool hasMainEvent = false;
+      var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
 
       controller = new StreamController<S>(
           sync: true,
@@ -42,18 +39,18 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
             subscription = input.listen(
                 (T value) {
                   try {
-                    Stream<S> otherStream = mapper(value);
+                    var otherStream = mapper(value);
 
                     hasMainEvent = true;
 
-                    streams.add(otherStream);
+                    openStreams++;
 
                     otherSubscription = otherStream.listen(controller.add,
                         onError: controller.addError, onDone: () {
-                      streams.remove(otherStream);
+                      openStreams--;
                       subscriptions.remove(otherSubscription);
 
-                      if (closeAfterNextEvent && streams.isEmpty)
+                      if (closeAfterNextEvent && openStreams == 0)
                         controller.close();
                     });
 
@@ -64,7 +61,7 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (!hasMainEvent || streams.isEmpty)
+                  if (!hasMainEvent || openStreams == 0)
                     controller.close();
                   else
                     closeAfterNextEvent = true;
@@ -84,7 +81,7 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 otherSubscription.resume());
           },
           onCancel: () {
-            final List<StreamSubscription<dynamic>> list =
+            final list =
                 new List<StreamSubscription<dynamic>>.from(subscriptions)
                   ..add(subscription);
 

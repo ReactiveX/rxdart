@@ -88,7 +88,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
           "You cannot add items while items are being added from addStream");
     }
 
-    final Completer<T> completer = new Completer<T>();
+    final completer = new Completer<T>();
     _isAddingStreamItems = true;
 
     source.listen((T event) {

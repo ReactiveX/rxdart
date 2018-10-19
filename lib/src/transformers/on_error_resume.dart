@@ -34,7 +34,7 @@ class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamSubscription<T> inputSubscription;
       StreamSubscription<T> recoverySubscription;
       StreamController<T> controller;
-      bool shouldCloseController = true;
+      var shouldCloseController = true;
 
       void safeClose() {
         if (shouldCloseController) {

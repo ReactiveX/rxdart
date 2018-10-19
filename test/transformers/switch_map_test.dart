@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 10), () => controller.add(1));
   new Timer(const Duration(milliseconds: 20), () => controller.add(2));
@@ -18,7 +18,7 @@ Stream<int> _getStream() {
 }
 
 Stream<int> _getOtherStream(int value) {
-  StreamController<int> controller = new StreamController<int>();
+  final controller = new StreamController<int>();
 
   new Timer(const Duration(milliseconds: 15), () => controller.add(value + 1));
   new Timer(const Duration(milliseconds: 25), () => controller.add(value + 2));
@@ -32,53 +32,53 @@ Stream<int> _getOtherStream(int value) {
 }
 
 Stream<int> range() =>
-    new Stream<int>.fromIterable(<int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    new Stream.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 void main() {
   test('rx.Observable.switchMap', () async {
-    const List<int> expectedOutput = const <int>[5, 6, 7, 8];
-    int count = 0;
+    const expectedOutput = [5, 6, 7, 8];
+    var count = 0;
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .switchMap(_getOtherStream)
-        .listen(expectAsync1((num result) {
+        .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.switchMap.reusable', () async {
-    final SwitchMapStreamTransformer<int, int> transformer =
+    final transformer =
         new SwitchMapStreamTransformer<int, int>(_getOtherStream);
-    const List<int> expectedOutput = const <int>[5, 6, 7, 8];
-    int countA = 0, countB = 0;
+    const expectedOutput = [5, 6, 7, 8];
+    var countA = 0, countB = 0;
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((num result) {
+        .listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    new Observable<int>(_getStream())
+    new Observable(_getStream())
         .transform(transformer)
-        .listen(expectAsync1((num result) {
+        .listen(expectAsync1((result) {
           expect(result, expectedOutput[countB++]);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.switchMap.asBroadcastStream', () async {
-    Stream<num> stream = new Observable<int>(_getStream().asBroadcastStream())
+    final stream = new Observable(_getStream().asBroadcastStream())
         .switchMap(_getOtherStream);
 
     // listen twice on same stream
-    stream.listen((_) {});
-    stream.listen((_) {});
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
     await expectLater(true, true);
   });
 
   test('rx.Observable.switchMap.error.shouldThrowA', () async {
-    Stream<int> observableWithError =
-        new Observable<int>(new ErrorStream<int>(new Exception()))
+    final observableWithError =
+        new Observable(new ErrorStream<int>(new Exception()))
             .switchMap(_getOtherStream);
 
     observableWithError.listen(null,
@@ -88,8 +88,8 @@ void main() {
   });
 
   test('rx.Observable.switchMap.error.shouldThrowB', () async {
-    Stream<int> observableWithError = new Observable<int>.just(1).switchMap(
-        (_) => new ErrorStream<int>(new Exception('Catch me if you can!')));
+    final observableWithError = new Observable.just(1).switchMap(
+        (_) => new ErrorStream<void>(new Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -98,8 +98,7 @@ void main() {
   });
 
   test('rx.Observable.switchMap.error.shouldThrowC', () async {
-    Stream<int> observableWithError =
-        new Observable<int>.just(1).switchMap((_) {
+    final observableWithError = new Observable.just(1).switchMap<void>((_) {
       throw new Exception('oh noes!');
     });
 
@@ -111,10 +110,10 @@ void main() {
 
   test('rx.Observable.switchMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    Observable<int> stream = new Observable<int>.just(0)
-        .switchMap((_) => new Observable<int>.just(1));
+    final stream =
+        new Observable.just(0).switchMap((_) => new Observable.just(1));
 
-    subscription = stream.listen(expectAsync1((int value) {
+    subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

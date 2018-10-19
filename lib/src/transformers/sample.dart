@@ -29,7 +29,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamSubscription<T> subscription;
       StreamSubscription<dynamic> sampleSubscription;
       T currentValue;
-      bool hasValue = false;
+      var hasValue = false;
 
       void onDone() {
         if (controller.isClosed) return;

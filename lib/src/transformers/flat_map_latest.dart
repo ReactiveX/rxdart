@@ -35,8 +35,7 @@ class FlatMapLatestStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
-      bool leftClosed = false, rightClosed = false;
-      bool hasMainEvent = false;
+      var leftClosed = false, rightClosed = false, hasMainEvent = false;
 
       controller = new StreamController<S>(
           sync: true,

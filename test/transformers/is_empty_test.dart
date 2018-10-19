@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.isEmpty.populated', () async {
-    final bool populated =
-        await new Observable<int>.fromIterable(<int>[1, 2, 3]).isEmpty;
+    final populated =
+        await new Observable.fromIterable(const [1, 2, 3]).isEmpty;
 
     await expectLater(populated, isFalse);
   });
 
   test('rx.Observable.isEmpty.empty', () async {
-    final bool empty = await new Observable<int>.fromIterable(<int>[]).isEmpty;
+    final empty = await new Observable.fromIterable(const <int>[]).isEmpty;
     await expectLater(empty, isTrue);
   });
 }

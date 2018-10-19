@@ -149,12 +149,12 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
       OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler,
       Stream<O> onStream) {
-    final StreamController<bool> doneController = new StreamController<bool>();
+    final doneController = new StreamController<bool>();
     if (onStream == null) {
       throw new ArgumentError('onStream cannot be null');
     }
 
-    final Stream<dynamic> ticker = onStream.transform<dynamic>(
+    final ticker = onStream.transform<dynamic>(
         new TakeUntilStreamTransformer<Null, dynamic>(doneController.stream));
 
     void onDone() {
@@ -164,7 +164,7 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
       doneController.close();
     }
 
-    final Stream<S> scheduler = stream
+    final scheduler = stream
         .transform(new DoStreamTransformer<T>(onDone: onDone, onCancel: onDone))
         .transform(new StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
@@ -197,7 +197,7 @@ class _OnCountSampler<T, S> extends StreamView<S> {
   factory _OnCountSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, int count,
       [int skip]) {
-    int eventIndex = 0;
+    var eventIndex = 0;
 
     skip ??= 0;
 
@@ -207,7 +207,7 @@ class _OnCountSampler<T, S> extends StreamView<S> {
       throw new ArgumentError('skip cannot be greater than count');
     }
 
-    final Stream<S> scheduler = stream
+    final scheduler = stream
         .transform<S>(new StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
               eventIndex++;
@@ -237,13 +237,13 @@ class _OnTestSampler<T, S> extends StreamView<S> {
 
   factory _OnTestSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, bool onTest(T event)) {
-    bool testResult = false;
+    var testResult = false;
 
     if (onTest == null) {
       throw new ArgumentError('onTest cannot be null');
     }
 
-    final Stream<S> scheduler = stream
+    final scheduler = stream
         .transform<S>(new StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
               testResult = onTest(data);

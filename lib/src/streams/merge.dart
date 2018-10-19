@@ -34,25 +34,23 @@ class MergeStream<T> extends Stream<T> {
       throw new ArgumentError('One of the provided streams is null');
     }
 
-    final List<StreamSubscription<T>> subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final subscriptions = new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
-          final List<bool> completedStatus =
-              new List<bool>.generate(streams.length, (_) => false);
+          final completedStatus =
+              new List.generate(streams.length, (_) => false);
 
-          for (int i = 0, len = streams.length; i < len; i++) {
-            Stream<T> stream = streams.elementAt(i);
+          for (var i = 0, len = streams.length; i < len; i++) {
+            var stream = streams.elementAt(i);
 
             subscriptions[i] = stream.listen(controller.add,
                 onError: controller.addError, onDone: () {
               completedStatus[i] = true;
 
-              if (completedStatus.reduce((bool a, bool b) => a && b))
-                controller.close();
+              if (completedStatus.reduce((a, b) => a && b)) controller.close();
             });
           }
         },
