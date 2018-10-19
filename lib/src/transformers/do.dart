@@ -85,8 +85,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       throw new ArgumentError("Must provide at least one handler");
     }
 
-    final subscriptions =
-        <Stream<dynamic>, StreamSubscription<dynamic>>{};
+    final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
 
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;

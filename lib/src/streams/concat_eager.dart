@@ -40,8 +40,7 @@ class ConcatEagerStream<T> extends Stream<T> {
       throw new ArgumentError('One of the provided streams is null');
     }
 
-    final subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final subscriptions = new List<StreamSubscription<T>>(streams.length);
     final completeEvents =
         streams != null ? new List<Completer<dynamic>>(streams.length) : null;
     StreamController<T> controller;

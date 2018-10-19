@@ -42,16 +42,14 @@ class CombineLatestStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
       throw new ArgumentError('combiner cannot be null');
     }
 
-    final subscriptions =
-        new List<StreamSubscription<dynamic>>(streams.length);
+    final subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
     StreamController<T> controller;
 
     controller = new StreamController<T>(
         sync: true,
         onListen: () {
           final values = new List<dynamic>(streams.length);
-          final triggered =
-              new List.generate(streams.length, (_) => false);
+          final triggered = new List.generate(streams.length, (_) => false);
           final completedStatus =
               new List.generate(streams.length, (_) => false);
           var allStreamsHaveEvents = false;
@@ -65,8 +63,7 @@ class CombineLatestStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
                   triggered[i] = true;
 
                   if (!allStreamsHaveEvents)
-                    allStreamsHaveEvents =
-                        triggered.reduce((a, b) => a && b);
+                    allStreamsHaveEvents = triggered.reduce((a, b) => a && b);
 
                   if (allStreamsHaveEvents)
                     updateWithValues(combiner, values, controller);

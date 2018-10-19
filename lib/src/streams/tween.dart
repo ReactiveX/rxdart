@@ -54,8 +54,8 @@ class TweenStream extends Stream<double> {
               break;
           }
 
-          final stream = sampleFromValues<double>(sampler,
-              startValue, changeInTime, duration.inMilliseconds, intervalMs);
+          final stream = sampleFromValues<double>(sampler, startValue,
+              changeInTime, duration.inMilliseconds, intervalMs);
 
           subscription = stream.listen(_controller.add,
               onError: _controller.addError, onDone: _controller.close);

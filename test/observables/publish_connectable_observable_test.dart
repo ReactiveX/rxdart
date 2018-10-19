@@ -10,8 +10,7 @@ void main() {
   group('PublishConnectableObservable', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
-      final observable =
-          PublishConnectableObservable(stream);
+      final observable = PublishConnectableObservable(stream);
 
       when(stream.listen(any, onError: anyNamed('onError'))).thenReturn(
           new Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
@@ -53,8 +52,7 @@ void main() {
     });
 
     test('can multicast observables', () async {
-      final observable =
-          Observable.fromIterable(const [1, 2, 3]).publish();
+      final observable = Observable.fromIterable(const [1, 2, 3]).publish();
 
       observable.connect();
 
@@ -64,8 +62,7 @@ void main() {
     });
 
     test('refcount automatically connects', () async {
-      final observable =
-          Observable.fromIterable(const [1, 2, 3]).share();
+      final observable = Observable.fromIterable(const [1, 2, 3]).share();
 
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
@@ -73,10 +70,9 @@ void main() {
     });
 
     test('provide a function to autoconnect that stops listening', () async {
-      final observable =
-          Observable.fromIterable(const [1, 2, 3]).publish().autoConnect(
-              connection: (subscription) =>
-                  subscription.cancel());
+      final observable = Observable.fromIterable(const [1, 2, 3])
+          .publish()
+          .autoConnect(connection: (subscription) => subscription.cancel());
 
       expect(observable, neverEmits(anything));
     });

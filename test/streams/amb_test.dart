@@ -67,7 +67,8 @@ void main() {
 
   test('rx.Observable.amb.shouldThrowC', () async {
     // ignore: deprecated_member_use
-    var observable = new Observable<num>.amb([new ErrorStream(new Exception('oh noes!'))]);
+    var observable =
+        new Observable<num>.amb([new ErrorStream(new Exception('oh noes!'))]);
 
     // listen twice on same stream
     observable.listen(null,
@@ -82,7 +83,8 @@ void main() {
 
     StreamSubscription<num> subscription;
     // ignore: deprecated_member_use
-    subscription = new Observable.amb([first, second, last]).listen(expectAsync1((value) {
+    subscription =
+        new Observable.amb([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

@@ -49,8 +49,7 @@ class ZipStream<T, A, B, C, D, E, F, G, H, I> extends Stream<T> {
     StreamController<T> controller;
     final pausedStates =
         new List.generate(streams.length, (_) => false, growable: false);
-    final subscriptions =
-        new List<StreamSubscription<dynamic>>(streams.length);
+    final subscriptions = new List<StreamSubscription<dynamic>>(streams.length);
 
     controller = new StreamController<T>(
         sync: true,

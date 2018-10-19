@@ -34,8 +34,7 @@ class MergeStream<T> extends Stream<T> {
       throw new ArgumentError('One of the provided streams is null');
     }
 
-    final subscriptions =
-        new List<StreamSubscription<T>>(streams.length);
+    final subscriptions = new List<StreamSubscription<T>>(streams.length);
     StreamController<T> controller;
 
     controller = new StreamController<T>(
@@ -51,8 +50,7 @@ class MergeStream<T> extends Stream<T> {
                 onError: controller.addError, onDone: () {
               completedStatus[i] = true;
 
-              if (completedStatus.reduce((a, b) => a && b))
-                controller.close();
+              if (completedStatus.reduce((a, b) => a && b)) controller.close();
             });
           }
         },

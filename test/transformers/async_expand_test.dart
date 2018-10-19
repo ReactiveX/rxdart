@@ -7,8 +7,7 @@ void main() {
     var count = 0;
 
     final observable = new Observable.fromIterable(expected)
-        .asyncExpand(
-            (value) => new Observable.fromIterable([value]));
+        .asyncExpand((value) => new Observable.fromIterable([value]));
 
     observable.listen(expectAsync1((actual) {
       expect(actual, expected[count++]);
