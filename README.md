@@ -208,7 +208,7 @@ In order to run the flutter example, you must have Flutter installed. For instal
   6. Run `flutter run`
 
 ## Notable References
-- [Documentation on the Dart Stream class](https://api.dartlang.org/stable/1.21.1/dart-async/Stream-class.html)
+- [Documentation on the Dart Stream class](https://api.dartlang.org/stable/2.0.0/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
 - [ReactiveX (Rx)](http://reactivex.io/)
 
