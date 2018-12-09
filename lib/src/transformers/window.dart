@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/src/samplers/buffer_strategy.dart';
-import 'package:rxdart/src/transformers/do.dart';
 
 /// Creates an Observable where each item is a [Stream] containing the items
 /// from the source sequence, batched by the [sampler].
