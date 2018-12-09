@@ -59,7 +59,8 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        if (buffer.isNotEmpty) controller.add(new List<T>.unmodifiable(buffer));
+        // uncomment if we want to also add the remainder buffer as a final event
+        // if (buffer.isNotEmpty) controller.add(new List<T>.unmodifiable(buffer));
 
         controller.close();
       }
@@ -71,13 +72,18 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
               subscription = scheduler(input, (
                 T data,
                 EventSink<List<T>> sink, [
-                int skip,
+                int startBufferEvery,
               ]) {
                 buffer.add(data);
                 sink.add(buffer);
-              }, (_, EventSink<List<T>> sink, [int skip]) {
+              }, (_, EventSink<List<T>> sink, [int startBufferEvery]) {
+                startBufferEvery ?? 0;
+
                 sink.add(new List<T>.unmodifiable(buffer));
-                buffer = buffer.sublist(buffer.length - (skip ?? 0));
+                buffer =
+                    startBufferEvery > 0 && startBufferEvery < buffer.length
+                        ? buffer.sublist(startBufferEvery)
+                        : <T>[];
               }).listen(controller.add,
                   onError: controller.addError,
                   onDone: onDone,

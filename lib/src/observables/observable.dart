@@ -1214,8 +1214,8 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.range(1, 4).bufferCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-  Observable<List<T>> bufferCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
+  Observable<List<T>> bufferCount(int count, [int startBufferEvery]) => transform(
+      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, startBufferEvery)));
 
   /// Deprecated: Please use [bufferCount]
   ///
@@ -1236,8 +1236,8 @@ class Observable<T> extends Stream<T> {
   ///       .bufferWithCount(2, 1)
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
   @deprecated
-  Observable<List<T>> bufferWithCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
+  Observable<List<T>> bufferWithCount(int count, [int startBufferEvery]) => transform(
+      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
@@ -2298,8 +2298,8 @@ class Observable<T> extends Stream<T> {
   ///       .doOnData((_) => print('next window'))
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
-  Observable<Stream<T>> windowCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
+  Observable<Stream<T>> windowCount(int count, [int startBufferEvery]) =>
+      transform(new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 
   /// Deprecated: Please use [windowCount]
   ///
@@ -2325,8 +2325,8 @@ class Observable<T> extends Stream<T> {
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
   @deprecated
-  Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
+  Observable<Stream<T>> windowWithCount(int count, [int startBufferEvery]) =>
+      transform(new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.

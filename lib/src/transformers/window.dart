@@ -70,8 +70,9 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        if (buffer.isNotEmpty)
-          controller.add(new Stream<T>.fromIterable(buffer));
+        // uncomment if we want to also add the remainder buffer as a final event
+        /*if (buffer.isNotEmpty)
+          controller.add(new Stream<T>.fromIterable(buffer));*/
 
         controller.close();
       }
@@ -82,12 +83,17 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
             try {
               subscription = scheduler(
                   input.transform(new DoStreamTransformer<T>(onDone: onDone)),
-                  (T data, EventSink<Stream<T>> sink, [int skip]) {
+                  (T data, EventSink<Stream<T>> sink, [int startBufferEvery]) {
                 buffer.add(data);
                 sink.add(new Stream<T>.fromIterable(buffer));
-              }, (_, EventSink<Stream<T>> sink, [int skip]) {
+              }, (_, EventSink<Stream<T>> sink, [int startBufferEvery]) {
+                startBufferEvery ?? 0;
+
                 sink.add(new Stream<T>.fromIterable(buffer));
-                buffer = buffer.sublist(buffer.length - (skip ?? 0));
+                buffer =
+                    startBufferEvery > 0 && startBufferEvery < buffer.length
+                        ? buffer.sublist(startBufferEvery)
+                        : <T>[];
               }).listen(controller.add,
                   onError: controller.addError,
                   onDone: onDone,

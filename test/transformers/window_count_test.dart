@@ -19,7 +19,7 @@ void main() {
       expect(expectedOutput[count][0], result[0]);
       expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 2));
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.windowCount.noSkip.asWindow', () async {
@@ -37,15 +37,14 @@ void main() {
       expect(expectedOutput[count][0], result[0]);
       expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 2));
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.windowCount.skip', () async {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4],
-      [4]
+      [3, 4]
     ];
     var count = 0;
 
@@ -59,15 +58,65 @@ void main() {
       if (expectedOutput[count].length > 1)
         expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 4));
+    }, count: expectedOutput.length));
+  });
+
+  test('rx.Observable.windowCount.skip2', () async {
+    const expectedOutput = [
+      [1, 2, 3],
+      [3, 4, 5],
+      [5, 6, 7]
+    ];
+    var count = 0;
+
+    final stream = Observable.range(1, 8).windowCount(3, 2).asyncMap((s) => s.toList());
+
+    bool equalLists(List<int> lA, List<int> lB) {
+      for (var i = 0, len = lA.length; i < len; i++) {
+        if (lA[i] != lB[i]) return false;
+      }
+
+      return true;
+    }
+
+    stream.listen(expectAsync1((result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[count].length, result.length);
+      expect(equalLists(expectedOutput[count], result), isTrue);
+      count++;
+    }, count: expectedOutput.length));
+  });
+
+  test('rx.Observable.windowCount.skip3', () async {
+    const expectedOutput = [
+      [1, 2, 3],
+      [5, 6, 7]
+    ];
+    var count = 0;
+
+    final stream = Observable.range(1, 8).windowCount(3, 4).asyncMap((s) => s.toList());
+
+    bool equalLists(List<int> lA, List<int> lB) {
+      for (var i = 0, len = lA.length; i < len; i++) {
+        if (lA[i] != lB[i]) return false;
+      }
+
+      return true;
+    }
+
+    stream.listen(expectAsync1((result) {
+      // test to see if the combined output matches
+      expect(expectedOutput[count].length, result.length);
+      expect(equalLists(expectedOutput[count], result), isTrue);
+      count++;
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.windowCount.skip.asWindow', () async {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4],
-      [4]
+      [3, 4]
     ];
     var count = 0;
 
@@ -82,7 +131,7 @@ void main() {
       if (expectedOutput[count].length > 1)
         expect(expectedOutput[count][1], result[1]);
       count++;
-    }, count: 4));
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.windowCount.reusable', () async {
@@ -102,7 +151,7 @@ void main() {
       expect(expectedOutput[countA][0], result[0]);
       expect(expectedOutput[countA][1], result[1]);
       countA++;
-    }, count: 2));
+    }, count: expectedOutput.length));
 
     final streamB = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
@@ -113,7 +162,7 @@ void main() {
       expect(expectedOutput[countB][0], result[0]);
       expect(expectedOutput[countB][1], result[1]);
       countB++;
-    }, count: 2));
+    }, count: expectedOutput.length));
   });
 
   test('rx.Observable.windowCount.asBroadcastStream', () async {
@@ -168,29 +217,13 @@ void main() {
 
   test('rx.Observable.windowCount.skip.shouldThrowB', () {
     new Observable.fromIterable(const [1, 2, 3, 4])
-        .windowCount(2, 100)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
-  });
-
-  test('rx.Observable.windowCount.skip.shouldThrowB.asWindow', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
-        .window(onCount(2, 100))
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
-      expect(e, isArgumentError);
-    }));
-  });
-
-  test('rx.Observable.windowCount.skip.shouldThrowC', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
         .windowCount(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
-  test('rx.Observable.windowCount.skip.shouldThrowC.asWindow', () {
+  test('rx.Observable.windowCount.skip.shouldThrowB.asWindow', () {
     new Observable.fromIterable(const [1, 2, 3, 4])
         .window(onCount(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {

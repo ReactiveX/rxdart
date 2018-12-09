@@ -29,8 +29,8 @@ class WindowWithCountStreamTransformer<T>
       _buildTransformer<T>(count, skip).bind(stream);
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
-      int count, int skip) {
-    assertCountAndSkip(count, skip);
+      int count, int startBufferEvery) {
+    assertCountAndSkip(count, startBufferEvery);
 
     return new StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
@@ -41,7 +41,7 @@ class WindowWithCountStreamTransformer<T>
           sync: true,
           onListen: () {
             subscription = input
-                .transform(new WindowStreamTransformer<T>(onCount(count, skip)))
+                .transform(new WindowStreamTransformer<T>(onCount(count, startBufferEvery)))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,
