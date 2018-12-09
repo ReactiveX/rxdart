@@ -62,13 +62,15 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (!hasEvent) {
-                    switchSubscription = fallbackStream.listen((T value) {
-                      controller.add(value);
-                    },
-                        onError: controller.addError,
-                        onDone: onDone,
-                        cancelOnError: cancelOnError);
+                  if (hasEvent) {
+                    controller.close();
+                  } else {
+                    switchSubscription = fallbackStream.listen(
+                      controller.add,
+                      onError: controller.addError,
+                      onDone: onDone,
+                      cancelOnError: cancelOnError,
+                    );
                   }
                 },
                 cancelOnError: cancelOnError);
