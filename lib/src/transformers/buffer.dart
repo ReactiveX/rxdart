@@ -76,7 +76,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
               ]) {
                 buffer.add(data);
                 sink.add(buffer);
-              }, (_, EventSink<List<T>> sink, [int startBufferEvery]) {
+              }, (_, EventSink<List<T>> sink, [int startBufferEvery = 0]) {
                 startBufferEvery ?? 0;
 
                 sink.add(new List<T>.unmodifiable(buffer));

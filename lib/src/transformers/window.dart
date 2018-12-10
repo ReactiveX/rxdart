@@ -80,11 +80,11 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
           sync: true,
           onListen: () {
             try {
-              subscription = scheduler(input,
-                  (T data, EventSink<Stream<T>> sink, [int startBufferEvery]) {
+              subscription = scheduler(input, (T data,
+                  EventSink<Stream<T>> sink, [int startBufferEvery = 0]) {
                 buffer.add(data);
                 sink.add(new Stream<T>.fromIterable(buffer));
-              }, (_, EventSink<Stream<T>> sink, [int startBufferEvery]) {
+              }, (_, EventSink<Stream<T>> sink, [int startBufferEvery = 0]) {
                 startBufferEvery ?? 0;
 
                 sink.add(new Stream<T>.fromIterable(buffer));

@@ -22,7 +22,7 @@ Stream<S> Function(
   Stream<T> stream,
   OnDataTransform<T, S>,
   OnDataTransform<S, S>,
-) onCount<T, S>(int count, [int startBufferEvery]) => (
+) onCount<T, S>(int count, [int startBufferEvery = 0]) => (
       Stream<T> stream,
       OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler,
@@ -194,13 +194,19 @@ class _OnCountSampler<T, S> extends StreamView<S> {
 
   factory _OnCountSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, int count,
-      [int startBufferEvery]) {
+      [int startBufferEvery = 0]) {
     var eventIndex = 0;
-
-    startBufferEvery ??= 0;
 
     if (count == null) {
       throw new ArgumentError('count cannot be null');
+    } else if (count < 1) {
+      throw new ArgumentError(
+          'count needs to be greater than 1, currently it is: $count');
+    }
+
+    if (startBufferEvery < 0) {
+      throw new ArgumentError(
+          'startBufferEvery needs to be greater than, or equal to 0, currently it is: $startBufferEvery');
     }
 
     bool maybeNewBuffer(S _) => eventIndex % count == 0;
@@ -215,7 +221,6 @@ class _OnCountSampler<T, S> extends StreamView<S> {
         .where(maybeNewBuffer)
         .transform<S>(new StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
-              startBufferEvery ??= 0;
               eventIndex -= startBufferEvery;
               scheduleHandler(data, sink, startBufferEvery);
             },

@@ -38,7 +38,8 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.bufferCount.skip', () async {
+  test('rx.Observable.bufferCount.startBufferEvery.count2startBufferEvery1',
+      () async {
     const expectedOutput = [
       [1, 2],
       [2, 3],
@@ -58,7 +59,8 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.bufferCount.skip2', () async {
+  test('rx.Observable.bufferCount.startBufferEvery.count3startBufferEvery2',
+      () async {
     const expectedOutput = [
       [1, 2, 3],
       [3, 4, 5],
@@ -84,7 +86,8 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.bufferCount.skip3', () async {
+  test('rx.Observable.bufferCount.startBufferEvery.count3startBufferEvery4',
+      () async {
     const expectedOutput = [
       [1, 2, 3],
       [5, 6, 7]
@@ -109,7 +112,7 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.bufferCount.skip.asBuffer', () async {
+  test('rx.Observable.bufferCount.startBufferEvery.asBuffer', () async {
     const expectedOutput = [
       [1, 2],
       [2, 3],
@@ -203,7 +206,15 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferCount.skip.shouldThrowB', () {
+  test('rx.Observable.bufferCount.shouldThrow.invalidCount.negative', () {
+    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+        .bufferCount(-1)
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.bufferCount.shouldThrow.invalidCount.isNull', () {
     new Observable<int>.fromIterable(const [1, 2, 3, 4])
         .bufferCount(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
@@ -211,9 +222,29 @@ void main() {
     }));
   });
 
-  test('rx.Observable.bufferCount.skip.shouldThrowB.asBuffer', () {
+  test('rx.Observable.bufferCount.shouldThrow.invalidCount.negative.asBuffer',
+      () {
+    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+        .buffer(onCount(-1))
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test('rx.Observable.bufferCount.shouldThrow.invalidCount.isNull.asBuffer',
+      () {
     new Observable.fromIterable(const [1, 2, 3, 4])
         .buffer(onCount(null))
+        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+      expect(e, isArgumentError);
+    }));
+  });
+
+  test(
+      'rx.Observable.bufferCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
+      () {
+    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+        .bufferCount(2, -1)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
