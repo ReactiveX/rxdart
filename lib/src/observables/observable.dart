@@ -1972,7 +1972,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.range(1, 4)
   ///       .pairwise()
-  ///       .listen(print); // prints [1, 2], [3, 4]
+  ///       .listen(print); // prints [1, 2], [2, 3]
   Observable<List<T>> pairwise() =>
       transform(new BufferStreamTransformer<T>(onCount<T, List<T>>(2, 1)));
 
