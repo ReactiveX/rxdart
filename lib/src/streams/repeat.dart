@@ -4,7 +4,7 @@ import 'dart:async';
 /// Stream the specified number of times until the [Stream] terminates
 /// successfully.
 ///
-/// If [count] is not specified, it retries indefinitely.
+/// If [count] is not specified, it repeats indefinitely.
 ///
 /// ### Example
 ///

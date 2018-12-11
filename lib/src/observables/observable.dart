@@ -605,12 +605,17 @@ class Observable<T> extends Stream<T> {
   static Observable<int> range(int startInclusive, int endInclusive) =>
       new Observable<int>(new RangeStream(startInclusive, endInclusive));
 
-  /// Creates an Observable that repeats the source's elements the specified
-  /// number of times.
+  /// Creates a [Stream] that will recreate and re-listen to the source
+  /// Stream the specified number of times until the [Stream] terminates
+  /// successfully.
+  ///
+  /// If [count] is not specified, it repeats indefinitely.
   ///
   /// ### Example
   ///
-  ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
+  ///     new RepeatStream((int repeatCount) =>
+  ///       Observable.just('repeat index: $repeatCount'), 3)
+  ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
   factory Observable.repeat(Stream<T> streamFactory(int repeatIndex),
           [int count]) =>
       new Observable(new RepeatStream<T>(streamFactory, count));
