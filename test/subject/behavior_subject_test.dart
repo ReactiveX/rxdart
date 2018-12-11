@@ -285,5 +285,14 @@ void main() {
       await expectLater(subject.stream, emits(3));
       await expectLater(subject.stream, emits(3));
     });
+
+    test('is always treated as a broadcast Stream', () async {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+      final stream = subject.asyncMap((event) => new Future.value(event));
+
+      expect(subject.isBroadcast, isTrue);
+      expect(stream.isBroadcast, isTrue);
+    });
   });
 }
