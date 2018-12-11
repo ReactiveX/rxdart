@@ -19,15 +19,14 @@ import 'package:rxdart/src/observables/observable.dart';
 class RepeatStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final StreamTransformer<S, T> transformer;
 
-  RepeatStreamTransformer(int count,
-      {Observable<T> sequenceFactory(Observable<S> stream)})
-      : transformer = _buildTransformer(count, sequenceFactory);
+  RepeatStreamTransformer(int count, {Stream<T> streamFactory(S event)})
+      : transformer = _buildTransformer(count, streamFactory);
 
   @override
   Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
 
   static StreamTransformer<S, T> _buildTransformer<S, T>(
-      int count, Observable<T> sequenceFactory(Observable<S> stream)) {
+      int count, Stream<T> streamFactory(S event)) {
     return new StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<S> subscription;
@@ -37,11 +36,11 @@ class RepeatStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       controller = new StreamController<T>(
           sync: true,
           onListen: () {
-            sequenceFactory ??= (Observable<S> stream) => stream.cast<T>();
+            streamFactory ??= (S event) => new Observable.just(event as T);
 
             Stream<T> buildSequence(S value) {
-              if (sequenceFactory != null) {
-                return sequenceFactory(Observable.just(value));
+              if (streamFactory != null) {
+                return streamFactory(value);
               }
 
               return Observable.just(value as T);
