@@ -1977,8 +1977,10 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
-  Observable<T> repeat(int repeatCount) =>
-      transform(new RepeatStreamTransformer<T>(repeatCount));
+  Observable<S> repeat<S>(int count,
+          {Observable<S> sequenceFactory(Observable<T> stream)}) =>
+      transform(new RepeatStreamTransformer<T, S>(count,
+          sequenceFactory: sequenceFactory));
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
