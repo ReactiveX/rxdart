@@ -28,6 +28,7 @@ import 'streams/never_test.dart' as never_test;
 import 'streams/periodic_test.dart' as periodic_test;
 import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
+import 'streams/repeat_test.dart' as repeat_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
@@ -87,7 +88,6 @@ import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
     as on_error_return_with_test;
 import 'transformers/reduce_test.dart' as reduce_test;
-import 'transformers/repeat_test.dart' as repeat_test;
 import 'transformers/sample_test.dart' as sample_test;
 import 'transformers/scan_test.dart' as scan_test;
 import 'transformers/single_test.dart' as single_test;
@@ -136,6 +136,7 @@ void main() {
   periodic_test.main();
   range_test.main();
   race_test.main();
+  repeat_test.main();
   retry_test.main();
   retry_when_test.main();
   stream_test.main();
@@ -192,7 +193,6 @@ void main() {
   on_error_return_test.main();
   on_error_return_with_test.main();
   reduce_test.main();
-  repeat_test.main();
   sample_test.main();
   scan_test.main();
   single_test.main();

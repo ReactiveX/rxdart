@@ -1,24 +1,16 @@
 import 'dart:async';
 
-/// Creates a Stream that will recreate and re-listen to the source
-/// Stream the specified number of times until the Stream terminates
+/// Creates a [Stream] that will recreate and re-listen to the source
+/// Stream the specified number of times until the [Stream] terminates
 /// successfully.
 ///
-/// If the retry count is not specified, it retries indefinitely. If the retry
-/// count is met, but the Stream has not terminated successfully, a
-/// `RetryError` will be thrown. The RetryError will contain all of the Errors
-/// and StackTraces that caused the failure.
+/// If [count] is not specified, it retries indefinitely.
 ///
 /// ### Example
 ///
-///     new RetryStream(() { new Stream.fromIterable([1]); })
-///         .listen((i) => print(i)); // Prints 1
-///
-///     new RetryStream(() {
-///          new Stream.fromIterable([1])
-///             .concatWith([new ErrorStream(new Error())]);
-///        }, 1)
-///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
+///     new RepeatStream((int repeatCount) =>
+///       Observable.just('repeat index: $repeatCount'), 3)
+///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {
   final Stream<T> Function(int) streamFactory;
   final int count;

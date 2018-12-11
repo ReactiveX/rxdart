@@ -31,17 +31,10 @@ void main() {
         new RepeatStream(_getRepeatStream('A')), emitsThrough('A100'));
   });
 
-  test('RepeatStream.emits.original.items', () async {
+  test('RepeatStream.single.subscription', () async {
     const retries = 3;
 
-    await expectLater(new RepeatStream(_getStreamWithExtras(), retries),
-        emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
-  });
-
-  /*test('RetryStream.single.subscription', () async {
-    const retries = 3;
-
-    final stream = new RetryStream(_getRetryStream(retries), retries);
+    final stream = new RepeatStream(_getRepeatStream('A'), retries);
 
     try {
       stream.listen(null);
@@ -51,11 +44,11 @@ void main() {
     }
   });
 
-  test('RetryStream.asBroadcastStream', () async {
+  test('RepeatStream.asBroadcastStream', () async {
     const retries = 3;
 
     final stream =
-        new RetryStream(_getRetryStream(retries), retries).asBroadcastStream();
+        new RepeatStream(_getRepeatStream('A'), retries).asBroadcastStream();
 
     // listen twice on same stream
     stream.listen(null);
@@ -64,46 +57,30 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('RetryStream.error.shouldThrow', () async {
-    final observableWithError = new RetryStream(_getRetryStream(3), 2);
+  test('RepeatStream.error.shouldThrow', () async {
+    final observableWithError =
+        new RepeatStream(_getErroneusRepeatStream('A'), 2);
 
     await expectLater(
         observableWithError,
         emitsInOrder(
-            <Matcher>[emitsError(new TypeMatcher<RetryError>()), emitsDone]));
+            <dynamic>['A0', emitsError(new TypeMatcher<Error>()), emitsDone]));
   });
 
-  test('RetryStream.error.capturesErrors', () async {
-    final observableWithError = new RetryStream(_getRetryStream(3), 2);
-
-    await expectLater(
-        observableWithError,
-        emitsInOrder(<Matcher>[
-          emitsError(
-            predicate<RetryError>((a) {
-              return a.errors.length == 3 &&
-                  a.errors
-                      .every((es) => es.error != null && es.stacktrace != null);
-            }),
-          ),
-          emitsDone,
-        ]));
-  });
-
-  test('RetryStream.pause.resume', () async {
-    StreamSubscription<int> subscription;
+  test('RepeatStream.pause.resume', () async {
+    StreamSubscription<String> subscription;
     const retries = 3;
 
-    subscription = new RetryStream(_getRetryStream(retries), retries)
+    subscription = new RepeatStream(_getRepeatStream('A'), retries)
         .listen(expectAsync1((result) {
-      expect(result, 1);
+      expect(result, 'A0');
 
       subscription.cancel();
     }));
 
     subscription.pause();
     subscription.resume();
-  });*/
+  });
 }
 
 Stream<String> Function(int) _getRepeatStream(String symbol) =>
@@ -112,19 +89,10 @@ Stream<String> Function(int) _getRepeatStream(String symbol) =>
           const Duration(milliseconds: 20), () => '$symbol$repeatIndex');
     };
 
-Stream<int> Function(int) _getStreamWithExtras() => (int repeatIndex) async* {
-      var count = 0;
-
-      if (count < repeatIndex) {
-        count++;
-
-        // Emit first item
-        yield 1;
-        // Emit the error
+Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
+    (int repeatIndex) async* {
+      if (repeatIndex == 0)
+        yield 'A0';
+      else
         throw new Error();
-        // Emit an extra item, testing that it is not included
-        yield 1;
-      } else {
-        yield 2;
-      }
     };
