@@ -63,8 +63,13 @@ void main() {
 
     await expectLater(
         observableWithError,
-        emitsInOrder(
-            <dynamic>['A0', emitsError(new TypeMatcher<Error>()), emitsDone]));
+        emitsInOrder(<dynamic>[
+          'A0',
+          emitsError(new TypeMatcher<Error>()),
+          'A0',
+          emitsError(new TypeMatcher<Error>()),
+          emitsDone
+        ]));
   });
 
   test('RepeatStream.pause.resume', () async {
@@ -90,9 +95,8 @@ Stream<String> Function(int) _getRepeatStream(String symbol) =>
     };
 
 Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
-    (int repeatIndex) async* {
-      if (repeatIndex == 0)
-        yield 'A0';
-      else
-        throw new Error();
+    (int repeatIndex) {
+      return new Observable.just('A0')
+          // Emit the error
+          .concatWith([new ErrorStream<String>(new Error())]);
     };
