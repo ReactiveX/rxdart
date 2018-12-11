@@ -69,9 +69,8 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        // uncomment if we want to also add the remainder buffer as a final event
-        /*if (buffer.isNotEmpty)
-          controller.add(new Stream<T>.fromIterable(buffer));*/
+        if (buffer.isNotEmpty)
+          controller.add(new Stream<T>.fromIterable(buffer));
 
         controller.close();
       }

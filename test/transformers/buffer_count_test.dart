@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.bufferCount.noSkip', () async {
+  test('rx.Observable.bufferCount.noStartBufferEvery', () async {
     const expectedOutput = [
       [1, 2],
       [3, 4]
@@ -21,7 +21,7 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.bufferCount.noSkip.asBuffer', () async {
+  test('rx.Observable.bufferCount.noStartBufferEvery.asBuffer', () async {
     const expectedOutput = [
       [1, 2],
       [3, 4]
@@ -43,7 +43,8 @@ void main() {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4]
+      [3, 4],
+      [4]
     ];
     var count = 0;
 
@@ -64,7 +65,8 @@ void main() {
     const expectedOutput = [
       [1, 2, 3],
       [3, 4, 5],
-      [5, 6, 7]
+      [5, 6, 7],
+      [7, 8]
     ];
     var count = 0;
 
@@ -116,7 +118,8 @@ void main() {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4]
+      [3, 4],
+      [4]
     ];
     var count = 0;
 

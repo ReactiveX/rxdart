@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.windowCount.noSkip', () async {
+  test('rx.Observable.windowCount.noStartBufferEvery', () async {
     const expectedOutput = [
       [1, 2],
       [3, 4]
@@ -22,7 +22,7 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.windowCount.noSkip.asWindow', () async {
+  test('rx.Observable.windowCount.noStartBufferEvery.asWindow', () async {
     const expectedOutput = [
       [1, 2],
       [3, 4]
@@ -45,7 +45,8 @@ void main() {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4]
+      [3, 4],
+      [4]
     ];
     var count = 0;
 
@@ -67,7 +68,8 @@ void main() {
     const expectedOutput = [
       [1, 2, 3],
       [3, 4, 5],
-      [5, 6, 7]
+      [5, 6, 7],
+      [7, 8]
     ];
     var count = 0;
 
@@ -121,7 +123,8 @@ void main() {
     const expectedOutput = [
       [1, 2],
       [2, 3],
-      [3, 4]
+      [3, 4],
+      [4]
     ];
     var count = 0;
 

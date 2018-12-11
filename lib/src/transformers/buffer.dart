@@ -59,8 +59,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        // uncomment if we want to also add the remainder buffer as a final event
-        // if (buffer.isNotEmpty) controller.add(new List<T>.unmodifiable(buffer));
+        if (buffer.isNotEmpty) controller.add(new List<T>.from(buffer));
 
         controller.close();
       }
