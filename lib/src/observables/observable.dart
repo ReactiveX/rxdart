@@ -1216,9 +1216,8 @@ class Observable<T> extends Stream<T> {
   /// on every other value from the source. A new buffer is started at the
   /// beginning of the source by default.
   ///
-  /// ### Example with [startBufferEvery]
-  ///
-  ///     Observable.range(1, 5).bufferCount(3, 2)
+  ///     Observable.range(1, 5)
+  ///       .bufferCount(3, 2)
   ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
   Observable<List<T>> bufferCount(int count, [int startBufferEvery = 0]) =>
       transform(new BufferStreamTransformer<T>(
@@ -2322,8 +2321,6 @@ class Observable<T> extends Stream<T> {
   /// if [startBufferEvery] is 2, then a new buffer will be started
   /// on every other value from the source. A new buffer is started at the
   /// beginning of the source by default.
-  ///
-  /// ### Example with [startBufferEvery]
   ///
   ///     Observable.range(1, 5)
   ///       .windowCount(3, 2)
