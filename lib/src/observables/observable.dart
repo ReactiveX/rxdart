@@ -1785,6 +1785,16 @@ class Observable<T> extends Stream<T> {
   Observable<S> map<S>(S convert(T event)) =>
       new Observable<S>(_stream.map(convert));
 
+  /// Emits the given constant value on the output Observable every time the source Observable emits a value.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.fromIterable([1, 2, 3, 4])
+  ///       .mapTo(true)
+  ///       .listen(print); // prints true, true, true, true
+  Observable<S> mapTo<S>(S value) =>
+      transform(new MapToStreamTransformer<T, S>(value));
+
   /// Converts the onData, on Done, and onError events into [Notification]
   /// objects that are passed into the downstream onData listener.
   ///

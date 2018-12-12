@@ -14,6 +14,7 @@ export 'package:rxdart/src/transformers/flat_map.dart';
 export 'package:rxdart/src/transformers/flat_map_latest.dart';
 export 'package:rxdart/src/transformers/ignore_elements.dart';
 export 'package:rxdart/src/transformers/interval.dart';
+export 'package:rxdart/src/transformers/map_to.dart';
 export 'package:rxdart/src/transformers/materialize.dart';
 export 'package:rxdart/src/transformers/of_type.dart';
 export 'package:rxdart/src/transformers/on_error_resume_next.dart';

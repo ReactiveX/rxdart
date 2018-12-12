@@ -77,6 +77,7 @@ import 'transformers/is_empty_test.dart' as is_empty_test;
 import 'transformers/join_test.dart' as join_test;
 import 'transformers/last_test.dart' as last_test;
 import 'transformers/last_where_test.dart' as last_where_test;
+import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
 import 'transformers/of_type_test.dart' as of_type_test;
@@ -184,6 +185,7 @@ void main() {
   join_test.main();
   last_test.main();
   last_where_test.main();
+  map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
   of_type_test.main();
