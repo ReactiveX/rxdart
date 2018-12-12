@@ -39,15 +39,16 @@ import 'package:rxdart/src/samplers/buffer_strategy.dart';
 /// should the above samplers be insufficient for your use case.
 class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
   final SamplerBuilder<T, List<T>> sampler;
+  final bool exhaustBufferOnDone;
 
-  BufferStreamTransformer(this.sampler);
+  BufferStreamTransformer(this.sampler, {this.exhaustBufferOnDone = true});
 
   @override
   Stream<List<T>> bind(Stream<T> stream) =>
-      _buildTransformer<T>(sampler).bind(stream);
+      _buildTransformer<T>(sampler, exhaustBufferOnDone).bind(stream);
 
   static StreamTransformer<T, List<T>> _buildTransformer<T>(
-      SamplerBuilder<T, List<T>> scheduler) {
+      SamplerBuilder<T, List<T>> scheduler, bool exhaustBufferOnDone) {
     assertSampler(scheduler);
 
     return new StreamTransformer<T, List<T>>(
@@ -59,7 +60,8 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        if (buffer.isNotEmpty) controller.add(new List<T>.from(buffer));
+        if (exhaustBufferOnDone && buffer.isNotEmpty)
+          controller.add(new List<T>.from(buffer));
 
         controller.close();
       }

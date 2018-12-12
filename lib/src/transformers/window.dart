@@ -49,15 +49,16 @@ import 'package:rxdart/src/samplers/buffer_strategy.dart';
 /// should the above samplers be insufficient for your use case.
 class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
   final SamplerBuilder<T, Stream<T>> sampler;
+  final bool exhaustBufferOnDone;
 
-  WindowStreamTransformer(this.sampler);
+  WindowStreamTransformer(this.sampler, {this.exhaustBufferOnDone = true});
 
   @override
   Stream<Stream<T>> bind(Stream<T> stream) =>
-      _buildTransformer<T>(sampler).bind(stream);
+      _buildTransformer<T>(sampler, exhaustBufferOnDone).bind(stream);
 
   static StreamTransformer<T, Stream<T>> _buildTransformer<T>(
-      SamplerBuilder<T, Stream<T>> scheduler) {
+      SamplerBuilder<T, Stream<T>> scheduler, bool exhaustBufferOnDone) {
     assertSampler(scheduler);
 
     return new StreamTransformer<T, Stream<T>>(
@@ -69,7 +70,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       void onDone() {
         if (controller.isClosed) return;
 
-        if (buffer.isNotEmpty)
+        if (exhaustBufferOnDone && buffer.isNotEmpty)
           controller.add(new Stream<T>.fromIterable(buffer));
 
         controller.close();

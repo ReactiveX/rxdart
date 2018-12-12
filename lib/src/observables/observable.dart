@@ -1985,7 +1985,8 @@ class Observable<T> extends Stream<T> {
   ///       .pairwise()
   ///       .listen(print); // prints [1, 2], [2, 3]
   Observable<List<T>> pairwise() =>
-      transform(new BufferStreamTransformer<T>(onCount<T, List<T>>(2, 1)));
+      transform(new BufferStreamTransformer<T>(onCount<T, List<T>>(2, 1),
+          exhaustBufferOnDone: false));
 
   @override
   AsObservableFuture<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
