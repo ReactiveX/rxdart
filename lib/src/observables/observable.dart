@@ -1222,46 +1222,59 @@ class Observable<T> extends Stream<T> {
               OnDataTransform<List<T>, List<T>> scheduleHandler) =>
           sampler(stream, bufferHandler, scheduleHandler)));
 
-  /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// Buffers a number of values from the source Observable by [count] then
+  /// emits the buffer and clears it, and starts a new buffer each
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided or is
+  /// null, then new buffers are started immediately at the start of the source
+  /// and when each buffer closes and is emitted.
   ///
   /// ### Example
+  /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
   ///       .bufferCount(2)
-  ///       .listen(print); // prints [1, 2], [3, 4]
+  ///       .listen(print); // prints [1, 2], [3, 4] done!
   ///
-  /// ### Example with skip
+  /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
   ///
-  ///     Observable.range(1, 4).bufferCount(2, 1)
-  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-  Observable<List<T>> bufferCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
+  ///     Observable.range(1, 5)
+  ///       .bufferCount(3, 2)
+  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
+  Observable<List<T>> bufferCount(int count, [int startBufferEvery = 0]) =>
+      transform(new BufferStreamTransformer<T>(
+          onCount<T, List<T>>(count, startBufferEvery)));
 
   /// Deprecated: Please use [bufferCount]
   ///
-  /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// Buffers a number of values from the source Observable by [count] then
+  /// emits the buffer and clears it, and starts a new buffer each
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided or is
+  /// null, then new buffers are started immediately at the start of the source
+  /// and when each buffer closes and is emitted.
   ///
   /// ### Example
-  ///
-  ///     Observable.range(1, 4).bufferWithCount(2)
-  ///       .listen(print); // prints [1, 2], [3, 4]
-  ///
-  /// ### Example with skip
+  /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
-  ///       .bufferWithCount(2, 1)
-  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
+  ///       .bufferCount(2)
+  ///       .listen(print); // prints [1, 2], [3, 4] done!
+  ///
+  /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
+  ///
+  /// ### Example with [startBufferEvery]
+  ///
+  ///     Observable.range(1, 5).bufferCount(3, 2)
+  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
   @deprecated
-  Observable<List<T>> bufferWithCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
+  Observable<List<T>> bufferWithCount(int count, [int startBufferEvery = 0]) =>
+      transform(new BufferStreamTransformer<T>(
+          onCount<T, List<T>>(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
@@ -1997,6 +2010,18 @@ class Observable<T> extends Stream<T> {
       transform(new OnErrorResumeStreamTransformer<T>(
           (dynamic e) => new Observable<T>.just(returnFn(e))));
 
+  /// Triggers on the second and subsequent triggerings of the input observable.
+  /// The Nth triggering of the input observable passes the arguments from the N-1th and Nth triggering as a pair.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 4)
+  ///       .pairwise()
+  ///       .listen(print); // prints [1, 2], [2, 3]
+  Observable<List<T>> pairwise() =>
+      transform(new BufferStreamTransformer<T>(onCount<T, List<T>>(2, 1),
+          exhaustBufferOnDone: false));
+
   @override
   AsObservableFuture<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
       new AsObservableFuture<dynamic>(_stream.pipe(streamConsumer));
@@ -2302,37 +2327,43 @@ class Observable<T> extends Stream<T> {
               OnDataTransform<Stream<T>, Stream<T>> scheduleHandler) =>
           sampler(stream, bufferHandler, scheduleHandler)));
 
-  /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// Buffers a number of values from the source Observable by [count] then
+  /// emits the values inside the buffer as a new [Stream],
+  /// and starts a new buffer each [startBufferEvery] values.
+  /// If [startBufferEvery] is not provided or is null, then new buffers are
+  /// started immediately at the start of the source and when each buffer
+  /// closes and is emitted.
   ///
   /// ### Example
+  /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
   ///       .windowCount(2)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 3, 4
+  ///       .doOnData((_) => print('new Stream emitted))
+  ///       .flatMap((stream) => stream)
+  ///       .listen(print); // prints new Stream emitted, 1, 2, new Stream emitted, 3, 4 done!
   ///
-  /// ### Example with skip
+  /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
   ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2, 1)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
-  Observable<Stream<T>> windowCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
+  ///     Observable.range(1, 5)
+  ///       .windowCount(3, 2)
+  ///       .doOnData((_) => print('new Stream emitted))
+  ///       .flatMap((stream) => stream)
+  ///       .listen(print); // prints new Stream emitted, 1, 2, 3 new Stream emitted 3, 4, 5 new Stream emitted 5 done!
+  Observable<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
+      transform(
+          new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 
   /// Deprecated: Please use [windowCount]
   ///
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence, in batches of [count].
   ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// If [startBufferEvery] is provided, each group will start where the previous group
+  /// ended minus the [startBufferEvery] value.
   ///
   /// ### Example
   ///
@@ -2342,7 +2373,7 @@ class Observable<T> extends Stream<T> {
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 1, 2, next window 3, 4
   ///
-  /// ### Example with skip
+  /// ### Example with startBufferEvery
   ///
   ///     Observable.range(1, 4)
   ///       .windowCount(2, 1)
@@ -2350,8 +2381,10 @@ class Observable<T> extends Stream<T> {
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
   @deprecated
-  Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
+  Observable<Stream<T>> windowWithCount(int count,
+          [int startBufferEvery = 0]) =>
+      transform(
+          new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
