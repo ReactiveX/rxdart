@@ -80,24 +80,6 @@ class Observable<T> extends Stream<T> {
 
   Observable(Stream<T> stream) : this._stream = stream;
 
-  /// Deprecated: please use [Observable.race].
-  ///
-  /// Given two or more source [streams], emit all of the items from only
-  /// the first of these [streams] to emit an item or notification.
-  ///
-  /// [Interactive marble diagram](http://rxmarbles.com/#amb)
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.amb([
-  ///       new Observable.timer(1, new Duration(days: 1)),
-  ///       new Observable.timer(2, new Duration(days: 2)),
-  ///       new Observable.timer(3, new Duration(seconds: 1))
-  ///     ]).listen(print); // prints 3
-  @deprecated
-  factory Observable.amb(Iterable<Stream<T>> streams) =>
-      new Observable<T>(new RaceStream<T>(streams));
-
   @override
   AsObservableFuture<bool> any(bool test(T element)) =>
       new AsObservableFuture<bool>(_stream.any(test));
@@ -1247,35 +1229,6 @@ class Observable<T> extends Stream<T> {
       transform(new BufferStreamTransformer<T>(
           onCount<T, List<T>>(count, startBufferEvery)));
 
-  /// Deprecated: Please use [bufferCount]
-  ///
-  /// Buffers a number of values from the source Observable by [count] then
-  /// emits the buffer and clears it, and starts a new buffer each
-  /// [startBufferEvery] values. If [startBufferEvery] is not provided or is
-  /// null, then new buffers are started immediately at the start of the source
-  /// and when each buffer closes and is emitted.
-  ///
-  /// ### Example
-  /// [count] is the maximum size of the buffer emitted
-  ///
-  ///     Observable.range(1, 4)
-  ///       .bufferCount(2)
-  ///       .listen(print); // prints [1, 2], [3, 4] done!
-  ///
-  /// ### Example
-  /// if [startBufferEvery] is 2, then a new buffer will be started
-  /// on every other value from the source. A new buffer is started at the
-  /// beginning of the source by default.
-  ///
-  /// ### Example with [startBufferEvery]
-  ///
-  ///     Observable.range(1, 5).bufferCount(3, 2)
-  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
-  @deprecated
-  Observable<List<T>> bufferWithCount(int count, [int startBufferEvery = 0]) =>
-      transform(new BufferStreamTransformer<T>(
-          onCount<T, List<T>>(count, startBufferEvery)));
-
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
   ///
@@ -1649,28 +1602,6 @@ class Observable<T> extends Stream<T> {
   Observable<S> flatMapIterable<S>(Stream<Iterable<S>> mapper(T value)) =>
       transform(new FlatMapStreamTransformer<T, Iterable<S>>(mapper))
           .expand((Iterable<S> iterable) => iterable);
-
-  /// Deprecated: Please use [switchMap] instead.
-  ///
-  /// This is the old name of this method This Converts each emitted item into a new Stream using the given mapper
-  /// function. The newly created Stream will be be listened to and begin
-  /// emitting items, and any previously created Stream will stop emitting.
-  ///
-  /// The flatMapLatest operator is similar to the flatMap and concatMap
-  /// methods, but it only emits items from the most recently created Stream.
-  ///
-  /// This can be useful when you only want the very latest state from
-  /// asynchronous APIs, for example.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.range(4, 1)
-  ///       .flatMapLatest((i) =>
-  ///         new Observable.timer(i, new Duration(minutes: i))
-  ///       .listen(print); // prints 1
-  @deprecated
-  Observable<S> flatMapLatest<S>(Stream<S> mapper(T value)) =>
-      transform(new SwitchMapStreamTransformer<T, S>(mapper));
 
   @override
   AsObservableFuture<S> fold<S>(
@@ -2354,35 +2285,6 @@ class Observable<T> extends Stream<T> {
   ///       .flatMap((stream) => stream)
   ///       .listen(print); // prints new Stream emitted, 1, 2, 3 new Stream emitted 3, 4, 5 new Stream emitted 5 done!
   Observable<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
-      transform(
-          new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
-
-  /// Deprecated: Please use [windowCount]
-  ///
-  /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [startBufferEvery] is provided, each group will start where the previous group
-  /// ended minus the [startBufferEvery] value.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 3, 4
-  ///
-  /// ### Example with startBufferEvery
-  ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2, 1)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
-  @deprecated
-  Observable<Stream<T>> windowWithCount(int count,
-          [int startBufferEvery = 0]) =>
       transform(
           new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 

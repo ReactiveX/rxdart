@@ -12,7 +12,6 @@ import 'observables/replay_connectable_observable_test.dart'
     as replay_connectable_observable_test;
 import 'observables/value_connectable_observable_test.dart'
     as value_connectable_observable_test;
-import 'streams/amb_test.dart' as amb_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
@@ -67,7 +66,6 @@ import 'transformers/expand_test.dart' as expand_test;
 import 'transformers/first_test.dart' as first_test;
 import 'transformers/first_where_test.dart' as first_where_test;
 import 'transformers/flat_map_iterable_test.dart' as flat_map_iterable_test;
-import 'transformers/flat_map_latest_test.dart' as flat_map_latest_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
 import 'transformers/fold_test.dart' as fold_test;
 import 'transformers/for_each_test.dart' as for_each_test;
@@ -122,7 +120,6 @@ import 'transformers/zip_with_test.dart' as zip_with_test;
 
 void main() {
   // Streams
-  amb_test.main();
   combine_latest_test.main();
   concat_eager_test.main();
   concat_test.main();
@@ -175,7 +172,6 @@ void main() {
   first_test.main();
   first_where_test.main();
   first_where_test.main();
-  flat_map_latest_test.main();
   flat_map_test.main();
   flat_map_iterable_test.main();
   fold_test.main();
