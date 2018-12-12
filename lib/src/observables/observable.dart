@@ -601,6 +601,21 @@ class Observable<T> extends Stream<T> {
   static Observable<int> range(int startInclusive, int endInclusive) =>
       new Observable<int>(new RangeStream(startInclusive, endInclusive));
 
+  /// Creates a [Stream] that will recreate and re-listen to the source
+  /// Stream the specified number of times until the [Stream] terminates
+  /// successfully.
+  ///
+  /// If [count] is not specified, it repeats indefinitely.
+  ///
+  /// ### Example
+  ///
+  ///     new RepeatStream((int repeatCount) =>
+  ///       Observable.just('repeat index: $repeatCount'), 3)
+  ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
+  factory Observable.repeat(Stream<T> streamFactory(int repeatIndex),
+          [int count]) =>
+      new Observable(new RepeatStream<T>(streamFactory, count));
+
   /// Creates an Observable that will recreate and re-listen to the source
   /// Stream the specified number of times until the Stream terminates
   /// successfully.
@@ -1989,15 +2004,6 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<T> reduce(T combine(T previous, T element)) =>
       new AsObservableFuture<T>(_stream.reduce(combine));
-
-  /// Creates an Observable that repeats the source's elements the specified
-  /// number of times.
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
-  Observable<T> repeat(int repeatCount) =>
-      transform(new RepeatStreamTransformer<T>(repeatCount));
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
