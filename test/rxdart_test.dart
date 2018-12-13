@@ -33,7 +33,6 @@ import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
-import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 import 'subject/publish_subject_test.dart' as publish_subject_test;
@@ -214,7 +213,6 @@ void main() {
   to_set_test.main();
   transform_test.main();
   timer_test.main();
-  tween_test.main();
   where_test.main();
   window_test.main();
   window_count_test.main();
