@@ -1326,15 +1326,51 @@ class Observable<T> extends Stream<T> {
   /// The Debounce operator filters out items emitted by the source Observable
   /// that are rapidly followed by another emitted item.
   ///
+  /// If [duration] is null, then the events are emitted immediately.
+  ///
   /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
   ///
   /// ### Example
   ///
   ///     new Observable.range(1, 100)
-  ///       .debounce(new Duration(seconds: 1))
+  ///       .debounce(const Duration(seconds: 1))
   ///       .listen(print); // prints 100
   Observable<T> debounce(Duration duration) =>
-      transform(new DebounceStreamTransformer<T>(duration));
+      transform(new DebounceStreamTransformer<T>((_) => duration));
+
+  /// Creates an Observable that will only emit items from the source sequence
+  /// if a particular time span has passed without the source sequence emitting
+  /// another item.
+  ///
+  /// The Debounce operator filters out items emitted by the source Observable
+  /// that are rapidly followed by another emitted item.
+  ///
+  /// The debounceSelector can resolve an arbitrary timeout, based on the
+  /// last emitted value.
+  ///
+  /// If [debounceSelector] resolves to null,
+  /// then the events are emitted immediately.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.range(1, 100)
+  ///       .debounceSelector((value) {
+  ///         if (value <= 50) {
+  ///           // short pause if the value is <= 50
+  ///           return const Duration(seconds: 1);
+  ///         } else if (value <= 75) {
+  ///           // long pause if value is > 50 and <= 75
+  ///           return const Duration(seconds: 10);
+  ///         }
+  ///
+  ///         // for the remaining events > 75, do not use a timeout
+  ///         return null;
+  ///       })
+  ///       .listen(print); // prints 100
+  Observable<T> debounceSelector(Duration durationSelector(T event)) =>
+      transform(new DebounceStreamTransformer<T>(durationSelector));
 
   /// Emit items from the source Stream, or a single default item if the source
   /// Stream emits nothing.

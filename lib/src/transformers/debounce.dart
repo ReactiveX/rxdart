@@ -12,18 +12,21 @@ import 'dart:async';
 /// ### Example
 ///
 ///     new Observable.fromIterable([1, 2, 3, 4])
-///       .debounce(new Duration(seconds: 1))
+///       .debounce(const Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  DebounceStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+  DebounceStreamTransformer(Duration durationSelector(T event))
+      : transformer = _buildTransformer(durationSelector) {
+    assert(durationSelector != null, 'durationSelector cannot be null');
+  }
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
+  static StreamTransformer<T, T> _buildTransformer<T>(
+      Duration durationSelector(T event)) {
     return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       T lastEvent;
       StreamController<T> controller;
@@ -40,10 +43,20 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
                   try {
                     _cancelTimerIfActive(timer);
 
-                    timer = new Timer(duration, () {
+                    timer = null;
+
+                    void handleData() {
                       controller.add(lastEvent);
                       lastEvent = null;
-                    });
+                    }
+
+                    final timeout = durationSelector(value);
+
+                    if (timeout == null) {
+                      handleData();
+                    } else {
+                      timer = new Timer(timeout, handleData);
+                    }
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
@@ -77,9 +90,9 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 
-  static void _cancelTimerIfActive(Timer _timer) {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
+  static void _cancelTimerIfActive(Timer timer) {
+    if (timer != null && timer.isActive) {
+      timer.cancel();
     }
   }
 }

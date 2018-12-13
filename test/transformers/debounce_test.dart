@@ -3,75 +3,66 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() {
-  final controller = new StreamController<int>();
-
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
-}
+Observable<int> get ticker =>
+    Observable.periodic(const Duration(milliseconds: 100), (step) => step + 1);
 
 void main() {
-  test('rx.Observable.debounce', () async {
-    new Observable(_getStream())
-        .debounce(const Duration(milliseconds: 200))
-        .listen(expectAsync1((result) {
-          expect(result, 4);
-        }, count: 1));
+  test('rx.Observable.debounce.static', () async {
+    await expectLater(
+        ticker.take(4).debounce(const Duration(milliseconds: 200)),
+        emitsInOrder(<dynamic>[4, emitsDone]));
+  });
+
+  test('rx.Observable.debounce.selector', () async {
+    await expectLater(
+        ticker.take(4).debounceSelector((i) => i == 1
+            ? const Duration(milliseconds: 50)
+            : const Duration(seconds: 1)),
+        emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
   test('rx.Observable.debounce.reusable', () async {
-    final transformer =
-        new DebounceStreamTransformer<int>(const Duration(milliseconds: 200));
+    final transformer = new DebounceStreamTransformer<int>(
+        (_) => const Duration(milliseconds: 200));
 
-    new Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
-          expect(result, 4);
-        }, count: 1));
+    await expectLater(ticker.take(4).transform(transformer),
+        emitsInOrder(<dynamic>[4, emitsDone]));
 
-    new Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
-          expect(result, 4);
-        }, count: 1));
+    await expectLater(ticker.take(4).transform(transformer),
+        emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
+    final stream = ticker
+        .take(4)
+        .asBroadcastStream()
         .debounce(const Duration(milliseconds: 200));
 
     // listen twice on same stream
     stream.listen(null);
     stream.listen(null);
     // code should reach here
-    await expectLater(true, true);
+    await expectLater(stream, emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
   test('rx.Observable.debounce.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
+        Observable(new ErrorStream<void>(new Exception()))
             .debounce(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null,
-        onError: expectAsync2((Exception e, StackTrace s) {
-      expect(e, isException);
-    }));
+    await expectLater(
+        observableWithError,
+        emitsInOrder(
+            <dynamic>[emitsError(new TypeMatcher<Exception>()), emitsDone]));
   });
 
   /// Should also throw if the current [Zone] is unable to install a [Timer]
   test('rx.Observable.debounce.error.shouldThrowB', () async {
     runZoned(() {
-      final observableWithError =
-          new Observable.just(1).debounce(const Duration(milliseconds: 200));
+      final singleEventTicker =
+          Observable.just(1).debounce(const Duration(milliseconds: 200));
 
-      observableWithError.listen(null,
+      singleEventTicker.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },
@@ -83,7 +74,7 @@ void main() {
   test('rx.Observable.debounce.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = new Observable.fromIterable(const [1, 2, 3])
-        .debounce(new Duration(milliseconds: 1));
+        .debounce(const Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 3);
@@ -99,7 +90,7 @@ void main() {
     final emissions = <int>[];
     final stopwatch = new Stopwatch();
     final stream = new Observable.fromIterable(const [1, 2, 3])
-        .debounce(new Duration(seconds: 100));
+        .debounce(const Duration(seconds: 100));
 
     stopwatch.start();
 
@@ -116,20 +107,31 @@ void main() {
       // last value to be emitted to be much shorter than that.
       expect(stopwatch.elapsedMilliseconds < 500, isTrue);
     }));
-  }, timeout: new Timeout(new Duration(seconds: 3)));
+  }, timeout: new Timeout(const Duration(seconds: 3)));
 
   test(
     'rx.Observable.debounce.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      final stream = new Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
-        subscription.cancel();
-      }).debounce(new Duration(seconds: 10));
+      final stream = new Observable.fromIterable(const [1, 2, 3])
+          .doOnDone(() => subscription.cancel())
+          .debounce(const Duration(seconds: 10));
 
       // We expect the onData callback to be called 0 times because the
       // subscription is cancelled when the base stream ends.
       subscription = stream.listen(expectAsync1((_) {}, count: 0));
     },
-    timeout: new Timeout(new Duration(seconds: 3)),
+    timeout: new Timeout(const Duration(seconds: 3)),
   );
+
+  test('rx.Observable.debounce.nullTimeout.emitsImmediately', () async {
+    await expectLater(ticker.take(4).debounce(null),
+        emitsInOrder(<dynamic>[1, 2, 3, 4, emitsDone]));
+  });
+
+  test('rx.Observable.debounce.nullTimeout.emitsImmediately.asSelector',
+      () async {
+    await expectLater(ticker.take(4).debounceSelector((_) => null),
+        emitsInOrder(<dynamic>[1, 2, 3, 4, emitsDone]));
+  });
 }
