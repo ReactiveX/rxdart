@@ -720,23 +720,6 @@ class Observable<T> extends Stream<T> {
   factory Observable.timer(T value, Duration duration) =>
       new Observable<T>((new TimerStream<T>(value, duration)));
 
-  /// Creates an Observable that emits values starting from startValue and
-  /// incrementing according to the ease type over the duration.
-  ///
-  /// This function is generally useful for transitions, such as animating
-  /// items across a screen or muting the volume of a sound gracefully.
-  ///
-  /// ### Example
-  ///
-  ///     Observable
-  ///       .tween(0.0, 100.0, const Duration(seconds: 1), ease: Ease.IN)
-  ///       .listen((i) => view.setLeft(i)); // Imaginary API as an example
-  static Observable<double> tween(
-          double startValue, double changeInTime, Duration duration,
-          {int intervalMs: 16, Ease ease: Ease.LINEAR}) =>
-      new Observable<double>(new TweenStream(
-          startValue, changeInTime, duration, intervalMs, ease));
-
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
   /// an element at a corresponding index.

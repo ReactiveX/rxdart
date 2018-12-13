@@ -15,6 +15,5 @@ export 'package:rxdart/src/streams/retry.dart';
 export 'package:rxdart/src/streams/retry_when.dart';
 export 'package:rxdart/src/streams/switch_latest.dart';
 export 'package:rxdart/src/streams/timer.dart';
-export 'package:rxdart/src/streams/tween.dart';
 export 'package:rxdart/src/streams/utils.dart';
 export 'package:rxdart/src/streams/zip.dart';
