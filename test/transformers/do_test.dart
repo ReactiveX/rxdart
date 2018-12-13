@@ -56,6 +56,21 @@ void main() {
       await expectLater(onCancelCalled, isTrue);
     });
 
+    test('awaits onCancel when the subscription is cancelled', () async {
+      var onCancelCompleted = 10, onCancelHandled = 10, eventSequenceCount = 0;
+      final observable = new Observable.just(1);
+
+      await observable
+          .doOnCancel(() =>
+              new Future<void>.delayed(const Duration(milliseconds: 100))
+                  .whenComplete(() => onCancelHandled = ++eventSequenceCount))
+          .listen(null)
+          .cancel()
+          .whenComplete(() => onCancelCompleted = ++eventSequenceCount);
+
+      await expectLater(onCancelCompleted > onCancelHandled, isTrue);
+    });
+
     test(
         'onCancel called only once when the subscription is multiple listeners',
         () async {

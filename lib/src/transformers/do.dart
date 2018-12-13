@@ -66,7 +66,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      {void onCancel(),
+      {dynamic onCancel(),
       void onData(T event),
       void onDone(),
       void onEach(Notification<T> notification),
@@ -158,9 +158,11 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         );
       };
       final FutureFunc onCancelLocal = () {
+        dynamic onCancelResult;
+
         if (onCancel != null) {
           try {
-            onCancel();
+            onCancelResult = onCancel();
           } catch (e, s) {
             if (!controller.isClosed) {
               controller.addError(e, s);
@@ -169,10 +171,14 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
             }
           }
         }
-        var cancelFuture =
+        final cancelResultFuture = onCancelResult is Future
+            ? onCancelResult
+            : new Future<dynamic>.value(onCancelResult);
+        final cancelFuture =
             subscriptions[input].cancel() ?? new Future<dynamic>.value();
 
-        return cancelFuture.whenComplete(() => subscriptions.remove(input));
+        return Future.wait<dynamic>([cancelFuture, cancelResultFuture])
+            .whenComplete(() => subscriptions.remove(input));
       };
 
       if (input.isBroadcast) {
