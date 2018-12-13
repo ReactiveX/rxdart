@@ -1,11 +1,17 @@
 import 'dart:async';
 
-/// Transforms a Stream so that will only emit items from the source sequence
+/// Creates an Observable that will only emit items from the source sequence
 /// if a particular time span has passed without the source sequence emitting
 /// another item.
 ///
-/// The Debounce Transformer filters out items emitted by the source Observable
+/// The Debounce operator filters out items emitted by the source Observable
 /// that are rapidly followed by another emitted item.
+///
+/// The debounceSelector can resolve an arbitrary timeout, based on the
+/// last emitted value.
+///
+/// If durationSelector resolves to null,
+/// then the events are emitted immediately.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
 ///
@@ -14,6 +20,23 @@ import 'dart:async';
 ///     new Observable.fromIterable([1, 2, 3, 4])
 ///       .debounce(const Duration(seconds: 1))
 ///       .listen(print); // prints 4
+///
+/// ### Example
+///
+///     new Observable.range(1, 100)
+///       .debounceSelector((value) {
+///         if (value <= 50) {
+///           // short pause if the value is <= 50
+///           return const Duration(seconds: 1);
+///         } else if (value <= 75) {
+///           // long pause if value is > 50 and <= 75
+///           return const Duration(seconds: 10);
+///         }
+///
+///         // for the remaining events > 75, do not use a timeout
+///         return null;
+///       })
+///       .listen(print); // prints 100///
 class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 

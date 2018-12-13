@@ -1348,7 +1348,7 @@ class Observable<T> extends Stream<T> {
   /// The debounceSelector can resolve an arbitrary timeout, based on the
   /// last emitted value.
   ///
-  /// If [debounceSelector] resolves to null,
+  /// If [durationSelector] resolves to null,
   /// then the events are emitted immediately.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
