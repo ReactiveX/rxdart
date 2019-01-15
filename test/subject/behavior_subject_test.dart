@@ -35,6 +35,20 @@ void main() {
       await expectLater(subject, emits(3));
     });
 
+    test('emits errors to every subscriber', () async {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(3);
+      subject.addError(new Exception('oh noes!'));
+
+      await expectLater(subject.stream, emitsError(isException));
+      await expectLater(subject.stream, emitsError(isException));
+      await expectLater(subject.stream, emitsError(isException));
+    });
+
     test('can synchronously get the latest value', () async {
       // ignore: close_sinks
       final subject = new BehaviorSubject<int>();
