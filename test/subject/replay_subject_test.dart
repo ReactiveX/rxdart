@@ -282,5 +282,14 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(const <int>[1, 2, 3]));
       await expectLater(subject.stream, emitsInOrder(const <int>[1, 2, 3]));
     });
+
+    test('is always treated as a broadcast Stream', () async {
+      // ignore: close_sinks
+      final subject = new ReplaySubject<int>();
+      final stream = subject.asyncMap((event) => new Future.value(event));
+
+      expect(subject.isBroadcast, isTrue);
+      expect(stream.isBroadcast, isTrue);
+    });
   });
 }

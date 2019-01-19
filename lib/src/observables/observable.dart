@@ -80,27 +80,49 @@ class Observable<T> extends Stream<T> {
 
   Observable(Stream<T> stream) : this._stream = stream;
 
-  /// Deprecated: please use [Observable.race].
-  ///
-  /// Given two or more source [streams], emit all of the items from only
-  /// the first of these [streams] to emit an item or notification.
-  ///
-  /// [Interactive marble diagram](http://rxmarbles.com/#amb)
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.amb([
-  ///       new Observable.timer(1, new Duration(days: 1)),
-  ///       new Observable.timer(2, new Duration(days: 2)),
-  ///       new Observable.timer(3, new Duration(seconds: 1))
-  ///     ]).listen(print); // prints 3
-  @deprecated
-  factory Observable.amb(Iterable<Stream<T>> streams) =>
-      new Observable<T>(new RaceStream<T>(streams));
-
   @override
   AsObservableFuture<bool> any(bool test(T element)) =>
       new AsObservableFuture<bool>(_stream.any(test));
+
+  /// Merges the given Streams into one Observable that emits a List of the
+  /// values emitted by the source Stream. This is helpful when you need to
+  /// combine a dynamic number of Streams.
+  ///
+  /// The Observable will not emit any lists of values until all of the source
+  /// streams have emitted at least one value.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatestList([
+  ///       Observable.just(1),
+  ///       Observable.fromIterable([0, 1, 2]),
+  ///     ])
+  ///     .listen(print); // prints [1, 0], [1, 1], [1, 2]
+  static Observable<R> combineLatest<T, R>(
+          Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
+      new Observable<R>(CombineLatestStream<T, R>(streams, combiner));
+
+  /// Merges the given Streams into one Observable that emits a List of the
+  /// values emitted by the source Stream. This is helpful when you need to
+  /// combine a dynamic number of Streams.
+  ///
+  /// The Observable will not emit any lists of values until all of the source
+  /// streams have emitted at least one value.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.combineLatestList([
+  ///       Observable.just(1),
+  ///       Observable.fromIterable([0, 1, 2]),
+  ///     ])
+  ///     .listen(print); // prints [1, 0], [1, 1], [1, 2]
+  static Observable<List<T>> combineLatestList<T>(
+          Iterable<Stream<T>> streams) =>
+      new Observable<List<T>>(CombineLatestStream.list<T>(streams));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -119,13 +141,9 @@ class Observable<T> extends Stream<T> {
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 1, 2, 3
   static Observable<T> combineLatest2<A, B, T>(
-          Stream<A> streamOne, Stream<B> streamTwo, T combiner(A a, B b)) =>
-      new Observable<T>(new CombineLatestStream<T, A, B, Null, Null, Null, Null,
-              Null, Null, Null>(
-          <Stream<dynamic>>[streamOne, streamTwo],
-          (A a, B b,
-                  [Null c, Null d, Null e, Null f, Null g, Null h, Null i]) =>
-              combiner(a, b)));
+          Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
+      new Observable<T>(
+          CombineLatestStream.combine2(streamA, streamB, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -144,16 +162,10 @@ class Observable<T> extends Stream<T> {
   ///       new Observable.fromIterable(["c", "c"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc", "abc"
-  static Observable<T> combineLatest3<A, B, C, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          T combiner(A a, B b, C c)) =>
-      new Observable<T>(new CombineLatestStream<T, A, B, C, Null, Null, Null,
-              Null, Null, Null>(
-          <Stream<dynamic>>[streamOne, streamTwo, streamThree],
-          (A a, B b, [C c, Null d, Null e, Null f, Null g, Null h, Null i]) =>
-              combiner(a, b, c)));
+  static Observable<T> combineLatest3<A, B, C, T>(Stream<A> streamA,
+          Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
+      new Observable<T>(
+          CombineLatestStream.combine3(streamA, streamB, streamC, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -174,16 +186,13 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd", "abcd"
   static Observable<T> combineLatest4<A, B, C, D, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
           T combiner(A a, B b, C c, D d)) =>
-      new Observable<T>(
-          new CombineLatestStream<T, A, B, C, D, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
-              (A a, B b, [C c, D d, Null e, Null f, Null g, Null h, Null i]) =>
-                  combiner(a, b, c, d)));
+      new Observable<T>(CombineLatestStream.combine4(
+          streamA, streamB, streamC, streamD, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -205,23 +214,14 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde", "abcde"
   static Observable<T> combineLatest5<A, B, C, D, E, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
           T combiner(A a, B b, C c, D d, E e)) =>
-      new Observable<T>(
-          new CombineLatestStream<T, A, B, C, D, E, Null, Null, Null, Null>(
-              <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive
-          ],
-              (A a, B b, [C c, D d, E e, Null f, Null g, Null h, Null i]) =>
-                  combiner(a, b, c, d, e)));
+      new Observable<T>(CombineLatestStream.combine5(
+          streamA, streamB, streamC, streamD, streamE, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -244,25 +244,15 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef", "abcdef"
   static Observable<T> combineLatest6<A, B, C, D, E, F, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
           T combiner(A a, B b, C c, D d, E e, F f)) =>
-      new Observable<T>(
-          new CombineLatestStream<T, A, B, C, D, E, F, Null, Null, Null>(
-              <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix
-          ],
-              (A a, B b, [C c, D d, E e, F f, Null g, Null h, Null i]) =>
-                  combiner(a, b, c, d, e, f)));
+      new Observable<T>(CombineLatestStream.combine6(
+          streamA, streamB, streamC, streamD, streamE, streamF, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -286,27 +276,16 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg", "abcdefg"
   static Observable<T> combineLatest7<A, B, C, D, E, F, G, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
           T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
-      new Observable<T>(
-          new CombineLatestStream<T, A, B, C, D, E, F, G, Null, Null>(
-              <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven
-          ],
-              (A a, B b, [C c, D d, E e, F f, G g, Null h, Null i]) =>
-                  combiner(a, b, c, d, e, f, g)));
+      new Observable<T>(CombineLatestStream.combine7(streamA, streamB, streamC,
+          streamD, streamE, streamF, streamG, combiner));
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -331,29 +310,28 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh", "abcdefgh"
   static Observable<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
-          Stream<H> streamEight,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
       new Observable<T>(
-          new CombineLatestStream<T, A, B, C, D, E, F, G, H, Null>(
-              <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven,
-            streamEight
-          ],
-              (A a, B b, [C c, D d, E e, F f, G g, H h, Null i]) =>
-                  combiner(a, b, c, d, e, f, g, h)));
+        CombineLatestStream.combine8(
+          streamA,
+          streamB,
+          streamC,
+          streamD,
+          streamE,
+          streamF,
+          streamG,
+          streamH,
+          combiner,
+        ),
+      );
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -379,30 +357,30 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi", "abcdefghi"
   static Observable<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
-          Stream<H> streamEight,
-          Stream<I> streamNine,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
+          Stream<I> streamI,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
-      new Observable<T>(new CombineLatestStream<T, A, B, C, D, E, F, G, H, I>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven,
-            streamEight,
-            streamNine
-          ],
-          (A a, B b, [C c, D d, E e, F f, G g, H h, I i]) =>
-              combiner(a, b, c, d, e, f, g, h, i)));
+      new Observable<T>(
+        CombineLatestStream.combine9(
+          streamA,
+          streamB,
+          streamC,
+          streamD,
+          streamE,
+          streamF,
+          streamG,
+          streamH,
+          streamI,
+          combiner,
+        ),
+      );
 
   /// Concatenates all of the specified stream sequences, as long as the
   /// previous stream sequence terminated successfully.
@@ -605,6 +583,21 @@ class Observable<T> extends Stream<T> {
   static Observable<int> range(int startInclusive, int endInclusive) =>
       new Observable<int>(new RangeStream(startInclusive, endInclusive));
 
+  /// Creates a [Stream] that will recreate and re-listen to the source
+  /// Stream the specified number of times until the [Stream] terminates
+  /// successfully.
+  ///
+  /// If [count] is not specified, it repeats indefinitely.
+  ///
+  /// ### Example
+  ///
+  ///     new RepeatStream((int repeatCount) =>
+  ///       Observable.just('repeat index: $repeatCount'), 3)
+  ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
+  factory Observable.repeat(Stream<T> streamFactory(int repeatIndex),
+          [int count]) =>
+      new Observable(new RepeatStream<T>(streamFactory, count));
+
   /// Creates an Observable that will recreate and re-listen to the source
   /// Stream the specified number of times until the Stream terminates
   /// successfully.
@@ -727,23 +720,6 @@ class Observable<T> extends Stream<T> {
   factory Observable.timer(T value, Duration duration) =>
       new Observable<T>((new TimerStream<T>(value, duration)));
 
-  /// Creates an Observable that emits values starting from startValue and
-  /// incrementing according to the ease type over the duration.
-  ///
-  /// This function is generally useful for transitions, such as animating
-  /// items across a screen or muting the volume of a sound gracefully.
-  ///
-  /// ### Example
-  ///
-  ///     Observable
-  ///       .tween(0.0, 100.0, const Duration(seconds: 1), ease: Ease.IN)
-  ///       .listen((i) => view.setLeft(i)); // Imaginary API as an example
-  static Observable<double> tween(
-          double startValue, double changeInTime, Duration duration,
-          {int intervalMs: 16, Ease ease: Ease.LINEAR}) =>
-      new Observable<double>(new TweenStream(
-          startValue, changeInTime, duration, intervalMs, ease));
-
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
   /// an element at a corresponding index.
@@ -767,19 +743,64 @@ class Observable<T> extends Stream<T> {
   ///       (a, b) => a + b)
   ///     .listen(print); // prints "Hi Friend"
   static Observable<T> zip2<A, B, T>(
-          Stream<A> streamOne, Stream<B> streamTwo, T zipper(A a, B b)) =>
-      new Observable<T>(
-          new ZipStream<T, A, B, Null, Null, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[streamOne, streamTwo],
-              (A a, B b,
-                      [Null c,
-                      Null d,
-                      Null e,
-                      Null f,
-                      Null g,
-                      Null h,
-                      Null i]) =>
-                  zipper(a, b)));
+          Stream<A> streamA, Stream<B> streamB, T zipper(A a, B b)) =>
+      Observable<T>(ZipStream.zip2(streamA, streamB, zipper));
+
+  /// Merges the iterable streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
+  ///
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zip(
+  ///       [
+  ///         Observable.just("Hi "),
+  ///         Observable.fromIterable(["Friend", "Dropped"]),
+  ///       ],
+  ///       (values) => values.first + values.last
+  ///     )
+  ///     .listen(print); // prints "Hi Friend"
+  static Observable<R> zip<T, R>(
+          Iterable<Stream<T>> streams, R zipper(List<T> values)) =>
+      Observable<R>(ZipStream(streams, zipper));
+
+  /// Merges the iterable streams into one observable sequence using the given
+  /// zipper function whenever all of the observable sequences have produced
+  /// an element at a corresponding index.
+  ///
+  /// It applies this function in strict sequence, so the first item emitted by
+  /// the new Observable will be the result of the function applied to the first
+  /// item emitted by Observable #1 and the first item emitted by Observable #2;
+  /// the second item emitted by the new zip-Observable will be the result of
+  /// the function applied to the second item emitted by Observable #1 and the
+  /// second item emitted by Observable #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Observable that
+  /// emits the fewest items.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#zip)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.zipList(
+  ///       [
+  ///         Observable.just("Hi "),
+  ///         Observable.fromIterable(["Friend", "Dropped"]),
+  ///       ],
+  ///     )
+  ///     .listen(print); // prints ['Hi ', 'Friend']
+  static Observable<List<T>> zipList<T>(Iterable<Stream<T>> streams) =>
+      Observable<List<T>>(ZipStream.list(streams));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -804,17 +825,9 @@ class Observable<T> extends Stream<T> {
   ///       new Observable.fromIterable(["c", "dropped"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc"
-  static Observable<T> zip3<A, B, C, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          T zipper(A a, B b, C c)) =>
-      new Observable<T>(
-          new ZipStream<T, A, B, C, Null, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[streamOne, streamTwo, streamThree],
-              (A a, B b,
-                      [C c, Null d, Null e, Null f, Null g, Null h, Null i]) =>
-                  zipper(a, b, c)));
+  static Observable<T> zip3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
+          Stream<C> streamC, T zipper(A a, B b, C c)) =>
+      Observable<T>(ZipStream.zip3(streamA, streamB, streamC, zipper));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -840,17 +853,9 @@ class Observable<T> extends Stream<T> {
   ///       new Observable.fromIterable(["d", "dropped"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd"
-  static Observable<T> zip4<A, B, C, D, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          T zipper(A a, B b, C c, D d)) =>
-      new Observable<T>(
-          new ZipStream<T, A, B, C, D, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[streamOne, streamTwo, streamThree, streamFour],
-              (A a, B b, [C c, D d, Null e, Null f, Null g, Null h, Null i]) =>
-                  zipper(a, b, c, d)));
+  static Observable<T> zip4<A, B, C, D, T>(Stream<A> streamA, Stream<B> streamB,
+          Stream<C> streamC, Stream<D> streamD, T zipper(A a, B b, C c, D d)) =>
+      Observable<T>(ZipStream.zip4(streamA, streamB, streamC, streamD, zipper));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -878,22 +883,14 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde"
   static Observable<T> zip5<A, B, C, D, E, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
           T zipper(A a, B b, C c, D d, E e)) =>
-      new Observable<T>(new ZipStream<T, A, B, C, D, E, Null, Null, Null, Null>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive
-          ],
-          (A a, B b, [C c, D d, E e, Null f, Null g, Null h, Null i]) =>
-              zipper(a, b, c, d, e)));
+      Observable<T>(
+          ZipStream.zip5(streamA, streamB, streamC, streamD, streamE, zipper));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -922,24 +919,22 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef"
   static Observable<T> zip6<A, B, C, D, E, F, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
           T zipper(A a, B b, C c, D d, E e, F f)) =>
-      new Observable<T>(new ZipStream<T, A, B, C, D, E, F, Null, Null, Null>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix
-          ],
-          (A a, B b, [C c, D d, E e, F f, Null g, Null h, Null i]) =>
-              zipper(a, b, c, d, e, f)));
+      Observable<T>(ZipStream.zip6(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        zipper,
+      ));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -969,26 +964,24 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg"
   static Observable<T> zip7<A, B, C, D, E, F, G, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
           T zipper(A a, B b, C c, D d, E e, F f, G g)) =>
-      new Observable<T>(new ZipStream<T, A, B, C, D, E, F, G, Null, Null>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven
-          ],
-          (A a, B b, [C c, D d, E e, F f, G g, Null h, Null i]) =>
-              zipper(a, b, c, d, e, f, g)));
+      Observable<T>(ZipStream.zip7(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        zipper,
+      ));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1019,28 +1012,26 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh"
   static Observable<T> zip8<A, B, C, D, E, F, G, H, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
-          Stream<H> streamEight,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
           T zipper(A a, B b, C c, D d, E e, F f, G g, H h)) =>
-      new Observable<T>(new ZipStream<T, A, B, C, D, E, F, G, H, Null>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven,
-            streamEight
-          ],
-          (A a, B b, [C c, D d, E e, F f, G g, H h, Null i]) =>
-              zipper(a, b, c, d, e, f, g, h)));
+      Observable<T>(ZipStream.zip8(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        zipper,
+      ));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1072,30 +1063,28 @@ class Observable<T> extends Stream<T> {
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi"
   static Observable<T> zip9<A, B, C, D, E, F, G, H, I, T>(
-          Stream<A> streamOne,
-          Stream<B> streamTwo,
-          Stream<C> streamThree,
-          Stream<D> streamFour,
-          Stream<E> streamFive,
-          Stream<F> streamSix,
-          Stream<G> streamSeven,
-          Stream<H> streamEight,
-          Stream<I> streamNine,
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
+          Stream<I> streamI,
           T zipper(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
-      new Observable<T>(new ZipStream<T, A, B, C, D, E, F, G, H, I>(
-          <Stream<dynamic>>[
-            streamOne,
-            streamTwo,
-            streamThree,
-            streamFour,
-            streamFive,
-            streamSix,
-            streamSeven,
-            streamEight,
-            streamNine
-          ],
-          (A a, B b, [C c, D d, E e, F f, G g, H h, I i]) =>
-              zipper(a, b, c, d, e, f, g, h, i)));
+      Observable<T>(ZipStream.zip9(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        streamI,
+        zipper,
+      ));
 
   /// Returns a multi-subscription stream that produces the same events as this.
   ///
@@ -1198,46 +1187,30 @@ class Observable<T> extends Stream<T> {
               OnDataTransform<List<T>, List<T>> scheduleHandler) =>
           sampler(stream, bufferHandler, scheduleHandler)));
 
-  /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// Buffers a number of values from the source Observable by [count] then
+  /// emits the buffer and clears it, and starts a new buffer each
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided or is
+  /// null, then new buffers are started immediately at the start of the source
+  /// and when each buffer closes and is emitted.
   ///
   /// ### Example
+  /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
   ///       .bufferCount(2)
-  ///       .listen(print); // prints [1, 2], [3, 4]
-  ///
-  /// ### Example with skip
-  ///
-  ///     Observable.range(1, 4).bufferCount(2, 1)
-  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-  Observable<List<T>> bufferCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
-
-  /// Deprecated: Please use [bufferCount]
-  ///
-  /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  ///       .listen(print); // prints [1, 2], [3, 4] done!
   ///
   /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
   ///
-  ///     Observable.range(1, 4).bufferWithCount(2)
-  ///       .listen(print); // prints [1, 2], [3, 4]
-  ///
-  /// ### Example with skip
-  ///
-  ///     Observable.range(1, 4)
-  ///       .bufferWithCount(2, 1)
-  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4], [4]
-  @deprecated
-  Observable<List<T>> bufferWithCount(int count, [int skip]) => transform(
-      new BufferStreamTransformer<T>(onCount<T, List<T>>(count, skip)));
+  ///     Observable.range(1, 5)
+  ///       .bufferCount(3, 2)
+  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
+  Observable<List<T>> bufferCount(int count, [int startBufferEvery = 0]) =>
+      transform(new BufferStreamTransformer<T>(
+          onCount<T, List<T>>(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [List] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
@@ -1624,28 +1597,6 @@ class Observable<T> extends Stream<T> {
       transform(new FlatMapStreamTransformer<T, Iterable<S>>(mapper))
           .expand((Iterable<S> iterable) => iterable);
 
-  /// Deprecated: Please use [switchMap] instead.
-  ///
-  /// This is the old name of this method This Converts each emitted item into a new Stream using the given mapper
-  /// function. The newly created Stream will be be listened to and begin
-  /// emitting items, and any previously created Stream will stop emitting.
-  ///
-  /// The flatMapLatest operator is similar to the flatMap and concatMap
-  /// methods, but it only emits items from the most recently created Stream.
-  ///
-  /// This can be useful when you only want the very latest state from
-  /// asynchronous APIs, for example.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.range(4, 1)
-  ///       .flatMapLatest((i) =>
-  ///         new Observable.timer(i, new Duration(minutes: i))
-  ///       .listen(print); // prints 1
-  @deprecated
-  Observable<S> flatMapLatest<S>(Stream<S> mapper(T value)) =>
-      transform(new SwitchMapStreamTransformer<T, S>(mapper));
-
   @override
   AsObservableFuture<S> fold<S>(
           S initialValue, S combine(S previous, T element)) =>
@@ -1786,6 +1737,16 @@ class Observable<T> extends Stream<T> {
   @override
   Observable<S> map<S>(S convert(T event)) =>
       new Observable<S>(_stream.map(convert));
+
+  /// Emits the given constant value on the output Observable every time the source Observable emits a value.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.fromIterable([1, 2, 3, 4])
+  ///       .mapTo(true)
+  ///       .listen(print); // prints true, true, true, true
+  Observable<S> mapTo<S>(S value) =>
+      transform(new MapToStreamTransformer<T, S>(value));
 
   /// Converts the onData, on Done, and onError events into [Notification]
   /// objects that are passed into the downstream onData listener.
@@ -1974,6 +1935,18 @@ class Observable<T> extends Stream<T> {
       transform(new OnErrorResumeStreamTransformer<T>(
           (dynamic e) => new Observable<T>.just(returnFn(e))));
 
+  /// Triggers on the second and subsequent triggerings of the input observable.
+  /// The Nth triggering of the input observable passes the arguments from the N-1th and Nth triggering as a pair.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.range(1, 4)
+  ///       .pairwise()
+  ///       .listen(print); // prints [1, 2], [2, 3]
+  Observable<List<T>> pairwise() =>
+      transform(new BufferStreamTransformer<T>(onCount<T, List<T>>(2, 1),
+          exhaustBufferOnDone: false));
+
   @override
   AsObservableFuture<dynamic> pipe(StreamConsumer<T> streamConsumer) =>
       new AsObservableFuture<dynamic>(_stream.pipe(streamConsumer));
@@ -1981,15 +1954,6 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<T> reduce(T combine(T previous, T element)) =>
       new AsObservableFuture<T>(_stream.reduce(combine));
-
-  /// Creates an Observable that repeats the source's elements the specified
-  /// number of times.
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.just(1).repeat(3).listen(print); // prints 1, 1, 1
-  Observable<T> repeat(int repeatCount) =>
-      transform(new RepeatStreamTransformer<T>(repeatCount));
 
   /// Returns an Observable that, when the specified sample stream emits
   /// an item or completes, emits the most recently emitted item (if any)
@@ -2288,56 +2252,35 @@ class Observable<T> extends Stream<T> {
               OnDataTransform<Stream<T>, Stream<T>> scheduleHandler) =>
           sampler(stream, bufferHandler, scheduleHandler)));
 
-  /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  /// Buffers a number of values from the source Observable by [count] then
+  /// emits the values inside the buffer as a new [Stream],
+  /// and starts a new buffer each [startBufferEvery] values.
+  /// If [startBufferEvery] is not provided or is null, then new buffers are
+  /// started immediately at the start of the source and when each buffer
+  /// closes and is emitted.
   ///
   /// ### Example
+  /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
   ///       .windowCount(2)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 3, 4
-  ///
-  /// ### Example with skip
-  ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2, 1)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
-  Observable<Stream<T>> windowCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
-
-  /// Deprecated: Please use [windowCount]
-  ///
-  /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, in batches of [count].
-  ///
-  /// If [skip] is provided, each group will start where the previous group
-  /// ended minus the [skip] value.
+  ///       .doOnData((_) => print('new Stream emitted))
+  ///       .flatMap((stream) => stream)
+  ///       .listen(print); // prints new Stream emitted, 1, 2, new Stream emitted, 3, 4 done!
   ///
   /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
   ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 3, 4
-  ///
-  /// ### Example with skip
-  ///
-  ///     Observable.range(1, 4)
-  ///       .windowCount(2, 1)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 2, 3, next window 3, 4, next window 4
-  @deprecated
-  Observable<Stream<T>> windowWithCount(int count, [int skip]) =>
-      transform(new WindowStreamTransformer<T>(onCount(count, skip)));
+  ///     Observable.range(1, 5)
+  ///       .windowCount(3, 2)
+  ///       .doOnData((_) => print('new Stream emitted))
+  ///       .flatMap((stream) => stream)
+  ///       .listen(print); // prints new Stream emitted, 1, 2, 3 new Stream emitted 3, 4, 5 new Stream emitted 5 done!
+  Observable<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
+      transform(
+          new WindowStreamTransformer<T>(onCount(count, startBufferEvery)));
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence, batched whenever [onFutureHandler] completes.
@@ -2418,20 +2361,7 @@ class Observable<T> extends Stream<T> {
   ///         .zipWith(new Observable.just(2), (one, two) => one + two)
   ///         .listen(print); // prints 3
   Observable<R> zipWith<S, R>(Stream<S> other, R zipper(T t, S s)) =>
-      new Observable<R>(
-          new ZipStream<R, T, S, Null, Null, Null, Null, Null, Null, Null>(
-              <Stream<dynamic>>[_stream, other],
-              (
-                      [T a,
-                      S b,
-                      Null c,
-                      Null d,
-                      Null e,
-                      Null f,
-                      Null g,
-                      Null h,
-                      Null i]) =>
-                  zipper(a, b)));
+      Observable<R>(ZipStream.zip2(_stream, other, zipper));
 
   /// Convert the current Observable into a [ConnectableObservable]
   /// that can be listened to multiple times. It will not begin emitting items

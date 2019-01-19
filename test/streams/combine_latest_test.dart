@@ -18,7 +18,40 @@ Stream<bool> get streamC {
 }
 
 void main() {
+  test('rx.Observable.combineLatestList', () async {
+    final combined = Observable.combineLatestList<int>([
+      Observable.fromIterable([1, 2, 3]),
+      Observable.just(2),
+      Observable.just(3),
+    ]);
+
+    expect(
+      combined,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        [2, 2, 3],
+        [3, 2, 3],
+      ]),
+    );
+  });
+
   test('rx.Observable.combineLatest', () async {
+    final combined = Observable.combineLatest<int, int>(
+      [
+        Observable.fromIterable([1, 2, 3]),
+        Observable.just(2),
+        Observable.just(3),
+      ],
+      (values) => values.fold(0, (acc, val) => acc + val),
+    );
+
+    expect(
+      combined,
+      emitsInOrder(<dynamic>[6, 7, 8]),
+    );
+  });
+
+  test('rx.Observable.combineLatest3', () async {
     const expectedOutput = ['0 4 true', '1 4 true', '2 4 true'];
     var count = 0;
 

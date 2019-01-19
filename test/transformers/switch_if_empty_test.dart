@@ -5,11 +5,17 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.switchIfEmpty.whenEmpty', () async {
-    new Observable(new Stream<bool>.empty())
-        .switchIfEmpty(new Observable.just(true))
-        .listen(expectAsync1((result) {
-          expect(result, true);
-        }, count: 1));
+    expect(
+      Observable<int>.empty().switchIfEmpty(Observable.just(1)),
+      emitsInOrder(<dynamic>[1, emitsDone]),
+    );
+  });
+
+  test('rx.Observable.initial.completes', () async {
+    expect(
+      Observable.just(99).switchIfEmpty(Observable.just(1)),
+      emitsInOrder(<dynamic>[99, emitsDone]),
+    );
   });
 
   test('rx.Observable.switchIfEmpty.reusable', () async {

@@ -12,7 +12,6 @@ import 'observables/replay_connectable_observable_test.dart'
     as replay_connectable_observable_test;
 import 'observables/value_connectable_observable_test.dart'
     as value_connectable_observable_test;
-import 'streams/amb_test.dart' as amb_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
@@ -28,12 +27,12 @@ import 'streams/never_test.dart' as never_test;
 import 'streams/periodic_test.dart' as periodic_test;
 import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
+import 'streams/repeat_test.dart' as repeat_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
-import 'streams/tween_test.dart' as tween_test;
 import 'streams/zip_test.dart' as zip_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 import 'subject/publish_subject_test.dart' as publish_subject_test;
@@ -66,7 +65,6 @@ import 'transformers/expand_test.dart' as expand_test;
 import 'transformers/first_test.dart' as first_test;
 import 'transformers/first_where_test.dart' as first_where_test;
 import 'transformers/flat_map_iterable_test.dart' as flat_map_iterable_test;
-import 'transformers/flat_map_latest_test.dart' as flat_map_latest_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
 import 'transformers/fold_test.dart' as fold_test;
 import 'transformers/for_each_test.dart' as for_each_test;
@@ -77,6 +75,7 @@ import 'transformers/is_empty_test.dart' as is_empty_test;
 import 'transformers/join_test.dart' as join_test;
 import 'transformers/last_test.dart' as last_test;
 import 'transformers/last_where_test.dart' as last_where_test;
+import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
 import 'transformers/of_type_test.dart' as of_type_test;
@@ -86,8 +85,8 @@ import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
     as on_error_return_with_test;
+import 'transformers/pairwise_test.dart' as pairwise_test;
 import 'transformers/reduce_test.dart' as reduce_test;
-import 'transformers/repeat_test.dart' as repeat_test;
 import 'transformers/sample_test.dart' as sample_test;
 import 'transformers/scan_test.dart' as scan_test;
 import 'transformers/single_test.dart' as single_test;
@@ -120,7 +119,6 @@ import 'transformers/zip_with_test.dart' as zip_with_test;
 
 void main() {
   // Streams
-  amb_test.main();
   combine_latest_test.main();
   concat_eager_test.main();
   concat_test.main();
@@ -136,6 +134,7 @@ void main() {
   periodic_test.main();
   range_test.main();
   race_test.main();
+  repeat_test.main();
   retry_test.main();
   retry_when_test.main();
   stream_test.main();
@@ -172,7 +171,6 @@ void main() {
   first_test.main();
   first_where_test.main();
   first_where_test.main();
-  flat_map_latest_test.main();
   flat_map_test.main();
   flat_map_iterable_test.main();
   fold_test.main();
@@ -184,6 +182,7 @@ void main() {
   join_test.main();
   last_test.main();
   last_where_test.main();
+  map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
   of_type_test.main();
@@ -191,8 +190,8 @@ void main() {
   on_error_resume_test.main();
   on_error_return_test.main();
   on_error_return_with_test.main();
+  pairwise_test.main();
   reduce_test.main();
-  repeat_test.main();
   sample_test.main();
   scan_test.main();
   single_test.main();
@@ -214,7 +213,6 @@ void main() {
   to_set_test.main();
   transform_test.main();
   timer_test.main();
-  tween_test.main();
   where_test.main();
   window_test.main();
   window_count_test.main();
