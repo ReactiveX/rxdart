@@ -33,7 +33,9 @@ typedef Future<dynamic> FutureFunc();
 /// be used or safely removed.
 ///
 /// Additionally, it is possible to cancel the stream when an error is emited by
-/// calling [onErrorCancel]
+/// calling
+///
+///   - onErrorCancel
 ///
 /// ### Example
 ///
