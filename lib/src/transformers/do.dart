@@ -32,6 +32,9 @@ typedef Future<dynamic> FutureFunc();
 /// in order to "fail fast" and alert the developer that the transformer should
 /// be used or safely removed.
 ///
+/// Additionally, it is possible to cancel the stream when an error is emited by
+/// calling [onErrorCancel]
+///
 /// ### Example
 ///
 ///     new Stream.fromIterable([1])
@@ -45,35 +48,38 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   DoStreamTransformer(
       {void onCancel(),
-      void onData(T event),
-      void onDone(),
-      void onEach(Notification<T> notification),
-      Function onError,
-      void onListen(),
-      void onPause(Future<dynamic> resumeSignal),
-      void onResume()})
+        void onData(T event),
+        void onDone(),
+        void onEach(Notification<T> notification),
+        Function onError,
+        void onListen(),
+        void onPause(Future<dynamic> resumeSignal),
+        void onResume(),
+        bool onErrorCancel})
       : transformer = _buildTransformer(
-            onCancel: onCancel,
-            onData: onData,
-            onDone: onDone,
-            onEach: onEach,
-            onError: onError,
-            onListen: onListen,
-            onPause: onPause,
-            onResume: onResume);
+      onCancel: onCancel,
+      onData: onData,
+      onDone: onDone,
+      onEach: onEach,
+      onError: onError,
+      onListen: onListen,
+      onPause: onPause,
+      onResume: onResume,
+      onErrorCancel : onErrorCancel);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       {void onCancel(),
-      void onData(T event),
-      void onDone(),
-      void onEach(Notification<T> notification),
-      Function onError,
-      void onListen(),
-      void onPause(Future<dynamic> resumeSignal),
-      void onResume()}) {
+        void onData(T event),
+        void onDone(),
+        void onEach(Notification<T> notification),
+        Function onError,
+        void onListen(),
+        void onPause(Future<dynamic> resumeSignal),
+        void onResume(),
+        bool onErrorCancel}) {
     if (onCancel == null &&
         onData == null &&
         onDone == null &&
@@ -81,7 +87,8 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         onError == null &&
         onListen == null &&
         onPause == null &&
-        onResume == null) {
+        onResume == null
+        && onErrorCancel == null) {
       throw new ArgumentError("Must provide at least one handler");
     }
 
@@ -99,9 +106,9 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
         subscriptions.putIfAbsent(
           input,
-          () {
+              () {
             return input.listen(
-              (T value) {
+                  (T value) {
                 if (onData != null) {
                   try {
                     onData(value);
@@ -152,7 +159,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 }
                 controller.close();
               },
-              cancelOnError: cancelOnError,
+              cancelOnError: onErrorCancel ?? false,
             );
           },
         );

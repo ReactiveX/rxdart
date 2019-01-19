@@ -1530,6 +1530,17 @@ class Observable<T> extends Stream<T> {
   Observable<T> doOnResume(void onResume()) =>
       transform(new DoStreamTransformer<T>(onResume: onResume));
 
+  /// When an observable emits an error, the [doOnDone] callback is not called
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.just(throw new Exception("message"))
+  ///       .doOnError(print("Error"))
+  ///       .doOnDone(print("Done"))
+  ///       .listen(null); // prints Error
+  Observable<T> onErrorCancel() =>
+      transform(new DoStreamTransformer<T>(onErrorCancel: true));
+
   @override
   AsObservableFuture<S> drain<S>([S futureValue]) =>
       new AsObservableFuture<S>(_stream.drain(futureValue));

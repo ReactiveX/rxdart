@@ -16,6 +16,19 @@ void main() {
       await expectLater(onDoneCalled, isTrue);
     });
 
+    test('observables with onErrorCancel should cancel on error', () async {
+      var onErrorCalled = false;
+      var onDataCalled = false;
+      final observable = new Observable<void>.error(new Exception())
+          .onErrorCancel()
+          .doOnError((dynamic e, dynamic s) => onErrorCalled = true)
+          .doOnData((_) => onDataCalled = true);
+
+      await expectLater(observable, emitsError(isException));
+      await expectLater(onErrorCalled, isTrue);
+      await expectLater(onDataCalled, isFalse);
+    });
+
     test('calls onError when an error is emitted', () async {
       var onErrorCalled = false;
       final observable = new Observable<void>.error(new Exception())
