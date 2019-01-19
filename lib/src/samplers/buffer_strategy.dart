@@ -16,27 +16,25 @@ typedef Stream<S> SamplerBuilder<T, S>(Stream<T> stream,
 /// Each item is a sequence containing the items
 /// from the source sequence, in batches of [count].
 ///
-/// If [skip] is provided, each group will start where the previous group
-/// ended minus the [skip] value.
+/// If [startBufferEvery] is provided, each group will start where the previous group
+/// ended minus the [startBufferEvery] value.
 Stream<S> Function(
   Stream<T> stream,
   OnDataTransform<T, S>,
   OnDataTransform<S, S>,
-) onCount<T, S>(int count, [int skip]) {
-  return (
-    Stream<T> stream,
-    OnDataTransform<T, S> bufferHandler,
-    OnDataTransform<S, S> scheduleHandler,
-  ) {
-    return new _OnCountSampler<T, S>(
-      stream,
-      bufferHandler,
-      scheduleHandler,
-      count,
-      skip,
-    );
-  };
-}
+) onCount<T, S>(int count, [int startBufferEvery = 0]) => (
+      Stream<T> stream,
+      OnDataTransform<T, S> bufferHandler,
+      OnDataTransform<S, S> scheduleHandler,
+    ) {
+      return new _OnCountSampler<T, S>(
+        stream,
+        bufferHandler,
+        scheduleHandler,
+        count,
+        startBufferEvery,
+      );
+    };
 
 /// Higher order function implementation for [_OnStreamSampler]
 /// which matches the method signature of buffer and window.
@@ -196,31 +194,35 @@ class _OnCountSampler<T, S> extends StreamView<S> {
 
   factory _OnCountSampler(Stream<T> stream, OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler, int count,
-      [int skip]) {
+      [int startBufferEvery = 0]) {
     var eventIndex = 0;
-
-    skip ??= 0;
 
     if (count == null) {
       throw new ArgumentError('count cannot be null');
-    } else if (skip > count) {
-      throw new ArgumentError('skip cannot be greater than count');
+    } else if (count < 1) {
+      throw new ArgumentError(
+          'count needs to be greater than 1, currently it is: $count');
     }
+
+    if (startBufferEvery < 0) {
+      throw new ArgumentError(
+          'startBufferEvery needs to be greater than, or equal to 0, currently it is: $startBufferEvery');
+    }
+
+    bool maybeNewBuffer(S _) => eventIndex % count == 0;
 
     final scheduler = stream
         .transform<S>(new StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
-              eventIndex++;
-              bufferHandler(data, sink, skip);
+              if (++eventIndex > 0) bufferHandler(data, sink, startBufferEvery);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
-        .where((_) => eventIndex % count == 0)
+        .where(maybeNewBuffer)
         .transform<S>(new StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
-              skip ??= 0;
-              eventIndex -= skip;
-              scheduleHandler(data, sink, skip);
+              eventIndex -= startBufferEvery;
+              scheduleHandler(data, sink, startBufferEvery);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)));

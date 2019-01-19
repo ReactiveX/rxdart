@@ -20,6 +20,9 @@ class DeferStream<T> extends Stream<T> {
   final bool _isReusable;
   bool _isUsed = false;
 
+  @override
+  bool get isBroadcast => _isReusable;
+
   DeferStream(this._streamFactory, {bool reusable: false})
       : _isReusable = reusable;
 

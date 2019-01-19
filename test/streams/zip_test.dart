@@ -5,6 +5,31 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.zip', () async {
+    expect(
+      Observable.zip<String, String>([
+        Observable.fromIterable(["A1", "B1"]),
+        Observable.fromIterable(["A2", "B2", "C2"]),
+      ], (values) => values.first + values.last),
+      emitsInOrder(<dynamic>["A1A2", "B1B2", emitsDone]),
+    );
+  });
+
+  test('rx.Observable.zipList', () async {
+    expect(
+      Observable.zipList([
+        Observable.fromIterable(["A1", "B1"]),
+        Observable.fromIterable(["A2", "B2", "C2"]),
+        Observable.fromIterable(["A3", "B3", "C3"]),
+      ]),
+      emitsInOrder(<dynamic>[
+        ['A1', 'A2', 'A3'],
+        ['B1', 'B2', 'B3'],
+        emitsDone
+      ]),
+    );
+  });
+
+  test('rx.Observable.zipBasics', () async {
     const expectedOutput = [
       [0, 1, true],
       [1, 2, false],
@@ -272,8 +297,11 @@ void main() {
   });
 
   test('rx.Observable.zip.error.shouldThrowA', () async {
-    final observableWithError = Observable.zip2(new Observable.just(1),
-        new Observable.just(2), (int a, int b) => throw new Exception());
+    final observableWithError = Observable.zip2(
+      new Observable.just(1),
+      new Observable.just(2),
+      (int a, int b) => throw new Exception(),
+    );
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

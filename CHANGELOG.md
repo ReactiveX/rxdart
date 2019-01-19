@@ -1,3 +1,21 @@
+## 0.20.0
+  * Breaking Change: bufferCount had buggy behavior when using `startBufferEvery` (was `skip` previously)
+  If you were relying on bufferCount with `skip` greater than 1 before, then you may have noticed 
+  erroneous behavior.
+  * Breaking Change: `repeat` is no longer an operator which simply repeats the last emitted event n-times,
+  instead this is now an Observable factory method which takes a StreamFactory and a count parameter.
+  This will cause each repeat cycle to create a fresh Observable sequence.
+  * `mapTo` is a new operator, which works just like `map`, but instead of taking a mapper Function, it takes
+  a single value where each event is mapped to.
+  * Bugfix: switchIfEmpty now correctly calls onDone
+  * combineLatest and zip can now take any amount of Streams:
+    * combineLatest2-9 & zip2-9 functionality unchanged, but now use a new path for construction.
+    * adds combineLatest and zipLatest which allows you to pass through an Iterable<Stream<T>> and a combiner that takes a List<T> when any source emits a change.
+    * adds combineLatestList / zipList which allows you to take in an Iterable<Stream<T>> and emit a Observable<List<T>> with the values. Just a convenience factory if all you want is the list!
+    * Constructors are provided by the Stream implementation directly
+  * Bugfix: Subjects that are transformed will now correctly return a new Observable where isBroadcast is true (was false before)  
+  * Remove deprecated operators which were replaced long ago: `bufferWithCount`, `windowWithCount`, `amb`, `flatMapLatest`
+
 ## 0.19.0
 
   * Breaking Change: Subjects `onCancel` function now returns `void` instead of `Future` to properly comply with the `StreamController` signature.
