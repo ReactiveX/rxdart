@@ -45,9 +45,8 @@ class SearchResult {
   factory SearchResult.fromJson(dynamic json) {
     final items = (json as List)
         .cast<Map<String, Object>>()
-        .map((Map<String, Object> item) {
-      return SearchResultItem.fromJson(item);
-    }).toList();
+        .map((item) => SearchResultItem.fromJson(item))
+        .toList();
 
     return SearchResult(items);
   }
