@@ -5,6 +5,8 @@ import 'package:rxdart/samplers.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
+import 'package:rxdart/src/transformers/group_by.dart'
+    show GroupByStreamTransformer;
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -1594,6 +1596,17 @@ class Observable<T> extends Stream<T> {
   @override
   AsObservableFuture<dynamic> forEach(void action(T element)) =>
       new AsObservableFuture<dynamic>(_stream.forEach(action));
+
+  /// The GroupBy operator divides an [Observable] that emits items into
+  /// an [Observable] that emits [Observable],
+  /// each one of which emits some subset of the items
+  /// from the original source [Observable].
+  ///
+  /// Which items end up on which Observable is decided by a
+  /// [grouper] that evaluates each item and assigns it a key.
+  /// All items with the same key are emitted by the same Observable.
+  Observable<GroupByObservable<T, S>> groupBy<S>(S grouper(T value)) =>
+      transform(new GroupByStreamTransformer<T, S>(grouper));
 
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
