@@ -84,7 +84,7 @@ var myObservable = new Observable(myStream);
 - [repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.repeat.html) / [RepeatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RepeatStream-class.html)
 - [retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html) / [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html)
 - [retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retryWhen.html) / [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html)
-- [switchLatest](https://wwwSwitchLatestStreamdartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html) / [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html)
+- [switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html) / [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html)
 - [timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html) / [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html)
 
 ###### Usage
@@ -133,6 +133,7 @@ var myObservable = Observable.combineLatest3(
 - [exhaustMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/exhaustMap.html) / [ExhaustMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ExhaustMapStreamTransformer-class.html)
 - [flatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMap.html) / [FlatMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/FlatMapStreamTransformer-class.html)
 - [flatMapIterable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMapIterable.html)
+- [groupBy](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/groupBy.html) / [GroupByStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/GroupByStreamTransformer-class.html)
 - [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html) / [IntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/IntervalStreamTransformer-class.html)
 - [mapTo](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mapTo.html) / [MapToStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/MapToStreamTransformer-class.html)
 - [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html) / [MaterializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/MaterializeStreamTransformer-class.html)
