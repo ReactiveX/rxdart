@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:rxdart/src/observables/observable.dart' show Observable;
 
 /// The GroupBy operator divides an [Observable] that emits items into
-/// an [Observable] that emits [Observable],
+/// an [Observable] that emits [GroupByObservable],
 /// each one of which emits some subset of the items
 /// from the original source [Observable].
 ///
-/// Which items end up on which Observable is decided by a
-/// [grouper] that evaluates each item and assigns it a key.
-/// All items with the same key are emitted by the same Observable.
+/// [GroupByObservable] acts like a regular [Observable], yet
+/// adding a 'key' property, which receives its [Type] and value from
+/// the [grouper] Function.
+///
+/// All items with the same key are emitted by the same [GroupByObservable].
 
 class GroupByStreamTransformer<T, S>
     extends StreamTransformerBase<T, GroupByObservable<T, S>> {
