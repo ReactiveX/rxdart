@@ -5,8 +5,6 @@ import 'package:rxdart/samplers.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
-import 'package:rxdart/src/transformers/group_by.dart'
-    show GroupByStreamTransformer;
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
