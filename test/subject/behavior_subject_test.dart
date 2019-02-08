@@ -20,6 +20,20 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
+    test('emits the most recently emitted null item to every subscriber',
+        () async {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(null);
+
+      await expectLater(subject.stream, emits(isNull));
+      await expectLater(subject.stream, emits(isNull));
+      await expectLater(subject.stream, emits(isNull));
+    });
+
     test(
         'emits the most recently emitted item to every subscriber that subscribe to the subject directly',
         () async {
@@ -88,20 +102,55 @@ void main() {
       await expectLater(subject.value, 3);
     });
 
+    test('can synchronously get the latest null value', () async {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.add(2);
+      subject.add(null);
+
+      await expectLater(subject.value, isNull);
+    });
+
     test('emits the seed item if no new items have been emitted', () async {
       // ignore: close_sinks
-      final subject = new BehaviorSubject<int>(seedValue: 1);
+      final subject = new BehaviorSubject<int>.seeded(1);
 
       await expectLater(subject.stream, emits(1));
       await expectLater(subject.stream, emits(1));
       await expectLater(subject.stream, emits(1));
     });
 
+    test('emits the null seed item if no new items have been emitted',
+        () async {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>.seeded(null);
+
+      await expectLater(subject.stream, emits(isNull));
+      await expectLater(subject.stream, emits(isNull));
+      await expectLater(subject.stream, emits(isNull));
+    });
+
     test('can synchronously get the initial value', () {
       // ignore: close_sinks
-      final subject = new BehaviorSubject<int>(seedValue: 1);
+      final subject = new BehaviorSubject<int>.seeded(1);
 
       expect(subject.value, 1);
+    });
+
+    test('can synchronously get the initial null value', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>.seeded(null);
+
+      expect(subject.value, null);
+    });
+
+    test('initial value is null when no value has been emitted', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      expect(subject.value, isNull);
     });
 
     test('emits done event to listeners when the subject is closed', () async {
@@ -297,7 +346,7 @@ void main() {
 
     test('can be listened to multiple times', () async {
       // ignore: close_sinks
-      final subject = new BehaviorSubject(seedValue: 1);
+      final subject = new BehaviorSubject.seeded(1);
       final stream = subject.stream;
 
       await expectLater(stream, emits(1));
@@ -335,6 +384,36 @@ void main() {
 
       expect(subject.isBroadcast, isTrue);
       expect(stream.isBroadcast, isTrue);
+    });
+
+    test('hasValue returns false for an empty subject', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      expect(subject.hasValue, isFalse);
+    });
+
+    test('hasValue returns true for a seeded subject with non-null seed', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>.seeded(1);
+
+      expect(subject.hasValue, isTrue);
+    });
+
+    test('hasValue returns true for a seeded subject with null seed', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>.seeded(null);
+
+      expect(subject.hasValue, isTrue);
+    });
+
+    test('hasValue returns true for an unseeded subject after an emission', () {
+      // ignore: close_sinks
+      final subject = new BehaviorSubject<int>();
+
+      subject.add(1);
+
+      expect(subject.hasValue, isTrue);
     });
   });
 }

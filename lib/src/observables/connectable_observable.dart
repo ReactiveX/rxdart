@@ -97,9 +97,20 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
 
   ValueConnectableObservable._(this._source, this._subject) : super(_subject);
 
-  factory ValueConnectableObservable(Stream<T> source, {T seedValue}) =>
+  factory ValueConnectableObservable(Stream<T> source) =>
       ValueConnectableObservable<T>._(
-          source, BehaviorSubject<T>(seedValue: seedValue));
+        source,
+        BehaviorSubject<T>(),
+      );
+
+  factory ValueConnectableObservable.seeded(
+    Stream<T> source,
+    T seedValue,
+  ) =>
+      ValueConnectableObservable<T>._(
+        source,
+        BehaviorSubject<T>.seeded(seedValue),
+      );
 
   @override
   ValueObservable<T> autoConnect({
@@ -144,6 +155,9 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
 
   @override
   T get value => _subject.value;
+
+  @override
+  bool get hasValue => _subject.hasValue;
 }
 
 /// A [ConnectableObservable] that converts a single-subscription Stream into

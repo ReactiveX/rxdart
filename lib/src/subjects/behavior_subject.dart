@@ -32,7 +32,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///
 /// ### Example with seed value
 ///
-///     final subject = new BehaviorSubject<int>(seedValue: 1);
+///     final subject = new BehaviorSubject<int>.seeded(1);
 ///
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1
@@ -47,7 +47,6 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
   ) : super(controller, observable);
 
   factory BehaviorSubject({
-    T seedValue,
     void onListen(),
     void onCancel(),
     bool sync: false,
@@ -59,7 +58,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
       sync: sync,
     );
 
-    final wrapper = new _Wrapper<T>(seedValue);
+    final wrapper = new _Wrapper<T>();
 
     return new BehaviorSubject<T>._(
         controller,
@@ -77,6 +76,35 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
         wrapper);
   }
 
+  factory BehaviorSubject.seeded(
+    T seedValue, {
+    void onListen(),
+    void onCancel(),
+    bool sync: false,
+  }) {
+    // ignore: close_sinks
+    final controller = new StreamController<T>.broadcast(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: sync,
+    );
+
+    final wrapper = new _Wrapper<T>.seeded(seedValue);
+
+    return new BehaviorSubject<T>._(
+        controller,
+        new Observable<T>.defer(() {
+          if (wrapper.latestIsError) {
+            scheduleMicrotask(() => controller.addError(
+                wrapper.latestError, wrapper.latestStackTrace));
+          }
+
+          return new Observable<T>(controller.stream)
+              .startWith(wrapper.latestValue);
+        }, reusable: true),
+        wrapper);
+  }
+
   @override
   void onAdd(T event) => _wrapper.setValue(event);
 
@@ -86,6 +114,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
   @override
   ValueObservable<T> get stream => this;
+
+  @override
+  bool get hasValue => _wrapper.latestIsValue;
 
   /// Get the latest value emitted by the Subject
   @override
@@ -102,7 +133,10 @@ class _Wrapper<T> {
 
   bool latestIsValue = false, latestIsError = false;
 
-  _Wrapper(this.latestValue) : latestIsValue = latestValue != null;
+  /// Non-seeded constructor
+  _Wrapper();
+
+  _Wrapper.seeded(this.latestValue) : latestIsValue = true;
 
   void setValue(T event) {
     latestIsValue = true;
