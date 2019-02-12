@@ -63,19 +63,26 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
     return new BehaviorSubject<T>._(
         controller,
-        new Observable<T>.defer(
-            () => wrapper.latestValue == null
-                ? controller.stream
-                : new Observable<T>(controller.stream)
-                    .startWith(wrapper.latestValue),
-            reusable: true),
+        new Observable<T>.defer(() {
+          if (wrapper.latestIsError) {
+            scheduleMicrotask(() => controller.addError(
+                wrapper.latestError, wrapper.latestStackTrace));
+          } else if (wrapper.latestIsValue) {
+            return new Observable<T>(controller.stream)
+                .startWith(wrapper.latestValue);
+          }
+
+          return controller.stream;
+        }, reusable: true),
         wrapper);
   }
 
   @override
-  void onAdd(T event) {
-    _wrapper.latestValue = event;
-  }
+  void onAdd(T event) => _wrapper.setValue(event);
+
+  @override
+  void onAddError(Object error, [StackTrace stackTrace]) =>
+      _wrapper.setError(error, stackTrace);
 
   @override
   ValueObservable<T> get stream => this;
@@ -90,6 +97,30 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
 class _Wrapper<T> {
   T latestValue;
+  Object latestError;
+  StackTrace latestStackTrace;
 
-  _Wrapper(this.latestValue);
+  bool latestIsValue = false, latestIsError = false;
+
+  _Wrapper(this.latestValue) : latestIsValue = latestValue != null;
+
+  void setValue(T event) {
+    latestIsValue = true;
+    latestIsError = false;
+
+    latestValue = event;
+
+    latestError = null;
+    latestStackTrace = null;
+  }
+
+  void setError(Object error, [StackTrace stackTrace]) {
+    latestIsValue = false;
+    latestIsError = true;
+
+    latestValue = null;
+
+    latestError = error;
+    latestStackTrace = stackTrace;
+  }
 }

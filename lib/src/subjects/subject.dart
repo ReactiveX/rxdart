@@ -78,8 +78,19 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
           "You cannot add an error while items are being added from addStream");
     }
 
+    _addError(error, stackTrace);
+  }
+
+  void _addError(Object error, [StackTrace stackTrace]) {
+    onAddError(error, stackTrace);
+
     controller.addError(error, stackTrace);
   }
+
+  /// An extension point for sub-classes. Perform any side-effect / state
+  /// management you need to here, rather than overriding the `add` method
+  /// directly.
+  void onAddError(Object error, [StackTrace stackTrace]) {}
 
   @override
   Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) {
