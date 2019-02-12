@@ -1595,6 +1595,19 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<dynamic> forEach(void action(T element)) =>
       new AsObservableFuture<dynamic>(_stream.forEach(action));
 
+  /// The GroupBy operator divides an [Observable] that emits items into
+  /// an [Observable] that emits [GroupByObservable],
+  /// each one of which emits some subset of the items
+  /// from the original source [Observable].
+  ///
+  /// [GroupByObservable] acts like a regular [Observable], yet
+  /// adding a 'key' property, which receives its [Type] and value from
+  /// the [grouper] Function.
+  ///
+  /// All items with the same key are emitted by the same [GroupByObservable].
+  Observable<GroupByObservable<T, S>> groupBy<S>(S grouper(T value)) =>
+      transform(new GroupByStreamTransformer<T, S>(grouper));
+
   /// Creates a wrapper Stream that intercepts some errors from this stream.
   ///
   /// If this stream sends an error that matches test, then it is intercepted by
