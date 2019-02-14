@@ -86,6 +86,34 @@ void main() {
       expect(observable, emits(3));
     });
 
+    test('replays the seeded item', () async {
+      final observable = new ValueConnectableObservable.seeded(
+              StreamController<int>().stream, 3)
+          .autoConnect();
+
+      expect(observable, emitsInOrder(const <int>[3]));
+      expect(observable, emitsInOrder(const <int>[3]));
+      expect(observable, emitsInOrder(const <int>[3]));
+
+      await Future<Null>.delayed(Duration(milliseconds: 200));
+
+      expect(observable, emits(3));
+    });
+
+    test('replays the seeded null item', () async {
+      final observable = new ValueConnectableObservable.seeded(
+              StreamController<int>().stream, null)
+          .autoConnect();
+
+      expect(observable, emitsInOrder(const <int>[null]));
+      expect(observable, emitsInOrder(const <int>[null]));
+      expect(observable, emitsInOrder(const <int>[null]));
+
+      await Future<Null>.delayed(Duration(milliseconds: 200));
+
+      expect(observable, emits(null));
+    });
+
     test('can multicast observables', () async {
       final observable = Observable.fromIterable(const [1, 2, 3]).shareValue();
 
@@ -96,7 +124,7 @@ void main() {
 
     test('transform Observables with initial value', () async {
       final observable =
-          Observable.fromIterable(const [1, 2, 3]).shareValue(seedValue: 0);
+          Observable.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
 
       expect(observable.value, 0);
       expect(observable, emitsInOrder(const <int>[0, 1, 2, 3]));
