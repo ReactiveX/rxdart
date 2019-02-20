@@ -1,3 +1,15 @@
+## 0.21.0
+  * Breaking Change: `BehaviorSubject` now has a separate factory constructor `seeded()`
+  This allows you to seed this Subject with a `null` value.
+  * Breaking Change: `BehaviorSubject` will now emit an `Error`, if the last event was also an `Error`.
+  Before, when an `Error` occurred before a `listen`, the subscriber would not be notified of that `Error`.
+  To refactor, simply change all occurences of `BehaviorSubject(seedValue: value)` to `BehaviorSubject.seeded(value)`
+  * Added the `groupBy` operator
+  * Bugix: `doOnCancel`: will now await the cancel result, if it is a `Future`.
+  * Removed: `bufferWithCount`, `windowWithCount`, `tween`
+  Please use `bufferCount` and `windowCount`, `tween` is removed, because it never was an official Rx spec.
+  * Updated Flutter example to work with the latest Flutter stable.
+
 ## 0.20.0
   * Breaking Change: bufferCount had buggy behavior when using `startBufferEvery` (was `skip` previously)
   If you were relying on bufferCount with `skip` greater than 1 before, then you may have noticed 
