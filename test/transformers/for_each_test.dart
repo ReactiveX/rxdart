@@ -5,7 +5,7 @@ void main() {
   test('rx.Observable.forEach', () async {
     var wasCalled = false;
 
-    await new Observable.just(1).forEach((_) {
+    await Observable.just(1).forEach((_) {
       wasCalled = true;
     });
 

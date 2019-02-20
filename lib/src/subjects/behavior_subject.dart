@@ -49,25 +49,25 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
   factory BehaviorSubject({
     void onListen(),
     void onCancel(),
-    bool sync: false,
+    bool sync = false,
   }) {
     // ignore: close_sinks
-    final controller = new StreamController<T>.broadcast(
+    final controller = StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final wrapper = new _Wrapper<T>();
+    final wrapper = _Wrapper<T>();
 
-    return new BehaviorSubject<T>._(
+    return BehaviorSubject<T>._(
         controller,
-        new Observable<T>.defer(() {
+        Observable<T>.defer(() {
           if (wrapper.latestIsError) {
             scheduleMicrotask(() => controller.addError(
                 wrapper.latestError, wrapper.latestStackTrace));
           } else if (wrapper.latestIsValue) {
-            return new Observable<T>(controller.stream)
+            return Observable<T>(controller.stream)
                 .startWith(wrapper.latestValue);
           }
 
@@ -80,26 +80,26 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
     T seedValue, {
     void onListen(),
     void onCancel(),
-    bool sync: false,
+    bool sync = false,
   }) {
     // ignore: close_sinks
-    final controller = new StreamController<T>.broadcast(
+    final controller = StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final wrapper = new _Wrapper<T>.seeded(seedValue);
+    final wrapper = _Wrapper<T>.seeded(seedValue);
 
-    return new BehaviorSubject<T>._(
+    return BehaviorSubject<T>._(
         controller,
-        new Observable<T>.defer(() {
+        Observable<T>.defer(() {
           if (wrapper.latestIsError) {
             scheduleMicrotask(() => controller.addError(
                 wrapper.latestError, wrapper.latestStackTrace));
           }
 
-          return new Observable<T>(controller.stream)
+          return Observable<T>(controller.stream)
               .startWith(wrapper.latestValue);
         }, reusable: true),
         wrapper);

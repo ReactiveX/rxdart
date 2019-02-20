@@ -26,14 +26,14 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       Stream<S> mapper(T value)) {
-    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       final subscriptions = <StreamSubscription<S>>[];
       StreamController<S> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
       var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
 
-      controller = new StreamController<S>(
+      controller = StreamController<S>(
           sync: true,
           onListen: () {
             subscription = input.listen(
@@ -81,9 +81,8 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 otherSubscription.resume());
           },
           onCancel: () {
-            final list =
-                new List<StreamSubscription<dynamic>>.from(subscriptions)
-                  ..add(subscription);
+            final list = List<StreamSubscription<dynamic>>.from(subscriptions)
+              ..add(subscription);
 
             return Future.wait<dynamic>(list
                 .map((StreamSubscription<dynamic> subscription) =>

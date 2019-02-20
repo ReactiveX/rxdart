@@ -8,7 +8,7 @@ void main() {
     const expected = [1, 2, 3];
     var count = 0;
 
-    new Observable(new Stream.fromIterable(const [1, 2, 3]))
+    Observable(Stream.fromIterable(const [1, 2, 3]))
         .timestamp()
         .listen(expectAsync1((result) {
           expect(result.value, expected[count++]);
@@ -16,17 +16,17 @@ void main() {
   });
 
   test('Rx.Observable.timestamp.reusable', () async {
-    final transformer = new TimestampStreamTransformer<int>();
+    final transformer = TimestampStreamTransformer<int>();
     const expected = [1, 2, 3];
     var countA = 0, countB = 0;
 
-    new Observable(new Stream.fromIterable(const [1, 2, 3]))
+    Observable(Stream.fromIterable(const [1, 2, 3]))
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result.value, expected[countA++]);
         }, count: expected.length));
 
-    new Observable(new Stream.fromIterable(const [1, 2, 3]))
+    Observable(Stream.fromIterable(const [1, 2, 3]))
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result.value, expected[countB++]);
@@ -37,16 +37,16 @@ void main() {
     const expected = [1, 2, 3];
     var count = 0;
 
-    new Stream.fromIterable(const [1, 2, 3])
-        .transform(new TimestampStreamTransformer<int>())
+    Stream.fromIterable(const [1, 2, 3])
+        .transform(TimestampStreamTransformer<int>())
         .listen(expectAsync1((result) {
           expect(result.value, expected[count++]);
         }, count: expected.length));
   });
 
   test('timestampTransformer.asBroadcastStream', () async {
-    final stream = new Stream.fromIterable(const [1, 2, 3])
-        .transform(new TimestampStreamTransformer<int>())
+    final stream = Stream.fromIterable(const [1, 2, 3])
+        .transform(TimestampStreamTransformer<int>())
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -57,8 +57,8 @@ void main() {
   });
 
   test('timestampTransformer.error.shouldThrow', () async {
-    final streamWithError = new ErrorStream<int>(new Exception())
-        .transform(new TimestampStreamTransformer());
+    final streamWithError =
+        ErrorStream<int>(Exception()).transform(TimestampStreamTransformer());
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -67,8 +67,8 @@ void main() {
   });
 
   test('timestampTransformer.pause.resume', () async {
-    final stream = new Stream.fromIterable(const [1, 2, 3])
-        .transform(new TimestampStreamTransformer());
+    final stream = Stream.fromIterable(const [1, 2, 3])
+        .transform(TimestampStreamTransformer());
     const expected = [1, 2, 3];
     StreamSubscription<Timestamped<int>> subscription;
     var count = 0;

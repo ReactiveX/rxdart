@@ -8,7 +8,7 @@ void main() => ZipBenchmark.main();
 class ZipBenchmark extends BenchmarkBase {
   ZipBenchmark() : super("zip");
 
-  static void main() => new ZipBenchmark().report();
+  static void main() => ZipBenchmark().report();
 
   @override
   void run() {

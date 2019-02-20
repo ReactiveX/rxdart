@@ -5,8 +5,8 @@ void main() {
   group('Observable.flatMapIterable', () {
     test('transforms a Stream<Iterable<S>> into individual items', () {
       expect(
-          Observable.range(1, 4).flatMapIterable(
-              (int i) => new Observable<List<int>>.just(<int>[i])),
+          Observable.range(1, 4)
+              .flatMapIterable((int i) => Observable<List<int>>.just(<int>[i])),
           emitsInOrder(<dynamic>[1, 2, 3, 4, emitsDone]));
     });
   });

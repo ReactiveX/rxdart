@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.defaultIfEmpty.whenEmpty', () async {
-    new Observable(new Stream<bool>.empty())
+    Observable(Stream<bool>.empty())
         .defaultIfEmpty(true)
         .listen(expectAsync1((bool result) {
           expect(result, true);
@@ -13,15 +13,15 @@ void main() {
   });
 
   test('rx.Observable.defaultIfEmpty.reusable', () async {
-    final transformer = new DefaultIfEmptyStreamTransformer<bool>(true);
+    final transformer = DefaultIfEmptyStreamTransformer<bool>(true);
 
-    new Observable(new Stream<bool>.empty())
+    Observable(Stream<bool>.empty())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, true);
         }, count: 1));
 
-    new Observable(new Stream<bool>.empty())
+    Observable(Stream<bool>.empty())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, true);
@@ -29,7 +29,7 @@ void main() {
   });
 
   test('rx.Observable.defaultIfEmpty.whenNotEmpty', () async {
-    new Observable(new Stream.fromIterable(const [false, false, false]))
+    Observable(Stream.fromIterable(const [false, false, false]))
         .defaultIfEmpty(true)
         .listen(expectAsync1((result) {
           expect(result, false);
@@ -37,7 +37,7 @@ void main() {
   });
 
   test('rx.Observable.defaultIfEmpty.asBroadcastStream', () async {
-    final stream = new Observable.fromIterable(const <int>[])
+    final stream = Observable.fromIterable(const <int>[])
         .defaultIfEmpty(-1)
         .asBroadcastStream();
 
@@ -51,8 +51,7 @@ void main() {
 
   test('rx.Observable.defaultIfEmpty.error.shouldThrow', () async {
     final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .defaultIfEmpty(-1);
+        Observable(ErrorStream<int>(Exception())).defaultIfEmpty(-1);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -62,7 +61,7 @@ void main() {
 
   test('rx.Observable.defaultIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = new Observable.fromIterable(const <int>[]).defaultIfEmpty(1);
+    final stream = Observable.fromIterable(const <int>[]).defaultIfEmpty(1);
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.transform', () async {
-    final observable = new Observable.fromIterable(const [1, 2])
-        .transform(new TestStreamTransformer());
+    final observable = Observable.fromIterable(const [1, 2])
+        .transform(TestStreamTransformer());
 
     observable.listen(expectAsync1((val) {
       expect(val, "Hi");
@@ -17,7 +17,7 @@ void main() {
 class TestStreamTransformer extends StreamTransformerBase<int, String> {
   @override
   Stream<String> bind(Stream<int> stream) {
-    final controller = new StreamController<String>();
+    final controller = StreamController<String>();
 
     stream.listen((_) => controller.add("Hi"), onDone: controller.close);
 

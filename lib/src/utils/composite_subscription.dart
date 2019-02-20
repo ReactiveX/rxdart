@@ -16,7 +16,7 @@ class CompositeSubscription {
   bool _isDisposed = false;
 
   final List<StreamSubscription<dynamic>> _subscriptionsList =
-      new List<StreamSubscription<dynamic>>();
+      List<StreamSubscription<dynamic>>();
 
   /// Checks if this composite is disposed. If it is, the composite can't be used again
   /// and will throw an error if you try to add more subscriptions to it.

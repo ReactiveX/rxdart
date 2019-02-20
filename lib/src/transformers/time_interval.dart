@@ -19,15 +19,15 @@ class TimeIntervalStreamTransformer<T>
   Stream<TimeInterval<T>> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, TimeInterval<T>> _buildTransformer<T>() {
-    return new StreamTransformer<T, TimeInterval<T>>(
+    return StreamTransformer<T, TimeInterval<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<TimeInterval<T>> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<TimeInterval<T>>(
+      controller = StreamController<TimeInterval<T>>(
           sync: true,
           onListen: () {
-            var stopwatch = new Stopwatch()..start();
+            var stopwatch = Stopwatch()..start();
             int ems;
 
             subscription = input.listen(
@@ -37,13 +37,13 @@ class TimeIntervalStreamTransformer<T>
                   stopwatch.stop();
 
                   try {
-                    controller.add(new TimeInterval<T>(
-                        value, new Duration(microseconds: ems)));
+                    controller.add(
+                        TimeInterval<T>(value, Duration(microseconds: ems)));
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
 
-                  stopwatch = new Stopwatch()..start();
+                  stopwatch = Stopwatch()..start();
                 },
                 onError: controller.addError,
                 onDone: () {

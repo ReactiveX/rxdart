@@ -82,12 +82,12 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         onListen == null &&
         onPause == null &&
         onResume == null) {
-      throw new ArgumentError("Must provide at least one handler");
+      throw ArgumentError("Must provide at least one handler");
     }
 
     final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
 
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       final VoidFunc onListenLocal = () {
         if (onListen != null) {
@@ -111,7 +111,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 }
                 if (onEach != null) {
                   try {
-                    onEach(new Notification<T>.onData(value));
+                    onEach(Notification<T>.onData(value));
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
@@ -128,7 +128,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 }
                 if (onEach != null) {
                   try {
-                    onEach(new Notification<T>.onError(e, s));
+                    onEach(Notification<T>.onError(e, s));
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
@@ -145,7 +145,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 }
                 if (onEach != null) {
                   try {
-                    onEach(new Notification<T>.onDone());
+                    onEach(Notification<T>.onDone());
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
@@ -173,22 +173,22 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
         final cancelResultFuture = onCancelResult is Future
             ? onCancelResult
-            : new Future<dynamic>.value(onCancelResult);
+            : Future<dynamic>.value(onCancelResult);
         final cancelFuture =
-            subscriptions[input].cancel() ?? new Future<dynamic>.value();
+            subscriptions[input].cancel() ?? Future<dynamic>.value();
 
         return Future.wait<dynamic>([cancelFuture, cancelResultFuture])
             .whenComplete(() => subscriptions.remove(input));
       };
 
       if (input.isBroadcast) {
-        controller = new StreamController<T>.broadcast(
+        controller = StreamController<T>.broadcast(
           sync: true,
           onListen: onListenLocal,
           onCancel: onCancelLocal,
         );
       } else {
-        controller = new StreamController<T>(
+        controller = StreamController<T>(
           sync: true,
           onListen: onListenLocal,
           onCancel: onCancelLocal,

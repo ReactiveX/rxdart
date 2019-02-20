@@ -5,7 +5,7 @@ void main() {
   test('rx.Observable.drain', () async {
     const expected = 2;
 
-    final actual = await new Observable.just(1).drain(expected);
+    final actual = await Observable.just(1).drain(expected);
 
     await expectLater(actual, expected);
   });

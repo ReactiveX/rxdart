@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => new Observable<int>((int n) async* {
+Observable<int> getStream(int n) => Observable<int>((int n) async* {
       var k = 0;
 
       while (k < n) {
-        await new Future<Null>.delayed(const Duration(milliseconds: 100));
+        await Future<Null>.delayed(const Duration(milliseconds: 100));
 
         yield k++;
       }
@@ -48,9 +48,9 @@ void main() {
 
   test('rx.Observable.windowTime.shouldClose', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
+    Observable(controller.stream)
         .windowTime(const Duration(seconds: 3))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
@@ -68,9 +68,9 @@ void main() {
 
   test('rx.Observable.windowTime.shouldClose.asWindow', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
+    Observable(controller.stream)
         .window(onTime(const Duration(seconds: 3)))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
@@ -87,8 +87,8 @@ void main() {
   });
 
   test('rx.Observable.windowTime.reusable', () async {
-    final transformer = new WindowStreamTransformer<int>(
-        onTime(const Duration(milliseconds: 220)));
+    final transformer =
+        WindowStreamTransformer<int>(onTime(const Duration(milliseconds: 220)));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -139,10 +139,9 @@ void main() {
   });
 
   test('rx.Observable.windowTime.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .windowTime(const Duration(milliseconds: 220))
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        .windowTime(const Duration(milliseconds: 220))
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -151,10 +150,9 @@ void main() {
   });
 
   test('rx.Observable.windowTime.error.shouldThrowA.asWindow', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .window(onTime(const Duration(milliseconds: 220)))
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        .window(onTime(const Duration(milliseconds: 220)))
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -163,15 +161,14 @@ void main() {
   });
 
   test('rx.Observable.windowTime.error.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
-        .windowTime(null)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+    Observable.fromIterable(const [1, 2, 3, 4]).windowTime(null).listen(null,
+        onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
   test('rx.Observable.windowTime.error.shouldThrowB.asWindow', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .window(onTime(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

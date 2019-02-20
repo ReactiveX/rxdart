@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   test('rx.Observable.dematerialize.happyPath', () async {
     const expectedValue = 1;
-    final observable = new Observable.just(1).materialize();
+    final observable = Observable.just(1).materialize();
 
     observable.dematerialize<int>().listen(expectAsync1((value) {
       expect(value, expectedValue);
@@ -19,10 +19,10 @@ void main() {
   });
 
   test('rx.Observable.dematerialize.reusable', () async {
-    final transformer = new DematerializeStreamTransformer<int>();
+    final transformer = DematerializeStreamTransformer<int>();
     const expectedValue = 1;
-    final observableA = new Observable.just(1).materialize();
-    final observableB = new Observable.just(1).materialize();
+    final observableA = Observable.just(1).materialize();
+    final observableB = Observable.just(1).materialize();
 
     observableA.transform(transformer).listen(expectAsync1((value) {
       expect(value, expectedValue);
@@ -41,12 +41,10 @@ void main() {
 
   test('dematerializeTransformer.happyPath', () async {
     const expectedValue = 1;
-    final stream = new Stream.fromIterable([
-      new Notification.onData(expectedValue),
-      new Notification<int>.onDone()
-    ]);
+    final stream = Stream.fromIterable(
+        [Notification.onData(expectedValue), Notification<int>.onDone()]);
 
-    stream.transform(new DematerializeStreamTransformer()).listen(
+    stream.transform(DematerializeStreamTransformer()).listen(
         expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
@@ -56,10 +54,10 @@ void main() {
   });
 
   test('dematerializeTransformer.sadPath', () async {
-    final stream = new Stream.fromIterable(
-        [new Notification<int>.onError(new Exception(), new Chain.current())]);
+    final stream = Stream.fromIterable(
+        [Notification<int>.onError(Exception(), Chain.current())]);
 
-    stream.transform(new DematerializeStreamTransformer()).listen(null,
+    stream.transform(DematerializeStreamTransformer()).listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
@@ -67,12 +65,10 @@ void main() {
 
   test('dematerializeTransformer.onPause.onResume', () async {
     const expectedValue = 1;
-    final stream = new Stream.fromIterable([
-      new Notification.onData(expectedValue),
-      new Notification<int>.onDone()
-    ]);
+    final stream = Stream.fromIterable(
+        [Notification.onData(expectedValue), Notification<int>.onDone()]);
 
-    stream.transform(new DematerializeStreamTransformer()).listen(
+    stream.transform(DematerializeStreamTransformer()).listen(
         expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {

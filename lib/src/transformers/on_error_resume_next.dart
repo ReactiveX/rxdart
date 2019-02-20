@@ -28,7 +28,7 @@ class OnErrorResumeNextStreamTransformer<T>
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       Stream<T> recoveryStream) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamSubscription<T> inputSubscription;
       StreamSubscription<T> recoverySubscription;
       StreamController<T> controller;
@@ -40,7 +40,7 @@ class OnErrorResumeNextStreamTransformer<T>
         }
       }
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             inputSubscription =

@@ -11,7 +11,7 @@ import 'dart:async';
 ///     new ErrorStream(new ArgumentError());
 class ErrorStream<T> extends Stream<T> {
   final Object error;
-  StreamController<T> controller = new StreamController<T>();
+  StreamController<T> controller = StreamController<T>();
 
   ErrorStream(this.error);
 

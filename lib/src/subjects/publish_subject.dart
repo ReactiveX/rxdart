@@ -29,17 +29,18 @@ class PublishSubject<T> extends Subject<T> {
   PublishSubject._(StreamController<T> controller, Observable<T> observable)
       : super(controller, observable);
 
-  factory PublishSubject({void onListen(), void onCancel(), bool sync: false}) {
+  factory PublishSubject(
+      {void onListen(), void onCancel(), bool sync = false}) {
     // ignore: close_sinks
-    final controller = new StreamController<T>.broadcast(
+    final controller = StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    return new PublishSubject<T>._(
+    return PublishSubject<T>._(
       controller,
-      new Observable<T>(controller.stream),
+      Observable<T>(controller.stream),
     );
   }
 }

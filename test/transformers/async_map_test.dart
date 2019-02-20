@@ -7,8 +7,8 @@ void main() {
   test('rx.Observable.asyncMap', () async {
     const expected = 1;
 
-    final observable = new Observable.just(expected)
-        .asyncMap((value) => new Future.value(value));
+    final observable =
+        Observable.just(expected).asyncMap((value) => Future.value(value));
 
     observable.listen(expectAsync1((actual) {
       expect(actual, expected);

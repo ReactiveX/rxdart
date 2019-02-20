@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group("DistinctUniqueStreamTransformer", () {
     test("works with the equals and hascode of the class", () async {
-      final observable = new Observable.fromIterable(const [
+      final observable = Observable.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -30,7 +30,7 @@ void main() {
     });
 
     test("works with a provided equals and hashcode", () async {
-      final observable = new Observable.fromIterable(const [
+      final observable = Observable.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -57,11 +57,11 @@ void main() {
     test(
         "sends an error to the subscription if an error occurs in the equals or hashmap methods",
         () async {
-      final observable = new Observable.fromIterable(
+      final observable = Observable.fromIterable(
               const [_TestObject("a"), _TestObject("b"), _TestObject("c")])
           .distinctUnique(
               equals: (a, b) => a.key == b.key,
-              hashCode: (o) => throw new Exception('Catch me if you can!'));
+              hashCode: (o) => throw Exception('Catch me if you can!'));
 
       observable.listen(
         null,
@@ -89,13 +89,13 @@ void main() {
       ];
 
       final distinctUniqueStreamTransformer =
-          new DistinctUniqueStreamTransformer<_TestObject>();
+          DistinctUniqueStreamTransformer<_TestObject>();
 
-      final firstStream = new Stream.fromIterable(data)
-          .transform(distinctUniqueStreamTransformer);
+      final firstStream =
+          Stream.fromIterable(data).transform(distinctUniqueStreamTransformer);
 
-      final secondStream = new Stream.fromIterable(data)
-          .transform(distinctUniqueStreamTransformer);
+      final secondStream =
+          Stream.fromIterable(data).transform(distinctUniqueStreamTransformer);
 
       await expectLater(
           firstStream,

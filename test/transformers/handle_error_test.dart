@@ -3,10 +3,10 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.handleError', () async {
-    final expected = new ArgumentError();
+    final expected = ArgumentError();
 
-    final obs = new Observable(new ErrorStream<void>(new Exception()))
-        .handleError((dynamic _) {
+    final obs =
+        Observable(ErrorStream<void>(Exception())).handleError((dynamic _) {
       throw expected;
     });
 

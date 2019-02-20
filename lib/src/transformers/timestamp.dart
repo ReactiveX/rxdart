@@ -18,16 +18,16 @@ class TimestampStreamTransformer<T>
   Stream<Timestamped<T>> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, Timestamped<T>> _buildTransformer<T>() {
-    return new StreamTransformer<T, Timestamped<T>>(
+    return StreamTransformer<T, Timestamped<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Timestamped<T>> controller;
       StreamSubscription<Timestamped<T>> subscription;
 
-      controller = new StreamController<Timestamped<T>>(
+      controller = StreamController<Timestamped<T>>(
           sync: true,
           onListen: () {
             subscription = input
-                .map((T value) => new Timestamped<T>(new DateTime.now(), value))
+                .map((T value) => Timestamped<T>(DateTime.now(), value))
                 .listen(controller.add,
                     onError: controller.addError,
                     onDone: controller.close,

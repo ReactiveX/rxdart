@@ -24,24 +24,24 @@ class MaterializeStreamTransformer<T>
   Stream<Notification<T>> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, Notification<T>> _buildTransformer<T>() {
-    return new StreamTransformer<T, Notification<T>>(
+    return StreamTransformer<T, Notification<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Notification<T>> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<Notification<T>>(
+      controller = StreamController<Notification<T>>(
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
               try {
-                controller.add(new Notification<T>.onData(value));
+                controller.add(Notification<T>.onData(value));
               } catch (e, s) {
                 controller.addError(e, s);
               }
             }, onError: (dynamic e, StackTrace s) {
-              controller.add(new Notification<T>.onError(e, s));
+              controller.add(Notification<T>.onError(e, s));
             }, onDone: () {
-              controller.add(new Notification<T>.onDone());
+              controller.add(Notification<T>.onDone());
 
               controller.close();
             }, cancelOnError: cancelOnError);

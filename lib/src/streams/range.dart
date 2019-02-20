@@ -24,7 +24,7 @@ class RangeStream extends Stream<int> {
   static Stream<int> buildStream(int startInclusive, int endInclusive) {
     final length = (endInclusive - startInclusive).abs() + 1;
 
-    return new Stream.fromIterable(new List.generate(
+    return Stream.fromIterable(List.generate(
         length,
         (int i) => startInclusive > endInclusive
             ? startInclusive - i

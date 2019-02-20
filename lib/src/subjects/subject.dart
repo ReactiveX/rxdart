@@ -22,7 +22,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
         super(observable);
 
   @override
-  StreamSink<T> get sink => new _StreamSinkWrapper<T>(this);
+  StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
 
   @override
   ControllerCallback get onListen => controller.onListen;
@@ -37,19 +37,19 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
 
   @override
   ControllerCallback get onPause =>
-      throw new UnsupportedError("Subjects do not support pause callbacks");
+      throw UnsupportedError("Subjects do not support pause callbacks");
 
   @override
   set onPause(void onPauseHandler()) =>
-      throw new UnsupportedError("Subjects do not support pause callbacks");
+      throw UnsupportedError("Subjects do not support pause callbacks");
 
   @override
   ControllerCallback get onResume =>
-      throw new UnsupportedError("Subjects do not support resume callbacks");
+      throw UnsupportedError("Subjects do not support resume callbacks");
 
   @override
   set onResume(void onResumeHandler()) =>
-      throw new UnsupportedError("Subjects do not support resume callbacks");
+      throw UnsupportedError("Subjects do not support resume callbacks");
 
   @override
   ControllerCancelCallback get onCancel => controller.onCancel;
@@ -74,7 +74,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   @override
   void addError(Object error, [StackTrace stackTrace]) {
     if (_isAddingStreamItems) {
-      throw new StateError(
+      throw StateError(
           "You cannot add an error while items are being added from addStream");
     }
 
@@ -93,13 +93,13 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   void onAddError(Object error, [StackTrace stackTrace]) {}
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError: true}) {
+  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError = true}) {
     if (_isAddingStreamItems) {
-      throw new StateError(
+      throw StateError(
           "You cannot add items while items are being added from addStream");
     }
 
-    final completer = new Completer<T>();
+    final completer = Completer<T>();
     _isAddingStreamItems = true;
 
     source.listen((T event) {
@@ -122,7 +122,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   @override
   void add(T event) {
     if (_isAddingStreamItems) {
-      throw new StateError(
+      throw StateError(
           "You cannot add items while items are being added from addStream");
     }
 
@@ -143,7 +143,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   @override
   Future<dynamic> close() {
     if (_isAddingStreamItems) {
-      throw new StateError(
+      throw StateError(
           "You cannot close the subject while items are being added from addStream");
     }
 

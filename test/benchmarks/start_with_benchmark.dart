@@ -7,7 +7,7 @@ void main() => StartWithBenchmark.main();
 class StartWithBenchmark extends BenchmarkBase {
   StartWithBenchmark() : super("startWith");
 
-  static void main() => new StartWithBenchmark().report();
+  static void main() => StartWithBenchmark().report();
 
   @override
   void run() {

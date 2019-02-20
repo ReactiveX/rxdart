@@ -51,8 +51,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
       SamplerBuilder<T, List<T>> scheduler, bool exhaustBufferOnDone) {
     assertSampler(scheduler);
 
-    return new StreamTransformer<T, List<T>>(
-        (Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, List<T>>((Stream<T> input, bool cancelOnError) {
       StreamController<List<T>> controller;
       StreamSubscription<List<T>> subscription;
       var buffer = <T>[];
@@ -61,12 +60,12 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
         if (controller.isClosed) return;
 
         if (exhaustBufferOnDone && buffer.isNotEmpty)
-          controller.add(new List<T>.from(buffer));
+          controller.add(List<T>.from(buffer));
 
         controller.close();
       }
 
-      controller = new StreamController<List<T>>(
+      controller = StreamController<List<T>>(
           sync: true,
           onListen: () {
             try {
@@ -80,7 +79,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
               }, (_, EventSink<List<T>> sink, [int startBufferEvery = 0]) {
                 startBufferEvery ?? 0;
 
-                sink.add(new List<T>.unmodifiable(buffer));
+                sink.add(List<T>.unmodifiable(buffer));
                 buffer =
                     startBufferEvery > 0 && startBufferEvery < buffer.length
                         ? buffer.sublist(startBufferEvery)
@@ -104,7 +103,7 @@ class BufferStreamTransformer<T> extends StreamTransformerBase<T, List<T>> {
 
   static void assertSampler<T>(SamplerBuilder<T, List<T>> scheduler) {
     if (scheduler == null) {
-      throw new ArgumentError('scheduler cannot be null');
+      throw ArgumentError('scheduler cannot be null');
     }
   }
 }

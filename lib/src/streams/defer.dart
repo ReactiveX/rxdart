@@ -23,14 +23,14 @@ class DeferStream<T> extends Stream<T> {
   @override
   bool get isBroadcast => _isReusable;
 
-  DeferStream(this._streamFactory, {bool reusable: false})
+  DeferStream(this._streamFactory, {bool reusable = false})
       : _isReusable = reusable;
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
     if (_isUsed && !_isReusable)
-      throw new StateError("Stream has already been listened to.");
+      throw StateError("Stream has already been listened to.");
     _isUsed = true;
 
     return _streamFactory().listen(onData,

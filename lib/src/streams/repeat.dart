@@ -28,10 +28,10 @@ class RepeatStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw new StateError("Stream has already been listened to.");
+    if (_isUsed) throw StateError("Stream has already been listened to.");
     _isUsed = true;
 
-    controller = new StreamController<T>(
+    controller = StreamController<T>(
         sync: true,
         onListen: maybeRepeatNext,
         onPause: ([Future<dynamic> resumeSignal]) =>

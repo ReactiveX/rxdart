@@ -25,9 +25,9 @@ void main() {
   });
 
   test('rx.Observable.pairwise.asBroadcastStream', () async {
-    final stream = new Observable(
-            new Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
-        .pairwise();
+    final stream =
+        Observable(Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
+            .pairwise();
 
     // listen twice on same stream
     stream.listen(null);
@@ -38,7 +38,7 @@ void main() {
 
   test('rx.Observable.pairwise.error.shouldThrow.onError', () async {
     final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception())).pairwise();
+        Observable(ErrorStream<void>(Exception())).pairwise();
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

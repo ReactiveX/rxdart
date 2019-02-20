@@ -12,19 +12,19 @@ void main() {
   test('rx.Observable.mapTo.shouldThrow', () async {
     await expectLater(
         Observable.range(1, 4)
-            .concatWith([new ErrorStream<int>(new Error())]).mapTo(true),
+            .concatWith([ErrorStream<int>(Error())]).mapTo(true),
         emitsInOrder(<dynamic>[
           true,
           true,
           true,
           true,
-          emitsError(new TypeMatcher<Error>()),
+          emitsError(TypeMatcher<Error>()),
           emitsDone
         ]));
   });
 
   test('rx.Observable.mapTo.reusable', () async {
-    final transformer = new MapToStreamTransformer<int, bool>(true);
+    final transformer = MapToStreamTransformer<int, bool>(true);
     final observable = Observable.range(1, 4).asBroadcastStream();
 
     observable.transform(transformer).listen(null);

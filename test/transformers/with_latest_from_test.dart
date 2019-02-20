@@ -5,12 +5,10 @@ import 'package:rxdart/src/observables/observable.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() =>
-    new Stream.periodic(const Duration(milliseconds: 22), (count) => count)
-        .take(7);
+    Stream.periodic(const Duration(milliseconds: 22), (count) => count).take(7);
 
 Stream<int> _getLatestFromStream() =>
-    new Stream.periodic(const Duration(milliseconds: 50), (count) => count)
-        .take(4);
+    Stream.periodic(const Duration(milliseconds: 50), (count) => count).take(4);
 
 void main() {
   test('rx.Observable.withLatestFrom', () async {
@@ -23,9 +21,9 @@ void main() {
     ];
     var count = 0;
 
-    new Observable(_getStream())
-        .withLatestFrom(_getLatestFromStream(),
-            (first, int second) => new Pair(first, second))
+    Observable(_getStream())
+        .withLatestFrom(
+            _getLatestFromStream(), (first, int second) => Pair(first, second))
         .take(5)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
@@ -33,9 +31,9 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.reusable', () async {
-    final transformer = new WithLatestFromStreamTransformer<int, int, Pair>(
+    final transformer = WithLatestFromStreamTransformer<int, int, Pair>(
         _getLatestFromStream().asBroadcastStream(),
-        (first, second) => new Pair(first, second));
+        (first, second) => Pair(first, second));
     const expectedOutput = [
       Pair(2, 0),
       Pair(3, 0),
@@ -45,14 +43,14 @@ void main() {
     ];
     var countA = 0, countB = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .take(5)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .take(5)
         .listen(expectAsync1((result) {
@@ -61,9 +59,8 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
-        .withLatestFrom(_getLatestFromStream().asBroadcastStream(),
-            (first, int second) => 0);
+    final stream = Observable(_getStream().asBroadcastStream()).withLatestFrom(
+        _getLatestFromStream().asBroadcastStream(), (first, int second) => 0);
 
     // listen twice on same stream
     stream.listen(null);
@@ -73,9 +70,8 @@ void main() {
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception())).withLatestFrom(
-            _getLatestFromStream(), (first, int second) => "Hello");
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .withLatestFrom(_getLatestFromStream(), (first, int second) => "Hello");
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -85,14 +81,14 @@ void main() {
 
   test('rx.Observable.withLatestFrom.error.shouldThrowB', () {
     expect(
-        () => new Observable.just(1)
+        () => Observable.just(1)
             .withLatestFrom(null, (first, int second) => "Hello"),
         throwsArgumentError);
   });
 
   test('rx.Observable.withLatestFrom.error.shouldThrowC', () {
     expect(
-        () => new Observable(_getStream())
+        () => Observable(_getStream())
             .withLatestFrom<int, void>(_getLatestFromStream(), null),
         throwsArgumentError);
   });
@@ -102,9 +98,9 @@ void main() {
     const expectedOutput = [Pair(2, 0)];
     var count = 0;
 
-    subscription = new Observable(_getStream())
-        .withLatestFrom(_getLatestFromStream(),
-            (first, int second) => new Pair(first, second))
+    subscription = Observable(_getStream())
+        .withLatestFrom(
+            _getLatestFromStream(), (first, int second) => Pair(first, second))
         .take(1)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);

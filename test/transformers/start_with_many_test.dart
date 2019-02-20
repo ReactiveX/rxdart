@@ -3,31 +3,31 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() => new Stream.fromIterable(const [1, 2, 3, 4]);
+Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3, 4]);
 
 void main() {
   test('rx.Observable.startWithMany', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWithMany.reusable', () async {
-    final transformer = new StartWithManyStreamTransformer<int>(const [5, 6]);
+    final transformer = StartWithManyStreamTransformer<int>(const [5, 6]);
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var countA = 0, countB = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
@@ -35,7 +35,7 @@ void main() {
   });
 
   test('rx.Observable.startWithMany.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
+    final stream = Observable(_getStream().asBroadcastStream())
         .startWithMany(const [5, 6]);
 
     // listen twice on same stream
@@ -47,8 +47,7 @@ void main() {
 
   test('rx.Observable.startWithMany.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .startWithMany(const [5, 6]);
+        Observable(ErrorStream<int>(Exception())).startWithMany(const [5, 6]);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -57,8 +56,7 @@ void main() {
   });
 
   test('rx.Observable.startWithMany.error.shouldThrowA', () {
-    expect(
-        () => new Observable.just(1).startWithMany(null), throwsArgumentError);
+    expect(() => Observable.just(1).startWithMany(null), throwsArgumentError);
   });
 
   test('rx.Observable.startWithMany.pause.resume', () async {
@@ -66,7 +64,7 @@ void main() {
     var count = 0;
 
     StreamSubscription<int> subscription;
-    subscription = new Observable(_getStream())
+    subscription = Observable(_getStream())
         .startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);
 

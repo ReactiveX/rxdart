@@ -15,26 +15,25 @@ void main() {
   test('RepeatStream', () async {
     const retries = 3;
 
-    await expectLater(new RepeatStream(_getRepeatStream('A'), retries),
+    await expectLater(RepeatStream(_getRepeatStream('A'), retries),
         emitsInOrder(<dynamic>['A0', 'A1', 'A2', emitsDone]));
   });
 
   test('RepeatStream.onDone', () async {
     const retries = 0;
 
-    await expectLater(
-        new RepeatStream(_getRepeatStream('A'), retries), emitsDone);
+    await expectLater(RepeatStream(_getRepeatStream('A'), retries), emitsDone);
   });
 
   test('RepeatStream.infinite.repeats', () async {
     await expectLater(
-        new RepeatStream(_getRepeatStream('A')), emitsThrough('A100'));
+        RepeatStream(_getRepeatStream('A')), emitsThrough('A100'));
   });
 
   test('RepeatStream.single.subscription', () async {
     const retries = 3;
 
-    final stream = new RepeatStream(_getRepeatStream('A'), retries);
+    final stream = RepeatStream(_getRepeatStream('A'), retries);
 
     try {
       stream.listen(null);
@@ -48,7 +47,7 @@ void main() {
     const retries = 3;
 
     final stream =
-        new RepeatStream(_getRepeatStream('A'), retries).asBroadcastStream();
+        RepeatStream(_getRepeatStream('A'), retries).asBroadcastStream();
 
     // listen twice on same stream
     stream.listen(null);
@@ -58,16 +57,15 @@ void main() {
   });
 
   test('RepeatStream.error.shouldThrow', () async {
-    final observableWithError =
-        new RepeatStream(_getErroneusRepeatStream('A'), 2);
+    final observableWithError = RepeatStream(_getErroneusRepeatStream('A'), 2);
 
     await expectLater(
         observableWithError,
         emitsInOrder(<dynamic>[
           'A0',
-          emitsError(new TypeMatcher<Error>()),
+          emitsError(TypeMatcher<Error>()),
           'A0',
-          emitsError(new TypeMatcher<Error>()),
+          emitsError(TypeMatcher<Error>()),
           emitsDone
         ]));
   });
@@ -76,7 +74,7 @@ void main() {
     StreamSubscription<String> subscription;
     const retries = 3;
 
-    subscription = new RepeatStream(_getRepeatStream('A'), retries)
+    subscription = RepeatStream(_getRepeatStream('A'), retries)
         .listen(expectAsync1((result) {
       expect(result, 'A0');
 
@@ -96,7 +94,7 @@ Stream<String> Function(int) _getRepeatStream(String symbol) =>
 
 Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
     (int repeatIndex) {
-      return new Observable.just('A0')
+      return Observable.just('A0')
           // Emit the error
-          .concatWith([new ErrorStream<String>(new Error())]);
+          .concatWith([ErrorStream<String>(Error())]);
     };

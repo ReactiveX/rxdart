@@ -67,9 +67,9 @@ void main() {
   });
 
   test('rx.Observable.groupBy.asBroadcastStream', () async {
-    final stream = new Observable(
-            new Stream.fromIterable([1, 2, 3, 4]).asBroadcastStream())
-        .groupBy((value) => value);
+    final stream =
+        Observable(Stream.fromIterable([1, 2, 3, 4]).asBroadcastStream())
+            .groupBy((value) => value);
 
     // listen twice on same stream
     stream.listen(null);
@@ -82,7 +82,7 @@ void main() {
     var count = 0;
     StreamSubscription subscription;
 
-    subscription = new Observable(new Stream.fromIterable([1, 2, 3, 4]))
+    subscription = Observable(Stream.fromIterable([1, 2, 3, 4]))
         .groupBy((value) => value)
         .listen(expectAsync1((result) {
           count++;
@@ -97,8 +97,7 @@ void main() {
 
   test('rx.Observable.groupBy.error.shouldThrow.onError', () async {
     final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .groupBy((value) => value);
+        Observable(ErrorStream<void>(Exception())).groupBy((value) => value);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -108,8 +107,8 @@ void main() {
 
   test('rx.Observable.groupBy.error.shouldThrow.onGrouper', () async {
     final observableWithError =
-        new Observable(new Stream.fromIterable([1, 2, 3, 4])).groupBy((value) {
-      throw new Exception();
+        Observable(Stream.fromIterable([1, 2, 3, 4])).groupBy((value) {
+      throw Exception();
     });
 
     observableWithError.listen(null,

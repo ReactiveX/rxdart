@@ -13,7 +13,7 @@ void main() {
       final observable = ReplayConnectableObservable(stream);
 
       when(stream.listen(any, onError: anyNamed('onError')))
-          .thenReturn(new Stream.fromIterable(const [1, 2, 3]).listen(null));
+          .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
 
       verifyNever(stream.listen(any, onError: anyNamed('onError')));
 
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final Observable<int> observable = new ReplayConnectableObservable<int>(
+      final Observable<int> observable = ReplayConnectableObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       ).autoConnect();
 
@@ -74,7 +74,7 @@ void main() {
     });
 
     test('replays the max number of items', () async {
-      final Observable<int> observable = new ReplayConnectableObservable<int>(
+      final Observable<int> observable = ReplayConnectableObservable<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
         maxSize: 2,
       ).autoConnect();

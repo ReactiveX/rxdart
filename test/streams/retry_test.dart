@@ -9,40 +9,40 @@ void main() {
   test('rx.Observable.retry', () async {
     const retries = 3;
 
-    await expectLater(new Observable.retry(_getRetryStream(retries), retries),
+    await expectLater(Observable.retry(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream', () async {
     const retries = 3;
 
-    await expectLater(new RetryStream<int>(_getRetryStream(retries), retries),
+    await expectLater(RetryStream<int>(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.onDone', () async {
     const retries = 3;
 
-    await expectLater(new RetryStream(_getRetryStream(retries), retries),
+    await expectLater(RetryStream(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.infinite.retries', () async {
-    await expectLater(new RetryStream(_getRetryStream(1000)),
+    await expectLater(RetryStream(_getRetryStream(1000)),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
   test('RetryStream.emits.original.items', () async {
     const retries = 3;
 
-    await expectLater(new RetryStream(_getStreamWithExtras(retries), retries),
+    await expectLater(RetryStream(_getStreamWithExtras(retries), retries),
         emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]));
   });
 
   test('RetryStream.single.subscription', () async {
     const retries = 3;
 
-    final stream = new RetryStream(_getRetryStream(retries), retries);
+    final stream = RetryStream(_getRetryStream(retries), retries);
 
     try {
       stream.listen(null);
@@ -56,7 +56,7 @@ void main() {
     const retries = 3;
 
     final stream =
-        new RetryStream(_getRetryStream(retries), retries).asBroadcastStream();
+        RetryStream(_getRetryStream(retries), retries).asBroadcastStream();
 
     // listen twice on same stream
     stream.listen(null);
@@ -66,16 +66,16 @@ void main() {
   });
 
   test('RetryStream.error.shouldThrow', () async {
-    final observableWithError = new RetryStream(_getRetryStream(3), 2);
+    final observableWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
         observableWithError,
         emitsInOrder(
-            <Matcher>[emitsError(new TypeMatcher<RetryError>()), emitsDone]));
+            <Matcher>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryStream.error.capturesErrors', () async {
-    final observableWithError = new RetryStream(_getRetryStream(3), 2);
+    final observableWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
         observableWithError,
@@ -95,7 +95,7 @@ void main() {
     StreamSubscription<int> subscription;
     const retries = 3;
 
-    subscription = new RetryStream(_getRetryStream(retries), retries)
+    subscription = RetryStream(_getRetryStream(retries), retries)
         .listen(expectAsync1((result) {
       expect(result, 1);
 
@@ -113,9 +113,9 @@ StreamFactory<int> _getRetryStream(int failCount) {
   return () {
     if (count < failCount) {
       count++;
-      return new ErrorStream<int>(new Error());
+      return ErrorStream<int>(Error());
     } else {
-      return new Observable.just(1);
+      return Observable.just(1);
     }
   };
 }
@@ -128,13 +128,13 @@ StreamFactory<int> _getStreamWithExtras(int failCount) {
       count++;
 
       // Emit first item
-      return new Observable.just(1)
+      return Observable.just(1)
           // Emit the error
-          .concatWith([new ErrorStream<int>(new Error())])
+          .concatWith([ErrorStream<int>(Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith([new Observable.just(1)]);
+          .concatWith([Observable.just(1)]);
     } else {
-      return new Observable.just(2);
+      return Observable.just(2);
     }
   };
 }

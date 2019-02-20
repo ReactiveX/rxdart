@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  final a = new Stream.fromIterable(const [1, 2, 3, 4]);
+  final a = Stream.fromIterable(const [1, 2, 3, 4]);
 
   return a;
 }
@@ -14,7 +14,7 @@ void main() {
     const expectedOutput = [1, 2, 3, 4];
     var count = 0;
 
-    final stream = new Observable(_getStream());
+    final stream = Observable(_getStream());
 
     await expectLater(stream is Stream<int>, true);
     await expectLater(stream is Observable<int>, true);
@@ -26,7 +26,7 @@ void main() {
   });
 
   test('rx.Observable.stream.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream());
+    final stream = Observable(_getStream().asBroadcastStream());
 
     // listen twice on same stream
     stream.listen(null);
@@ -36,8 +36,7 @@ void main() {
   });
 
   test('rx.Observable.stream.error.shouldThrow', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()));
+    final observableWithError = Observable(ErrorStream<void>(Exception()));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

@@ -7,9 +7,9 @@ void main() {
   test('rx.Observable.timeout', () async {
     StreamSubscription<int> subscription;
 
-    Stream<int> observable = new Observable<int>.fromFuture(
-            new Future<int>.delayed(new Duration(milliseconds: 30), () => 1))
-        .timeout(new Duration(milliseconds: 1));
+    Stream<int> observable = Observable<int>.fromFuture(
+            Future<int>.delayed(Duration(milliseconds: 30), () => 1))
+        .timeout(Duration(milliseconds: 1));
 
     subscription = observable.listen((_) {},
         onError: expectAsync2((TimeoutException e, StackTrace s) {

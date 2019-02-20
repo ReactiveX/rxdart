@@ -4,25 +4,25 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() =>
-    new Stream<int>.periodic(const Duration(milliseconds: 20), (count) => count)
+    Stream<int>.periodic(const Duration(milliseconds: 20), (count) => count)
         .take(5);
 
 Stream<int> _getSampleStream() =>
-    new Stream<int>.periodic(const Duration(milliseconds: 35), (count) => count)
+    Stream<int>.periodic(const Duration(milliseconds: 35), (count) => count)
         .take(10);
 
 void main() {
   test('rx.Observable.sample', () async {
-    final observable = new Observable(_getStream()).sample(_getSampleStream());
+    final observable = Observable(_getStream()).sample(_getSampleStream());
 
     await expectLater(observable, emitsInOrder(const <int>[0, 2, 4]));
   });
 
   test('rx.Observable.sample.reusable', () async {
-    final transformer = new SampleStreamTransformer<int>(
-        _getSampleStream().asBroadcastStream());
-    final observableA = new Observable(_getStream()).transform(transformer);
-    final observableB = new Observable(_getStream()).transform(transformer);
+    final transformer =
+        SampleStreamTransformer<int>(_getSampleStream().asBroadcastStream());
+    final observableA = Observable(_getStream()).transform(transformer);
+    final observableB = Observable(_getStream()).transform(transformer);
 
     await Future.wait<dynamic>([
       expectLater(observableA, emitsInOrder(const <int>[0, 2, 4])),
@@ -31,17 +31,17 @@ void main() {
   });
 
   test('rx.Observable.sample.onDone', () async {
-    final observable = new Observable(new Observable.just(1))
-        .sample(new Observable<void>.empty());
+    final observable =
+        Observable(Observable.just(1)).sample(Observable<void>.empty());
 
     await expectLater(observable, emits(1));
   });
 
   test('rx.Observable.sample.shouldClose', () async {
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
-        .sample(new Stream<void>.empty()) // should trigger onDone
+    Observable(controller.stream)
+        .sample(Stream<void>.empty()) // should trigger onDone
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
 
     controller.add(0);
@@ -53,7 +53,7 @@ void main() {
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
+    final stream = Observable(_getStream().asBroadcastStream())
         .sample(_getSampleStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -65,8 +65,7 @@ void main() {
 
   test('rx.Observable.sample.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .sample(_getSampleStream());
+        Observable(ErrorStream<void>(Exception())).sample(_getSampleStream());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -75,8 +74,8 @@ void main() {
   });
 
   test('rx.Observable.sample.error.shouldThrowB', () async {
-    final observableWithError = new Observable.just(1)
-        .sample(new ErrorStream<void>(new Exception('Catch me if you can!')));
+    final observableWithError = Observable.just(1)
+        .sample(ErrorStream<void>(Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -89,7 +88,7 @@ void main() {
     var count = 0;
     StreamSubscription<int> subscription;
 
-    subscription = new Observable(_getStream())
+    subscription = Observable(_getStream())
         .sample(_getSampleStream())
         .listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('ErrorStream', () async {
-    Stream<int> stream = new ErrorStream<int>(new Exception());
+    Stream<int> stream = ErrorStream<int>(Exception());
 
     await expectLater(
         stream,
@@ -18,7 +18,7 @@ void main() {
   });
 
   test('ErrorStream.single.subscription', () async {
-    Stream<int> stream = new ErrorStream<int>(new Exception());
+    Stream<int> stream = ErrorStream<int>(Exception());
 
     // expect to hit onError in first subscription
     // expect immediate error when trying another subscription
@@ -29,7 +29,7 @@ void main() {
   });
 
   test('rx.Observable.error', () async {
-    final observable = new Observable<int>.error(new Exception());
+    final observable = Observable<int>.error(Exception());
 
     await expectLater(
         observable,

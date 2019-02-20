@@ -7,7 +7,7 @@ void main() => DebounceBenchmark.main();
 class DebounceBenchmark extends BenchmarkBase {
   DebounceBenchmark() : super("debounce");
 
-  static void main() => new DebounceBenchmark().report();
+  static void main() => DebounceBenchmark().report();
 
   @override
   void run() {

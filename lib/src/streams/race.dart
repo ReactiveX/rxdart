@@ -27,9 +27,9 @@ class RaceStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams == null) {
-      throw new ArgumentError('streams cannot be null');
+      throw ArgumentError('streams cannot be null');
     } else if (streams.isEmpty) {
-      throw new ArgumentError('provide at least 1 stream');
+      throw ArgumentError('provide at least 1 stream');
     }
 
     final subscriptions = <StreamSubscription<T>>[];
@@ -37,7 +37,7 @@ class RaceStream<T> extends Stream<T> {
 
     StreamController<T> controller;
 
-    controller = new StreamController<T>(
+    controller = StreamController<T>(
         sync: true,
         onListen: () {
           void doUpdate(int i, T value) {
@@ -75,7 +75,7 @@ class RaceStream<T> extends Stream<T> {
                 subscriptions.map((StreamSubscription<T> subscription) {
               if (subscription != null) return subscription.cancel();
 
-              return new Future<dynamic>.value();
+              return Future<dynamic>.value();
             }).where((Future<dynamic> cancelFuture) => cancelFuture != null)));
 
     return controller;

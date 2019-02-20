@@ -14,7 +14,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   SampleStreamTransformer(Stream<dynamic> sampleStream,
-      {bool sampleOnValueOnly: true})
+      {bool sampleOnValueOnly = true})
       : transformer = _buildTransformer(sampleStream,
             sampleOnValueOnly: sampleOnValueOnly);
 
@@ -23,8 +23,8 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       Stream<dynamic> sampleStream,
-      {bool sampleOnValueOnly: true}) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      {bool sampleOnValueOnly = true}) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<dynamic> sampleSubscription;
@@ -50,7 +50,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
       }
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             try {

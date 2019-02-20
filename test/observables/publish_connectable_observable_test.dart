@@ -12,8 +12,8 @@ void main() {
       final stream = MockStream<int>();
       final observable = PublishConnectableObservable(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError'))).thenReturn(
-          new Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
+      when(stream.listen(any, onError: anyNamed('onError')))
+          .thenReturn(Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
 
       verifyNever(stream.listen(any, onError: anyNamed('onError')));
 
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final observable = new PublishConnectableObservable(
+      final observable = PublishConnectableObservable(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 

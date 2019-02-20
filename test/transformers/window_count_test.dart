@@ -143,14 +143,14 @@ void main() {
   });
 
   test('rx.Observable.windowCount.reusable', () async {
-    final transformer = new WindowStreamTransformer<int>(onCount(2));
+    final transformer = WindowStreamTransformer<int>(onCount(2));
     const expectedOutput = [
       [1, 2],
       [3, 4]
     ];
     var countA = 0, countB = 0;
 
-    final streamA = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamA = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
         .asyncMap((s) => s.toList());
 
@@ -161,7 +161,7 @@ void main() {
       countA++;
     }, count: expectedOutput.length));
 
-    final streamB = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamB = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
         .asyncMap((s) => s.toList());
 
@@ -174,7 +174,7 @@ void main() {
   });
 
   test('rx.Observable.windowCount.asBroadcastStream', () async {
-    final stream = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final stream = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .windowCount(2)
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
@@ -187,7 +187,7 @@ void main() {
   });
 
   test('rx.Observable.windowCount.asBroadcastStream.asWindow', () async {
-    final stream = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final stream = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .window(onCount(2))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
@@ -200,10 +200,9 @@ void main() {
   });
 
   test('rx.Observable.windowCount.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .windowCount(2)
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .windowCount(2)
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -212,10 +211,9 @@ void main() {
   });
 
   test('rx.Observable.windowCount.error.shouldThrowA.asWindow', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .window(onCount(2))
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .window(onCount(2))
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -224,7 +222,7 @@ void main() {
   });
 
   test('rx.Observable.windowCount.shouldThrow.invalidCount.negative', () {
-    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+    Observable<int>.fromIterable(const [1, 2, 3, 4])
         .windowCount(-1)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -232,7 +230,7 @@ void main() {
   });
 
   test('rx.Observable.windowCount.shouldThrow.invalidCount.isNull', () {
-    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+    Observable<int>.fromIterable(const [1, 2, 3, 4])
         .windowCount(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -241,7 +239,7 @@ void main() {
 
   test('rx.Observable.windowCount.shouldThrow.invalidCount.negative.asBuffer',
       () {
-    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+    Observable<int>.fromIterable(const [1, 2, 3, 4])
         .window(onCount(-1))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -250,7 +248,7 @@ void main() {
 
   test('rx.Observable.windowCount.shouldThrow.invalidCount.isNull.asBuffer',
       () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .window(onCount(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -260,7 +258,7 @@ void main() {
   test(
       'rx.Observable.windowCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
       () {
-    new Observable<int>.fromIterable(const [1, 2, 3, 4])
+    Observable<int>.fromIterable(const [1, 2, 3, 4])
         .windowCount(2, -1)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

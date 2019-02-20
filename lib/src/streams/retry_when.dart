@@ -76,10 +76,10 @@ class RetryWhenStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw new StateError('Stream has already been listened to.');
+    if (_isUsed) throw StateError('Stream has already been listened to.');
     _isUsed = true;
 
-    controller = new StreamController<T>(
+    controller = StreamController<T>(
       sync: true,
       onListen: retry,
       onPause: ([Future<dynamic> resumeSignal]) =>
@@ -106,14 +106,14 @@ class RetryWhenStream<T> extends Stream<T> {
         sub = retryWhenFactory(e, s).listen(
           (dynamic event) {
             sub.cancel();
-            _errors.add(new ErrorAndStacktrace(e, s));
+            _errors.add(ErrorAndStacktrace(e, s));
             retry();
           },
           onError: (dynamic e, StackTrace s) {
             sub.cancel();
-            controller.addError(new RetryError(
+            controller.addError(RetryError(
               'Received an error after attempting to retry.',
-              _errors..add(new ErrorAndStacktrace(e, s)),
+              _errors..add(ErrorAndStacktrace(e, s)),
             ));
             controller.close();
           },

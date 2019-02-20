@@ -32,12 +32,12 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       bool equals(T e1, T e2), int hashCode(T e)) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      var collection = new HashSet<T>(equals: equals, hashCode: hashCode);
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+      var collection = HashSet<T>(equals: equals, hashCode: hashCode);
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
