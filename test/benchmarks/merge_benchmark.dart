@@ -10,10 +10,10 @@ void main() => MergeBenchmark.main();
 class MergeBenchmark extends BenchmarkBase {
   MergeBenchmark() : super("merge");
 
-  static void main() => new MergeBenchmark().report();
+  static void main() => MergeBenchmark().report();
 
   @override
   void run() {
-    new Observable<int>.merge(<Stream<int>>[range(), range()]).listen(null);
+    Observable<int>.merge(<Stream<int>>[range(), range()]).listen(null);
   }
 }

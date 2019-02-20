@@ -19,6 +19,6 @@ class AsObservableFuture<T> extends WrappedFuture<T> {
   AsObservableFuture(Future<T> wrapped) : super(wrapped);
 
   Observable<T> asObservable() {
-    return new Observable<T>.fromFuture(wrapped);
+    return Observable<T>.fromFuture(wrapped);
   }
 }

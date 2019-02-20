@@ -9,7 +9,7 @@ import 'dart:async';
 class TimerStream<T> extends Stream<T> {
   final T value;
   final Duration duration;
-  final StreamController<T> controller = new StreamController<T>();
+  final StreamController<T> controller = StreamController<T>();
 
   TimerStream(this.value, this.duration);
 
@@ -19,7 +19,7 @@ class TimerStream<T> extends Stream<T> {
     final subscription = controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-    new Timer(duration, () {
+    Timer(duration, () {
       controller.add(value);
       controller.close();
     });

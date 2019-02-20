@@ -5,7 +5,7 @@ void main() {
   test('rx.Observable.fromIterable', () async {
     const value = 1;
 
-    final observable = new Observable.fromIterable([value]);
+    final observable = Observable.fromIterable([value]);
 
     observable.listen(expectAsync1((actual) {
       expect(actual, value);

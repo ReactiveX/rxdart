@@ -7,7 +7,7 @@ void main() => SwitchMapBenchmark.main();
 class SwitchMapBenchmark extends BenchmarkBase {
   SwitchMapBenchmark() : super("switchMap");
 
-  static void main() => new SwitchMapBenchmark().report();
+  static void main() => SwitchMapBenchmark().report();
 
   @override
   void run() {

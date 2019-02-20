@@ -18,14 +18,14 @@ class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Iterable<T> startValues) {
     if (startValues == null) {
-      throw new ArgumentError('startValues cannot be null');
+      throw ArgumentError('startValues cannot be null');
     }
 
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             startValues.forEach(controller.add);

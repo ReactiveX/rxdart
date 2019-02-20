@@ -5,7 +5,7 @@ void main() {
   test('rx.Observable.just', () async {
     const value = 1;
 
-    final observable = new Observable.just(value);
+    final observable = Observable.just(value);
 
     observable.listen(expectAsync1((actual) {
       expect(actual, value);

@@ -27,18 +27,18 @@ class WithLatestFromStreamTransformer<T, S, R>
   static StreamTransformer<T, R> _buildTransformer<T, S, R>(
       Stream<S> latestFromStream, R fn(T t, S s)) {
     if (latestFromStream == null) {
-      throw new ArgumentError('latestFromStream cannot be null');
+      throw ArgumentError('latestFromStream cannot be null');
     } else if (fn == null) {
-      throw new ArgumentError('combiner cannot be null');
+      throw ArgumentError('combiner cannot be null');
     }
 
-    return new StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
       StreamController<R> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> latestFromSubscription;
       S latestValue;
 
-      controller = new StreamController<R>(
+      controller = StreamController<R>(
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {

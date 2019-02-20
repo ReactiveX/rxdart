@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => new Observable<int>((int n) async* {
+Observable<int> getStream(int n) => Observable<int>((int n) async* {
       var k = 0;
 
       while (k < n) {
-        await new Future<Null>.delayed(const Duration(milliseconds: 100));
+        await Future<Null>.delayed(const Duration(milliseconds: 100));
 
         yield k++;
       }
@@ -23,7 +23,7 @@ void main() {
 
     getStream(4)
         .bufferFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 220)))
+            () => Future<Null>.delayed(const Duration(milliseconds: 220)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -39,7 +39,7 @@ void main() {
 
     getStream(4)
         .buffer(onFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 220))))
+            () => Future<Null>.delayed(const Duration(milliseconds: 220))))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -56,11 +56,11 @@ void main() {
     ];
     var count = 0;
 
-    new Observable.fromFuture(
-            new Future<Null>.delayed(const Duration(milliseconds: 200))
+    Observable.fromFuture(
+            Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .bufferFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 40)))
+            () => Future<Null>.delayed(const Duration(milliseconds: 40)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -78,11 +78,11 @@ void main() {
     ];
     var count = 0;
 
-    new Observable.fromFuture(
-            new Future<Null>.delayed(const Duration(milliseconds: 200))
+    Observable.fromFuture(
+            Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
         .buffer(onFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 40))))
+            () => Future<Null>.delayed(const Duration(milliseconds: 40))))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -91,11 +91,10 @@ void main() {
 
   test('rx.Observable.bufferFuture.shouldClose', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
-        .bufferFuture(
-            () => new Future<Null>.delayed(const Duration(seconds: 3)))
+    Observable(controller.stream)
+        .bufferFuture(() => Future<Null>.delayed(const Duration(seconds: 3)))
         .listen(
             expectAsync1((result) => expect(result, expectedOutput), count: 1),
             onDone: expectAsync0(() => expect(true, isTrue)));
@@ -110,11 +109,11 @@ void main() {
 
   test('rx.Observable.bufferFuture.shouldClose.asBuffer', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
-        .buffer(onFuture(
-            () => new Future<Null>.delayed(const Duration(seconds: 3))))
+    Observable(controller.stream)
+        .buffer(
+            onFuture(() => Future<Null>.delayed(const Duration(seconds: 3))))
         .listen(
             expectAsync1((result) => expect(result, expectedOutput), count: 1),
             onDone: expectAsync0(() => expect(true, isTrue)));
@@ -128,8 +127,8 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(onFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
+    final transformer = BufferStreamTransformer<int>(onFuture(
+        () => Future<Null>.delayed(const Duration(milliseconds: 220))));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -153,7 +152,7 @@ void main() {
 
   test('rx.Observable.bufferFuture.asBroadcastStream', () async {
     final stream = getStream(4).asBroadcastStream().bufferFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
+        () => Future<Null>.delayed(const Duration(milliseconds: 220)));
 
     // listen twice on same stream
     stream.listen(expectAsync1((_) {}, count: 2));
@@ -164,7 +163,7 @@ void main() {
 
   test('rx.Observable.bufferFuture.asBroadcastStream.asBuffer', () async {
     final stream = getStream(4).asBroadcastStream().buffer(onFuture(
-        () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
+        () => Future<Null>.delayed(const Duration(milliseconds: 220))));
 
     // listen twice on same stream
     stream.listen(expectAsync1((_) {}, count: 2));
@@ -174,9 +173,9 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<Null>(new Exception())).bufferFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 220)));
+    final observableWithError = Observable(ErrorStream<Null>(Exception()))
+        .bufferFuture(
+            () => Future<Null>.delayed(const Duration(milliseconds: 220)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Object e, StackTrace s) {
@@ -185,9 +184,9 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowA.asBuffer', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<Null>(new Exception())).buffer(onFuture(
-            () => new Future<Null>.delayed(const Duration(milliseconds: 220))));
+    final observableWithError = Observable(ErrorStream<Null>(Exception()))
+        .buffer(onFuture(
+            () => Future<Null>.delayed(const Duration(milliseconds: 220))));
 
     observableWithError.listen(null,
         onError: expectAsync2((Object e, StackTrace s) {
@@ -196,7 +195,7 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .bufferFuture<Null>(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -204,7 +203,7 @@ void main() {
   });
 
   test('rx.Observable.bufferFuture.error.shouldThrowB.asFuture', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .buffer(onFuture<int, List<int>, void>(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

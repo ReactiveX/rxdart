@@ -24,13 +24,13 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       T lastEvent;
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       Timer timer;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(
@@ -40,7 +40,7 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
                   try {
                     _cancelTimerIfActive(timer);
 
-                    timer = new Timer(duration, () {
+                    timer = Timer(duration, () {
                       controller.add(lastEvent);
                       lastEvent = null;
                     });

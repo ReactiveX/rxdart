@@ -10,7 +10,7 @@ void main() {
     test('calls onDone when the stream is finished', () async {
       var onDoneCalled = false;
       final observable =
-          new Observable<void>.empty().doOnDone(() => onDoneCalled = true);
+          Observable<void>.empty().doOnDone(() => onDoneCalled = true);
 
       await expectLater(observable, emitsDone);
       await expectLater(onDoneCalled, isTrue);
@@ -18,7 +18,7 @@ void main() {
 
     test('calls onError when an error is emitted', () async {
       var onErrorCalled = false;
-      final observable = new Observable<void>.error(new Exception())
+      final observable = Observable<void>.error(Exception())
           .doOnError((dynamic e, dynamic s) => onErrorCalled = true);
 
       await expectLater(observable, emitsError(isException));
@@ -29,7 +29,7 @@ void main() {
         'onError only called once when an error is emitted on a broadcast stream',
         () async {
       var count = 0;
-      final subject = new BehaviorSubject<int>(sync: true);
+      final subject = BehaviorSubject<int>(sync: true);
       final stream = subject.stream.doOnError(
         (dynamic e, dynamic s) => count++,
       );
@@ -37,8 +37,8 @@ void main() {
       stream.listen(null, onError: (dynamic e, dynamic s) {});
       stream.listen(null, onError: (dynamic e, dynamic s) {});
 
-      subject.addError(new Exception());
-      subject.addError(new Exception());
+      subject.addError(Exception());
+      subject.addError(Exception());
 
       await expectLater(count, 2);
       await subject.close();
@@ -46,7 +46,7 @@ void main() {
 
     test('calls onCancel when the subscription is cancelled', () async {
       var onCancelCalled = false;
-      final observable = new Observable.just(1);
+      final observable = Observable.just(1);
 
       await observable
           .doOnCancel(() => onCancelCalled = true)
@@ -58,11 +58,11 @@ void main() {
 
     test('awaits onCancel when the subscription is cancelled', () async {
       var onCancelCompleted = 10, onCancelHandled = 10, eventSequenceCount = 0;
-      final observable = new Observable.just(1);
+      final observable = Observable.just(1);
 
       await observable
           .doOnCancel(() =>
-              new Future<void>.delayed(const Duration(milliseconds: 100))
+              Future<void>.delayed(const Duration(milliseconds: 100))
                   .whenComplete(() => onCancelHandled = ++eventSequenceCount))
           .listen(null)
           .cancel()
@@ -75,7 +75,7 @@ void main() {
         'onCancel called only once when the subscription is multiple listeners',
         () async {
       var count = 0;
-      final subject = new BehaviorSubject<int>(sync: true);
+      final subject = BehaviorSubject<int>(sync: true);
       final observable = subject.doOnCancel(() => count++);
 
       observable.listen(null);
@@ -88,7 +88,7 @@ void main() {
     test('calls onData when the observable emits an item', () async {
       var onDataCalled = false;
       final observable =
-          new Observable.just(1).doOnData((_) => onDataCalled = true);
+          Observable.just(1).doOnData((_) => onDataCalled = true);
 
       await expectLater(observable, emits(1));
       await expectLater(onDataCalled, isTrue);
@@ -97,9 +97,9 @@ void main() {
     test('onData only emits once for broadcast streams with multiple listeners',
         () async {
       final actual = <int>[];
-      final controller = new StreamController<int>.broadcast(sync: true);
-      final observable = controller.stream
-          .transform(new DoStreamTransformer(onData: actual.add));
+      final controller = StreamController<int>.broadcast(sync: true);
+      final observable =
+          controller.stream.transform(DoStreamTransformer(onData: actual.add));
 
       observable.listen(null);
       observable.listen(null);
@@ -114,9 +114,9 @@ void main() {
     test('emits onEach Notifications for Data, Error, and Done', () async {
       StackTrace stacktrace;
       final actual = <Notification<int>>[];
-      final exception = new Exception();
-      final observable = new Observable.just(1).concatWith(
-          [new Observable<int>.error(exception)]).doOnEach((notification) {
+      final exception = Exception();
+      final observable = Observable.just(1).concatWith(
+          [Observable<int>.error(exception)]).doOnEach((notification) {
         actual.add(notification);
 
         if (notification.isOnError) {
@@ -128,18 +128,18 @@ void main() {
           emitsInOrder(<dynamic>[1, emitsError(isException), emitsDone]));
 
       await expectLater(actual, [
-        new Notification.onData(1),
-        new Notification<void>.onError(exception, stacktrace),
-        new Notification<void>.onDone()
+        Notification.onData(1),
+        Notification<void>.onError(exception, stacktrace),
+        Notification<void>.onDone()
       ]);
     });
 
     test('onEach only emits once for broadcast streams with multiple listeners',
         () async {
       var count = 0;
-      final controller = new StreamController<int>.broadcast(sync: true);
+      final controller = StreamController<int>.broadcast(sync: true);
       final observable =
-          controller.stream.transform(new DoStreamTransformer(onEach: (_) {
+          controller.stream.transform(DoStreamTransformer(onEach: (_) {
         count++;
       }));
 
@@ -155,7 +155,7 @@ void main() {
 
     test('calls onListen when a consumer listens', () async {
       var onListenCalled = false;
-      final observable = new Observable<void>.empty().doOnListen(() {
+      final observable = Observable<void>.empty().doOnListen(() {
         onListenCalled = true;
       });
 
@@ -166,10 +166,10 @@ void main() {
     test('calls onListen every time a consumer listens to a broadcast stream',
         () async {
       var onListenCallCount = 0;
-      final sc = new StreamController<int>.broadcast()..add(1)..add(2)..add(3);
+      final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
 
       final observable =
-          new Observable(sc.stream).doOnListen(() => onListenCallCount++);
+          Observable(sc.stream).doOnListen(() => onListenCallCount++);
 
       observable.listen(null);
       observable.listen(null);
@@ -180,7 +180,7 @@ void main() {
 
     test('calls onPause and onResume when the subscription is', () async {
       var onPauseCalled = false, onResumeCalled = false;
-      final observable = new Observable.just(1).doOnPause((_) {
+      final observable = Observable.just(1).doOnPause((_) {
         onPauseCalled = true;
       }).doOnResume(() {
         onResumeCalled = true;
@@ -196,12 +196,12 @@ void main() {
 
     test('should be reusable', () async {
       var callCount = 0;
-      final transformer = new DoStreamTransformer<int>(onData: (_) {
+      final transformer = DoStreamTransformer<int>(onData: (_) {
         callCount++;
       });
 
-      final observableA = new Observable.just(1).transform(transformer),
-          observableB = new Observable.just(1).transform(transformer);
+      final observableA = Observable.just(1).transform(transformer),
+          observableB = Observable.just(1).transform(transformer);
 
       observableA.listen(null, onDone: expectAsync0(() {
         expect(callCount, 2);
@@ -213,26 +213,25 @@ void main() {
     });
 
     test('throws an error when no arguments are provided', () {
-      expect(() => new DoStreamTransformer<void>(), throwsArgumentError);
+      expect(() => DoStreamTransformer<void>(), throwsArgumentError);
     });
 
     test('should propagate errors', () {
-      new Observable.just(1)
-          .doOnListen(
-              () => throw new Exception('catch me if you can! doOnListen'))
+      Observable.just(1)
+          .doOnListen(() => throw Exception('catch me if you can! doOnListen'))
           .listen(null,
               onError: expectAsync2(
                   (Exception e, [StackTrace s]) => expect(e, isException)));
 
-      new Observable.just(1)
-          .doOnData((_) => throw new Exception('catch me if you can! doOnData'))
+      Observable.just(1)
+          .doOnData((_) => throw Exception('catch me if you can! doOnData'))
           .listen(null,
               onError: expectAsync2(
                   (Exception e, [StackTrace s]) => expect(e, isException)));
 
-      new Observable<void>.error(new Exception('oh noes!'))
+      Observable<void>.error(Exception('oh noes!'))
           .doOnError((dynamic _, dynamic __) =>
-              throw new Exception('catch me if you can! doOnError'))
+              throw Exception('catch me if you can! doOnError'))
           .listen(null,
               onError: expectAsync2(
                   (Exception e, [StackTrace s]) => expect(e, isException),
@@ -242,14 +241,14 @@ void main() {
       // in that case, the error is forwarded to the current [Zone]
       runZoned(
         () {
-          new Observable.just(1)
+          Observable.just(1)
               .doOnCancel(() =>
-                  throw new Exception('catch me if you can! doOnCancel-zoned'))
+                  throw Exception('catch me if you can! doOnCancel-zoned'))
               .listen(null);
 
-          new Observable.just(1)
+          Observable.just(1)
               .doOnCancel(
-                  () => throw new Exception('catch me if you can! doOnCancel'))
+                  () => throw Exception('catch me if you can! doOnCancel'))
               .listen(null)
                 ..cancel();
         },
@@ -258,8 +257,8 @@ void main() {
         ),
       );
 
-      new Observable.just(1)
-          .doOnDone(() => throw new Exception('catch me if you can! doOnDone'))
+      Observable.just(1)
+          .doOnDone(() => throw Exception('catch me if you can! doOnDone'))
           .listen(
             null,
             onError: expectAsync2(
@@ -267,8 +266,8 @@ void main() {
             ),
           );
 
-      new Observable.just(1)
-          .doOnEach((_) => throw new Exception('catch me if you can! doOnEach'))
+      Observable.just(1)
+          .doOnEach((_) => throw Exception('catch me if you can! doOnEach'))
           .listen(
             null,
             onError: expectAsync2(
@@ -277,9 +276,8 @@ void main() {
             ),
           );
 
-      new Observable.just(1)
-          .doOnPause(
-              (_) => throw new Exception('catch me if you can! doOnPause'))
+      Observable.just(1)
+          .doOnPause((_) => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
                 (Exception e, [StackTrace s]) => expect(e, isException),
@@ -287,9 +285,8 @@ void main() {
             ..pause()
             ..resume();
 
-      new Observable.just(1)
-          .doOnResume(
-              () => throw new Exception('catch me if you can! doOnResume'))
+      Observable.just(1)
+          .doOnResume(() => throw Exception('catch me if you can! doOnResume'))
           .listen(null,
               onError: expectAsync2(
                   (Exception e, [StackTrace s]) => expect(e, isException)))

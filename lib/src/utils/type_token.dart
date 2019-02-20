@@ -24,19 +24,19 @@ class TypeToken<S> {
 }
 
 /// Filter the observable to only Booleans
-const TypeToken<bool> kBool = const TypeToken<bool>();
+const TypeToken<bool> kBool = TypeToken<bool>();
 
 /// Filter the observable to only Doubles
-const TypeToken<double> kDouble = const TypeToken<double>();
+const TypeToken<double> kDouble = TypeToken<double>();
 
 /// Filter the observable to only Integers
-const TypeToken<int> kInt = const TypeToken<int>();
+const TypeToken<int> kInt = TypeToken<int>();
 
 /// Filter the observable to only Numbers
-const TypeToken<num> kNum = const TypeToken<num>();
+const TypeToken<num> kNum = TypeToken<num>();
 
 /// Filter the observable to only Strings
-const TypeToken<String> kString = const TypeToken<String>();
+const TypeToken<String> kString = TypeToken<String>();
 
 /// Filter the observable to only Symbols
-const TypeToken<Symbol> kSymbol = const TypeToken<Symbol>();
+const TypeToken<Symbol> kSymbol = TypeToken<Symbol>();

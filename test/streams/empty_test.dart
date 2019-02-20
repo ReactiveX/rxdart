@@ -5,7 +5,7 @@ void main() {
   test('rx.Observable.empty', () async {
     var onDataCalled = false, onErrorCalled = false;
 
-    final observable = new Observable<int>.empty();
+    final observable = Observable<int>.empty();
 
     observable.listen(
         expectAsync1((_) {

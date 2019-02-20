@@ -19,16 +19,16 @@ void main() {
   });
 
   test('rx.Observable.switchIfEmpty.reusable', () async {
-    final transformer = new SwitchIfEmptyStreamTransformer<bool>(
-        new Observable.just(true).asBroadcastStream());
+    final transformer = SwitchIfEmptyStreamTransformer<bool>(
+        Observable.just(true).asBroadcastStream());
 
-    new Observable(new Stream<bool>.empty())
+    Observable(Stream<bool>.empty())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, true);
         }, count: 1));
 
-    new Observable(new Stream<bool>.empty())
+    Observable(Stream<bool>.empty())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, true);
@@ -36,16 +36,16 @@ void main() {
   });
 
   test('rx.Observable.switchIfEmpty.whenNotEmpty', () async {
-    new Observable.just(false)
-        .switchIfEmpty(new Observable.just(true))
+    Observable.just(false)
+        .switchIfEmpty(Observable.just(true))
         .listen(expectAsync1((result) {
           expect(result, false);
         }, count: 1));
   });
 
   test('rx.Observable.switchIfEmpty.asBroadcastStream', () async {
-    final stream = new Observable(new Stream<int>.empty())
-        .switchIfEmpty(new Observable.just(1))
+    final stream = Observable(Stream<int>.empty())
+        .switchIfEmpty(Observable.just(1))
         .asBroadcastStream();
 
     // listen twice on same stream
@@ -57,9 +57,8 @@ void main() {
   });
 
   test('rx.Observable.switchIfEmpty.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .switchIfEmpty(new Observable.just(1));
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .switchIfEmpty(Observable.just(1));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -68,14 +67,14 @@ void main() {
   });
 
   test('rx.Observable.switchIfEmpty.error.shouldThrowB', () {
-    expect(() => new Observable<void>.empty().switchIfEmpty(null),
+    expect(() => Observable<void>.empty().switchIfEmpty(null),
         throwsArgumentError);
   });
 
   test('rx.Observable.switchIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = new Observable(new Stream<int>.empty())
-        .switchIfEmpty(new Observable.just(1));
+    final stream =
+        Observable(Stream<int>.empty()).switchIfEmpty(Observable.just(1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

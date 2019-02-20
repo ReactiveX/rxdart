@@ -8,7 +8,7 @@ void main() => CombineLatestBenchmark.main();
 class CombineLatestBenchmark extends BenchmarkBase {
   CombineLatestBenchmark() : super("combineLatest");
 
-  static void main() => new CombineLatestBenchmark().report();
+  static void main() => CombineLatestBenchmark().report();
 
   @override
   void run() {

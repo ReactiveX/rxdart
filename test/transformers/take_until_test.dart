@@ -4,12 +4,12 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _getStream() {
-  final controller = new StreamController<int>();
+  final controller = StreamController<int>();
 
-  new Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  new Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  new Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  new Timer(const Duration(milliseconds: 400), () {
+  Timer(const Duration(milliseconds: 100), () => controller.add(1));
+  Timer(const Duration(milliseconds: 200), () => controller.add(2));
+  Timer(const Duration(milliseconds: 300), () => controller.add(3));
+  Timer(const Duration(milliseconds: 400), () {
     controller.add(4);
     controller.close();
   });
@@ -18,9 +18,9 @@ Stream<int> _getStream() {
 }
 
 Stream<int> _getOtherStream() {
-  final controller = new StreamController<int>();
+  final controller = StreamController<int>();
 
-  new Timer(const Duration(milliseconds: 250), () {
+  Timer(const Duration(milliseconds: 250), () {
     controller.add(1);
     controller.close();
   });
@@ -33,7 +33,7 @@ void main() {
     const expectedOutput = [1, 2];
     var count = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
@@ -41,24 +41,24 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.shouldClose', () async {
-    new Observable(_getStream())
-        .takeUntil(new Stream<void>.empty())
+    Observable(_getStream())
+        .takeUntil(Stream<void>.empty())
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
   });
 
   test('rx.Observable.takeUntil.reusable', () async {
-    final transformer = new TakeUntilStreamTransformer<int, int>(
+    final transformer = TakeUntilStreamTransformer<int, int>(
         _getOtherStream().asBroadcastStream());
     const expectedOutput = [1, 2];
     var countA = 0, countB = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
@@ -66,7 +66,7 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
+    final stream = Observable(_getStream().asBroadcastStream())
         .takeUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -78,8 +78,7 @@ void main() {
 
   test('rx.Observable.takeUntil.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .takeUntil(_getOtherStream());
+        Observable(ErrorStream<void>(Exception())).takeUntil(_getOtherStream());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -88,8 +87,7 @@ void main() {
   });
 
   test('rx.Observable.takeUntil.error.shouldThrowB', () {
-    expect(() => new Observable.just(1).takeUntil<void>(null),
-        throwsArgumentError);
+    expect(() => Observable.just(1).takeUntil<void>(null), throwsArgumentError);
   });
 
   test('rx.Observable.takeUntil.pause.resume', () async {
@@ -97,7 +95,7 @@ void main() {
     const expectedOutput = [1, 2];
     var count = 0;
 
-    subscription = new Observable(_getStream())
+    subscription = Observable(_getStream())
         .takeUntil(_getOtherStream())
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);

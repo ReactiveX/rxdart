@@ -23,13 +23,13 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       var onDoneCalled = false, hasNoEvents = true;
       var timers = <Timer>[];
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(
@@ -38,7 +38,7 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
                   try {
                     Timer timer;
-                    timer = new Timer(duration, () {
+                    timer = Timer(duration, () {
                       controller.add(value);
 
                       timers.remove(timer);

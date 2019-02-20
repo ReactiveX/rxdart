@@ -27,7 +27,7 @@ Stream<S> Function(
       OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler,
     ) {
-      return new _OnCountSampler<T, S>(
+      return _OnCountSampler<T, S>(
         stream,
         bufferHandler,
         scheduleHandler,
@@ -51,7 +51,7 @@ Stream<S> Function(
     OnDataTransform<T, S> bufferHandler,
     OnDataTransform<S, S> scheduleHandler,
   ) {
-    return new _OnStreamSampler<T, S, O>(
+    return _OnStreamSampler<T, S, O>(
       stream,
       bufferHandler,
       scheduleHandler,
@@ -76,14 +76,14 @@ Stream<S> Function(
     OnDataTransform<S, S> scheduleHandler,
   ) {
     if (duration == null) {
-      throw new ArgumentError('duration cannot be null');
+      throw ArgumentError('duration cannot be null');
     }
 
-    return new _OnStreamSampler<T, S, Null>(
+    return _OnStreamSampler<T, S, Null>(
       stream,
       bufferHandler,
       scheduleHandler,
-      new Stream<Null>.periodic(duration),
+      Stream<Null>.periodic(duration),
     );
   };
 }
@@ -104,10 +104,10 @@ Stream<S> Function(
     OnDataTransform<S, S> scheduleHandler,
   ) {
     if (onFuture == null) {
-      throw new ArgumentError('onFuture cannot be null');
+      throw ArgumentError('onFuture cannot be null');
     }
 
-    return new _OnStreamSampler<T, S, O>(
+    return _OnStreamSampler<T, S, O>(
       stream,
       bufferHandler,
       scheduleHandler,
@@ -133,8 +133,7 @@ Stream<S> Function(
     onTest<T, S>(bool onTest(T event)) => (Stream<T> stream,
             OnDataTransform<T, S> bufferHandler,
             OnDataTransform<S, S> scheduleHandler) =>
-        new _OnTestSampler<T, S>(
-            stream, bufferHandler, scheduleHandler, onTest);
+        _OnTestSampler<T, S>(stream, bufferHandler, scheduleHandler, onTest);
 
 /// A buffer strategy where each item is a sequence containing the items
 /// from the source sequence, sampled on [onStream].
@@ -147,13 +146,13 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
       OnDataTransform<T, S> bufferHandler,
       OnDataTransform<S, S> scheduleHandler,
       Stream<O> onStream) {
-    final doneController = new StreamController<bool>();
+    final doneController = StreamController<bool>();
     if (onStream == null) {
-      throw new ArgumentError('onStream cannot be null');
+      throw ArgumentError('onStream cannot be null');
     }
 
     final ticker = onStream.transform<dynamic>(
-        new TakeUntilStreamTransformer<Null, dynamic>(doneController.stream));
+        TakeUntilStreamTransformer<Null, dynamic>(doneController.stream));
 
     void onDone() {
       if (doneController.isClosed) return;
@@ -163,23 +162,22 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
     }
 
     final scheduler = stream
-        .transform(new DoStreamTransformer<T>(onDone: onDone, onCancel: onDone))
-        .transform(new StreamTransformer<T, S>.fromHandlers(
+        .transform(DoStreamTransformer<T>(onDone: onDone, onCancel: onDone))
+        .transform(StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
               bufferHandler(data, sink, 0);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
-        .transform(
-            new SampleStreamTransformer<S>(ticker, sampleOnValueOnly: false))
-        .transform(new StreamTransformer<S, S>.fromHandlers(
+        .transform(SampleStreamTransformer<S>(ticker, sampleOnValueOnly: false))
+        .transform(StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
               scheduleHandler(data, sink, 0);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)));
 
-    return new _OnStreamSampler<T, S, O>._(scheduler);
+    return _OnStreamSampler<T, S, O>._(scheduler);
   }
 }
 
@@ -198,28 +196,28 @@ class _OnCountSampler<T, S> extends StreamView<S> {
     var eventIndex = 0;
 
     if (count == null) {
-      throw new ArgumentError('count cannot be null');
+      throw ArgumentError('count cannot be null');
     } else if (count < 1) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'count needs to be greater than 1, currently it is: $count');
     }
 
     if (startBufferEvery < 0) {
-      throw new ArgumentError(
+      throw ArgumentError(
           'startBufferEvery needs to be greater than, or equal to 0, currently it is: $startBufferEvery');
     }
 
     bool maybeNewBuffer(S _) => eventIndex % count == 0;
 
     final scheduler = stream
-        .transform<S>(new StreamTransformer<T, S>.fromHandlers(
+        .transform<S>(StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
               if (++eventIndex > 0) bufferHandler(data, sink, startBufferEvery);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
         .where(maybeNewBuffer)
-        .transform<S>(new StreamTransformer<S, S>.fromHandlers(
+        .transform<S>(StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
               eventIndex -= startBufferEvery;
               scheduleHandler(data, sink, startBufferEvery);
@@ -227,7 +225,7 @@ class _OnCountSampler<T, S> extends StreamView<S> {
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)));
 
-    return new _OnCountSampler<T, S>._(scheduler);
+    return _OnCountSampler<T, S>._(scheduler);
   }
 }
 
@@ -242,11 +240,11 @@ class _OnTestSampler<T, S> extends StreamView<S> {
     var testResult = false;
 
     if (onTest == null) {
-      throw new ArgumentError('onTest cannot be null');
+      throw ArgumentError('onTest cannot be null');
     }
 
     final scheduler = stream
-        .transform<S>(new StreamTransformer<T, S>.fromHandlers(
+        .transform<S>(StreamTransformer<T, S>.fromHandlers(
             handleData: (T data, EventSink<S> sink) {
               testResult = onTest(data);
               bufferHandler(data, sink, 0);
@@ -254,13 +252,13 @@ class _OnTestSampler<T, S> extends StreamView<S> {
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
         .where((_) => testResult)
-        .transform<S>(new StreamTransformer<S, S>.fromHandlers(
+        .transform<S>(StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
               scheduleHandler(data, sink, 0);
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)));
 
-    return new _OnTestSampler<T, S>._(scheduler);
+    return _OnTestSampler<T, S>._(scheduler);
   }
 }

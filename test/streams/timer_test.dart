@@ -7,13 +7,13 @@ void main() {
   test('TimerStream', () async {
     const value = 1;
 
-    final stream = new TimerStream(value, new Duration(milliseconds: 1));
+    final stream = TimerStream(value, Duration(milliseconds: 1));
 
     await expectLater(stream, emitsInOrder(<dynamic>[value, emitsDone]));
   });
 
   test('TimerStream.single.subscription', () async {
-    final stream = new TimerStream(1, new Duration(milliseconds: 1));
+    final stream = TimerStream(1, Duration(milliseconds: 1));
 
     stream.listen(null);
     await expectLater(() => stream.listen(null), throwsA(isStateError));
@@ -23,7 +23,7 @@ void main() {
     const value = 1;
     StreamSubscription<int> subscription;
 
-    final stream = new TimerStream(value, new Duration(milliseconds: 1));
+    final stream = TimerStream(value, Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((actual) {
       expect(actual, value);
@@ -39,7 +39,7 @@ void main() {
     const value = 1;
     StreamSubscription<int> subscription;
 
-    final stream = new TimerStream(value, new Duration(milliseconds: 1));
+    final stream = TimerStream(value, Duration(milliseconds: 1));
 
     subscription = stream.listen(
         expectAsync1((_) {
@@ -58,8 +58,7 @@ void main() {
   test('rx.Observable.timer', () async {
     const value = 1;
 
-    final observable =
-        new Observable.timer(value, new Duration(milliseconds: 5));
+    final observable = Observable.timer(value, Duration(milliseconds: 5));
 
     observable.listen(expectAsync1((actual) {
       expect(actual, value);

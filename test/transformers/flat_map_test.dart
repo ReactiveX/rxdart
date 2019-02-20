@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() => new Stream.fromIterable(const [1, 2, 3]);
+Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
 
 Stream<int> _getOtherStream(int value) {
-  final controller = new StreamController<int>();
+  final controller = StreamController<int>();
 
-  new Timer(
+  Timer(
       // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
       // than they delay 3
-      new Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
+      Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
     controller.add(value);
     controller.close();
   });
@@ -24,7 +24,7 @@ void main() {
     const expectedOutput = [3, 2, 1];
     var count = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .flatMap(_getOtherStream)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
@@ -32,17 +32,17 @@ void main() {
   });
 
   test('rx.Observable.flatMap.reusable', () async {
-    final transformer = new FlatMapStreamTransformer<int, int>(_getOtherStream);
+    final transformer = FlatMapStreamTransformer<int, int>(_getOtherStream);
     const expectedOutput = [3, 2, 1];
     var countA = 0, countB = 0;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[countB++]);
@@ -50,8 +50,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
-        .flatMap(_getOtherStream);
+    final stream =
+        Observable(_getStream().asBroadcastStream()).flatMap(_getOtherStream);
 
     // listen twice on same stream
     stream.listen(null);
@@ -62,8 +62,7 @@ void main() {
 
   test('rx.Observable.flatMap.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .flatMap(_getOtherStream);
+        Observable(ErrorStream<int>(Exception())).flatMap(_getOtherStream);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -72,8 +71,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrowB', () async {
-    final observableWithError = new Observable.just(1).flatMap(
-        (_) => new ErrorStream<void>(new Exception('Catch me if you can!')));
+    final observableWithError = Observable.just(1)
+        .flatMap((_) => ErrorStream<void>(Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -82,8 +81,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrowC', () async {
-    final observableWithError = new Observable.just(1)
-        .flatMap<void>((_) => throw new Exception('oh noes!'));
+    final observableWithError =
+        Observable.just(1).flatMap<void>((_) => throw Exception('oh noes!'));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -93,8 +92,7 @@ void main() {
 
   test('rx.Observable.flatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream =
-        new Observable.just(0).flatMap((_) => new Observable.just(1));
+    final stream = Observable.just(0).flatMap((_) => Observable.just(1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

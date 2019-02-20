@@ -43,15 +43,14 @@ void main() {
   });
 
   test('rx.Observable.windowTest.reusable', () async {
-    final transformer =
-        new WindowStreamTransformer<int>(onTest((i) => i % 2 == 0));
-    const expectedOutput = const [
+    final transformer = WindowStreamTransformer<int>(onTest((i) => i % 2 == 0));
+    const expectedOutput = [
       [1, 2],
       [3, 4]
     ];
     var countA = 0, countB = 0;
 
-    final streamA = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamA = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
         .asyncMap((s) => s.toList());
 
@@ -62,7 +61,7 @@ void main() {
       countA++;
     }, count: 2));
 
-    final streamB = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamB = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer)
         .asyncMap((s) => s.toList());
 
@@ -75,7 +74,7 @@ void main() {
   });
 
   test('rx.Observable.windowTest.asBroadcastStream', () async {
-    final stream = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final stream = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .windowTest((i) => i % 2 == 0)
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
@@ -88,7 +87,7 @@ void main() {
   });
 
   test('rx.Observable.windowTest.asBroadcastStream.asWindow', () async {
-    final stream = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final stream = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .window(onTest((i) => i % 2 == 0))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
@@ -101,10 +100,9 @@ void main() {
   });
 
   test('rx.Observable.windowTest.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .windowTest((i) => i % 2 == 0)
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .windowTest((i) => i % 2 == 0)
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -113,10 +111,9 @@ void main() {
   });
 
   test('rx.Observable.windowTest.error.shouldThrowA.asWindow', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .window(onTest((i) => i % 2 == 0))
-            .asyncMap((s) => s.toList());
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .window(onTest((i) => i % 2 == 0))
+        .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -125,15 +122,14 @@ void main() {
   });
 
   test('rx.Observable.windowTest.skip.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
-        .windowTest(null)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+    Observable.fromIterable(const [1, 2, 3, 4]).windowTest(null).listen(null,
+        onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
   test('rx.Observable.windowTest.skip.shouldThrowB.asWindow', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .window(onTest(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> getDelayedStream(int delay, int value) async* {
-  final completer = new Completer<Null>();
+  final completer = Completer<Null>();
 
-  new Timer(new Duration(milliseconds: delay), () => completer.complete());
+  Timer(Duration(milliseconds: delay), () => completer.complete());
 
   await completer.future;
 
@@ -22,7 +22,7 @@ void main() {
         last = getDelayedStream(70, 3);
     var expected = 1;
 
-    new Observable.race([first, second, last]).listen(expectAsync1((result) {
+    Observable.race([first, second, last]).listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
@@ -31,7 +31,7 @@ void main() {
   test('rx.Observable.race.single.subscription', () async {
     final first = getDelayedStream(50, 1);
 
-    final observable = new Observable.race([first]);
+    final observable = Observable.race([first]);
 
     observable.listen(null);
     await expectLater(() => observable.listen(null), throwsA(isStateError));
@@ -43,7 +43,7 @@ void main() {
         last = getDelayedStream(70, 3);
 
     final observable =
-        new Observable.race([first, second, last]).asBroadcastStream();
+        Observable.race([first, second, last]).asBroadcastStream();
 
     // listen twice on same stream
     observable.listen(null);
@@ -53,16 +53,16 @@ void main() {
   });
 
   test('rx.Observable.race.shouldThrowA', () {
-    expect(() => new Observable<Null>.race(null), throwsArgumentError);
+    expect(() => Observable<Null>.race(null), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowB', () {
-    expect(() => new Observable<Null>.race(const []), throwsArgumentError);
+    expect(() => Observable<Null>.race(const []), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowC', () async {
     final observable =
-        new Observable.race([new ErrorStream<Null>(new Exception('oh noes!'))]);
+        Observable.race([ErrorStream<Null>(Exception('oh noes!'))]);
 
     // listen twice on same stream
     observable.listen(null,
@@ -78,13 +78,12 @@ void main() {
     StreamSubscription<int> subscription;
     // ignore: deprecated_member_use
     subscription =
-        new Observable.race([first, second, last]).listen(expectAsync1((value) {
+        Observable.race([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();
     }, count: 1));
 
-    subscription
-        .pause(new Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
   });
 }

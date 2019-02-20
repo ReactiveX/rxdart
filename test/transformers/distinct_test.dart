@@ -6,7 +6,7 @@ void main() {
     const expected = 1;
 
     final observable =
-        new Observable.fromIterable(const [expected, expected]).distinct();
+        Observable.fromIterable(const [expected, expected]).distinct();
 
     observable.listen(expectAsync1((actual) {
       expect(actual, expected);

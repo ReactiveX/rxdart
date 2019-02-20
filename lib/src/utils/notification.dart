@@ -16,13 +16,13 @@ class Notification<T> {
   Notification(this.kind, this.value, this.error, this.stackTrace);
 
   factory Notification.onData(T value) =>
-      new Notification<T>(Kind.OnData, value, null, null);
+      Notification<T>(Kind.OnData, value, null, null);
 
   factory Notification.onDone() =>
-      new Notification<T>(Kind.OnDone, null, null, null);
+      Notification<T>(Kind.OnDone, null, null, null);
 
   factory Notification.onError(dynamic e, StackTrace s) =>
-      new Notification<T>(Kind.OnError, null, e, s);
+      Notification<T>(Kind.OnError, null, e, s);
 
   @override
   bool operator ==(Object other) {

@@ -7,28 +7,28 @@ import 'package:test/test.dart';
 void main() {
   test('rx.Observable.retryWhen', () {
     expect(
-      new Observable.retryWhen(_sourceStream(3), _alwaysThrow),
+      Observable.retryWhen(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream', () {
     expect(
-      new RetryWhenStream(_sourceStream(3), _alwaysThrow),
+      RetryWhenStream(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.onDone', () {
     expect(
-      new RetryWhenStream(_sourceStream(3), _alwaysThrow),
+      RetryWhenStream(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.infinite.retries', () {
     expect(
-      new RetryWhenStream(_sourceStream(1000, 2), _neverThrow).take(6),
+      RetryWhenStream(_sourceStream(1000, 2), _neverThrow).take(6),
       emitsInOrder(<dynamic>[0, 1, 0, 1, 0, 1, emitsDone]),
     );
   });
@@ -37,13 +37,13 @@ void main() {
     const retries = 3;
 
     expect(
-      new RetryWhenStream(_getStreamWithExtras(retries), _neverThrow).take(6),
+      RetryWhenStream(_getStreamWithExtras(retries), _neverThrow).take(6),
       emitsInOrder(<dynamic>[1, 1, 1, 2, emitsDone]),
     );
   });
 
   test('RetryWhenStream.single.subscription', () {
-    final stream = new RetryWhenStream(_sourceStream(3), _neverThrow);
+    final stream = RetryWhenStream(_sourceStream(3), _neverThrow);
     try {
       stream.listen(null);
       stream.listen(null);
@@ -54,7 +54,7 @@ void main() {
 
   test('RetryWhenStream.asBroadcastStream', () {
     final stream =
-        new RetryWhenStream(_sourceStream(3), _neverThrow).asBroadcastStream();
+        RetryWhenStream(_sourceStream(3), _neverThrow).asBroadcastStream();
 
     // listen twice on same stream
     stream.listen(null);
@@ -65,17 +65,17 @@ void main() {
 
   test('RetryWhenStream.error.shouldThrow', () {
     final observableWithError =
-        new RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
         observableWithError,
         emitsInOrder(
-            <dynamic>[emitsError(new TypeMatcher<RetryError>()), emitsDone]));
+            <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
     final observableWithError =
-        new RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
         observableWithError,
@@ -94,7 +94,7 @@ void main() {
   test('RetryWhenStream.pause.resume', () async {
     StreamSubscription<int> subscription;
 
-    subscription = new RetryWhenStream(_sourceStream(3), _neverThrow)
+    subscription = RetryWhenStream(_sourceStream(3), _neverThrow)
         .listen(expectAsync1((result) {
       expect(result, 0);
 
@@ -108,15 +108,15 @@ void main() {
 
 StreamFactory<int> _sourceStream(int i, [int throwAt]) {
   return throwAt == null
-      ? () => new Observable.fromIterable(range(i))
-      : () => new Observable.fromIterable(range(i))
+      ? () => Observable.fromIterable(range(i))
+      : () => Observable.fromIterable(range(i))
           .map((i) => i == throwAt ? throw i : i);
 }
 
 Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
-    new Observable<void>.error(new Error());
+    Observable<void>.error(Error());
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => new Observable.just('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => Observable.just('');
 
 StreamFactory<int> _getStreamWithExtras(int failCount) {
   var count = 0;
@@ -126,13 +126,13 @@ StreamFactory<int> _getStreamWithExtras(int failCount) {
       count++;
 
       // Emit first item
-      return new Observable.just(1)
+      return Observable.just(1)
           // Emit the error
-          .concatWith([new ErrorStream<int>(new Error())])
+          .concatWith([ErrorStream<int>(Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith([new Observable.just(1)]);
+          .concatWith([Observable.just(1)]);
     } else {
-      return new Observable.just(2);
+      return Observable.just(2);
     }
   };
 }
@@ -167,12 +167,12 @@ Iterable<int> range(int start_or_stop, [int stop, int step]) sync* {
   stop ??= start_or_stop;
   step ??= 1;
 
-  if (step == 0) throw new ArgumentError('step cannot be 0');
+  if (step == 0) throw ArgumentError('step cannot be 0');
   if (step > 0 && stop < start)
-    throw new ArgumentError('if step is positive,'
+    throw ArgumentError('if step is positive,'
         ' stop must be greater than start');
   if (step < 0 && stop > start)
-    throw new ArgumentError('if step is negative,'
+    throw ArgumentError('if step is negative,'
         ' stop must be less than start');
 
   for (var value = start; step < 0 ? value > stop : value < stop; value += step)

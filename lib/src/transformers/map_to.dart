@@ -16,11 +16,11 @@ class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
 
   static StreamTransformer<S, T> _buildTransformer<S, T>(T value) =>
-      new StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
+      StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
         StreamController<T> controller;
         StreamSubscription<S> subscription;
 
-        controller = new StreamController<T>(
+        controller = StreamController<T>(
             sync: true,
             onListen: () {
               subscription = input.listen((_) => controller.add(value),

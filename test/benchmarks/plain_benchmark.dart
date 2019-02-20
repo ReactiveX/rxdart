@@ -7,7 +7,7 @@ void main() => PlainBenchmark.main();
 class PlainBenchmark extends BenchmarkBase {
   const PlainBenchmark() : super("plain");
 
-  static void main() => new PlainBenchmark().report();
+  static void main() => PlainBenchmark().report();
 
   @override
   void run() {

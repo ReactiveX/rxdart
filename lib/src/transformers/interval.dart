@@ -18,18 +18,18 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {
               try {
-                final completer = new Completer<T>();
+                final completer = Completer<T>();
 
-                new Timer(duration, () => completer.complete(value));
+                Timer(duration, () => completer.complete(value));
 
                 subscription.pause(completer.future.then<T>((T event) {
                   controller.add(event);

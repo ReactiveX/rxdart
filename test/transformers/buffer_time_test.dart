@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => new Observable<int>((int n) async* {
+Observable<int> getStream(int n) => Observable<int>((int n) async* {
       var k = 0;
 
       while (k < n) {
-        await new Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         yield k++;
       }
@@ -46,9 +46,9 @@ void main() {
 
   test('rx.Observable.bufferTime.shouldClose', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
+    Observable(controller.stream)
         .bufferTime(const Duration(seconds: 3))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -65,9 +65,9 @@ void main() {
 
   test('rx.Observable.bufferTime.shouldClose.asBuffer', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
+    Observable(controller.stream)
         .buffer(onTime(const Duration(seconds: 3)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -83,8 +83,8 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(
-        onTime(const Duration(milliseconds: 220)));
+    final transformer =
+        BufferStreamTransformer<int>(onTime(const Duration(milliseconds: 220)));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -131,9 +131,8 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .bufferTime(const Duration(milliseconds: 220));
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        .bufferTime(const Duration(milliseconds: 220));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -142,9 +141,8 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.error.shouldThrowA.asBuffer', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .buffer(onTime(const Duration(milliseconds: 220)));
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        .buffer(onTime(const Duration(milliseconds: 220)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -153,15 +151,14 @@ void main() {
   });
 
   test('rx.Observable.bufferTime.error.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
-        .bufferTime(null)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+    Observable.fromIterable(const [1, 2, 3, 4]).bufferTime(null).listen(null,
+        onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
   test('rx.Observable.bufferTime.error.shouldThrowB.asBuffer', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .buffer(onTime(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

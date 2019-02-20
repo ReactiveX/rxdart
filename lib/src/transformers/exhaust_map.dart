@@ -26,13 +26,13 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       Stream<S> mapper(T value)) {
-    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> inputSubscription;
       StreamSubscription<S> outputSubscription;
       var inputClosed = false, outputIsEmitting = false;
 
-      controller = new StreamController<S>(
+      controller = StreamController<S>(
         sync: true,
         onListen: () {
           inputSubscription = input.listen(

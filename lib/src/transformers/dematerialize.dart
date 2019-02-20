@@ -32,12 +32,12 @@ class DematerializeStreamTransformer<T>
   Stream<T> bind(Stream<Notification<T>> stream) => transformer.bind(stream);
 
   static StreamTransformer<Notification<T>, T> _buildTransformer<T>() {
-    return new StreamTransformer<Notification<T>, T>(
+    return StreamTransformer<Notification<T>, T>(
         (Stream<Notification<T>> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<Notification<T>> subscription;
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen((Notification<T> notification) {

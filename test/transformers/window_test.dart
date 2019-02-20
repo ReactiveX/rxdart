@@ -5,8 +5,8 @@ import 'package:test/test.dart';
 /// using [onCount], [onFuture], [onTest], [onTime], [onStream]
 void main() {
   test('rx.Observable.window.onNull.shouldThrow', () {
-    new Observable<int>.fromIterable(<int>[1, 2, 3, 4]).window(null).listen(
-        null, onError: expectAsync2((NoSuchMethodError e, StackTrace s) {
+    Observable<int>.fromIterable(<int>[1, 2, 3, 4]).window(null).listen(null,
+        onError: expectAsync2((NoSuchMethodError e, StackTrace s) {
       expect(e, isNoSuchMethodError);
     }));
   });

@@ -51,21 +51,21 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
     int maxSize,
     void onListen(),
     void onCancel(),
-    bool sync: false,
+    bool sync = false,
   }) {
     // ignore: close_sinks
-    final controller = new StreamController<T>.broadcast(
+    final controller = StreamController<T>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
       sync: sync,
     );
 
-    final queue = new Queue<T>();
+    final queue = Queue<T>();
 
-    return new ReplaySubject<T>._(
+    return ReplaySubject<T>._(
       controller,
-      new Observable<T>.defer(
-          () => new Observable<T>(controller.stream)
+      Observable<T>.defer(
+          () => Observable<T>(controller.stream)
               .startWithMany(queue.toList(growable: false)),
           reusable: true),
       queue,

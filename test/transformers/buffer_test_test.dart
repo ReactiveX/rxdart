@@ -39,15 +39,14 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.reusable', () async {
-    final transformer =
-        new BufferStreamTransformer<int>(onTest((i) => i % 2 == 0));
+    final transformer = BufferStreamTransformer<int>(onTest((i) => i % 2 == 0));
     const expectedOutput = [
       [1, 2],
       [3, 4]
     ];
     var countA = 0, countB = 0;
 
-    final streamA = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamA = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer);
 
     streamA.listen(expectAsync1((result) {
@@ -57,7 +56,7 @@ void main() {
       countA++;
     }, count: 2));
 
-    final streamB = new Observable(new Stream.fromIterable(const [1, 2, 3, 4]))
+    final streamB = Observable(Stream.fromIterable(const [1, 2, 3, 4]))
         .transform(transformer);
 
     streamB.listen(expectAsync1((result) {
@@ -69,9 +68,9 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.asBroadcastStream', () async {
-    final stream = new Observable(
-            new Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
-        .bufferTest((i) => i % 2 == 0);
+    final stream =
+        Observable(Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
+            .bufferTest((i) => i % 2 == 0);
 
     // listen twice on same stream
     stream.listen(null);
@@ -81,9 +80,9 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.asBroadcastStream.asBuffer', () async {
-    final stream = new Observable(
-            new Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
-        .buffer(onTest((i) => i % 2 == 0));
+    final stream =
+        Observable(Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
+            .buffer(onTest((i) => i % 2 == 0));
 
     // listen twice on same stream
     stream.listen(null);
@@ -94,8 +93,7 @@ void main() {
 
   test('rx.Observable.bufferTest.error.shouldThrowA', () async {
     final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .bufferTest((i) => i % 2 == 0);
+        Observable(ErrorStream<int>(Exception())).bufferTest((i) => i % 2 == 0);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -104,9 +102,8 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.error.shouldThrowA.asBuffer', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<int>(new Exception()))
-            .buffer(onTest((i) => i % 2 == 0));
+    final observableWithError = Observable(ErrorStream<int>(Exception()))
+        .buffer(onTest((i) => i % 2 == 0));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -115,15 +112,14 @@ void main() {
   });
 
   test('rx.Observable.bufferTest.skip.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
-        .bufferTest(null)
-        .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
+    Observable.fromIterable(const [1, 2, 3, 4]).bufferTest(null).listen(null,
+        onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
     }));
   });
 
   test('rx.Observable.bufferTest.skip.shouldThrowB.asBuffer', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .buffer(onTest(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

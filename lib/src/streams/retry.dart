@@ -39,10 +39,10 @@ class RetryStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw new StateError("Stream has already been listened to.");
+    if (_isUsed) throw StateError("Stream has already been listened to.");
     _isUsed = true;
 
-    controller = new StreamController<T>(
+    controller = StreamController<T>(
         sync: true,
         onListen: retry,
         onPause: ([Future<dynamic> resumeSignal]) =>
@@ -64,14 +64,14 @@ class RetryStream<T> extends Stream<T> {
       subscription.cancel();
 
       if (count == retryStep) {
-        controller.addError(new RetryError(
+        controller.addError(RetryError(
           'Received an error after attempting $count retries',
-          _errors..add(new ErrorAndStacktrace(e, s)),
+          _errors..add(ErrorAndStacktrace(e, s)),
         ));
         controller.close();
       } else {
         retryStep++;
-        _errors.add(new ErrorAndStacktrace(e, s));
+        _errors.add(ErrorAndStacktrace(e, s));
         retry();
       }
     }, onDone: controller.close, cancelOnError: false);

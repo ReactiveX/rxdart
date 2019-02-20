@@ -24,9 +24,9 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   static StreamTransformer<T, T> _buildTransformer<T, S>(
       Stream<S> otherStream) {
     if (otherStream == null) {
-      throw new ArgumentError("take until stream cannot be null");
+      throw ArgumentError("take until stream cannot be null");
     }
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<S> otherSubscription;
@@ -37,7 +37,7 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
         controller.close();
       }
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input.listen(controller.add,

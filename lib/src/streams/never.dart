@@ -13,7 +13,7 @@ import 'dart:async';
 ///     new NeverStream().listen(print); // Neither prints nor terminates
 class NeverStream<T> extends Stream<T> {
   // ignore: close_sinks
-  StreamController<T> controller = new StreamController<T>();
+  StreamController<T> controller = StreamController<T>();
 
   NeverStream();
 

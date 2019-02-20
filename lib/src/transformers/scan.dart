@@ -25,7 +25,7 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     var index = 0;
     var acc = seed;
 
-    return new StreamTransformer<T, S>.fromHandlers(
+    return StreamTransformer<T, S>.fromHandlers(
         handleData: (T data, EventSink<S> sink) {
           acc = accumulator(acc, data, index++);
 

@@ -19,10 +19,10 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     if (duration == null) {
-      throw new ArgumentError('duration cannot be null');
+      throw ArgumentError('duration cannot be null');
     }
 
-    return new StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       Timer _timer;
@@ -32,7 +32,7 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
         if (_timer != null && _timer.isActive) return false;
 
         try {
-          _timer = new Timer(duration, () {
+          _timer = Timer(duration, () {
             if (_closeAfterNextEvent && !controller.isClosed)
               controller.close();
           });
@@ -43,7 +43,7 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
         return true;
       }
 
-      controller = new StreamController<T>(
+      controller = StreamController<T>(
           sync: true,
           onListen: () {
             subscription = input

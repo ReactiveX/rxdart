@@ -7,7 +7,7 @@ void main() => MapBenchmark.main();
 class MapBenchmark extends BenchmarkBase {
   MapBenchmark() : super("map");
 
-  static void main() => new MapBenchmark().report();
+  static void main() => MapBenchmark().report();
 
   @override
   void run() {

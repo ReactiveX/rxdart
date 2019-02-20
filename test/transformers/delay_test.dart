@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() =>
-    new Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
+Stream<int> _getStream() => Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
 void main() {
   test('rx.Observable.delay', () async {
     var value = 1;
-    new Observable(_getStream())
+    Observable(_getStream())
         .delay(const Duration(milliseconds: 200))
         .listen(expectAsync1((result) {
           expect(result, value++);
@@ -18,7 +17,7 @@ void main() {
 
   test('rx.Observable.delay.shouldBeDelayed', () async {
     var value = 1;
-    new Observable(_getStream())
+    Observable(_getStream())
         .delay(const Duration(milliseconds: 500))
         .timeInterval()
         .listen(expectAsync1((result) {
@@ -35,16 +34,16 @@ void main() {
 
   test('rx.Observable.delay.reusable', () async {
     final transformer =
-        new DelayStreamTransformer<int>(const Duration(milliseconds: 200));
+        DelayStreamTransformer<int>(const Duration(milliseconds: 200));
     var valueA = 1, valueB = 1;
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, valueA++);
         }, count: 4));
 
-    new Observable(_getStream())
+    Observable(_getStream())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, valueB++);
@@ -52,7 +51,7 @@ void main() {
   });
 
   test('rx.Observable.delay.asBroadcastStream', () async {
-    final stream = new Observable(_getStream().asBroadcastStream())
+    final stream = Observable(_getStream().asBroadcastStream())
         .delay(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -63,9 +62,8 @@ void main() {
   });
 
   test('rx.Observable.delay.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<void>(new Exception()))
-            .delay(const Duration(milliseconds: 200));
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        .delay(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -77,21 +75,21 @@ void main() {
   test('rx.Observable.delay.error.shouldThrowB', () async {
     runZoned(() {
       final observableWithError =
-          new Observable.just(1).delay(const Duration(milliseconds: 200));
+          Observable.just(1).delay(const Duration(milliseconds: 200));
 
       observableWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },
-        zoneSpecification: new ZoneSpecification(
+        zoneSpecification: ZoneSpecification(
             createTimer: (self, parent, zone, duration, void f()) =>
-                throw new Exception('Zone createTimer error')));
+                throw Exception('Zone createTimer error')));
   });
 
   test('rx.Observable.delay.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = new Observable.fromIterable(const [1, 2, 3])
-        .delay(new Duration(milliseconds: 1));
+    final stream = Observable.fromIterable(const [1, 2, 3])
+        .delay(Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
@@ -107,14 +105,14 @@ void main() {
     'rx.Observable.delay.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      final stream = new Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
+      final stream = Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
-      }).delay(new Duration(seconds: 10));
+      }).delay(Duration(seconds: 10));
 
       // We expect the onData callback to be called 0 times because the
       // subscription is cancelled when the base stream ends.
       subscription = stream.listen(expectAsync1((_) {}, count: 0));
     },
-    timeout: new Timeout(new Duration(seconds: 3)),
+    timeout: Timeout(Duration(seconds: 3)),
   );
 }

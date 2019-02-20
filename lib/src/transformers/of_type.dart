@@ -41,11 +41,11 @@ class OfTypeStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       TypeToken<S> typeToken) {
-    return new StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
 
-      controller = new StreamController<S>(
+      controller = StreamController<S>(
           sync: true,
           onListen: () {
             subscription = input.listen((T value) {

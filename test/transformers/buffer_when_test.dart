@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => new Observable<int>((int n) async* {
+Observable<int> getStream(int n) => Observable<int>((int n) async* {
       var k = 0;
 
       while (k < n) {
-        await new Future<Null>.delayed(const Duration(milliseconds: 100));
+        await Future<Null>.delayed(const Duration(milliseconds: 100));
 
         yield k++;
       }
@@ -22,8 +22,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .bufferWhen(
-            new Stream<Null>.periodic(const Duration(milliseconds: 220)))
+        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -38,8 +37,8 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .buffer(onStream(
-            new Stream<Null>.periodic(const Duration(milliseconds: 220))))
+        .buffer(
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -56,10 +55,10 @@ void main() {
     ];
     var count = 0;
 
-    new Observable.fromFuture(
-            new Future<Null>.delayed(const Duration(milliseconds: 200))
+    Observable.fromFuture(
+            Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
-        .bufferWhen(new Stream<Null>.periodic(const Duration(milliseconds: 40)))
+        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 40)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -77,11 +76,11 @@ void main() {
     ];
     var count = 0;
 
-    new Observable.fromFuture(
-            new Future<Null>.delayed(const Duration(milliseconds: 200))
+    Observable.fromFuture(
+            Future<Null>.delayed(const Duration(milliseconds: 200))
                 .then((_) => 'done'))
-        .buffer(onStream(
-            new Stream<Null>.periodic(const Duration(milliseconds: 40))))
+        .buffer(
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 40))))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -90,10 +89,10 @@ void main() {
 
   test('rx.Observable.bufferWhen.shouldClose', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
-        .bufferWhen(new Stream<Null>.periodic(const Duration(seconds: 3)))
+    Observable(controller.stream)
+        .bufferWhen(Stream<Null>.periodic(const Duration(seconds: 3)))
         .listen(
             expectAsync1((result) => expect(result, expectedOutput), count: 1),
             onDone: expectAsync0(() => expect(true, isTrue)));
@@ -108,10 +107,10 @@ void main() {
 
   test('rx.Observable.bufferWhen.shouldClose.asBuffer', () async {
     const expectedOutput = [0, 1, 2, 3];
-    final controller = new StreamController<int>();
+    final controller = StreamController<int>();
 
-    new Observable(controller.stream)
-        .buffer(onStream(new Stream<Null>.periodic(const Duration(seconds: 3))))
+    Observable(controller.stream)
+        .buffer(onStream(Stream<Null>.periodic(const Duration(seconds: 3))))
         .listen(
             expectAsync1((result) => expect(result, expectedOutput), count: 1),
             onDone: expectAsync0(() => expect(true, isTrue)));
@@ -125,8 +124,8 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.bufferWhen.reusable', () async {
-    final transformer = new BufferStreamTransformer<int>(onStream(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
+    final transformer = BufferStreamTransformer<int>(onStream(
+        Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream()));
     const expectedOutput = [
       [0, 1],
@@ -151,7 +150,7 @@ void main() {
 
   test('rx.Observable.bufferWhen.asBroadcastStream', () async {
     final stream = getStream(4).asBroadcastStream().bufferWhen(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
+        Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream());
 
     // listen twice on same stream
@@ -163,7 +162,7 @@ void main() {
 
   test('rx.Observable.bufferWhen.asBroadcastStream.asBuffer', () async {
     final stream = getStream(4).asBroadcastStream().buffer(onStream(
-        new Stream<Null>.periodic(const Duration(milliseconds: 220))
+        Stream<Null>.periodic(const Duration(milliseconds: 220))
             .asBroadcastStream()));
 
     // listen twice on same stream
@@ -174,9 +173,8 @@ void main() {
   }, skip: 'todo: investigate why this test makes the process hang');
 
   test('rx.Observable.bufferWhen.error.shouldThrowA', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<Null>(new Exception())).bufferWhen(
-            new Stream<Null>.periodic(const Duration(milliseconds: 220)));
+    final observableWithError = Observable(ErrorStream<Null>(Exception()))
+        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -185,9 +183,9 @@ void main() {
   });
 
   test('rx.Observable.bufferWhen.error.shouldThrowA.asBuffer', () async {
-    final observableWithError =
-        new Observable(new ErrorStream<Null>(new Exception())).buffer(onStream(
-            new Stream<Null>.periodic(const Duration(milliseconds: 220))));
+    final observableWithError = Observable(ErrorStream<Null>(Exception()))
+        .buffer(
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -196,7 +194,7 @@ void main() {
   });
 
   test('rx.Observable.bufferWhen.error.shouldThrowB', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .bufferWhen<Null>(null)
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
@@ -204,7 +202,7 @@ void main() {
   });
 
   test('rx.Observable.bufferWhen.error.shouldThrowB.asBuffer', () {
-    new Observable.fromIterable(const [1, 2, 3, 4])
+    Observable.fromIterable(const [1, 2, 3, 4])
         .buffer(onStream<int, List<int>, void>(null))
         .listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);

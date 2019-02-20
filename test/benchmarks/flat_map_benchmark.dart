@@ -7,7 +7,7 @@ void main() => FlatMapBenchmark.main();
 class FlatMapBenchmark extends BenchmarkBase {
   FlatMapBenchmark() : super("flatMap");
 
-  static void main() => new FlatMapBenchmark().report();
+  static void main() => FlatMapBenchmark().report();
 
   @override
   void run() {

@@ -31,17 +31,17 @@ class ConcatStream<T> extends Stream<T> {
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams == null) {
-      throw new ArgumentError('Streams cannot be null');
+      throw ArgumentError('Streams cannot be null');
     } else if (streams.isEmpty) {
-      throw new ArgumentError('At least 1 stream needs to be provided');
+      throw ArgumentError('At least 1 stream needs to be provided');
     } else if (streams.any((Stream<T> stream) => stream == null)) {
-      throw new ArgumentError('One of the provided streams is null');
+      throw ArgumentError('One of the provided streams is null');
     }
 
     StreamController<T> controller;
     StreamSubscription<T> subscription;
 
-    controller = new StreamController<T>(
+    controller = StreamController<T>(
         sync: true,
         onListen: () {
           final len = streams.length;

@@ -25,22 +25,22 @@ class GroupByStreamTransformer<T, S>
 
   static StreamTransformer<T, GroupByObservable<T, S>> _buildTransformer<T, S>(
       S Function(T) grouper) {
-    return new StreamTransformer<T, GroupByObservable<T, S>>(
+    return StreamTransformer<T, GroupByObservable<T, S>>(
         (Stream<T> input, bool cancelOnError) {
       final mapper = <S, StreamController<T>>{};
       StreamController<GroupByObservable<T, S>> controller;
       StreamSubscription<T> subscription;
 
       final controllerBuilder = (S forKey) => () {
-            final groupedController = new StreamController<T>();
+            final groupedController = StreamController<T>();
 
-            controller.add(
-                new GroupByObservable<T, S>(forKey, groupedController.stream));
+            controller
+                .add(GroupByObservable<T, S>(forKey, groupedController.stream));
 
             return groupedController;
           };
 
-      controller = new StreamController<GroupByObservable<T, S>>(
+      controller = StreamController<GroupByObservable<T, S>>(
           sync: true,
           onListen: () {
             subscription = input.listen(

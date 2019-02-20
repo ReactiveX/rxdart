@@ -61,7 +61,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
       SamplerBuilder<T, Stream<T>> scheduler, bool exhaustBufferOnDone) {
     assertSampler(scheduler);
 
-    return new StreamTransformer<T, Stream<T>>(
+    return StreamTransformer<T, Stream<T>>(
         (Stream<T> input, bool cancelOnError) {
       StreamController<Stream<T>> controller;
       StreamSubscription<Stream<T>> subscription;
@@ -71,23 +71,23 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
         if (controller.isClosed) return;
 
         if (exhaustBufferOnDone && buffer.isNotEmpty)
-          controller.add(new Stream<T>.fromIterable(buffer));
+          controller.add(Stream<T>.fromIterable(buffer));
 
         controller.close();
       }
 
-      controller = new StreamController<Stream<T>>(
+      controller = StreamController<Stream<T>>(
           sync: true,
           onListen: () {
             try {
               subscription = scheduler(input, (T data,
                   EventSink<Stream<T>> sink, [int startBufferEvery = 0]) {
                 buffer.add(data);
-                sink.add(new Stream<T>.fromIterable(buffer));
+                sink.add(Stream<T>.fromIterable(buffer));
               }, (_, EventSink<Stream<T>> sink, [int startBufferEvery = 0]) {
                 startBufferEvery ?? 0;
 
-                sink.add(new Stream<T>.fromIterable(buffer));
+                sink.add(Stream<T>.fromIterable(buffer));
                 buffer =
                     startBufferEvery > 0 && startBufferEvery < buffer.length
                         ? buffer.sublist(startBufferEvery)
@@ -111,7 +111,7 @@ class WindowStreamTransformer<T> extends StreamTransformerBase<T, Stream<T>> {
 
   static void assertSampler<T>(SamplerBuilder<T, Stream<T>> scheduler) {
     if (scheduler == null) {
-      throw new ArgumentError('scheduler cannot be null');
+      throw ArgumentError('scheduler cannot be null');
     }
   }
 }

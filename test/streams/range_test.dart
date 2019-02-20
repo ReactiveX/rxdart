@@ -6,7 +6,7 @@ void main() {
     final expected = const [1, 2, 3];
     var count = 0;
 
-    final stream = new RangeStream(1, 3);
+    final stream = RangeStream(1, 3);
 
     stream.listen(expectAsync1((actual) {
       expect(actual, expected[count++]);
@@ -14,14 +14,14 @@ void main() {
   });
 
   test('RangeStream.single.subscription', () async {
-    final stream = new RangeStream(1, 5);
+    final stream = RangeStream(1, 5);
 
     stream.listen(null);
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('RangeStream.single', () async {
-    final stream = new RangeStream(1, 1);
+    final stream = RangeStream(1, 1);
 
     stream.listen(expectAsync1((actual) {
       expect(actual, 1);
@@ -32,7 +32,7 @@ void main() {
     final expected = const [3, 2, 1];
     var count = 0;
 
-    final stream = new RangeStream(3, 1);
+    final stream = RangeStream(3, 1);
 
     stream.listen(expectAsync1((actual) {
       expect(actual, expected[count++]);

@@ -13,7 +13,7 @@ void main() {
       final observable = ValueConnectableObservable(stream);
 
       when(stream.listen(any, onError: anyNamed('onError')))
-          .thenReturn(new Stream.fromIterable(const [1, 2, 3]).listen(null));
+          .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
 
       verifyNever(stream.listen(any, onError: anyNamed('onError')));
 
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final observable = new ValueConnectableObservable(
+      final observable = ValueConnectableObservable(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
@@ -73,7 +73,7 @@ void main() {
     });
 
     test('replays the latest item', () async {
-      final observable = new ValueConnectableObservable(
+      final observable = ValueConnectableObservable(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
@@ -87,9 +87,9 @@ void main() {
     });
 
     test('replays the seeded item', () async {
-      final observable = new ValueConnectableObservable.seeded(
-              StreamController<int>().stream, 3)
-          .autoConnect();
+      final observable =
+          ValueConnectableObservable.seeded(StreamController<int>().stream, 3)
+              .autoConnect();
 
       expect(observable, emitsInOrder(const <int>[3]));
       expect(observable, emitsInOrder(const <int>[3]));
@@ -101,7 +101,7 @@ void main() {
     });
 
     test('replays the seeded null item', () async {
-      final observable = new ValueConnectableObservable.seeded(
+      final observable = ValueConnectableObservable.seeded(
               StreamController<int>().stream, null)
           .autoConnect();
 
