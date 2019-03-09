@@ -23,8 +23,7 @@ import 'package:rxdart/src/streams/utils.dart';
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
   final StreamFactory<T> streamFactory;
-  int count;
-  int retryStep = 0;
+  int count, retryStep = 0;
   StreamController<T> controller;
   StreamSubscription<T> subscription;
   bool _isUsed = false;
@@ -45,8 +44,7 @@ class RetryStream<T> extends Stream<T> {
     controller = StreamController<T>(
         sync: true,
         onListen: retry,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
+        onPause: ([Future resumeSignal]) => subscription.pause(resumeSignal),
         onResume: () => subscription.resume(),
         onCancel: () => subscription.cancel());
 

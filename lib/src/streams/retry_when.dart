@@ -82,8 +82,7 @@ class RetryWhenStream<T> extends Stream<T> {
     controller = StreamController<T>(
       sync: true,
       onListen: retry,
-      onPause: ([Future<dynamic> resumeSignal]) =>
-          subscription.pause(resumeSignal),
+      onPause: ([Future resumeSignal]) => subscription.pause(resumeSignal),
       onResume: () => subscription.resume(),
       onCancel: () => subscription.cancel(),
     );
@@ -104,7 +103,7 @@ class RetryWhenStream<T> extends Stream<T> {
 
         StreamSubscription<void> sub;
         sub = retryWhenFactory(e, s).listen(
-          (dynamic event) {
+          (_) {
             sub.cancel();
             _errors.add(ErrorAndStacktrace(e, s));
             retry();

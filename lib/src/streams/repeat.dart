@@ -34,8 +34,7 @@ class RepeatStream<T> extends Stream<T> {
     controller = StreamController<T>(
         sync: true,
         onListen: maybeRepeatNext,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
+        onPause: ([Future resumeSignal]) => subscription.pause(resumeSignal),
         onResume: () => subscription.resume(),
         onCancel: () => subscription?.cancel());
 
@@ -54,8 +53,10 @@ class RepeatStream<T> extends Stream<T> {
       maybeRepeatNext();
     }
 
+    final onRepeatNext = () => streamFactory(repeatStep++);
+
     try {
-      subscription = streamFactory(repeatStep++).listen(controller.add,
+      subscription = onRepeatNext().listen(controller.add,
           onError: controller.addError, onDone: onDone, cancelOnError: false);
     } catch (e, s) {
       controller.addError(e, s);

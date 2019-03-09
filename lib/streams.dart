@@ -1,6 +1,5 @@
 library rx_streams;
 
-export 'package:rxdart/src/streams/amb.dart';
 export 'package:rxdart/src/streams/combine_latest.dart';
 export 'package:rxdart/src/streams/concat.dart';
 export 'package:rxdart/src/streams/concat_eager.dart';

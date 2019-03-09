@@ -42,7 +42,7 @@ class ConcatEagerStream<T> extends Stream<T> {
 
     final subscriptions = List<StreamSubscription<T>>(streams.length);
     final completeEvents =
-        streams != null ? List<Completer<dynamic>>(streams.length) : null;
+        streams != null ? List<Completer>(streams.length) : null;
     StreamController<T> controller;
 
     controller = StreamController<T>(
@@ -61,14 +61,13 @@ class ConcatEagerStream<T> extends Stream<T> {
             if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
           }
         },
-        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-            (StreamSubscription<T> subscription) =>
-                subscription.pause(resumeSignal)),
-        onResume: () => subscriptions.forEach(
-            (StreamSubscription<T> subscription) => subscription.resume()),
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () =>
+            subscriptions.forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((StreamSubscription<T> subscription) => subscription.cancel())
-            .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null)));
 
     return controller;
   }

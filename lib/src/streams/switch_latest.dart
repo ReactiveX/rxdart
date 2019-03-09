@@ -63,7 +63,7 @@ class SwitchLatestStream<T> extends Stream<T> {
         sync: true,
         onListen: () {
           subscription = streams.listen(
-            (Stream<T> value) {
+            (value) {
               try {
                 otherSubscription?.cancel();
 
@@ -93,7 +93,7 @@ class SwitchLatestStream<T> extends Stream<T> {
             cancelOnError: cancelOnError,
           );
         },
-        onPause: ([Future<dynamic> resumeSignal]) {
+        onPause: ([Future resumeSignal]) {
           subscription.pause(resumeSignal);
           otherSubscription?.pause(resumeSignal);
         },

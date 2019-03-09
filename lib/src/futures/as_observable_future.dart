@@ -18,7 +18,5 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 class AsObservableFuture<T> extends WrappedFuture<T> {
   AsObservableFuture(Future<T> wrapped) : super(wrapped);
 
-  Observable<T> asObservable() {
-    return Observable<T>.fromFuture(wrapped);
-  }
+  Observable<T> asObservable() => Observable<T>.fromFuture(wrapped);
 }

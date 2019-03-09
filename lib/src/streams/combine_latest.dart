@@ -62,7 +62,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<T, List<T>>(
       streams,
-      (List<T> values) => values,
+      (values) => values,
     );
   }
 
@@ -73,7 +73,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamOne, streamTwo],
-      (List<dynamic> values) => combiner(values[0] as A, values[1] as B),
+      (values) => combiner(values[0] as A, values[1] as B),
     );
   }
 
@@ -85,13 +85,11 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+          ),
     );
   }
 
@@ -104,14 +102,12 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC, streamD],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+          ),
     );
   }
 
@@ -125,15 +121,13 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-          values[4] as E,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+            values[4] as E,
+          ),
     );
   }
 
@@ -148,16 +142,14 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-          values[4] as E,
-          values[5] as F,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+            values[4] as E,
+            values[5] as F,
+          ),
     );
   }
 
@@ -173,17 +165,15 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-          values[4] as E,
-          values[5] as F,
-          values[6] as G,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+            values[4] as E,
+            values[5] as F,
+            values[6] as G,
+          ),
     );
   }
 
@@ -200,18 +190,16 @@ class CombineLatestStream<T, R> extends StreamView<R> {
   ) {
     return CombineLatestStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG, streamH],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-          values[4] as E,
-          values[5] as F,
-          values[6] as G,
-          values[7] as H,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+            values[4] as E,
+            values[5] as F,
+            values[6] as G,
+            values[7] as H,
+          ),
     );
   }
 
@@ -239,19 +227,17 @@ class CombineLatestStream<T, R> extends StreamView<R> {
         streamH,
         streamI
       ],
-      (List<dynamic> values) {
-        return combiner(
-          values[0] as A,
-          values[1] as B,
-          values[2] as C,
-          values[3] as D,
-          values[4] as E,
-          values[5] as F,
-          values[6] as G,
-          values[7] as H,
-          values[8] as I,
-        );
-      },
+      (values) => combiner(
+            values[0] as A,
+            values[1] as B,
+            values[2] as C,
+            values[3] as D,
+            values[4] as E,
+            values[5] as F,
+            values[6] as G,
+            values[7] as H,
+            values[8] as I,
+          ),
     );
   }
 
@@ -265,48 +251,60 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>(streams.length);
-        final triggered = List.generate(streams.length, (_) => false);
-        final completedStatus = List.generate(streams.length, (_) => false);
-        var allStreamsHaveEvents = false;
+        final len = streams.length;
+        final values = List<T>(len);
+        var pendingOnValue = len, pendingOnDone = len;
 
-        for (var i = 0, len = streams.length; i < len; i++) {
+        final maybeDispatchNext = () {
+          // if all Streams have emitted at least one event,
+          // then dispatch a new combineLatest event.
+          if (pendingOnValue == 0) {
+            try {
+              controller.add(combiner(values.toList(growable: false)));
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
+          }
+        };
+
+        final onEvent = (int index) {
+          var hasEmittedOnce = false;
+
+          return (T value) {
+            values[index] = value;
+
+            if (!hasEmittedOnce) {
+              hasEmittedOnce = true;
+              pendingOnValue--;
+            }
+
+            maybeDispatchNext();
+          };
+        };
+
+        final onDone = () {
+          pendingOnDone--;
+
+          if (pendingOnDone == 0) controller.close();
+        };
+
+        for (var i = 0; i < len; i++) {
           final stream = streams.elementAt(i);
 
           subscriptions[i] = stream.listen(
-            (T value) {
-              values[i] = value;
-              triggered[i] = true;
-
-              if (!allStreamsHaveEvents)
-                allStreamsHaveEvents = triggered.every((t) => t);
-
-              if (allStreamsHaveEvents) {
-                try {
-                  controller.add(combiner(values.toList()));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-            },
+            onEvent(i),
             onError: controller.addError,
-            onDone: () {
-              completedStatus[i] = true;
-
-              if (completedStatus.every((c) => c)) controller.close();
-            },
+            onDone: onDone,
           );
         }
       },
-      onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-          (StreamSubscription<dynamic> subscription) =>
-              subscription.pause(resumeSignal)),
-      onResume: () => subscriptions.forEach(
-          (StreamSubscription<dynamic> subscription) => subscription.resume()),
+      onPause: ([Future resumeSignal]) => subscriptions
+          .forEach((subscription) => subscription.pause(resumeSignal)),
+      onResume: () =>
+          subscriptions.forEach((subscription) => subscription.resume()),
       onCancel: () => Future.wait<dynamic>(subscriptions
-          .map((StreamSubscription<dynamic> subscription) =>
-              subscription.cancel())
-          .where((Future<dynamic> cancelFuture) => cancelFuture != null)),
+          .map((subscription) => subscription.cancel())
+          .where((cancelFuture) => cancelFuture != null)),
     );
 
     return controller;

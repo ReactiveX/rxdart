@@ -23,7 +23,6 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///     print(min); // prints "short"
 class StreamMinFuture<T> extends WrappedFuture<T> {
   StreamMinFuture(Stream<T> stream, [Comparator<T> comparator])
-      : super(stream
-            .toList()
-            .then((List<T> values) => (values..sort(comparator)).first));
+      : super(
+            stream.toList().then((values) => (values..sort(comparator)).first));
 }

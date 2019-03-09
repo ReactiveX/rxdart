@@ -20,10 +20,9 @@ class MergeStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      controller.stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams == null) {
@@ -53,14 +52,13 @@ class MergeStream<T> extends Stream<T> {
             });
           }
         },
-        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-            (StreamSubscription<T> subscription) =>
-                subscription.pause(resumeSignal)),
-        onResume: () => subscriptions.forEach(
-            (StreamSubscription<T> subscription) => subscription.resume()),
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () =>
+            subscriptions.forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((StreamSubscription<T> subscription) => subscription.cancel())
-            .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null)));
 
     return controller;
   }

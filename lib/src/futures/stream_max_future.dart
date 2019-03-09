@@ -23,7 +23,6 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///     print(max); // prints "loooooooong"
 class StreamMaxFuture<T> extends WrappedFuture<T> {
   StreamMaxFuture(Stream<T> stream, [Comparator<T> comparator])
-      : super(stream
-            .toList()
-            .then((List<T> values) => (values..sort(comparator)).last));
+      : super(
+            stream.toList().then((values) => (values..sort(comparator)).last));
 }

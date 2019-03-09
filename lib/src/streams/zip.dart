@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 /// Merges the specified streams into one observable sequence using the given
 /// zipper function whenever all of the observable sequences have produced
@@ -240,55 +241,72 @@ class ZipStream<T, R> extends StreamView<R> {
           sync: true,
           onListen: () {
             try {
-              final values = List<List<T>>.generate(streams.length, (_) => []);
-              final completedStatus =
-                  List.generate(streams.length, (_) => false);
+              final totalStreams = streams.length;
+              final values =
+                  List<Queue<T>>.generate(totalStreams, (_) => Queue<T>());
+              var pendingOnEvent = totalStreams, pendingOnDone = totalStreams;
 
-              void doUpdate(int index, T value) {
-                values[index].add(value);
+              final maybeDispatchNext = () {
+                // if all Stream buffers have at least one event,
+                // then dispatch a new zip event.
+                if (pendingOnEvent == 0) {
+                  final List<T> args = List<T>(totalStreams);
 
-                if (values.every((v) => v.isNotEmpty)) {
+                  for (var i = 0; i < totalStreams; i++) {
+                    final buffer = values[i];
+
+                    args[i] = buffer.removeFirst();
+
+                    if (buffer.isEmpty) {
+                      pendingOnEvent++;
+                    }
+                  }
+
                   try {
-                    controller.add(zipper(
-                        values.fold([], (prev, vals) => prev..add(vals[0]))));
+                    controller.add(zipper(args));
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
-
-                  values.forEach((v) => v..removeAt(0));
                 }
-              }
+              };
 
-              void markDone(int i) {
-                completedStatus[i] = true;
+              final onEvent = (int index) {
+                final buffer = values[index];
 
-                if (completedStatus.reduce((bool a, bool b) => a && b))
-                  controller.close();
-              }
+                return (T value) {
+                  if (buffer.isEmpty) pendingOnEvent--;
 
-              for (var i = 0, len = streams.length; i < len; i++) {
+                  buffer.add(value);
+
+                  maybeDispatchNext();
+                };
+              };
+
+              final onDone = () {
+                pendingOnDone--;
+
+                if (pendingOnDone == 0) controller.close();
+              };
+
+              for (var i = 0; i < totalStreams; i++) {
                 var stream = streams.elementAt(i);
 
-                subscriptions[i] = stream.listen(
-                    (T value) => doUpdate(i, value),
-                    onError: controller.addError,
-                    onDone: () => markDone(i));
+                subscriptions[i] = stream.listen(onEvent(i),
+                    onError: controller.addError, onDone: onDone);
               }
             } catch (e, s) {
               controller.addError(e, s);
             }
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
-                  (StreamSubscription<dynamic> subscription) =>
-                      subscription.pause(resumeSignal)),
-          onResume: () =>
-              subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
-                  (StreamSubscription<dynamic> subscription) =>
-                      subscription.resume()),
+          onPause: ([Future resumeSignal]) => subscriptions
+              .where((subscription) => subscription != null)
+              .forEach((subscription) => subscription.pause(resumeSignal)),
+          onResume: () => subscriptions
+              .where((subscription) => subscription != null)
+              .forEach((subscription) => subscription.resume()),
           onCancel: () => Future.wait<dynamic>(subscriptions
-              .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
-              .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+              .map((subscription) => subscription.cancel())
+              .where((cancelFuture) => cancelFuture != null)));
 
       return controller;
     }
