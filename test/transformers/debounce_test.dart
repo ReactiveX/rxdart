@@ -131,4 +131,12 @@ void main() {
     },
     timeout: Timeout(Duration(seconds: 3)),
   );
+
+  test('rx.Observable.debounce.last.event.can.be.null', () async {
+    Observable(Stream.fromIterable([1, 2, 3, null]))
+        .debounce(const Duration(milliseconds: 200))
+        .listen(expectAsync1((result) {
+          expect(result, null);
+        }, count: 1));
+  });
 }

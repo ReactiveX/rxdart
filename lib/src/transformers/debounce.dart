@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/streams/timer.dart';
+
 /// Transforms a Stream so that will only emit items from the source sequence
 /// if a particular time span has passed without the source sequence emitting
 /// another item.
@@ -25,38 +27,38 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      T lastEvent;
       StreamController<T> controller;
-      StreamSubscription<T> subscription;
-      Timer timer;
+      StreamSubscription<T> subscription, innerSubscription;
 
       controller = StreamController<T>(
           sync: true,
           onListen: () {
+            _EventWrapper<T> wrappedEvent;
+
             subscription = input.listen(
                 (T value) {
-                  lastEvent = value;
+                  wrappedEvent = _EventWrapper(value);
 
                   try {
-                    _cancelTimerIfActive(timer);
+                    innerSubscription?.cancel();
 
-                    timer = Timer(duration, () {
-                      controller.add(lastEvent);
-                      lastEvent = null;
-                    });
+                    innerSubscription = TimerStream(value, duration).listen(
+                        controller.add,
+                        onError: controller.addError,
+                        onDone: () => wrappedEvent = null);
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
                 },
                 onError: controller.addError,
                 onDone: () {
-                  _cancelTimerIfActive(timer);
-
-                  if (lastEvent != null) {
+                  if (wrappedEvent != null) {
                     scheduleMicrotask(() {
-                      controller.add(lastEvent);
+                      innerSubscription?.cancel();
 
-                      controller.close();
+                      controller
+                        ..add(wrappedEvent.event)
+                        ..close();
                     });
                   } else {
                     controller.close();
@@ -64,11 +66,16 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 },
                 cancelOnError: cancelOnError);
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
+          onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
+            innerSubscription?.pause(resumeSignal);
+          },
+          onResume: () {
+            subscription.resume();
+            innerSubscription?.resume();
+          },
           onCancel: () {
-            _cancelTimerIfActive(timer);
+            innerSubscription?.cancel();
 
             return subscription.cancel();
           });
@@ -76,10 +83,14 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
 
-  static void _cancelTimerIfActive(Timer _timer) {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
-    }
-  }
+/// Inner wrapper class.
+/// Because the event can be of value null, checking on != null in the code
+/// above is ambiguous.
+/// If we wrap the event, then the inner value can safely be null.
+class _EventWrapper<T> {
+  final T event;
+
+  _EventWrapper(this.event);
 }

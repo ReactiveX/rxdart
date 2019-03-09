@@ -7,25 +7,20 @@ import 'dart:async';
 ///     new TimerStream("hi", new Duration(minutes: 1))
 ///         .listen((i) => print(i)); // print "hi" after 1 minute
 class TimerStream<T> extends Stream<T> {
-  final T value;
-  final Duration duration;
+  final Stream<T> stream;
 
-  Stream<T> _stream;
-
-  TimerStream(this.value, this.duration) {
-    assert(duration != null, 'duration cannot be null');
-  }
+  TimerStream(T value, Duration duration)
+      : stream = buildStream(duration, value);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    _stream ??= forwardingStream();
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: true);
 
-    return _stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+  static Stream<T> buildStream<T>(Duration duration, T value) async* {
+    assert(duration != null, 'duration cannot be null');
 
-  Stream<T> forwardingStream() async* {
-    yield await Future<void>.delayed(duration).then((_) => value);
+    yield await Future.delayed(duration, () => value);
   }
 }

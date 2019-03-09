@@ -55,6 +55,13 @@ void main() {
     await subscription.cancel();
   });
 
+  test('TimerStream.delay.startAfterListen', () async {
+    final stream = TimerStream(1, const Duration(milliseconds: 10));
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    await expectLater(stream, emitsInOrder(<dynamic>[1, emitsDone]));
+  });
+
   test('rx.Observable.timer', () async {
     const value = 1;
 
