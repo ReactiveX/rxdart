@@ -73,4 +73,28 @@ void main() {
       expect(true, isTrue);
     }));
   });
+
+  /// Should also throw if the current [Zone] is unable to install a [Timer]
+  test('rx.Observable.timer.error.zone', () async {
+    runZoned(() {
+      final stream = TimerStream(null, const Duration(milliseconds: 200));
+
+      stream.listen(null,
+          onError: expectAsync2(
+              (Exception e, StackTrace s) => expect(e, isException)));
+    },
+        zoneSpecification: ZoneSpecification(
+            createTimer: (self, parent, zone, duration, void f()) =>
+                throw Exception('Zone createTimer error')));
+  });
+
+  test('rx.Observable.timer.error.debounce.assertNotNull', () async {
+    runZoned(() {
+      final stream = TimerStream(null, null);
+
+      stream.listen(null,
+          onError: expectAsync2((Error e, StackTrace s) =>
+              expect(e, const TypeMatcher<AssertionError>())));
+    });
+  });
 }
