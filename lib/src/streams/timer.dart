@@ -19,13 +19,13 @@ class TimerStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    final forwardingStream = () async* {
-      yield await Future<void>.delayed(duration).then((_) => value);
-    };
-
     _stream ??= forwardingStream();
 
     return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  Stream<T> forwardingStream() async* {
+    yield await Future<void>.delayed(duration).then((_) => value);
   }
 }
