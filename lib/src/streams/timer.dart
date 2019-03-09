@@ -12,18 +12,18 @@ class TimerStream<T> extends Stream<T> {
 
   Stream<T> _stream;
 
-  TimerStream(this.value, this.duration);
+  TimerStream(this.value, this.duration) {
+    assert(duration != null, 'duration cannot be null');
+  }
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    final delayedOnData = () async* {
-      await Future<void>.delayed(duration);
-
-      yield value;
+    final forwardingStream = () async* {
+      yield await Future<void>.delayed(duration).then((_) => value);
     };
 
-    _stream ??= delayedOnData();
+    _stream ??= forwardingStream();
 
     return _stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
