@@ -19,10 +19,8 @@ void main() {
   });
 
   test('rx.Observable.onErrorResumeNext.reusable', () async {
-    // ignore: deprecated_member_use
-    final transformer =
-        // ignore: deprecated_member_use
-        OnErrorResumeNextStreamTransformer(_getStream().asBroadcastStream());
+    final transformer = OnErrorResumeStreamTransformer(
+        (dynamic _) => _getStream().asBroadcastStream());
     var countA = 0, countB = 0;
 
     Observable(ErrorStream<int>(Exception()))
