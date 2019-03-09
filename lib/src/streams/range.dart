@@ -20,13 +20,16 @@ class RangeStream extends Stream<int> {
       stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  static Stream<int> buildStream(int startInclusive, int endInclusive) {
-    final length = (endInclusive - startInclusive).abs() + 1;
-
-    return Stream.fromIterable(List.generate(
-        length,
-        (i) => startInclusive > endInclusive
-            ? startInclusive - i
-            : startInclusive + i));
+  static Stream<int> buildStream(int step, int goal) async* {
+    if (step == goal) {
+      // final event
+      yield step;
+    } else if (step < goal) {
+      yield step;
+      yield* buildStream(step + 1, goal);
+    } else if (step > goal) {
+      yield step;
+      yield* buildStream(step - 1, goal);
+    }
   }
 }

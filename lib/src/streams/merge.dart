@@ -39,17 +39,20 @@ class MergeStream<T> extends Stream<T> {
     controller = StreamController<T>(
         sync: true,
         onListen: () {
-          final completedStatus = List.generate(streams.length, (_) => false);
+          final len = streams.length;
+          var pendingOnDone = len;
 
-          for (var i = 0, len = streams.length; i < len; i++) {
+          final onDone = () {
+            pendingOnDone--;
+
+            if (pendingOnDone == 0) controller.close();
+          };
+
+          for (var i = 0; i < len; i++) {
             var stream = streams.elementAt(i);
 
             subscriptions[i] = stream.listen(controller.add,
-                onError: controller.addError, onDone: () {
-              completedStatus[i] = true;
-
-              if (completedStatus.reduce((a, b) => a && b)) controller.close();
-            });
+                onError: controller.addError, onDone: onDone);
           }
         },
         onPause: ([Future<dynamic> resumeSignal]) => subscriptions
