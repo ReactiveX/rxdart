@@ -15,8 +15,8 @@ Observable<int> _observable([int nextValue = 1]) =>
 void main() {
   test('rx.Observable.throttle', () async {
     await expectLater(
-        _observable().throttle(const Duration(milliseconds: 250)).take(2),
-        emitsInOrder(<dynamic>[1, 4, emitsDone]));
+        _observable().throttle(const Duration(milliseconds: 250)).take(3),
+        emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {
