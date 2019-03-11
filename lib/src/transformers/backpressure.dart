@@ -8,38 +8,39 @@ enum WindowStrategy {
   startAfterFirstEvent
 }
 
-class BackpressureStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
+  final StreamTransformer<S, T> transformer;
 
   BackpressureStreamTransformer(
       WindowStrategy strategy,
-      Stream<dynamic> windowStreamFactory(T event),
-      T onWindowStart(T event),
-      T onWindowEnd(Iterable<T> queue),
+      Stream<dynamic> windowStreamFactory(S event),
+      T onWindowStart(S event),
+      T onWindowEnd(Iterable<S> queue),
       {bool ignoreEmptyWindows = true})
       : transformer = _buildTransformer(strategy, windowStreamFactory,
             onWindowStart, onWindowEnd, ignoreEmptyWindows);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(
+  static StreamTransformer<S, T> _buildTransformer<S, T>(
       WindowStrategy strategy,
-      Stream<dynamic> windowStreamFactory(T event),
-      T onWindowStart(T event),
-      T onWindowEnd(Iterable<T> queue),
+      Stream<dynamic> windowStreamFactory(S event),
+      T onWindowStart(S event),
+      T onWindowEnd(Iterable<S> queue),
       bool ignoreEmptyWindows) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+    return StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
       StreamController<T> controller;
-      StreamSubscription<T> subscription;
+      StreamSubscription<S> subscription;
       StreamSubscription windowSubscription;
 
       controller = StreamController<T>(
           sync: true,
           onListen: () {
-            final queue = Queue<T>();
-            final resolveWindowEnd = () {
-              if (strategy == WindowStrategy.awaitWindowCompletion ||
+            final queue = Queue<S>();
+            final resolveWindowEnd = ([bool forceClose = false]) {
+              if (forceClose ||
+                  strategy == WindowStrategy.awaitWindowCompletion ||
                   strategy == WindowStrategy.restartOnEvent) {
                 windowSubscription?.cancel();
                 windowSubscription = null;
@@ -48,7 +49,7 @@ class BackpressureStreamTransformer<T> extends StreamTransformerBase<T, T> {
               if (queue.isNotEmpty || !ignoreEmptyWindows) {
                 if (onWindowEnd != null) {
                   try {
-                    controller.add(onWindowEnd(List<T>.unmodifiable(queue)));
+                    controller.add(onWindowEnd(List<S>.unmodifiable(queue)));
                   } catch (e, s) {
                     controller.addError(e, s);
                   }
@@ -57,7 +58,7 @@ class BackpressureStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 queue.clear();
               }
             };
-            final maybeCreateWindow = (T event) {
+            final maybeCreateWindow = (S event) {
               try {
                 switch (strategy) {
                   case WindowStrategy.awaitWindowCompletion:
@@ -107,9 +108,12 @@ class BackpressureStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  onWindowEnd = (Iterable<T> queue) =>
-                      queue.isNotEmpty ? queue.last : null;
-                  resolveWindowEnd();
+                  if (onWindowStart != null && queue.isNotEmpty)
+                    controller.add(onWindowStart(queue.last));
+
+                  resolveWindowEnd(true);
+
+                  queue.clear();
                   controller.close();
                 },
                 cancelOnError: cancelOnError);

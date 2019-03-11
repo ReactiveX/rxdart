@@ -1333,7 +1333,7 @@ class Observable<T> extends Stream<T> {
   ///       .debounce(new Duration(seconds: 1))
   ///       .listen(print); // prints 100
   Observable<T> debounceTime(Duration duration) => transform(
-      DebounceStreamTransformer<T>((_) => Stream<void>.periodic(duration)));
+      DebounceStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
 
   /// Emit items from the source Stream, or a single default item if the source
   /// Stream emits nothing.
@@ -1984,6 +1984,20 @@ class Observable<T> extends Stream<T> {
   ///       .listen(print); // prints 3
   Observable<T> sample(Stream<dynamic> sampleStream) =>
       transform(SampleStreamTransformer<T>((_) => sampleStream));
+
+  /// Returns an Observable that, when the specified sample stream emits
+  /// an item or completes, emits the most recently emitted item (if any)
+  /// emitted by the source stream since the previous emission from
+  /// the sample stream.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable([1, 2, 3])
+  ///       .sampleTime(const Duration(seconds: 1))
+  ///       .listen(print); // prints 3
+  Observable<T> sampleTime(Duration duration) =>
+      transform(SampleStreamTransformer<T>(
+          (_) => Stream<void>.periodic(duration)));
 
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial

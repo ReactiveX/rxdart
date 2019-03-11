@@ -3,15 +3,17 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+/// yield immediately, then every 100ms
 Observable<int> getStream(int n) => Observable<int>((int n) async* {
-      var k = 0;
+  var k = 1;
 
-      while (k < n) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+  yield 0;
 
-        yield k++;
-      }
-    }(n));
+  while (k < n) {
+    yield await Future<Null>.delayed(const Duration(milliseconds: 100))
+      .then((_) => k++);
+}
+}(n));
 
 void main() {
   test('rx.Observable.bufferTime', () async {
@@ -22,7 +24,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .bufferTime(const Duration(milliseconds: 220))
+        .bufferTime(const Duration(milliseconds: 160))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -37,7 +39,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .buffer(onTime(const Duration(milliseconds: 220)))
+        .buffer(onTime(const Duration(milliseconds: 160)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -84,7 +86,7 @@ void main() {
 
   test('rx.Observable.bufferTime.reusable', () async {
     final transformer =
-        BufferStreamTransformer<int>(onTime(const Duration(milliseconds: 220)));
+        BufferStreamTransformer<int>(onTime(const Duration(milliseconds: 160)));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -109,7 +111,7 @@ void main() {
   test('rx.Observable.bufferTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
-        .bufferTime(const Duration(milliseconds: 220));
+        .bufferTime(const Duration(milliseconds: 160));
 
     // listen twice on same stream
     stream.listen(expectAsync1((_) {}, count: 2));
@@ -121,7 +123,7 @@ void main() {
   test('rx.Observable.bufferTime.asBroadcastStream.asBuffer', () async {
     final stream = getStream(4)
         .asBroadcastStream()
-        .buffer(onTime(const Duration(milliseconds: 220)));
+        .buffer(onTime(const Duration(milliseconds: 160)));
 
     // listen twice on same stream
     stream.listen(expectAsync1((_) {}, count: 2));
@@ -132,7 +134,7 @@ void main() {
 
   test('rx.Observable.bufferTime.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .bufferTime(const Duration(milliseconds: 220));
+        .bufferTime(const Duration(milliseconds: 160));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -142,7 +144,7 @@ void main() {
 
   test('rx.Observable.bufferTime.error.shouldThrowA.asBuffer', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .buffer(onTime(const Duration(milliseconds: 220)));
+        .buffer(onTime(const Duration(milliseconds: 160)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

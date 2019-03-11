@@ -22,7 +22,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)))
+        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 160)))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -38,7 +38,7 @@ void main() {
 
     getStream(4)
         .buffer(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))))
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 160))))
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
           expect(result, expectedOutput[count++]);
@@ -46,45 +46,44 @@ void main() {
   });
 
   test('rx.Observable.bufferWhen.sampleBeforeEvent.shouldEmit', () async {
-    const expectedOutput = [
-      <String>[],
-      <String>[],
-      <String>[],
-      <String>[],
-      ['done']
-    ];
-    var count = 0;
+    final stream = () async* {
+      yield 'start';
 
-    Observable.fromFuture(
-            Future<Null>.delayed(const Duration(milliseconds: 200))
-                .then((_) => 'done'))
-        .bufferWhen(Stream<Null>.periodic(const Duration(milliseconds: 40)))
-        .listen(expectAsync1((result) {
-          // test to see if the combined output matches
-          expect(result, expectedOutput[count++]);
-        }, count: 5));
+      await Future<void>.delayed(const Duration(milliseconds: 190));
+    };
+
+    await expectLater(
+        Observable(stream()).bufferWhen(
+            Stream<Null>.periodic(const Duration(milliseconds: 40))),
+        emitsInOrder(<dynamic>[
+          ['start'], // buffer 0 -> 40ms
+          <String>[], // buffer 40ms -> 80ms
+          <String>[], // buffer 80ms -> 120ms
+          <String>[], // buffer 120ms -> 160ms
+          <String>[], // final buffer
+          emitsDone
+        ]));
   });
 
   test('rx.Observable.bufferWhen.sampleBeforeEvent.shouldEmit.asBuffer',
       () async {
-    const expectedOutput = [
-      <String>[],
-      <String>[],
-      <String>[],
-      <String>[],
-      ['done']
-    ];
-    var count = 0;
+    final stream = () async* {
+      yield 'start';
 
-    Observable.fromFuture(
-            Future<Null>.delayed(const Duration(milliseconds: 200))
-                .then((_) => 'done'))
-        .buffer(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 40))))
-        .listen(expectAsync1((result) {
-          // test to see if the combined output matches
-          expect(result, expectedOutput[count++]);
-        }, count: 5));
+      await Future<void>.delayed(const Duration(milliseconds: 190));
+    };
+
+    await expectLater(
+        Observable(stream()).buffer(
+        onStream(Stream<Null>.periodic(const Duration(milliseconds: 40)))),
+        emitsInOrder(<dynamic>[
+          ['start'], // buffer 0 -> 40ms
+          <String>[], // buffer 40ms -> 80ms
+          <String>[], // buffer 80ms -> 120ms
+          <String>[], // buffer 120ms -> 160ms
+          <String>[], // final buffer
+          emitsDone
+        ]));
   });
 
   test('rx.Observable.bufferWhen.shouldClose', () async {

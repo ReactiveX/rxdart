@@ -23,7 +23,7 @@ void main() {
 
     getStream(4)
         .windowFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220)))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -40,7 +40,7 @@ void main() {
 
     getStream(4)
         .window(onFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220))))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -89,7 +89,7 @@ void main() {
 
   test('rx.Observable.windowFuture.reusable', () async {
     final transformer = WindowStreamTransformer<int>(onFuture(
-        () => Future<Null>.delayed(const Duration(milliseconds: 220))));
+        () => Future<Null>.delayed(const Duration(milliseconds: 160))));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -116,7 +116,7 @@ void main() {
   test('rx.Observable.windowFuture.asBroadcastStream', () async {
     final stream = getStream(4)
         .windowFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220)))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -130,7 +130,7 @@ void main() {
   test('rx.Observable.windowFuture.asBroadcastStream.asWindow', () async {
     final stream = getStream(4)
         .window(onFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220))))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -144,7 +144,7 @@ void main() {
   test('rx.Observable.windowFuture.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<Null>(Exception()))
         .windowFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220)))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
@@ -156,7 +156,7 @@ void main() {
   test('rx.Observable.windowFuture.error.shouldThrowA.asWindow', () async {
     final observableWithError = Observable(ErrorStream<Null>(Exception()))
         .window(onFuture(
-            () => Future<Null>.delayed(const Duration(milliseconds: 220))))
+            () => Future<Null>.delayed(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,

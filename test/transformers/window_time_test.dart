@@ -22,7 +22,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .windowTime(const Duration(milliseconds: 220))
+        .windowTime(const Duration(milliseconds: 160))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -38,7 +38,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .window(onTime(const Duration(milliseconds: 220)))
+        .window(onTime(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -88,7 +88,7 @@ void main() {
 
   test('rx.Observable.windowTime.reusable', () async {
     final transformer =
-        WindowStreamTransformer<int>(onTime(const Duration(milliseconds: 220)));
+        WindowStreamTransformer<int>(onTime(const Duration(milliseconds: 160)));
     const expectedOutput = [
       [0, 1],
       [2, 3]
@@ -114,7 +114,7 @@ void main() {
 
   test('rx.Observable.windowTime.asBroadcastStream', () async {
     final stream = getStream(4)
-        .windowTime(const Duration(milliseconds: 220))
+        .windowTime(const Duration(milliseconds: 160))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -127,7 +127,7 @@ void main() {
 
   test('rx.Observable.windowTime.asBroadcastStream.asWindow', () async {
     final stream = getStream(4)
-        .window(onTime(const Duration(milliseconds: 220)))
+        .window(onTime(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -140,7 +140,7 @@ void main() {
 
   test('rx.Observable.windowTime.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .windowTime(const Duration(milliseconds: 220))
+        .windowTime(const Duration(milliseconds: 160))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
@@ -151,7 +151,7 @@ void main() {
 
   test('rx.Observable.windowTime.error.shouldThrowA.asWindow', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .window(onTime(const Duration(milliseconds: 220)))
+        .window(onTime(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,

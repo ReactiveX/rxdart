@@ -22,7 +22,7 @@ void main() {
     var count = 0;
 
     getStream(4)
-        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)))
+        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -39,7 +39,7 @@ void main() {
 
     getStream(4)
         .window(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))))
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList())
         .listen(expectAsync1((result) {
           // test to see if the combined output matches
@@ -49,25 +49,25 @@ void main() {
 
   test('rx.Observable.windowWhen.sampleBeforeEvent.shouldEmit.asBuffer',
       () async {
-    const expectedOutput = [
-      <String>[],
-      <String>[],
-      <String>[],
-      <String>[],
-      ['done']
-    ];
-    var count = 0;
+    final stream = () async* {
+      yield 'start';
 
-    Observable<String>.fromFuture(
-            Future<Null>.delayed(const Duration(milliseconds: 200))
-                .then((_) => 'done'))
-        .window(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 40))))
-        .asyncMap((s) => s.toList())
-        .listen(expectAsync1((result) {
-          // test to see if the combined output matches
-          expect(result, expectedOutput[count++]);
-        }, count: 5));
+      await Future<void>.delayed(const Duration(milliseconds: 190));
+    };
+
+    await expectLater(
+        Observable(stream())
+            .window(onStream(
+                Stream<Null>.periodic(const Duration(milliseconds: 40))))
+            .asyncMap((s) => s.toList()),
+        emitsInOrder(<dynamic>[
+          ['start'], // buffer 0 -> 40ms
+          <String>[], // buffer 40ms -> 80ms
+          <String>[], // buffer 80ms -> 120ms
+          <String>[], // buffer 120ms -> 160ms
+          <String>[], // final buffer
+          emitsDone
+        ]));
   });
 
   test('rx.Observable.windowWhen.shouldClose', () async {
@@ -110,7 +110,7 @@ void main() {
 
   test('rx.Observable.windowWhen.reusable', () async {
     final transformer = WindowStreamTransformer<int>(onStream(
-        Stream<Null>.periodic(const Duration(milliseconds: 220))
+        Stream<Null>.periodic(const Duration(milliseconds: 160))
             .asBroadcastStream()));
     const expectedOutput = [
       [0, 1],
@@ -137,7 +137,7 @@ void main() {
 
   test('rx.Observable.windowWhen.asBroadcastStream', () async {
     final stream = getStream(4)
-        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)))
+        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -151,7 +151,7 @@ void main() {
   test('rx.Observable.windowWhen.asBroadcastStream.asWindow', () async {
     final stream = getStream(4)
         .window(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))))
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList())
         .asBroadcastStream();
 
@@ -164,7 +164,7 @@ void main() {
 
   test('rx.Observable.windowWhen.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<int>(Exception()))
-        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 220)))
+        .windowWhen(Stream<Null>.periodic(const Duration(milliseconds: 160)))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,
@@ -176,7 +176,7 @@ void main() {
   test('rx.Observable.windowWhen.error.shouldThrowA.asWindow', () async {
     final observableWithError = Observable(ErrorStream<int>(Exception()))
         .window(
-            onStream(Stream<Null>.periodic(const Duration(milliseconds: 220))))
+            onStream(Stream<Null>.periodic(const Duration(milliseconds: 160))))
         .asyncMap((s) => s.toList());
 
     observableWithError.listen(null,

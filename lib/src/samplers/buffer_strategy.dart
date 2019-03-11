@@ -169,7 +169,7 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
-        .transform(BackpressureStreamTransformer<S>(
+        .transform(BackpressureStreamTransformer(
             WindowStrategy.startAfterFirstEvent,
             (_) => ticker,
             null,
