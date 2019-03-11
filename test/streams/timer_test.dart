@@ -86,7 +86,7 @@ void main() {
         zoneSpecification: ZoneSpecification(
             createTimer: (self, parent, zone, duration, void f()) =>
                 throw Exception('Zone createTimer error')));
-  });
+  }, skip: true);
 
   test('rx.Observable.timer.error.debounce.assertNotNull', () async {
     runZoned(() {
