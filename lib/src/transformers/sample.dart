@@ -28,24 +28,21 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       StreamController<T> controller;
       StreamSubscription<T> subscription;
       StreamSubscription<dynamic> sampleSubscription;
-      T currentValue;
-      var hasValue = false;
+      _EventWrapper<T> currentValue;
 
       void onDone() {
         if (controller.isClosed) return;
 
-        if (hasValue) {
-          hasValue = false;
-          controller.add(currentValue);
+        if (currentValue != null) {
+          controller.add(currentValue.event);
         }
 
         controller.close();
       }
 
       void onSample(dynamic _) {
-        if (hasValue || !sampleOnValueOnly) {
-          controller.add(currentValue);
-          hasValue = false;
+        if (currentValue != null || !sampleOnValueOnly) {
+          controller.add(currentValue?.event);
           currentValue = null;
         }
       }
@@ -54,9 +51,8 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           sync: true,
           onListen: () {
             try {
-              subscription = input.listen((T value) {
-                hasValue = true;
-                currentValue = value;
+              subscription = input.listen((value) {
+                currentValue = _EventWrapper(value);
               },
                   onError: controller.addError,
                   onDone: onDone,
@@ -81,4 +77,14 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Inner wrapper class.
+/// Because the event can be of value null, checking on != null in the code
+/// above is ambiguous.
+/// If we wrap the event, then the inner value can safely be null.
+class _EventWrapper<T> {
+  final T event;
+
+  _EventWrapper(this.event);
 }

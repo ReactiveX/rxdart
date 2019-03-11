@@ -3,53 +3,35 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() {
-  final controller = StreamController<int>();
-
-  Timer(const Duration(milliseconds: 100), () => controller.add(1));
-  Timer(const Duration(milliseconds: 200), () => controller.add(2));
-  Timer(const Duration(milliseconds: 300), () => controller.add(3));
-  Timer(const Duration(milliseconds: 400), () {
-    controller.add(4);
-    controller.close();
-  });
-
-  return controller.stream;
+Stream<int> _stream([int nextValue = 1]) async* {
+  yield await Future.delayed(
+      const Duration(milliseconds: 100), () => nextValue);
+  yield* _stream(++nextValue);
 }
+
+Observable<int> _observable([int nextValue = 1]) =>
+    Observable(_stream(nextValue));
 
 void main() {
   test('rx.Observable.throttle', () async {
-    const expectedOutput = [1, 4];
-    var count = 0;
-
-    Observable(_getStream())
-        .throttle(const Duration(milliseconds: 250))
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[count++]);
-        }, count: 2));
+    await expectLater(
+        _observable().throttle(const Duration(milliseconds: 250)).take(2),
+        emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {
     final transformer =
         ThrottleStreamTransformer<int>(const Duration(milliseconds: 250));
-    const expectedOutput = [1, 4];
-    var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[countA++]);
-        }, count: 2));
+    await expectLater(_stream().transform(transformer).take(2),
+        emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[countB++]);
-        }, count: 2));
+    await expectLater(_stream().transform(transformer).take(2),
+        emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = Observable(_stream().asBroadcastStream())
         .throttle(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -70,39 +52,26 @@ void main() {
   });
 
   test('rx.Observable.throttle.error.shouldThrowB', () {
-    expect(() => Observable.just(1).throttle(null), throwsArgumentError);
-  });
-
-  test('rx.Observable.throttle.error.shouldThrowC', () async {
-    runZoned(() {
-      final observable =
-          Observable.just(1).throttle(const Duration(milliseconds: 200));
-
-      observable.listen(null,
-          onError: expectAsync2(
-              (Exception e, StackTrace s) => expect(e, isException)));
-    },
-        zoneSpecification: ZoneSpecification(
-            createTimer: (self, parent, zone, duration, void f()) =>
-                throw Exception('Zone createTimer error')));
+    expect(() => Observable.just(1).throttle(null),
+        throwsA(const TypeMatcher<AssertionError>()));
   });
 
   test('rx.Observable.throttle.pause.resume', () async {
     StreamSubscription<int> subscription;
-    const expectedOutput = [1, 4];
-    var count = 0;
 
-    subscription = Observable(_getStream())
+    final controller = StreamController<int>();
+
+    subscription = _observable()
         .throttle(const Duration(milliseconds: 250))
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[count++]);
+        .take(2)
+        .listen(controller.add, onDone: controller.close);
 
-          if (count == expectedOutput.length) {
-            subscription.cancel();
-          }
-        }, count: expectedOutput.length));
+    await expectLater(
+        controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    subscription.pause();
-    subscription.resume();
+    //ignore: unawaited_futures
+    Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
+        subscription
+            .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
   });
 }

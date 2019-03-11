@@ -11,54 +11,74 @@ import 'dart:async';
 class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  ThrottleStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+  ThrottleStreamTransformer(Duration duration, {bool trailing = false})
+      : transformer = _buildTransformer(duration, trailing: trailing);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    if (duration == null) {
-      throw ArgumentError('duration cannot be null');
-    }
+  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration,
+      {bool trailing = false}) {
+    assert(duration != null, 'duration cannot be null');
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      StreamSubscription<T> subscription;
-      Timer _timer;
-      var _closeAfterNextEvent = false;
-
-      bool _resetTimer() {
-        if (_timer != null && _timer.isActive) return false;
-
-        try {
-          _timer = Timer(duration, () {
-            if (_closeAfterNextEvent && !controller.isClosed)
-              controller.close();
-          });
-        } catch (e, s) {
-          controller.addError(e, s);
-        }
-
-        return true;
-      }
+      StreamSubscription<T> subscription, windowSubscription;
 
       controller = StreamController<T>(
           sync: true,
           onListen: () {
+            T last;
+
+            final resolveNext = (T event) {
+              if (windowSubscription == null) {
+                controller.add(event);
+
+                windowSubscription = _window(duration)
+                    .listen(null, onError: controller.addError, onDone: () {
+                  windowSubscription.cancel();
+                  windowSubscription = null;
+                  last = null;
+                }, cancelOnError: cancelOnError);
+              } else {
+                last = event;
+              }
+            };
+
             subscription = input
-                .where((_) => _resetTimer())
-                .listen(controller.add, onError: controller.addError,
-                    onDone: () {
-              _closeAfterNextEvent = true;
+                .listen(resolveNext, onError: controller.addError, onDone: () {
+              windowSubscription?.cancel();
+
+              if (last != null) {
+                scheduleMicrotask(() {
+                  controller
+                    ..add(last)
+                    ..close();
+                });
+              } else {
+                controller.close();
+              }
             }, cancelOnError: cancelOnError);
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+          onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
+            windowSubscription?.pause(resumeSignal);
+          },
+          onResume: () {
+            subscription.resume();
+            windowSubscription?.resume();
+          },
+          onCancel: () {
+            windowSubscription?.cancel();
+
+            return subscription.cancel();
+          });
 
       return controller.stream.listen(null);
     });
   }
+}
+
+Stream<Null> _window(Duration duration) async* {
+  yield await Future.delayed(duration);
 }
