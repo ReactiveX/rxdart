@@ -17,17 +17,15 @@ void main() {
 
     await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
-/*
+
   test('rx.Observable.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
     final observableA = Observable(_getStream()).transform(transformer);
     final observableB = Observable(_getStream()).transform(transformer);
 
-    await Future.wait<dynamic>([
-      expectLater(observableA, emitsInOrder(const <int>[0, 2, 4])),
-      expectLater(observableB, emitsInOrder(const <int>[0, 2, 4]))
-    ]);
+    await expectLater(observableA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(observableB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
   test('rx.Observable.sample.onDone', () async {
@@ -84,21 +82,16 @@ void main() {
   });
 
   test('rx.Observable.sample.pause.resume', () async {
-    const expectedOutput = [0, 2, 4];
-    var count = 0;
-    StreamSubscription<int> subscription;
+    final controller = StreamController<int>();
 
-    subscription = Observable(_getStream())
+    StreamSubscription<int> subscription = Observable(_getStream())
         .sample(_getSampleStream())
-        .listen(expectAsync1((result) {
-          expect(expectedOutput[count++], result);
+        .listen(controller.add, onDone: controller.close);
 
-          if (count == expectedOutput.length) {
-            subscription.cancel();
-          }
-        }, count: expectedOutput.length));
+    await expectLater(
+        controller.stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
 
     subscription.pause();
     subscription.resume();
-  });*/
+  });
 }

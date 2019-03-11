@@ -33,7 +33,7 @@ class SampleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onListen: () {
             subscription = input
                 .transform(BackpressureStreamTransformer(
-                    WindowStrategy.startAfterFirstEvent,
+                    WindowStrategy.firstEventOnly,
                     window,
                     null,
                     (Iterable<T> queue) => queue.last))

@@ -1995,9 +1995,8 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.fromIterable([1, 2, 3])
   ///       .sampleTime(const Duration(seconds: 1))
   ///       .listen(print); // prints 3
-  Observable<T> sampleTime(Duration duration) =>
-      transform(SampleStreamTransformer<T>(
-          (_) => Stream<void>.periodic(duration)));
+  Observable<T> sampleTime(Duration duration) => transform(
+      SampleStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
 
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial

@@ -2,11 +2,7 @@ import 'dart:async';
 
 import 'dart:collection';
 
-enum WindowStrategy {
-  restartOnEvent,
-  awaitWindowCompletion,
-  startAfterFirstEvent
-}
+enum WindowStrategy { everyEvent, eventAfterLastWindow, firstEventOnly }
 
 class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final StreamTransformer<S, T> transformer;
@@ -40,8 +36,8 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             final queue = Queue<S>();
             final resolveWindowEnd = ([bool forceClose = false]) {
               if (forceClose ||
-                  strategy == WindowStrategy.awaitWindowCompletion ||
-                  strategy == WindowStrategy.restartOnEvent) {
+                  strategy == WindowStrategy.eventAfterLastWindow ||
+                  strategy == WindowStrategy.everyEvent) {
                 windowSubscription?.cancel();
                 windowSubscription = null;
               }
@@ -61,7 +57,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             final maybeCreateWindow = (S event) {
               try {
                 switch (strategy) {
-                  case WindowStrategy.awaitWindowCompletion:
+                  case WindowStrategy.eventAfterLastWindow:
                     if (windowSubscription != null) return;
 
                     windowSubscription = windowStreamFactory(event)
@@ -72,7 +68,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                             cancelOnError: cancelOnError);
 
                     break;
-                  case WindowStrategy.startAfterFirstEvent:
+                  case WindowStrategy.firstEventOnly:
                     if (windowSubscription != null) return;
 
                     windowSubscription = windowStreamFactory(event).listen(
@@ -82,7 +78,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                         cancelOnError: cancelOnError);
 
                     break;
-                  case WindowStrategy.restartOnEvent:
+                  case WindowStrategy.everyEvent:
                     windowSubscription?.cancel();
 
                     windowSubscription = windowStreamFactory(event)

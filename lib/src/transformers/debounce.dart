@@ -37,7 +37,7 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onListen: () {
             subscription = input
                 .transform(BackpressureStreamTransformer(
-                    WindowStrategy.restartOnEvent,
+                    WindowStrategy.everyEvent,
                     window,
                     null,
                     (Iterable<T> queue) => queue.last))

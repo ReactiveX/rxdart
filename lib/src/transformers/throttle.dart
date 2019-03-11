@@ -31,7 +31,7 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onListen: () {
             subscription = input
                 .transform(BackpressureStreamTransformer(
-                    WindowStrategy.awaitWindowCompletion,
+                    WindowStrategy.eventAfterLastWindow,
                     window,
                     (event) => event,
                     null))
