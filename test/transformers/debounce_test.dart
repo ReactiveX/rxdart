@@ -20,15 +20,15 @@ Stream<int> _getStream() {
 void main() {
   test('rx.Observable.debounce', () async {
     Observable(_getStream())
-        .debounce(const Duration(milliseconds: 200))
+        .debounceTime(const Duration(milliseconds: 200))
         .listen(expectAsync1((result) {
           expect(result, 4);
         }, count: 1));
   });
 
   test('rx.Observable.debounce.reusable', () async {
-    final transformer =
-        DebounceStreamTransformer<int>(const Duration(milliseconds: 200));
+    final transformer = DebounceStreamTransformer<int>(
+        (_) => Stream<void>.periodic(const Duration(milliseconds: 200)));
 
     Observable(_getStream())
         .transform(transformer)
@@ -45,7 +45,7 @@ void main() {
 
   test('rx.Observable.debounce.asBroadcastStream', () async {
     final stream = Observable(_getStream().asBroadcastStream())
-        .debounce(const Duration(milliseconds: 200));
+        .debounceTime(const Duration(milliseconds: 200));
 
     // listen twice on same stream
     stream.listen(null);
@@ -56,7 +56,7 @@ void main() {
 
   test('rx.Observable.debounce.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .debounce(const Duration(milliseconds: 200));
+        .debounceTime(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -64,25 +64,10 @@ void main() {
     }));
   });
 
-  /// Should also throw if the current [Zone] is unable to install a [Timer]
-  test('rx.Observable.debounce.error.shouldThrowB', () async {
-    runZoned(() {
-      final observableWithError =
-          Observable.just(1).debounce(const Duration(milliseconds: 200));
-
-      observableWithError.listen(null,
-          onError: expectAsync2(
-              (Exception e, StackTrace s) => expect(e, isException)));
-    },
-        zoneSpecification: ZoneSpecification(
-            createTimer: (self, parent, zone, duration, void f()) =>
-                throw Exception('Zone createTimer error')));
-  });
-
   test('rx.Observable.debounce.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = Observable.fromIterable(const [1, 2, 3])
-        .debounce(Duration(milliseconds: 1));
+        .debounceTime(Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 3);
@@ -98,7 +83,7 @@ void main() {
     final emissions = <int>[];
     final stopwatch = Stopwatch();
     final stream = Observable.fromIterable(const [1, 2, 3])
-        .debounce(Duration(seconds: 100));
+        .debounceTime(Duration(seconds: 100));
 
     stopwatch.start();
 
@@ -123,7 +108,7 @@ void main() {
       StreamSubscription<int> subscription;
       final stream = Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
-      }).debounce(Duration(seconds: 10));
+      }).debounceTime(Duration(seconds: 10));
 
       // We expect the onData callback to be called 0 times because the
       // subscription is cancelled when the base stream ends.
@@ -134,7 +119,7 @@ void main() {
 
   test('rx.Observable.debounce.last.event.can.be.null', () async {
     Observable(Stream.fromIterable([1, 2, 3, null]))
-        .debounce(const Duration(milliseconds: 200))
+        .debounceTime(const Duration(milliseconds: 200))
         .listen(expectAsync1((result) {
           expect(result, null);
         }, count: 1));

@@ -1315,8 +1315,25 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.range(1, 100)
   ///       .debounce(new Duration(seconds: 1))
   ///       .listen(print); // prints 100
-  Observable<T> debounce(Duration duration) =>
-      transform(DebounceStreamTransformer<T>(duration));
+  Observable<T> debounce(Stream sampler(T event)) =>
+      transform(DebounceStreamTransformer<T>(sampler));
+
+  /// Creates an Observable that will only emit items from the source sequence
+  /// if a particular time span has passed without the source sequence emitting
+  /// another item.
+  ///
+  /// The Debounce operator filters out items emitted by the source Observable
+  /// that are rapidly followed by another emitted item.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.range(1, 100)
+  ///       .debounce(new Duration(seconds: 1))
+  ///       .listen(print); // prints 100
+  Observable<T> debounceTime(Duration duration) => transform(
+      DebounceStreamTransformer<T>((_) => Stream<void>.periodic(duration)));
 
   /// Emit items from the source Stream, or a single default item if the source
   /// Stream emits nothing.
@@ -1966,7 +1983,7 @@ class Observable<T> extends Stream<T> {
   ///       .sample(new Observable.timer(1, new Duration(seconds: 1))
   ///       .listen(print); // prints 3
   Observable<T> sample(Stream<dynamic> sampleStream) =>
-      transform(SampleStreamTransformer<T>(sampleStream));
+      transform(SampleStreamTransformer<T>((_) => sampleStream));
 
   /// Applies an accumulator function over an observable sequence and returns
   /// each intermediate result. The optional seed value is used as the initial
@@ -2148,8 +2165,19 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.fromIterable([1, 2, 3])
   ///       .throttle(new Duration(seconds: 1))
   ///       .listen(print); // prints 1
-  Observable<T> throttle(Duration duration) =>
-      transform(ThrottleStreamTransformer<T>(duration));
+  Observable<T> throttle(Stream window(T event)) =>
+      transform(ThrottleStreamTransformer<T>(window));
+
+  /// Returns an Observable that emits only the first item emitted by the source
+  /// Observable during sequential time windows of a specified duration.
+  ///
+  /// ### Example
+  ///
+  ///     new Observable.fromIterable([1, 2, 3])
+  ///       .throttle(new Duration(seconds: 1))
+  ///       .listen(print); // prints 1
+  Observable<T> throttleTime(Duration duration) => transform(
+      ThrottleStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
 
   /// Records the time interval between consecutive values in an observable
   /// sequence.

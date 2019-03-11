@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/samplers/utils.dart';
 import 'package:rxdart/src/transformers/do.dart';
-import 'package:rxdart/src/transformers/sample.dart';
+import 'package:rxdart/src/transformers/backpressure.dart';
 import 'package:rxdart/src/transformers/take_until.dart';
 
 /// Higher order function signature which matches the method signature
@@ -169,7 +169,12 @@ class _OnStreamSampler<T, S, O> extends StreamView<S> {
             },
             handleError: (Object error, StackTrace s, EventSink<S> sink) =>
                 sink.addError(error, s)))
-        .transform(SampleStreamTransformer<S>(ticker, sampleOnValueOnly: false))
+        .transform(BackpressureStreamTransformer<S>(
+            WindowStrategy.startAfterFirstEvent,
+            (_) => ticker,
+            null,
+            (Iterable<S> queue) => queue.isEmpty ? null : queue.last,
+            ignoreEmptyWindows: false))
         .transform(StreamTransformer<S, S>.fromHandlers(
             handleData: (S data, EventSink<S> sink) {
               scheduleHandler(data, sink, 0);

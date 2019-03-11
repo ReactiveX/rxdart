@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/timer.dart';
 import 'package:rxdart/src/transformers/backpressure.dart';
 
 /// A StreamTransformer that emits only the first item emitted by the source
@@ -14,14 +13,14 @@ import 'package:rxdart/src/transformers/backpressure.dart';
 class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
-  ThrottleStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+  ThrottleStreamTransformer(Stream window(T event))
+      : transformer = _buildTransformer(window);
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    assert(duration != null, 'duration cannot be null');
+  static StreamTransformer<T, T> _buildTransformer<T>(Stream window(T event)) {
+    assert(window != null, 'window stream factory cannot be null');
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
@@ -32,8 +31,9 @@ class ThrottleStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onListen: () {
             subscription = input
                 .transform(BackpressureStreamTransformer(
-                    (T event) => TimerStream<bool>(true, duration),
-                    (T event) => event,
+                    WindowStrategy.awaitWindowCompletion,
+                    window,
+                    (event) => event,
                     null))
                 .listen(controller.add,
                     onError: controller.addError,

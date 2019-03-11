@@ -15,13 +15,13 @@ Observable<int> _observable([int nextValue = 1]) =>
 void main() {
   test('rx.Observable.throttle', () async {
     await expectLater(
-        _observable().throttle(const Duration(milliseconds: 250)).take(3),
+        _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {
-    final transformer =
-        ThrottleStreamTransformer<int>(const Duration(milliseconds: 250));
+    final transformer = ThrottleStreamTransformer<int>(
+        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
@@ -32,7 +32,7 @@ void main() {
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
     final stream = Observable(_stream().asBroadcastStream())
-        .throttle(const Duration(milliseconds: 200));
+        .throttleTime(const Duration(milliseconds: 200));
 
     // listen twice on same stream
     stream.listen(null);
@@ -43,7 +43,7 @@ void main() {
 
   test('rx.Observable.throttle.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .throttle(const Duration(milliseconds: 200));
+        .throttleTime(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -62,7 +62,7 @@ void main() {
     final controller = StreamController<int>();
 
     subscription = _observable()
-        .throttle(const Duration(milliseconds: 250))
+        .throttleTime(const Duration(milliseconds: 250))
         .take(2)
         .listen(controller.add, onDone: controller.close);
 
