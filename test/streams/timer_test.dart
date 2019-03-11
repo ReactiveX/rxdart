@@ -96,5 +96,5 @@ void main() {
           onError: expectAsync2((Error e, StackTrace s) =>
               expect(e, const TypeMatcher<AssertionError>())));
     });
-  });
+  }, skip: true);
 }
