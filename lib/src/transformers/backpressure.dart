@@ -33,14 +33,24 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       controller = StreamController<T>(
           sync: true,
           onListen: () {
+            // the Queue which is built while a Window frame is open
             final queue = Queue<S>();
-            final resolveWindowEnd = ([bool forceClose = false]) {
+            // handles the start of a Window frame
+            final resolveWindowStart = (S event) {
+              if (onWindowStart != null) controller.add(onWindowStart(event));
+            };
+            // determines whether the last open Window should close
+            final maybeCloseOpenWindow = (bool forceClose) {
               if (forceClose ||
                   strategy == WindowStrategy.eventAfterLastWindow ||
                   strategy == WindowStrategy.everyEvent) {
                 windowSubscription?.cancel();
                 windowSubscription = null;
               }
+            };
+            // handles the end of a Window frame
+            final resolveWindowEnd = ([bool isControllerClosing = false]) {
+              maybeCloseOpenWindow(isControllerClosing);
 
               if (queue.isNotEmpty || !ignoreEmptyWindows) {
                 if (onWindowEnd != null) {
@@ -54,44 +64,47 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                 queue.clear();
               }
             };
+            // opens a new Window which fires once, then closes
+            final singleWindow = (S event) => windowStreamFactory(event)
+                .take(1)
+                .listen(null,
+                    onError: controller.addError,
+                    onDone: resolveWindowEnd,
+                    cancelOnError: cancelOnError);
+            // opens a new Window which is kept open until the main Stream
+            // closes.
+            final multiWindow = (S event) => windowStreamFactory(event).listen(
+                (dynamic _) => resolveWindowEnd(),
+                onError: controller.addError,
+                onDone: resolveWindowEnd,
+                cancelOnError: cancelOnError);
             final maybeCreateWindow = (S event) {
               try {
                 switch (strategy) {
+                  // for example throttle
                   case WindowStrategy.eventAfterLastWindow:
                     if (windowSubscription != null) return;
 
-                    windowSubscription = windowStreamFactory(event)
-                        .take(1)
-                        .listen(null,
-                            onError: controller.addError,
-                            onDone: resolveWindowEnd,
-                            cancelOnError: cancelOnError);
+                    windowSubscription = singleWindow(event);
 
                     break;
+                  // for example scan
                   case WindowStrategy.firstEventOnly:
                     if (windowSubscription != null) return;
 
-                    windowSubscription = windowStreamFactory(event).listen(
-                        (dynamic _) => resolveWindowEnd(),
-                        onError: controller.addError,
-                        onDone: resolveWindowEnd,
-                        cancelOnError: cancelOnError);
+                    windowSubscription = multiWindow(event);
 
                     break;
+                  // for example debounce
                   case WindowStrategy.everyEvent:
                     windowSubscription?.cancel();
 
-                    windowSubscription = windowStreamFactory(event)
-                        .take(1)
-                        .listen(null,
-                            onError: controller.addError,
-                            onDone: resolveWindowEnd,
-                            cancelOnError: cancelOnError);
+                    windowSubscription = singleWindow(event);
 
                     break;
                 }
 
-                if (onWindowStart != null) controller.add(onWindowStart(event));
+                resolveWindowStart(event);
               } catch (e, s) {
                 controller.addError(e, s);
               }
@@ -104,8 +117,9 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (onWindowStart != null && queue.isNotEmpty)
-                    controller.add(onWindowStart(queue.last));
+                  // treat the final event as a Window that opens
+                  // and immediately closes again
+                  if (queue.isNotEmpty) resolveWindowStart(queue.last);
 
                   resolveWindowEnd(true);
 

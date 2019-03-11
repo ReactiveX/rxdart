@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/transformers/backpressure.dart';
+import 'package:rxdart/src/transformers/utils.dart';
 
 /// Transforms a Stream so that will only emit items from the source sequence
 /// if a particular time span has passed without the source sequence emitting
@@ -20,38 +21,18 @@ class DebounceStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> transformer;
 
   DebounceStreamTransformer(Stream window(T event))
-      : transformer = _buildTransformer(window);
+      : transformer = _buildTransformer(window) {
+    assert(window != null, 'window stream factory cannot be null');
+  }
 
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Stream window(T event)) {
-    assert(window != null, 'window stream factory cannot be null');
+  static StreamTransformer<T, T> _buildTransformer<T>(Stream window(T event)) =>
+      streamTransformed(_setupBackpressure(window));
 
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input
-                .transform(BackpressureStreamTransformer(
-                    WindowStrategy.everyEvent,
-                    window,
-                    null,
-                    (Iterable<T> queue) => queue.last))
-                .listen(controller.add,
-                    onError: controller.addError,
-                    onDone: controller.close,
-                    cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
-  }
+  static BackpressureStreamTransformer<T, T> _setupBackpressure<T>(
+          Stream window(T event)) =>
+      BackpressureStreamTransformer(WindowStrategy.everyEvent, window, null,
+          (Iterable<T> queue) => queue.last);
 }
