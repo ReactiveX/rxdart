@@ -10,7 +10,9 @@ class TimerStream<T> extends Stream<T> {
   final Stream<T> stream;
 
   TimerStream(T value, Duration duration)
-      : stream = buildStream(duration, value);
+      : stream = buildStream(duration, value) {
+    assert(duration != null, 'duration cannot be null');
+  }
 
   @override
   StreamSubscription<T> listen(void onData(T event),
@@ -18,9 +20,6 @@ class TimerStream<T> extends Stream<T> {
       stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: true);
 
-  static Stream<T> buildStream<T>(Duration duration, T value) async* {
-    assert(duration != null, 'duration cannot be null');
-
-    yield await Future.delayed(duration, () => value);
-  }
+  static Stream<T> buildStream<T>(Duration duration, T value) =>
+      Stream.fromFuture(Future.delayed(duration, () => value));
 }
