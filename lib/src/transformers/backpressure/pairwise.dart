@@ -1,8 +1,7 @@
 import 'package:rxdart/src/streams/never.dart';
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 
-/// Triggers on the second and subsequent triggerings of the input observable.
-/// The Nth triggering of the input observable passes the arguments from the N-1th and Nth triggering as a pair.
+/// Emits the n-th and n-1th events as a pair..
 ///
 /// ### Example
 ///

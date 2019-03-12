@@ -1145,47 +1145,22 @@ class Observable<T> extends Stream<T> {
       Observable<S>(_stream.asyncMap(convert));
 
   /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, batched by the [sampler].
+  /// from the source sequence.
   ///
-  /// ### Example with [onCount]
+  /// This [List] is emitted every time [window] emits an event.
   ///
-  ///     Observable.range(1, 4)
-  ///       .buffer(onCount(2))
-  ///       .listen(print); // prints [1, 2], [3, 4]
+  /// ### Example
   ///
-  /// ### Example with [onFuture]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .buffer(onFuture(() => new Future.delayed(const Duration(milliseconds: 220))))
+  ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+  ///       .buffer(new Stream.periodic(const Duration(milliseconds: 160), (i) => i))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  ///
-  /// ### Example with [onTest]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .buffer(onTest((i) => i % 2 == 0))
-  ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
-  ///
-  /// ### Example with [onTime]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .buffer(onTime(const Duration(milliseconds: 220)))
-  ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  ///
-  /// ### Example with [onStream]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .buffer(onStream(new Stream.periodic(const Duration(milliseconds: 220), (int i) => i)))
-  ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  ///
-  /// You can create your own sampler by extending [StreamView]
-  /// should the above samplers be insufficient for your use case.
-  Observable<List<T>> buffer(Stream other) =>
-      transform(BufferStreamTransformer((_) => other));
+  Observable<List<T>> buffer(Stream window) =>
+      transform(BufferStreamTransformer((_) => window));
 
   /// Buffers a number of values from the source Observable by [count] then
   /// emits the buffer and clears it, and starts a new buffer each
-  /// [startBufferEvery] values. If [startBufferEvery] is not provided or is
-  /// null, then new buffers are started immediately at the start of the source
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided,
+  /// then new buffers are started immediately at the start of the source
   /// and when each buffer closes and is emitted.
   ///
   /// ### Example
@@ -1207,7 +1182,7 @@ class Observable<T> extends Stream<T> {
       transform(BufferCountStreamTransformer<T>(count, startBufferEvery));
 
   /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, batched whenever [onTestHandler] passes.
+  /// from the source sequence, batched whenever [test] passes.
   ///
   /// ### Example
   ///
@@ -1277,37 +1252,45 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<bool> contains(Object needle) =>
       AsObservableFuture<bool>(_stream.contains(needle));
 
-  /// Creates an Observable that will only emit items from the source sequence
-  /// if a particular time span has passed without the source sequence emitting
+  /// Transforms a [Stream] so that will only emit items from the source sequence
+  /// if a [window] has completed, without the source sequence emitting
   /// another item.
   ///
-  /// The Debounce operator filters out items emitted by the source Observable
+  /// This [window] is created after the last debounced event was emitted.
+  /// You can use the value of the last debounced event to determine
+  /// the length of the next [window].
+  ///
+  /// A [window] is open until the first [window] event emits.
+  ///
+  /// debounce filters out items emitted by the source [Observable]
   /// that are rapidly followed by another emitted item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
   ///
   /// ### Example
   ///
-  ///     new Observable.range(1, 100)
-  ///       .debounce((event) => Stream<void>.fromFuture(Future<void>.delayed(const Duration(seconds: 1))))
-  ///       .listen(print); // prints 100
-  Observable<T> debounce(Stream sampler(T event)) =>
-      transform(DebounceStreamTransformer<T>(sampler));
+  ///     new Observable.fromIterable([1, 2, 3, 4])
+  ///       .debounce((_) => TimerStream(true, const Duration(seconds: 1)))
+  ///       .listen(print); // prints 4
+  Observable<T> debounce(Stream window(T event)) =>
+      transform(DebounceStreamTransformer<T>(window));
 
-  /// Creates an Observable that will only emit items from the source sequence
-  /// if a particular time span has passed without the source sequence emitting
-  /// another item.
+  /// Transforms a [Stream] so that will only emit items from the source sequence
+  /// whenever the time span defined by [duration] passes,
+  /// without the source sequence emitting another item.
   ///
-  /// The Debounce operator filters out items emitted by the source Observable
+  /// This time span start after the last debounced event was emitted.
+  ///
+  /// debounceTime filters out items emitted by the source [Observable]
   /// that are rapidly followed by another emitted item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
   ///
   /// ### Example
   ///
-  ///     new Observable.range(1, 100)
-  ///       .debounceTime(new Duration(seconds: 1))
-  ///       .listen(print); // prints 100
+  ///     new Observable.fromIterable([1, 2, 3, 4])
+  ///       .debounceTime(const Duration(seconds: 1))
+  ///       .listen(print); // prints 4
   Observable<T> debounceTime(Duration duration) => transform(
       DebounceStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
 
@@ -1928,8 +1911,7 @@ class Observable<T> extends Stream<T> {
       transform(OnErrorResumeStreamTransformer<T>(
           (dynamic e) => Observable<T>.just(returnFn(e))));
 
-  /// Triggers on the second and subsequent triggerings of the input observable.
-  /// The Nth triggering of the input observable passes the arguments from the N-1th and Nth triggering as a pair.
+  /// Emits the n-th and n-1th events as a pair..
   ///
   /// ### Example
   ///
@@ -1946,27 +1928,25 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<T> reduce(T combine(T previous, T element)) =>
       AsObservableFuture<T>(_stream.reduce(combine));
 
-  /// Returns an Observable that, when the specified sample stream emits
-  /// an item or completes, emits the most recently emitted item (if any)
-  /// emitted by the source stream since the previous emission from
-  /// the sample stream.
+  /// Emits the most recently emitted item (if any)
+  /// emitted by the source [Stream] since the previous emission from
+  /// the [sampleStream].
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2, 3])
-  ///       .sample(new Observable.timer(1, new Duration(seconds: 1))
+  ///     new Stream.fromIterable([1, 2, 3])
+  ///       .sample(new TimerStream(1, const Duration(seconds: 1)))
   ///       .listen(print); // prints 3
   Observable<T> sample(Stream<dynamic> sampleStream) =>
       transform(SampleStreamTransformer<T>((_) => sampleStream));
 
-  /// Returns an Observable that, when the specified time window emits
-  /// an item or completes, emits the most recently emitted item (if any)
-  /// emitted by the source stream since the previous emission from
-  /// the sample stream.
+  /// Emits the most recently emitted item (if any)
+  /// emitted by the source [Stream] since the previous emission within
+  /// the recurring time span, defined by [duration]
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2, 3])
+  ///     new Stream.fromIterable([1, 2, 3])
   ///       .sampleTime(const Duration(seconds: 1))
   ///       .listen(print); // prints 3
   Observable<T> sampleTime(Duration duration) =>
@@ -2144,25 +2124,26 @@ class Observable<T> extends Stream<T> {
   Observable<T> takeWhile(bool test(T element)) =>
       Observable<T>(_stream.takeWhile(test));
 
-  /// Returns an Observable that emits only the first item emitted by the source
-  /// Observable during sequential time windows of a specified duration.
+  /// Emits only the first item emitted by the source [Stream]
+  /// while [window] is open.
+  ///
+  /// You can use the value of the last throttled event to determine
+  /// the length of the next [window].
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2, 3])
-  ///       .throttle(new Duration(seconds: 1))
-  ///       .listen(print); // prints 1
+  ///     new Stream.fromIterable([1, 2, 3])
+  ///       .throttle((_) => TimerStream(true, const Duration(seconds: 1)))
   Observable<T> throttle(Stream window(T event)) =>
       transform(ThrottleStreamTransformer<T>(window));
 
-  /// Returns an Observable that emits only the first item emitted by the source
-  /// Observable during sequential time windows of a specified duration.
+  /// Emits only the first item emitted by the source [Stream]
+  /// within a time span of [duration].
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2, 3])
-  ///       .throttleTime(new Duration(seconds: 1))
-  ///       .listen(print); // prints 1
+  ///     new Stream.fromIterable([1, 2, 3])
+  ///       .throttleTime(const Duration(seconds: 1))
   Observable<T> throttleTime(Duration duration) => transform(
       ThrottleStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
 
@@ -2216,68 +2197,32 @@ class Observable<T> extends Stream<T> {
   Observable<T> where(bool test(T event)) => Observable<T>(_stream.where(test));
 
   /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, batched by the [sampler].
+  /// from the source sequence.
   ///
-  /// ### Example with [onCount]
+  /// This [List] is emitted every time [window] emits an event.
   ///
-  ///     Observable.range(1, 4)
-  ///       .window(onCount(2))
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 1, 2, next window 3, 4
+  /// ### Example
   ///
-  /// ### Example with [onFuture]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .window(onFuture(() => new Future.delayed(const Duration(milliseconds: 220))))
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  ///
-  /// ### Example with [onTest]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .window(onTest((i) => i % 2 == 0))
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 0, next window 1, 2 next window 3, 4,  ...
-  ///
-  /// ### Example with [onTime]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .window(onTime(const Duration(milliseconds: 220)))
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  ///
-  /// ### Example with [onStream]
-  ///
-  ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
-  ///       .window(onStream(new Stream.periodic(const Duration(milliseconds: 220), (int i) => i)))
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  ///
-  /// You can create your own sampler by extending [StreamView]
-  /// should the above samplers be insufficient for your use case.
-  Observable<Stream<T>> window(Stream other) =>
-      transform(WindowStreamTransformer((_) => other));
+  ///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+  ///       .window(new Stream.periodic(const Duration(milliseconds: 160), (i) => i))
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
+  Observable<Stream<T>> window(Stream window) =>
+      transform(WindowStreamTransformer((_) => window));
 
   /// Buffers a number of values from the source Observable by [count] then
-  /// emits the values inside the buffer as a new [Stream],
-  /// and starts a new buffer each [startBufferEvery] values.
-  /// If [startBufferEvery] is not provided or is null, then new buffers are
-  /// started immediately at the start of the source and when each buffer
-  /// closes and is emitted.
+  /// emits the buffer as a [Stream] and clears it, and starts a new buffer each
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided,
+  /// then new buffers are started immediately at the start of the source
+  /// and when each buffer closes and is emitted.
   ///
   /// ### Example
   /// [count] is the maximum size of the buffer emitted
   ///
   ///     Observable.range(1, 4)
   ///       .windowCount(2)
-  ///       .doOnData((_) => print('new Stream emitted))
-  ///       .flatMap((stream) => stream)
-  ///       .listen(print); // prints new Stream emitted, 1, 2, new Stream emitted, 3, 4 done!
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [1, 2], [3, 4] done!
   ///
   /// ### Example
   /// if [startBufferEvery] is 2, then a new buffer will be started
@@ -2285,23 +2230,20 @@ class Observable<T> extends Stream<T> {
   /// beginning of the source by default.
   ///
   ///     Observable.range(1, 5)
-  ///       .windowCount(3, 2)
-  ///       .doOnData((_) => print('new Stream emitted))
-  ///       .flatMap((stream) => stream)
-  ///       .listen(print); // prints new Stream emitted, 1, 2, 3 new Stream emitted 3, 4, 5 new Stream emitted 5 done!
+  ///       .bufferCount(3, 2)
+  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
   Observable<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
       transform(WindowCountStreamTransformer(count, startBufferEvery));
 
   /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, batched whenever [onTestHandler] passes.
+  /// from the source sequence, batched whenever [test] passes.
   ///
   /// ### Example
   ///
   ///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
   ///       .windowTest((i) => i % 2 == 0)
-  ///       .doOnData((_) => print('next window'))
-  ///       .flatMap((s) => s)
-  ///       .listen(print); // prints next window 0, next window 1, 2 next window 3, 4,  ...
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
   Observable<Stream<T>> windowTest(bool onTestHandler(T event)) =>
       transform(WindowTestStreamTransformer(onTestHandler));
 
