@@ -12,7 +12,7 @@ void main() {
     ];
     var count = 0;
 
-    final stream = Observable.range(1, 4).pairwise().doOnData(print);
+    final stream = Observable.range(1, 4).pairwise();
 
     stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
