@@ -12,8 +12,9 @@ script:
   - sh tool/check_format.sh
   - dartanalyzer --fatal-infos --fatal-warnings ./
   - pub run test test/rxdart_test.dart
+  - pub get --packages-dir
   - pub global activate coverage
-  - pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
+  - pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates &
   - dart --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart
   - pub global run coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
 after_success:

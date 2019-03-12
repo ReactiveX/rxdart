@@ -90,6 +90,7 @@ import 'transformers/on_error_return_with_test.dart'
 import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
 import 'transformers/reduce_test.dart' as reduce_test;
 import 'transformers/backpressure/sample_test.dart' as sample_test;
+import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
 import 'transformers/scan_test.dart' as scan_test;
 import 'transformers/single_test.dart' as single_test;
 import 'transformers/single_where_test.dart' as single_where_test;
@@ -192,6 +193,7 @@ void main() {
   pairwise_test.main();
   reduce_test.main();
   sample_test.main();
+  sample_time_test.main();
   scan_test.main();
   single_test.main();
   single_where_test.main();
