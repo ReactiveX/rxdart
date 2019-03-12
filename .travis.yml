@@ -14,7 +14,7 @@ script:
   - pub run test test/rxdart_test.dart
   - pub global activate coverage
   - pub global run coverage:collect_coverage --port=8111 -o coverage.json --resume-isolates --wait-paused &
-  - dart --observe=8111 test/rxdart_test.dart
-  - pub global run coverage:format_coverage --report-on lib --in coverage.json --out lcov.info --lcov
+  - dart --pause-isolates-on-exit --enable-vm-service=test/rxdart_test.dart
+  - pub global run coverage:format_coverage --packages=.packages -i coverage.json
 after_success:
   - bash <(curl -s https://codecov.io/bash)
