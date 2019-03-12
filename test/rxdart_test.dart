@@ -1,8 +1,5 @@
 library test.rx;
 
-import 'dart:async';
-import 'dart:io';
-
 import 'futures/as_observable_future_test.dart' as as_observable_future_test;
 import 'futures/stream_max_test.dart' as stream_max_test;
 import 'futures/stream_min_test.dart' as stream_min_test;
@@ -44,16 +41,9 @@ import 'transformers/any_test.dart' as any_test;
 import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
-import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
-import 'transformers/backpressure/buffer_test.dart' as buffer_test;
-import 'transformers/backpressure/buffer_test_test.dart' as buffer_test_test;
-import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
-import 'transformers/backpressure/debounce_test.dart' as debounce_test;
-import 'transformers/backpressure/debounce_time_test.dart'
-    as debounce_time_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
 import 'transformers/delay_test.dart' as delay_test;
 import 'transformers/dematerialize_test.dart' as dematerialize_test;
@@ -87,10 +77,7 @@ import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
     as on_error_return_with_test;
-import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
 import 'transformers/reduce_test.dart' as reduce_test;
-import 'transformers/backpressure/sample_test.dart' as sample_test;
-import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
 import 'transformers/scan_test.dart' as scan_test;
 import 'transformers/single_test.dart' as single_test;
 import 'transformers/single_where_test.dart' as single_where_test;
@@ -103,8 +90,6 @@ import 'transformers/switch_if_empty_test.dart' as switch_if_empty_test;
 import 'transformers/switch_map_test.dart' as switch_map_test;
 import 'transformers/take_until_test.dart' as take_until_test;
 import 'transformers/take_while_test.dart' as take_while_test;
-import 'transformers/backpressure/throttle_test.dart' as throttle_test;
-import 'transformers/backpressure/throttle_time_test.dart' as throttle_time_test;
 import 'transformers/time_interval_test.dart' as time_interval_test;
 import 'transformers/timeout_test.dart' as timeout_test;
 import 'transformers/timestamp_test.dart' as timestamp_test;
@@ -112,12 +97,26 @@ import 'transformers/to_list_test.dart' as to_list_test;
 import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
+import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
+import 'transformers/zip_with_test.dart' as zip_with_test;
+
+import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
+import 'transformers/backpressure/buffer_test.dart' as buffer_test;
+import 'transformers/backpressure/buffer_test_test.dart' as buffer_test_test;
+import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
+import 'transformers/backpressure/debounce_test.dart' as debounce_test;
+import 'transformers/backpressure/debounce_time_test.dart'
+    as debounce_time_test;
+import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
+import 'transformers/backpressure/sample_test.dart' as sample_test;
+import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
+import 'transformers/backpressure/throttle_test.dart' as throttle_test;
+import 'transformers/backpressure/throttle_time_test.dart'
+    as throttle_time_test;
 import 'transformers/backpressure/window_count_test.dart' as window_count_test;
 import 'transformers/backpressure/window_test.dart' as window_test;
 import 'transformers/backpressure/window_test_test.dart' as window_test_test;
 import 'transformers/backpressure/window_time_test.dart' as window_time_test;
-import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
-import 'transformers/zip_with_test.dart' as zip_with_test;
 
 void main() {
   // Streams
@@ -149,15 +148,9 @@ void main() {
   as_broadcast_stream.main();
   async_expand_test.main();
   async_map_test.main();
-  buffer_test.main();
-  buffer_count_test.main();
-  buffer_test_test.main();
-  buffer_time_test.main();
   concat_map_test.main();
   concat_with_test.main();
   contains_test.main();
-  debounce_test.main();
-  debounce_time_test.main();
   default_if_empty_test.main();
   delay_test.main();
   dematerialize_test.main();
@@ -191,10 +184,7 @@ void main() {
   on_error_resume_test.main();
   on_error_return_test.main();
   on_error_return_with_test.main();
-  pairwise_test.main();
   reduce_test.main();
-  sample_test.main();
-  sample_time_test.main();
   scan_test.main();
   single_test.main();
   single_where_test.main();
@@ -207,8 +197,6 @@ void main() {
   switch_map_test.main();
   take_until_test.main();
   take_while_test.main();
-  throttle_test.main();
-  throttle_time_test.main();
   time_interval_test.main();
   timeout_test.main();
   timestamp_test.main();
@@ -217,12 +205,25 @@ void main() {
   transform_test.main();
   timer_test.main();
   where_test.main();
+  with_latest_from_test.main();
+  zip_with_test.main();
+
+  // Backpressure
+  buffer_test.main();
+  buffer_count_test.main();
+  buffer_test_test.main();
+  buffer_time_test.main();
+  debounce_test.main();
+  debounce_time_test.main();
+  pairwise_test.main();
+  sample_test.main();
+  sample_time_test.main();
+  throttle_test.main();
+  throttle_time_test.main();
   window_test.main();
   window_count_test.main();
   window_test_test.main();
   window_time_test.main();
-  with_latest_from_test.main();
-  zip_with_test.main();
 
   // Subjects
   behaviour_subject_test.main();
@@ -240,6 +241,4 @@ void main() {
   replay_connectable_observable_test.main();
   publish_connectable_observable_test.main();
   composite_subscription_test.main();
-
-  Timer(const Duration(minutes: 1), () => exit(0));
 }
