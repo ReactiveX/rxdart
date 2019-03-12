@@ -237,5 +237,5 @@ void main() {
   publish_connectable_observable_test.main();
   composite_subscription_test.main();
 
-  Timer(const Duration(minutes: 2), () => exit(0));
+  Timer(const Duration(minutes: 1), () => exit(0));
 }

@@ -13,8 +13,8 @@ script:
   - dartanalyzer --fatal-infos --fatal-warnings ./
   - pub run test test/rxdart_test.dart
   - pub global activate coverage
-  - dart --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart
   - pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
+  - dart --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart
   - pub global run coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
 after_success:
   - bash <(curl -s https://codecov.io/bash)
