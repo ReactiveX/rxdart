@@ -1,5 +1,8 @@
 library test.rx;
 
+import 'dart:async';
+import 'dart:io';
+
 import 'futures/as_observable_future_test.dart' as as_observable_future_test;
 import 'futures/stream_max_test.dart' as stream_max_test;
 import 'futures/stream_min_test.dart' as stream_min_test;
@@ -49,7 +52,8 @@ import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
 import 'transformers/backpressure/debounce_test.dart' as debounce_test;
-import 'transformers/backpressure/debounce_time_test.dart' as debounce_time_test;
+import 'transformers/backpressure/debounce_time_test.dart'
+    as debounce_time_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
 import 'transformers/delay_test.dart' as delay_test;
 import 'transformers/dematerialize_test.dart' as dematerialize_test;
@@ -232,4 +236,6 @@ void main() {
   replay_connectable_observable_test.main();
   publish_connectable_observable_test.main();
   composite_subscription_test.main();
+
+  Timer(const Duration(minutes: 2), () => exit(0));
 }
