@@ -15,8 +15,21 @@ Observable<int> _observable([int nextValue = 1]) =>
 void main() {
   test('rx.Observable.throttle', () async {
     await expectLater(
-        _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
+        _observable()
+            .throttle((_) =>
+                TimerStream<bool>(true, const Duration(milliseconds: 250)))
+            .take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+  });
+
+  test('rx.Observable.throttle.dynamic.window', () async {
+    await expectLater(
+        _observable()
+            .throttle((value) => value == 1
+                ? TimerStream<bool>(true, const Duration(milliseconds: 10))
+                : TimerStream<bool>(true, const Duration(milliseconds: 250)))
+            .take(3),
+        emitsInOrder(<dynamic>[1, 2, 5, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {
@@ -31,8 +44,8 @@ void main() {
   });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
-    final stream = Observable(_stream().asBroadcastStream())
-        .throttleTime(const Duration(milliseconds: 200));
+    final stream = Observable(_stream().asBroadcastStream()).throttle(
+        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
 
     // listen twice on same stream
     stream.listen(null);
@@ -43,7 +56,8 @@ void main() {
 
   test('rx.Observable.throttle.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .throttleTime(const Duration(milliseconds: 200));
+        .throttle(
+            (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -62,7 +76,8 @@ void main() {
     final controller = StreamController<int>();
 
     subscription = _observable()
-        .throttleTime(const Duration(milliseconds: 250))
+        .throttle(
+            (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)))
         .take(2)
         .listen(controller.add, onDone: controller.close);
 

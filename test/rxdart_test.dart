@@ -104,6 +104,7 @@ import 'transformers/switch_map_test.dart' as switch_map_test;
 import 'transformers/take_until_test.dart' as take_until_test;
 import 'transformers/take_while_test.dart' as take_while_test;
 import 'transformers/backpressure/throttle_test.dart' as throttle_test;
+import 'transformers/backpressure/throttle_time_test.dart' as throttle_time_test;
 import 'transformers/time_interval_test.dart' as time_interval_test;
 import 'transformers/timeout_test.dart' as timeout_test;
 import 'transformers/timestamp_test.dart' as timestamp_test;
@@ -207,6 +208,7 @@ void main() {
   take_until_test.main();
   take_while_test.main();
   throttle_test.main();
+  throttle_time_test.main();
   time_interval_test.main();
   timeout_test.main();
   timestamp_test.main();
