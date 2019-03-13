@@ -84,7 +84,8 @@ void main() {
   test('rx.Observable.sample.pause.resume', () async {
     final controller = StreamController<int>();
 
-    StreamSubscription<int> subscription = Observable(_getStream())
+    //ignore: cancel_subscriptions
+    var subscription = Observable(_getStream())
         .sample(_getSampleStream())
         .listen(controller.add, onDone: controller.close);
 

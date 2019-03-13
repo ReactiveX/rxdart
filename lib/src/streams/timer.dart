@@ -12,6 +12,7 @@ class TimerStream<T> extends Stream<T> {
   final Stream<T> _stream;
 
   factory TimerStream(T value, Duration duration) {
+    //ignore: close_sinks
     final sink = StreamController<T>();
 
     return TimerStream._(
@@ -44,6 +45,7 @@ class _DelayedSink<T> implements EventSink<T> {
 
   _DelayedSink(this._outputSink, this._delay);
 
+  @override
   void add(T data) {
     final dispatch = (T data) {
       _outputSink.add(data);
@@ -55,7 +57,9 @@ class _DelayedSink<T> implements EventSink<T> {
     Future.delayed(_delay, () => data).then(dispatch);
   }
 
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  @override
+  void addError(Object e, [StackTrace st]) => _outputSink.addError(e, st);
 
+  @override
   void close() => _outputSink.close();
 }

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   test('rx.Observable.windowCount.noStartBufferEvery', () async {
     await expectLater(
-        await Observable.range(1, 4)
+        Observable.range(1, 4)
             .windowCount(2)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[

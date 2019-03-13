@@ -15,7 +15,7 @@ enum WindowStrategy {
 /// The [StreamTransformer] works by creating windows, during which it
 /// buffers events to a [Queue].
 ///
-/// [strategy] is used to determine how and when a new window is created:
+/// strategy is used to determine how and when a new window is created:
 /// [WindowStrategy.everyEvent] cancels the open window (if any) and
 /// immediately opens a fresh one.
 /// [WindowStrategy.eventAfterLastWindow] waits until the current open
@@ -24,20 +24,20 @@ enum WindowStrategy {
 /// [WindowStrategy.firstEventOnly] opens a recurring window right after
 /// the very first event on the source [Stream] is emitted.
 /// [WindowStrategy.onHandler] does not open any windows, rather all events
-/// are buffered and emitted whenever [closeWindowWhen] triggers.
-/// When [closeWindowWhen] triggers, the active buffer is cleared.
+/// are buffered and emitted whenever closeWindowWhen triggers.
+/// When closeWindowWhen triggers, the active buffer is cleared.
 ///
-/// [onWindowStart] and [onWindowEnd] are handlers that fire when a window
+/// onWindowStart and onWindowEnd are handlers that fire when a window
 /// opens and closes, right before emitting the transformed event.
 ///
-/// [startBufferEvery] allows to skip events coming from the source [Stream].
+/// startBufferEvery allows to skip events coming from the source [Stream].
 ///
-/// [ignoreEmptyWindows] can be set to true, to allow events to be emitted
+/// ignoreEmptyWindows can be set to true, to allow events to be emitted
 /// at the end of a window, even if the current buffer is empty.
 /// If the buffer is empty, then an empty [List] will be emitted.
 /// If false, then nothing is emitted on an empty buffer.
 ///
-/// [dispatchOnClose] will cause the remaining values in the buffer to be
+/// dispatchOnClose will cause the remaining values in the buffer to be
 /// emitted when the source [Stream] closes.
 /// When false, the remaining buffer is discarded on close.
 class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {

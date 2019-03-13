@@ -24,14 +24,14 @@ class WindowStreamTransformer<T>
   }
 }
 
-/// Buffers a number of values from the source Observable by [count] then
+/// Buffers a number of values from the source Observable by count then
 /// emits the buffer as a [Stream] and clears it, and starts a new buffer each
-/// [startBufferEvery] values. If [startBufferEvery] is not provided,
+/// startBufferEvery values. If startBufferEvery is not provided,
 /// then new buffers are started immediately at the start of the source
 /// and when each buffer closes and is emitted.
 ///
 /// ### Example
-/// [count] is the maximum size of the buffer emitted
+/// count is the maximum size of the buffer emitted
 ///
 ///     Observable.range(1, 4)
 ///       .windowCount(2)
@@ -39,7 +39,7 @@ class WindowStreamTransformer<T>
 ///       .listen(print); // prints [1, 2], [3, 4] done!
 ///
 /// ### Example
-/// if [startBufferEvery] is 2, then a new buffer will be started
+/// if startBufferEvery is 2, then a new buffer will be started
 /// on every other value from the source. A new buffer is started at the
 /// beginning of the source by default.
 ///
@@ -63,7 +63,7 @@ class WindowCountStreamTransformer<T>
 }
 
 /// Creates an Observable where each item is a [Stream] containing the items
-/// from the source sequence, batched whenever [test] passes.
+/// from the source sequence, batched whenever test passes.
 ///
 /// ### Example
 ///

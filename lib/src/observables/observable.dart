@@ -1182,7 +1182,7 @@ class Observable<T> extends Stream<T> {
       transform(BufferCountStreamTransformer<T>(count, startBufferEvery));
 
   /// Creates an Observable where each item is a [List] containing the items
-  /// from the source sequence, batched whenever [test] passes.
+  /// from the source sequence, batched whenever test passes.
   ///
   /// ### Example
   ///
@@ -2236,7 +2236,7 @@ class Observable<T> extends Stream<T> {
       transform(WindowCountStreamTransformer(count, startBufferEvery));
 
   /// Creates an Observable where each item is a [Stream] containing the items
-  /// from the source sequence, batched whenever [test] passes.
+  /// from the source sequence, batched whenever test passes.
   ///
   /// ### Example
   ///

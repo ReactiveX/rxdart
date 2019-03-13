@@ -71,6 +71,7 @@ void main() {
   }, skip: true);
 
   test('rx.Observable.throttle.pause.resume', () async {
+    //ignore: cancel_subscriptions
     StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
