@@ -35,7 +35,7 @@ void main() {
 
     await expectLater(_observable().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
-  });
+  }, skip: true);
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
     final stream = _observable().asBroadcastStream().throttle(
@@ -46,7 +46,7 @@ void main() {
     stream.listen(null);
     // code should reach here
     await expectLater(true, true);
-  });
+  }, skip: true);
 
   test('rx.Observable.throttle.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
