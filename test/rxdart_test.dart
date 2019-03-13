@@ -209,7 +209,7 @@ void main() {
   zip_with_test.main();
 
   // Backpressure
-  buffer_test.main();
+  /*buffer_test.main();
   buffer_count_test.main();
   buffer_test_test.main();
   buffer_time_test.main();
@@ -223,7 +223,7 @@ void main() {
   window_test.main();
   window_count_test.main();
   window_test_test.main();
-  window_time_test.main();
+  window_time_test.main();*/
 
   // Subjects
   behaviour_subject_test.main();
