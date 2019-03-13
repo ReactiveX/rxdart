@@ -27,13 +27,12 @@ void main() {
   test('rx.Observable.throttleTime.asBroadcastStream', () async {
     final stream = _observable()
         .asBroadcastStream()
-        .throttleTime(const Duration(milliseconds: 200));
+        .throttleTime(const Duration(milliseconds: 250))
+        .ignoreElements();
 
     // listen twice on same stream
-    stream.listen(null);
-    stream.listen(null);
-    // code should reach here
-    await expectLater(true, true);
+    await expectLater(stream, emitsDone);
+    await expectLater(stream, emitsDone);
   });
 
   test('rx.Observable.throttleTime.error.shouldThrowA', () async {
@@ -70,5 +69,5 @@ void main() {
     await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription
             .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
-  }, skip: true);
+  });
 }

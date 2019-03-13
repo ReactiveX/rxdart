@@ -35,18 +35,19 @@ void main() {
 
     await expectLater(_observable().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
-  }, skip: true);
+  });
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
-    final stream = _observable().asBroadcastStream().throttle(
-        (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
+    final stream = _observable()
+        .asBroadcastStream()
+        .throttle(
+            (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
+        .ignoreElements();
 
     // listen twice on same stream
-    stream.listen(null);
-    stream.listen(null);
-    // code should reach here
-    await expectLater(true, true);
-  }, skip: true);
+    await expectLater(stream, emitsDone);
+    await expectLater(stream, emitsDone);
+  });
 
   test('rx.Observable.throttle.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
@@ -84,5 +85,5 @@ void main() {
     await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription
             .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
-  }, skip: true);
+  });
 }
