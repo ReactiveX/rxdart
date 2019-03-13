@@ -100,7 +100,7 @@ import 'transformers/where_test.dart' as where_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
-
+import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
 import 'transformers/backpressure/buffer_test.dart' as buffer_test;
 
 void main() {
@@ -195,8 +195,8 @@ void main() {
 
   // Backpressure
   buffer_test.main();
-  /*buffer_count_test.main();
-  buffer_test_test.main();
+  buffer_count_test.main();
+  /*buffer_test_test.main();
   buffer_time_test.main();
   debounce_test.main();
   debounce_time_test.main();
