@@ -2,7 +2,7 @@ language: dart
 # Speed up builds by using containerization.
 sudo: false
 dart:
-- stable
+- 2.0.0-dev.69.1
 with_content_shell: false
 before_install:
   - export DISPLAY=:99.0
@@ -12,9 +12,10 @@ script:
   - sh tool/check_format.sh
   - dartanalyzer --fatal-infos --fatal-warnings ./
   - pub run test test/rxdart_test.dart
+  - pub get --packages-dir
   - pub global activate coverage
-  - pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates &
-  - dart --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart
-  - pub global run coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
+  - pub global run coverage:collect_coverage --port=8111 -o coverage.json --resume-isolates --wait-paused &
+  - dart --observe=8111 test/rxdart_test.dart
+  - pub global run coverage:format_coverage --package-root=packages --report-on lib --in coverage.json --out lcov.info --lcov
 after_success:
   - bash <(curl -s https://codecov.io/bash)
