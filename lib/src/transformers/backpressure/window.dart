@@ -20,7 +20,7 @@ class WindowStreamTransformer<T>
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             ignoreEmptyWindows: false) {
-    if (window == null) throw new ArgumentError.notNull('window');
+    if (window == null) throw ArgumentError.notNull('window');
   }
 }
 
@@ -53,12 +53,12 @@ class WindowCountStreamTransformer<T>
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             startBufferEvery: startBufferEvery,
             closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
-    if (count == null) throw new ArgumentError.notNull('count');
+    if (count == null) throw ArgumentError.notNull('count');
     if (startBufferEvery == null)
-      throw new ArgumentError.notNull('startBufferEvery');
-    if (count < 1) throw new ArgumentError.value(count, 'count');
+      throw ArgumentError.notNull('startBufferEvery');
+    if (count < 1) throw ArgumentError.value(count, 'count');
     if (startBufferEvery < 0)
-      throw new ArgumentError.value(startBufferEvery, 'startBufferEvery');
+      throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
   }
 }
 
@@ -77,6 +77,6 @@ class WindowTestStreamTransformer<T>
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             closeWindowWhen: (Iterable<T> queue) => test(queue.last)) {
-    if (test == null) throw new ArgumentError.notNull('test');
+    if (test == null) throw ArgumentError.notNull('test');
   }
 }

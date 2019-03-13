@@ -36,5 +36,5 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   }
 }
 
-typedef S _ScanStreamTransformerAccumulator<T, S>(
+typedef _ScanStreamTransformerAccumulator<T, S> = S Function(
     S accumulated, T value, int index);

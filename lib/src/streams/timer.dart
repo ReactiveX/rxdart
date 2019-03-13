@@ -12,7 +12,7 @@ class TimerStream<T> extends Stream<T> {
   final Stream<T> _stream;
 
   factory TimerStream(T value, Duration duration) {
-    final sink = new StreamController<T>();
+    final sink = StreamController<T>();
 
     return TimerStream._(
         value,

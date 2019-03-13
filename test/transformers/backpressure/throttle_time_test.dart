@@ -21,7 +21,7 @@ void main() {
 
   test('rx.Observable.throttleTime.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
-            (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
+        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
@@ -47,8 +47,8 @@ void main() {
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
-          expect(e, isException);
-        }));
+      expect(e, isException);
+    }));
   });
 
   test('rx.Observable.throttleTime.error.shouldThrowB', () {
@@ -71,7 +71,7 @@ void main() {
 
     //ignore: unawaited_futures
     Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
-    subscription
-        .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
-    });
+        subscription
+            .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
+  });
 }

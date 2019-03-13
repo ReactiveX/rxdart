@@ -108,7 +108,38 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                   }
                 }
 
+                // prepare the buffer for the next window.
+                // by default, this is just a cleared buffer
                 if (!isControllerClosing && startBufferEvery > 0) {
+                  // ...unless startBufferEvery is provided.
+                  // here we backtrack to the first event of the last buffer
+                  // and count forward using startBufferEvery until we reach
+                  // the next event.
+                  //
+                  // if the next event is found inside the current buffer,
+                  // then this event and any later events in the buffer
+                  // become the starting values of the next buffer.
+                  // if the next event is not yet available, then a skip
+                  // count is calculated.
+                  // this count will skip the next Future n-events.
+                  // when skip is reset to 0, then we start adding events
+                  // again into the new buffer.
+                  //
+                  // example:
+                  // startBufferEvery = 2
+                  // last buffer: [0, 1, 2, 3, 4]
+                  // 0 is the first event,
+                  // 2 is the n-th event
+                  // new buffer starts with [2, 3, 4]
+                  //
+                  // example:
+                  // startBufferEvery = 3
+                  // last buffer: [0, 1]
+                  // 0 is the first event,
+                  // the n-the event is not yet dispatched at this point
+                  // skip becomes 1
+                  // event 2 is skipped, skip becomes 0
+                  // event 3 is now added to the buffer
                   try {
                     final startWith = (startBufferEvery < queue.length)
                         ? queue.toList().sublist(startBufferEvery)
@@ -201,28 +232,29 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                 resolveWindowEnd();
               }
             };
+            final onData = (S event) {
+              maybeCreateWindow(event);
 
-            subscription = input.listen(
-                (event) {
-                  maybeCreateWindow(event);
+              if (skip == 0) queue.add(event);
 
-                  if (skip == 0) queue.add(event);
+              if (skip > 0) skip--;
 
-                  if (skip > 0) skip--;
+              maybeCloseWindow();
+            };
+            final onDone = () {
+              // treat the final event as a Window that opens
+              // and immediately closes again
+              if (queue.isNotEmpty) resolveWindowStart(queue.last);
 
-                  maybeCloseWindow();
-                },
+              resolveWindowEnd(true);
+
+              queue.clear();
+              controller.close();
+            };
+
+            subscription = input.listen(onData,
                 onError: controller.addError,
-                onDone: () {
-                  // treat the final event as a Window that opens
-                  // and immediately closes again
-                  if (queue.isNotEmpty) resolveWindowStart(queue.last);
-
-                  resolveWindowEnd(true);
-
-                  queue.clear();
-                  controller.close();
-                },
+                onDone: onDone,
                 cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) =>

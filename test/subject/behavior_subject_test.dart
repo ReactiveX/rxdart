@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-typedef Future<Null> AsyncVoidCallBack();
+typedef AsyncVoidCallBack = Future<Null> Function();
 
 void main() {
   group('BehaviorSubject', () {
