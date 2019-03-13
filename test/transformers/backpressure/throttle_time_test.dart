@@ -21,7 +21,7 @@ void main() {
 
   test('rx.Observable.throttleTime.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
-        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
+        (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
@@ -72,8 +72,8 @@ void main() {
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
-        subscription
+    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
+        () => subscription
             .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
   });
 }

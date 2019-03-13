@@ -16,8 +16,8 @@ void main() {
   test('rx.Observable.throttle', () async {
     await expectLater(
         _observable()
-            .throttle((_) =>
-                TimerStream<bool>(true, const Duration(milliseconds: 250)))
+            .throttle(
+                (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
@@ -26,15 +26,15 @@ void main() {
     await expectLater(
         _observable()
             .throttle((value) => value == 1
-                ? TimerStream<bool>(true, const Duration(milliseconds: 10))
-                : TimerStream<bool>(true, const Duration(milliseconds: 250)))
+                ? Stream<void>.periodic(const Duration(milliseconds: 10))
+                : Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
         emitsInOrder(<dynamic>[1, 2, 5, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
-        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
+        (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
@@ -45,7 +45,7 @@ void main() {
 
   test('rx.Observable.throttle.asBroadcastStream', () async {
     final stream = Observable(_stream().asBroadcastStream()).throttle(
-        (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
+        (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     // listen twice on same stream
     stream.listen(null);
@@ -57,7 +57,7 @@ void main() {
   test('rx.Observable.throttle.error.shouldThrowA', () async {
     final observableWithError = Observable(ErrorStream<void>(Exception()))
         .throttle(
-            (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)));
+            (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -77,7 +77,7 @@ void main() {
 
     subscription = _observable()
         .throttle(
-            (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)))
+            (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
         .take(2)
         .listen(controller.add, onDone: () {
       controller.close();
@@ -87,8 +87,8 @@ void main() {
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
-        subscription
+    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
+        () => subscription
             .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
   });
 }
