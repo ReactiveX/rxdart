@@ -2127,6 +2127,8 @@ class Observable<T> extends Stream<T> {
   /// Emits only the first item emitted by the source [Stream]
   /// while [window] is open.
   ///
+  /// if [trailing] is true, then the last item is emitted instead
+  ///
   /// You can use the value of the last throttled event to determine
   /// the length of the next [window].
   ///
@@ -2134,18 +2136,22 @@ class Observable<T> extends Stream<T> {
   ///
   ///     new Stream.fromIterable([1, 2, 3])
   ///       .throttle((_) => TimerStream(true, const Duration(seconds: 1)))
-  Observable<T> throttle(Stream window(T event)) =>
-      transform(ThrottleStreamTransformer<T>(window));
+  Observable<T> throttle(Stream window(T event), {bool trailing = false}) =>
+      transform(ThrottleStreamTransformer<T>(window, trailing: trailing));
 
   /// Emits only the first item emitted by the source [Stream]
   /// within a time span of [duration].
+  ///
+  /// if [trailing] is true, then the last item is emitted instead
   ///
   /// ### Example
   ///
   ///     new Stream.fromIterable([1, 2, 3])
   ///       .throttleTime(const Duration(seconds: 1))
-  Observable<T> throttleTime(Duration duration) => transform(
-      ThrottleStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
+  Observable<T> throttleTime(Duration duration, {bool trailing = false}) =>
+      transform(ThrottleStreamTransformer<T>(
+          (_) => TimerStream<bool>(true, duration),
+          trailing: trailing));
 
   /// Records the time interval between consecutive values in an observable
   /// sequence.

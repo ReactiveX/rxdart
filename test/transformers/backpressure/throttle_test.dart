@@ -4,7 +4,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Observable<int> _observable() =>
-    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1);
+    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1)
+        .take(10);
 
 void main() {
   test('rx.Observable.throttle', () async {
@@ -16,6 +17,16 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
+  test('rx.Observable.throttle.trailing', () async {
+    await expectLater(
+        _observable()
+            .throttle(
+                (_) => Stream<void>.periodic(const Duration(milliseconds: 250)),
+                trailing: true)
+            .take(3),
+        emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
+  });
+
   test('rx.Observable.throttle.dynamic.window', () async {
     await expectLater(
         _observable()
@@ -24,6 +35,18 @@ void main() {
                 : Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
         emitsInOrder(<dynamic>[1, 2, 5, emitsDone]));
+  });
+
+  test('rx.Observable.throttle.dynamic.window.trailing', () async {
+    await expectLater(
+        _observable()
+            .throttle(
+                (value) => value == 1
+                    ? Stream<void>.periodic(const Duration(milliseconds: 10))
+                    : Stream<void>.periodic(const Duration(milliseconds: 250)),
+                trailing: true)
+            .take(3),
+        emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
   test('rx.Observable.throttle.reusable', () async {

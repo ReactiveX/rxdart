@@ -4,13 +4,22 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Observable<int> _observable() =>
-    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1);
+    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1)
+        .take(10);
 
 void main() {
   test('rx.Observable.throttleTime', () async {
     await expectLater(
         _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+  });
+
+  test('rx.Observable.throttleTime.trailing', () async {
+    await expectLater(
+        _observable()
+            .throttleTime(const Duration(milliseconds: 250), trailing: true)
+            .take(3),
+        emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
 
   test('rx.Observable.throttleTime.reusable', () async {
