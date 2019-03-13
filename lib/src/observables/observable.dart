@@ -84,10 +84,10 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<bool> any(bool test(T element)) =>
       AsObservableFuture<bool>(_stream.any(test));
 
-  /// Merges the given Streams into one Observable that emits a List of the
-  /// values emitted by the source Stream. This is helpful when you need to
-  /// combine a dynamic number of Streams.
-  ///
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function whenever any of the observable sequences emits an item.
+  /// This is helpful when you need to combine a dynamic number of Streams.
+  /// 
   /// The Observable will not emit any lists of values until all of the source
   /// streams have emitted at least one value.
   ///
@@ -95,11 +95,11 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatestList([
-  ///       Observable.just(1),
-  ///       Observable.fromIterable([0, 1, 2]),
-  ///     ])
-  ///     .listen(print); // prints [1, 0], [1, 1], [1, 2]
+  ///    Observable.combineLatest([
+  ///      new Observable.just("a"),
+  ///      new Observable.fromIterable(["b", "c", "d"])
+  ///    ], (list) => list.join())
+  ///    .listen(print); // prints "ab", "ac", "ad"
   static Observable<R> combineLatest<T, R>(
           Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
       Observable<R>(CombineLatestStream<T, R>(streams, combiner));
