@@ -12,7 +12,7 @@ void main() {
 
     Observable(_getStream())
         .startWithMany(const [5, 6]).listen(expectAsync1((result) {
-      expect(expectedOutput[count++], result);
+      expect(1, result);
     }, count: expectedOutput.length));
   });
 
