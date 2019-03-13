@@ -74,10 +74,14 @@ void main() {
 
   test('rx.Observable.sampleTime.pause.resume', () async {
     final controller = StreamController<int>();
-    //ignore: cancel_subscriptions
-    final subscription = Observable(_getStream())
+    StreamSubscription<int> subscription;
+
+    subscription = Observable(_getStream())
         .sampleTime(const Duration(milliseconds: 35))
-        .listen(controller.add, onDone: controller.close);
+        .listen(controller.add, onDone: () {
+      controller.close();
+      subscription.cancel();
+    });
 
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 50)));
 

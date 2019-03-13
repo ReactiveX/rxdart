@@ -71,7 +71,6 @@ void main() {
   }, skip: true);
 
   test('rx.Observable.throttle.pause.resume', () async {
-    //ignore: cancel_subscriptions
     StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
@@ -80,7 +79,10 @@ void main() {
         .throttle(
             (_) => TimerStream<bool>(true, const Duration(milliseconds: 250)))
         .take(2)
-        .listen(controller.add, onDone: controller.close);
+        .listen(controller.add, onDone: () {
+      controller.close();
+      subscription.cancel();
+    });
 
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));

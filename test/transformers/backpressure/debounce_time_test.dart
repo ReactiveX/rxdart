@@ -54,10 +54,14 @@ void main() {
 
   test('rx.Observable.debounceTime.pause.resume', () async {
     final controller = StreamController<int>();
-    //ignore: cancel_subscriptions
-    final subscription = Observable.fromIterable([1, 2, 3])
+    StreamSubscription<int> subscription;
+
+    subscription = Observable.fromIterable([1, 2, 3])
         .debounceTime(Duration(milliseconds: 100))
-        .listen(controller.add, onDone: controller.close);
+        .listen(controller.add, onDone: () {
+      controller.close();
+      subscription.cancel();
+    });
 
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 50)));
 

@@ -83,11 +83,14 @@ void main() {
 
   test('rx.Observable.sample.pause.resume', () async {
     final controller = StreamController<int>();
+    StreamSubscription<int> subscription;
 
-    //ignore: cancel_subscriptions
-    var subscription = Observable(_getStream())
+    subscription = Observable(_getStream())
         .sample(_getSampleStream())
-        .listen(controller.add, onDone: controller.close);
+        .listen(controller.add, onDone: () {
+      controller.close();
+      subscription.cancel();
+    });
 
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
