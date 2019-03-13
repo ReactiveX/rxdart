@@ -12,6 +12,15 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
+  test('rx.Observable.sequenceEqual.diffTime.equals', () async {
+    final observable = Observable.sequenceEqual(
+        Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1)
+            .take(5),
+        Stream.fromIterable(const [1, 2, 3, 4, 5]));
+
+    await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
+  });
+
   test('rx.Observable.sequenceEqual.equals.customCompare.equals', () async {
     final observable = Observable.sequenceEqual(
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
@@ -19,6 +28,15 @@ void main() {
         equals: (int a, int b) => true);
 
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
+  });
+
+  test('rx.Observable.sequenceEqual.diffTime.notEquals', () async {
+    final observable = Observable.sequenceEqual(
+        Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1)
+            .take(5),
+        Stream.fromIterable(const [1, 1, 1, 1, 1]));
+
+    await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
   test('rx.Observable.sequenceEqual.notEquals', () async {
