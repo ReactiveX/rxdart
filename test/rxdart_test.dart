@@ -107,9 +107,9 @@ import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
 import 'transformers/backpressure/debounce_test.dart' as debounce_test;
 import 'transformers/backpressure/debounce_time_test.dart'
     as debounce_time_test;
-import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;/*
+import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
 import 'transformers/backpressure/sample_test.dart' as sample_test;
-import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
+import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;/*
 import 'transformers/backpressure/throttle_test.dart' as throttle_test;
 import 'transformers/backpressure/throttle_time_test.dart'
     as throttle_time_test;
@@ -215,9 +215,9 @@ void main() {
   buffer_time_test.main();
   debounce_test.main();
   debounce_time_test.main();
-  pairwise_test.main();/*
+  pairwise_test.main();
   sample_test.main();
-  sample_time_test.main();
+  sample_time_test.main();/*
   throttle_test.main();
   throttle_time_test.main();
   window_test.main();
