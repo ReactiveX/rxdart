@@ -7,23 +7,16 @@ import 'dart:async';
 ///     new TimerStream("hi", new Duration(minutes: 1))
 ///         .listen((i) => print(i)); // print "hi" after 1 minute
 class TimerStream<T> extends Stream<T> {
-  final T value;
-  final Duration duration;
-  final StreamController<T> controller = StreamController<T>();
+  final Stream<T> stream;
 
-  TimerStream(this.value, this.duration);
+  TimerStream(T value, Duration duration)
+      : stream = Stream.fromFuture(duration != null
+            ? Future.delayed(duration, () => value)
+            : Future.value(value));
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    final subscription = controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-
-    Timer(duration, () {
-      controller.add(value);
-      controller.close();
-    });
-
-    return subscription;
-  }
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

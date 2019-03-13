@@ -1,5 +1,8 @@
 library test.rx;
 
+import 'dart:async';
+import 'dart:io';
+
 import 'futures/as_observable_future_test.dart' as as_observable_future_test;
 import 'futures/stream_max_test.dart' as stream_max_test;
 import 'futures/stream_min_test.dart' as stream_min_test;
@@ -241,4 +244,7 @@ void main() {
   replay_connectable_observable_test.main();
   publish_connectable_observable_test.main();
   composite_subscription_test.main();
+
+  // attempt to fix coverage by force-exiting?
+  Timer(const Duration(minutes: 1), () => exit(0));
 }
