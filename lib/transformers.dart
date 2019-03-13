@@ -7,7 +7,6 @@ export 'package:rxdart/src/transformers/distinct_unique.dart';
 export 'package:rxdart/src/transformers/do.dart';
 export 'package:rxdart/src/transformers/exhaust_map.dart';
 export 'package:rxdart/src/transformers/flat_map.dart';
-export 'package:rxdart/src/transformers/flat_map_latest.dart';
 export 'package:rxdart/src/transformers/group_by.dart';
 export 'package:rxdart/src/transformers/ignore_elements.dart';
 export 'package:rxdart/src/transformers/interval.dart';
