@@ -222,7 +222,7 @@ void main() {
   //throttle_test.main();
   //throttle_time_test.main();
   window_test.main();
-  win1dow_count_test.main();
+  window_count_test.main();
   window_test_test.main();
   window_time_test.main();
 
