@@ -87,7 +87,7 @@ class Observable<T> extends Stream<T> {
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an item.
   /// This is helpful when you need to combine a dynamic number of Streams.
-  /// 
+  ///
   /// The Observable will not emit any lists of values until all of the source
   /// streams have emitted at least one value.
   ///
@@ -679,9 +679,24 @@ class Observable<T> extends Stream<T> {
   /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
   /// ```
   factory Observable.retryWhen(Stream<T> streamFactory(),
-      Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) {
-    return Observable<T>(RetryWhenStream<T>(streamFactory, retryWhenFactory));
-  }
+          Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) =>
+      Observable<T>(RetryWhenStream<T>(streamFactory, retryWhenFactory));
+
+  /// Determine whether two Observables emit the same sequence of items.
+  /// You can provide an optional [equals] handler to determine equality.
+  ///
+  /// [Interactive marble diagram](https://rxmarbles.com/#sequenceEqual)
+  ///
+  /// ### Example
+  ///
+  ///     Observable.sequenceEqual([
+  ///       Stream.fromIterable([1, 2, 3, 4, 5]),
+  ///       Stream.fromIterable([1, 2, 3, 4, 5])
+  ///     ])
+  ///     .listen(print); // prints true
+  static Observable<bool> sequenceEqual<A, B>(Stream<A> stream, Stream<B> other,
+          {bool equals(A a, B b)}) =>
+      Observable(SequenceEqualStream<A, B>(stream, other, equals: equals));
 
   /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
   /// single Observable that emits the items emitted by the
