@@ -100,24 +100,6 @@ import 'transformers/where_test.dart' as where_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
-import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
-import 'transformers/backpressure/buffer_test.dart' as buffer_test;
-import 'transformers/backpressure/buffer_test_test.dart' as buffer_test_test;
-import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
-import 'transformers/backpressure/debounce_test.dart' as debounce_test;
-import 'transformers/backpressure/debounce_time_test.dart'
-    as debounce_time_test;
-import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
-import 'transformers/backpressure/sample_test.dart' as sample_test;
-import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
-import 'transformers/backpressure/throttle_test.dart' as throttle_test;
-import 'transformers/backpressure/throttle_time_test.dart'
-    as throttle_time_test;
-import 'transformers/backpressure/window_count_test.dart' as window_count_test;
-import 'transformers/backpressure/window_test.dart' as window_test;
-import 'transformers/backpressure/window_test_test.dart' as window_test_test;
-import 'transformers/backpressure/window_time_test.dart' as window_time_test;
-
 void main() {
   // Streams
   combine_latest_test.main();
