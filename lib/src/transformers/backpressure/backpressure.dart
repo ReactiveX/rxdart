@@ -257,10 +257,18 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                 onDone: onDone,
                 cancelOnError: cancelOnError);
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+          onPause: ([Future<dynamic> resumeSignal]) {
+            windowSubscription?.pause(resumeSignal);
+            subscription.pause(resumeSignal);
+          },
+          onResume: () {
+            windowSubscription?.resume();
+            subscription.resume();
+          },
+          onCancel: () {
+            windowSubscription?.cancel();
+            return subscription.cancel();
+          });
 
       return controller.stream.listen(null);
     });
