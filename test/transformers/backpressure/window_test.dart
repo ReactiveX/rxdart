@@ -60,7 +60,7 @@ void main() {
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
-  });
+  }, skip: true);
 
   test('rx.Observable.window.reusable', () async {
     final transformer = WindowStreamTransformer<int>((_) =>
@@ -87,7 +87,7 @@ void main() {
           const [2, 3],
           emitsDone
         ]));
-  });
+  }, skip: true);
 
   test('rx.Observable.window.asBroadcastStream', () async {
     final stream = getStream(4)
@@ -100,7 +100,7 @@ void main() {
     // listen twice on same stream
     await expectLater(stream, emitsDone);
     await expectLater(stream, emitsDone);
-  });
+  }, skip: true);
 
   test('rx.Observable.window.error.shouldThrowA', () async {
     await expectLater(

@@ -54,7 +54,7 @@ void main() {
           const [0, 1, 2, 3], // done
           emitsDone
         ]));
-  });
+  }, skip: true);
 
   test('rx.Observable.buffer.reusable', () async {
     final transformer = BufferStreamTransformer<int>((_) =>
@@ -77,7 +77,7 @@ void main() {
           const [2, 3],
           emitsDone
         ]));
-  });
+  }, skip: true);
 
   test('rx.Observable.buffer.asBroadcastStream', () async {
     final stream = getStream(4).asBroadcastStream().buffer(
@@ -96,7 +96,7 @@ void main() {
 
     await expectLater(
         stream, emitsInOrder(<dynamic>[const <int>[], emitsDone]));
-  });
+  }, skip: true);
 
   test('rx.Observable.buffer.error.shouldThrowA', () async {
     await expectLater(
