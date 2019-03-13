@@ -8,7 +8,6 @@ Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3, 4]);
 void main() {
   test('rx.Observable.startWithMany', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
-    var count = 0;
 
     Observable(_getStream())
         .startWithMany(const [5, 6]).listen(expectAsync1((result) {
