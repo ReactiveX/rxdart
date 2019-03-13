@@ -77,11 +77,11 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       StreamController<T> controller;
       StreamSubscription<S> subscription;
       StreamSubscription windowSubscription;
-      var skip = 0;
 
       controller = StreamController<T>(
           sync: true,
           onListen: () {
+            var skip = 0;
             // the Queue which is built while a Window frame is open
             final queue = Queue<S>();
             // handles the start of a Window frame
@@ -163,6 +163,8 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             // tries to create a new Stream from the window factory method
             final buildStream = (S event) {
               Stream stream;
+
+              windowSubscription?.cancel();
 
               try {
                 stream = windowStreamFactory(event);

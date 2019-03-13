@@ -72,8 +72,7 @@ void main() {
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    //ignore: unawaited_futures
-    Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
+    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(() =>
         subscription
             .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
   });
