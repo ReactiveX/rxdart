@@ -87,7 +87,7 @@ class Observable<T> extends Stream<T> {
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an item.
   /// This is helpful when you need to combine a dynamic number of Streams.
-  /// 
+  ///
   /// The Observable will not emit any lists of values until all of the source
   /// streams have emitted at least one value.
   ///
@@ -464,6 +464,271 @@ class Observable<T> extends Stream<T> {
   factory Observable.eventTransformed(
           Stream<T> source, EventSink<T> mapSink(EventSink<T> sink)) =>
       Observable<T>((Stream<T>.eventTransformed(source, mapSink)));
+
+  ///  Creates an [Observable] where all last events of existing stream(s) are piped
+  ///  through a sink-transformation.
+  ///
+  /// This operator is best used when you have a group of observables
+  /// and only care about the final emitted value of each.
+  /// One common use case for this is if you wish to issue multiple
+  /// requests on page load (or some other event)
+  /// and only want to take action when a response has been received for all.
+  ///
+  /// In this way it is similar to how you might use [Future].wait.
+  ///
+  /// Be aware that if any of the inner observables supplied to forkJoin error
+  /// you will lose the value of any other observables that would or have already
+  /// completed if you do not catch the error correctly on the inner observable.
+  ///
+  /// If you are only concerned with all inner observables completing
+  /// successfully you can catch the error on the outside.
+  /// It's also worth noting that if you have an observable
+  /// that emits more than one item, and you are concerned with the previous
+  /// emissions forkJoin is not the correct choice.
+  ///
+  /// In these cases you may better off with an operator like combineLatest or zip.
+  ///
+  /// ### Example
+  ///
+  ///    Observable.forkJoin([
+  ///      new Observable.just("a"),
+  ///      new Observable.fromIterable(["b", "c", "d"])
+  ///    ], (list) => list.join(', '))
+  ///    .listen(print); // prints "a, d"
+  static Observable<R> forkJoin<T, R>(
+          Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
+      Observable<R>(ForkJoinStream<T, R>(streams, combiner));
+
+  /// Merges the given Streams into one Observable that emits a List of the
+  /// last values emitted by the source stream(s). This is helpful when you need to
+  /// forkJoin a dynamic number of Streams.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoinList([
+  ///       Observable.just(1),
+  ///       Observable.fromIterable([0, 1, 2]),
+  ///     ])
+  ///     .listen(print); // prints [1, 2]
+  static Observable<List<T>> forkJoinList<T>(Iterable<Stream<T>> streams) =>
+      Observable<List<T>>(ForkJoinStream.list<T>(streams));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin2(
+  ///       new Observable.just(1),
+  ///       new Observable.fromIterable([0, 1, 2]),
+  ///       (a, b) => a + b)
+  ///     .listen(print); //prints 3
+  static Observable<T> forkJoin2<A, B, T>(
+          Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
+      Observable<T>(ForkJoinStream.combine2(streamA, streamB, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin3(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.fromIterable(["c", "d"]),
+  ///       (a, b, c) => a + b + c)
+  ///     .listen(print); //prints "abd"
+  static Observable<T> forkJoin3<A, B, C, T>(Stream<A> streamA,
+          Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
+      Observable<T>(
+          ForkJoinStream.combine3(streamA, streamB, streamC, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin4(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.fromIterable(["d", "e"]),
+  ///       (a, b, c, d) => a + b + c + d)
+  ///     .listen(print); //prints "abce"
+  static Observable<T> forkJoin4<A, B, C, D, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          T combiner(A a, B b, C c, D d)) =>
+      Observable<T>(ForkJoinStream.combine4(
+          streamA, streamB, streamC, streamD, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin5(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.fromIterable(["e", "f"]),
+  ///       (a, b, c, d, e) => a + b + c + d + e)
+  ///     .listen(print); //prints "abcdf"
+  static Observable<T> forkJoin5<A, B, C, D, E, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          T combiner(A a, B b, C c, D d, E e)) =>
+      Observable<T>(ForkJoinStream.combine5(
+          streamA, streamB, streamC, streamD, streamE, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin6(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.fromIterable(["f", "g"]),
+  ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
+  ///     .listen(print); //prints "abcdeg"
+  static Observable<T> forkJoin6<A, B, C, D, E, F, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          T combiner(A a, B b, C c, D d, E e, F f)) =>
+      Observable<T>(ForkJoinStream.combine6(
+          streamA, streamB, streamC, streamD, streamE, streamF, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin7(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.fromIterable(["g", "h"]),
+  ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
+  ///     .listen(print); //prints "abcdefh"
+  static Observable<T> forkJoin7<A, B, C, D, E, F, G, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
+      Observable<T>(ForkJoinStream.combine7(streamA, streamB, streamC, streamD,
+          streamE, streamF, streamG, combiner));
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin8(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.fromIterable(["h", "i"]),
+  ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
+  ///     .listen(print); //prints "abcdefgi"
+  static Observable<T> forkJoin8<A, B, C, D, E, F, G, H, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
+          T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+      Observable<T>(
+        ForkJoinStream.combine8(
+          streamA,
+          streamB,
+          streamC,
+          streamD,
+          streamE,
+          streamF,
+          streamG,
+          streamH,
+          combiner,
+        ),
+      );
+
+  /// Merges the given Streams into one Observable sequence by using the
+  /// [combiner] function when all of the observable sequences emits their
+  /// last item.
+  ///
+  /// ### Example
+  ///
+  ///     Observable.forkJoin9(
+  ///       new Observable.just("a"),
+  ///       new Observable.just("b"),
+  ///       new Observable.just("c"),
+  ///       new Observable.just("d"),
+  ///       new Observable.just("e"),
+  ///       new Observable.just("f"),
+  ///       new Observable.just("g"),
+  ///       new Observable.just("h"),
+  ///       new Observable.fromIterable(["i", "j"]),
+  ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
+  ///     .listen(print); //prints "abcdefghj"
+  static Observable<T> forkJoin9<A, B, C, D, E, F, G, H, I, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          Stream<E> streamE,
+          Stream<F> streamF,
+          Stream<G> streamG,
+          Stream<H> streamH,
+          Stream<I> streamI,
+          T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+      Observable<T>(
+        ForkJoinStream.combine9(
+          streamA,
+          streamB,
+          streamC,
+          streamD,
+          streamE,
+          streamF,
+          streamG,
+          streamH,
+          streamI,
+          combiner,
+        ),
+      );
 
   /// Creates an Observable from the future.
   ///
