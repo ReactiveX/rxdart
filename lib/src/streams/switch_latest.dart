@@ -38,9 +38,7 @@ class SwitchLatestStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_controller == null) {
-      _controller = _buildController(streams, cancelOnError);
-    }
+    _controller ??= _buildController(streams, cancelOnError);
 
     return _controller.stream.listen(
       onData,
@@ -62,34 +60,36 @@ class SwitchLatestStream<T> extends Stream<T> {
     controller = StreamController<T>(
         sync: true,
         onListen: () {
+          final closeLeft = () {
+            leftClosed = true;
+
+            if (rightClosed || !hasMainEvent) controller.close();
+          };
+
+          final closeRight = () {
+            rightClosed = true;
+
+            if (leftClosed) controller.close();
+          };
+
           subscription = streams.listen(
-            (Stream<T> value) {
+            (stream) {
               try {
                 otherSubscription?.cancel();
 
                 hasMainEvent = true;
 
-                otherSubscription = value.listen(
+                otherSubscription = stream.listen(
                   controller.add,
                   onError: controller.addError,
-                  onDone: () {
-                    rightClosed = true;
-
-                    if (leftClosed) controller.close();
-                  },
+                  onDone: closeRight,
                 );
               } catch (e, s) {
                 controller.addError(e, s);
               }
             },
             onError: controller.addError,
-            onDone: () {
-              leftClosed = true;
-
-              if (rightClosed || !hasMainEvent) {
-                controller.close();
-              }
-            },
+            onDone: closeLeft,
             cancelOnError: cancelOnError,
           );
         },

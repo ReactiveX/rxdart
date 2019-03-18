@@ -32,51 +32,46 @@ class RaceStream<T> extends Stream<T> {
       throw ArgumentError('provide at least 1 stream');
     }
 
-    final subscriptions = <StreamSubscription<T>>[];
-    var isDisambiguated = false;
-
+    List<StreamSubscription<T>> subscriptions;
     StreamController<T> controller;
 
     controller = StreamController<T>(
         sync: true,
         onListen: () {
-          void doUpdate(int i, T value) {
-            try {
-              if (!isDisambiguated)
-                for (var k = subscriptions.length - 1; k >= 0; k--) {
-                  if (k != i) {
-                    subscriptions[k].cancel();
-                    subscriptions.removeAt(k);
-                  }
+          var index = 0;
+
+          final reduceToWinner = (int winnerIndex) {
+            //ignore: cancel_subscriptions
+            final winner = subscriptions.removeAt(winnerIndex);
+
+            subscriptions.forEach((subscription) => subscription.cancel());
+
+            subscriptions = [winner];
+          };
+
+          final doUpdate = (int index) => (T value) {
+                try {
+                  if (subscriptions.length > 1) reduceToWinner(index);
+
+                  controller.add(value);
+                } catch (e, s) {
+                  controller.addError(e, s);
                 }
+              };
 
-              isDisambiguated = true;
-
-              controller.add(value);
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          }
-
-          for (var i = 0, len = streams.length; i < len; i++) {
-            var stream = streams.elementAt(i);
-
-            subscriptions.add(stream.listen((T value) => doUpdate(i, value),
-                onError: controller.addError,
-                onDone: () => controller.close()));
-          }
+          subscriptions = streams
+              .map((stream) => stream.listen(doUpdate(index++),
+                  onError: controller.addError, onDone: controller.close))
+              .toList();
         },
-        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-            (StreamSubscription<T> subscription) =>
-                subscription.pause(resumeSignal)),
-        onResume: () => subscriptions.forEach(
-            (StreamSubscription<T> subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(
-                subscriptions.map((StreamSubscription<T> subscription) {
-              if (subscription != null) return subscription.cancel();
-
-              return Future<dynamic>.value();
-            }).where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () =>
+            subscriptions.forEach((subscription) => subscription.resume()),
+        onCancel: () => Future.wait<dynamic>(subscriptions
+            .where((subscription) => subscription != null)
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null)));
 
     return controller;
   }

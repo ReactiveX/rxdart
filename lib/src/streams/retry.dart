@@ -22,12 +22,11 @@ import 'package:rxdart/src/streams/utils.dart';
 ///        }, 1)
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
-  final StreamFactory<T> streamFactory;
+  final Stream<T> Function() streamFactory;
   int count;
   int retryStep = 0;
   StreamController<T> controller;
   StreamSubscription<T> subscription;
-  bool _isUsed = false;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
   RetryStream(this.streamFactory, [this.count]);
@@ -39,10 +38,31 @@ class RetryStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw StateError("Stream has already been listened to.");
-    _isUsed = true;
+    void Function([int]) retry;
 
-    controller = StreamController<T>(
+    final combinedErrors = () => RetryError.withCount(
+          count,
+          _errors,
+        );
+
+    retry = ([_]) {
+      subscription = streamFactory().listen(controller.add,
+          onError: (dynamic e, StackTrace s) {
+        subscription.cancel();
+
+        _errors.add(ErrorAndStacktrace(e, s));
+
+        if (count == retryStep) {
+          controller
+            ..addError(combinedErrors())
+            ..close();
+        } else {
+          retry(++retryStep);
+        }
+      }, onDone: controller.close, cancelOnError: false);
+    };
+
+    controller ??= StreamController<T>(
         sync: true,
         onListen: retry,
         onPause: ([Future<dynamic> resumeSignal]) =>
@@ -56,24 +76,5 @@ class RetryStream<T> extends Stream<T> {
       onDone: onDone,
       cancelOnError: cancelOnError,
     );
-  }
-
-  void retry() {
-    subscription = streamFactory().listen(controller.add,
-        onError: (dynamic e, StackTrace s) {
-      subscription.cancel();
-
-      if (count == retryStep) {
-        controller.addError(RetryError(
-          'Received an error after attempting $count retries',
-          _errors..add(ErrorAndStacktrace(e, s)),
-        ));
-        controller.close();
-      } else {
-        retryStep++;
-        _errors.add(ErrorAndStacktrace(e, s));
-        retry();
-      }
-    }, onDone: controller.close, cancelOnError: false);
   }
 }

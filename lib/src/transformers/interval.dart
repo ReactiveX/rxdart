@@ -17,38 +17,48 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
   @override
   Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) =>
+      StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
+        StreamController<T> controller;
+        StreamSubscription<T> subscription;
+        Future<T> onInterval;
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((T value) {
-              try {
-                final completer = Completer<T>();
+        final combinedWait = (Future<dynamic> resumeSignal) {
+          if (resumeSignal != null && onInterval != null)
+            return Future.wait<dynamic>([onInterval, resumeSignal]);
 
-                Timer(duration, () => completer.complete(value));
+          if (onInterval != null) return onInterval;
 
-                subscription.pause(completer.future.then<T>((T event) {
-                  controller.add(event);
+          return resumeSignal;
+        };
 
-                  return event;
-                }));
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
+        controller = StreamController<T>(
+            sync: true,
+            onListen: () {
+              subscription = input.listen((value) {
+                try {
+                  onInterval = Future.delayed(duration, () => value);
+
+                  // no need to call combinedWait here,
+                  // if the main subscription is paused, then
+                  // there can never be an event in that pause time frame
+                  subscription.pause(onInterval
+                      .then(controller.add)
+                      .whenComplete(() => onInterval = null));
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              },
+                  onError: controller.addError,
+                  onDone: controller.close,
+                  cancelOnError: cancelOnError);
             },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: () => subscription.pause(),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            // await also onInterval, if it is active
+            onPause: ([Future<dynamic> resumeSignal]) =>
+                subscription.pause(combinedWait(resumeSignal)),
+            onResume: () => subscription.resume(),
+            onCancel: () => subscription.cancel());
 
-      return controller.stream.listen(null);
-    });
-  }
+        return controller.stream.listen(null);
+      });
 }

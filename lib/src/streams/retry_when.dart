@@ -60,11 +60,10 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
 /// ```
 class RetryWhenStream<T> extends Stream<T> {
-  final StreamFactory<T> streamFactory;
+  final Stream<T> Function() streamFactory;
   final RetryWhenStreamFactory retryWhenFactory;
   StreamController<T> controller;
   StreamSubscription<T> subscription;
-  bool _isUsed = false;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
   RetryWhenStream(this.streamFactory, this.retryWhenFactory);
@@ -76,12 +75,9 @@ class RetryWhenStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw StateError('Stream has already been listened to.');
-    _isUsed = true;
-
-    controller = StreamController<T>(
+    controller ??= StreamController<T>(
       sync: true,
-      onListen: retry,
+      onListen: _retry,
       onPause: ([Future<dynamic> resumeSignal]) =>
           subscription.pause(resumeSignal),
       onResume: () => subscription.resume(),
@@ -96,26 +92,26 @@ class RetryWhenStream<T> extends Stream<T> {
     );
   }
 
-  void retry() {
+  void _retry() {
     subscription = streamFactory().listen(
       controller.add,
-      onError: (dynamic e, StackTrace s) {
+      onError: (Object e, [StackTrace s]) {
         subscription.cancel();
 
         StreamSubscription<void> sub;
         sub = retryWhenFactory(e, s).listen(
-          (dynamic event) {
+          (event) {
             sub.cancel();
             _errors.add(ErrorAndStacktrace(e, s));
-            retry();
+            _retry();
           },
-          onError: (dynamic e, StackTrace s) {
+          onError: (Object e, [StackTrace s]) {
             sub.cancel();
-            controller.addError(RetryError(
-              'Received an error after attempting to retry.',
-              _errors..add(ErrorAndStacktrace(e, s)),
-            ));
-            controller.close();
+            controller
+              ..addError(RetryError.onReviveFailed(
+                _errors..add(ErrorAndStacktrace(e, s)),
+              ))
+              ..close();
           },
         );
       },
