@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 /// Merges the specified streams into one observable sequence using the given
 /// zipper function whenever all of the observable sequences have produced
