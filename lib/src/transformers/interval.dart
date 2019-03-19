@@ -23,14 +23,10 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
         StreamSubscription<T> subscription;
         Future<T> onInterval;
 
-        final combinedWait = (Future<dynamic> resumeSignal) {
-          if (resumeSignal != null && onInterval != null)
-            return Future.wait<dynamic>([onInterval, resumeSignal]);
-
-          if (onInterval != null) return onInterval;
-
-          return resumeSignal;
-        };
+        final combinedWait = (Future<dynamic> resumeSignal) =>
+            (resumeSignal != null && onInterval != null)
+                ? Future.wait<dynamic>([onInterval, resumeSignal])
+                : resumeSignal;
 
         controller = StreamController<T>(
             sync: true,
