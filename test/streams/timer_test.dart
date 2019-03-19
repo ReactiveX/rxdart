@@ -35,6 +35,17 @@ void main() {
     subscription.resume();
   });
 
+  test('TimerStream.single.subscription', () async {
+    final observable = TimerStream(null, Duration(milliseconds: 1));
+
+    try {
+      observable.listen(null);
+      observable.listen(null);
+    } catch (e) {
+      await expectLater(e, isStateError);
+    }
+  });
+
   test('TimerStream.cancel', () async {
     const value = 1;
     StreamSubscription<int> subscription;

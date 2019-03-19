@@ -7,14 +7,12 @@ import 'dart:async';
 ///     new TimerStream("hi", new Duration(minutes: 1))
 ///         .listen((i) => print(i)); // print "hi" after 1 minute
 class TimerStream<T> extends Stream<T> {
-  final T _value;
-  final Duration _duration;
   final Stream<T> Function() _streamFactory;
 
-  TimerStream(this._value, this._duration)
+  TimerStream(T value, Duration duration)
       : _streamFactory = (() {
           final stream =
-              Stream.fromFuture(Future.delayed(_duration, () => _value));
+              Stream.fromFuture(Future.delayed(duration, () => value));
 
           return () => stream;
         })();
