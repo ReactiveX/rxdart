@@ -9,12 +9,19 @@ import 'dart:async';
 class TimerStream<T> extends Stream<T> {
   final T _value;
   final Duration _duration;
+  final Stream<T> Function() _streamFactory;
 
-  TimerStream(this._value, this._duration);
+  TimerStream(this._value, this._duration)
+      : _streamFactory = (() {
+          final stream =
+              Stream.fromFuture(Future.delayed(_duration, () => _value));
+
+          return () => stream;
+        })();
 
   @override
   StreamSubscription<T> listen(void onData(T event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      Stream.fromFuture(Future.delayed(_duration, () => _value)).listen(onData,
+      _streamFactory().listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }
