@@ -17,7 +17,6 @@ class RepeatStream<T> extends Stream<T> {
   int repeatStep = 0;
   StreamController<T> controller;
   StreamSubscription<T> subscription;
-  bool _isUsed = false;
 
   RepeatStream(this.streamFactory, [this.count]);
 
@@ -28,10 +27,7 @@ class RepeatStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    if (_isUsed) throw StateError("Stream has already been listened to.");
-    _isUsed = true;
-
-    controller = StreamController<T>(
+    controller ??= StreamController<T>(
         sync: true,
         onListen: maybeRepeatNext,
         onPause: ([Future<dynamic> resumeSignal]) =>

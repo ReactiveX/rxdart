@@ -106,7 +106,7 @@ void main() {
   });
 }
 
-StreamFactory<int> _sourceStream(int i, [int throwAt]) {
+Stream<int> Function() _sourceStream(int i, [int throwAt]) {
   return throwAt == null
       ? () => Observable.fromIterable(range(i))
       : () => Observable.fromIterable(range(i))
@@ -118,7 +118,7 @@ Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
 
 Stream<void> _neverThrow(dynamic e, StackTrace s) => Observable.just('');
 
-StreamFactory<int> _getStreamWithExtras(int failCount) {
+Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;
 
   return () {

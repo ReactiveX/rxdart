@@ -107,7 +107,7 @@ void main() {
   });
 }
 
-StreamFactory<int> _getRetryStream(int failCount) {
+Stream<int> Function() _getRetryStream(int failCount) {
   var count = 0;
 
   return () {
@@ -120,7 +120,7 @@ StreamFactory<int> _getRetryStream(int failCount) {
   };
 }
 
-StreamFactory<int> _getStreamWithExtras(int failCount) {
+Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;
 
   return () {

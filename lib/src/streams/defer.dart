@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/utils.dart';
-
 /// The defer factory waits until an observer subscribes to it, and then it
 /// creates an Observable with the given factory function.
 ///
@@ -16,24 +14,25 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 ///     new DeferStream(() => new Observable.just(1)).listen(print); //prints 1
 class DeferStream<T> extends Stream<T> {
-  final StreamFactory<T> _streamFactory;
+  final Stream<T> Function() _factory;
   final bool _isReusable;
-  bool _isUsed = false;
 
   @override
   bool get isBroadcast => _isReusable;
 
-  DeferStream(this._streamFactory, {bool reusable = false})
-      : _isReusable = reusable;
+  DeferStream(Stream<T> streamFactory(), {bool reusable = false})
+      : _isReusable = reusable,
+        _factory = reusable
+            ? (() => streamFactory())
+            : (() {
+                final stream = streamFactory();
+
+                return () => stream;
+              }());
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    if (_isUsed && !_isReusable)
-      throw StateError("Stream has already been listened to.");
-    _isUsed = true;
-
-    return _streamFactory().listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      _factory().listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }
