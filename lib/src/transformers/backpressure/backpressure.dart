@@ -2,6 +2,16 @@ import 'dart:async';
 
 import 'dart:collection';
 
+/// window strategy is used to determine how and when a new window is created:
+/// [WindowStrategy.everyEvent] cancels the open window (if any) and
+/// immediately opens a fresh one.
+/// [WindowStrategy.eventAfterLastWindow] waits until the current open
+/// window completes, then when the source [Stream] emits a next event,
+/// it opens a new window.
+/// [WindowStrategy.firstEventOnly] opens a recurring window right after
+/// the very first event on the source [Stream] is emitted.
+/// [WindowStrategy.onHandler] does not open any windows, rather all events
+/// are buffered and emitted whenever the handler triggers.
 enum WindowStrategy {
   everyEvent,
   eventAfterLastWindow,
