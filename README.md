@@ -94,6 +94,7 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 
 ##### Available Static Methods
 - [combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) / [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combineLatest2, combineLatest... combineLatest9) 
+- [forkJoin](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html) / [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (forkJoin2, forkJoin... forkJoin9) 
 - [range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html) / [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html)
 - [tween](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/tween.html) / [TweenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TweenStream-class.html)
 - [zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html) / [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9)

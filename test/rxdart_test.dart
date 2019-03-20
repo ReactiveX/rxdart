@@ -19,6 +19,7 @@ import 'streams/defer_test.dart' as defer_test;
 import 'streams/empty_test.dart' as empty_test;
 import 'streams/error_test.dart' as error_test;
 import 'streams/event_transformed_test.dart' as event_transformed_test;
+import 'streams/fork_join_test.dart' as fork_join_test;
 import 'streams/from_future_test.dart' as from_future_test;
 import 'streams/from_iterable_test.dart' as from_iterable_test;
 import 'streams/just_test.dart' as just_test;
@@ -125,6 +126,7 @@ void main() {
   empty_test.main();
   error_test.main();
   event_transformed_test.main();
+  fork_join_test.main();
   from_future_test.main();
   from_iterable_test.main();
   just_test.main();
