@@ -2,20 +2,18 @@ import 'dart:async';
 
 import 'dart:collection';
 
-/// window strategy is used to determine how and when a new window is created:
-/// [WindowStrategy.everyEvent] cancels the open window (if any) and
-/// immediately opens a fresh one.
-/// [WindowStrategy.eventAfterLastWindow] waits until the current open
-/// window completes, then when the source [Stream] emits a next event,
-/// it opens a new window.
-/// [WindowStrategy.firstEventOnly] opens a recurring window right after
-/// the very first event on the source [Stream] is emitted.
-/// [WindowStrategy.onHandler] does not open any windows, rather all events
-/// are buffered and emitted whenever the handler triggers.
+/// The strategy that is used to determine how and when a new window is created.
 enum WindowStrategy {
+  /// cancels the open window (if any) and immediately opens a fresh one.
   everyEvent,
+  /// waits until the current open window completes, then when the
+  /// source [Stream] emits a next event, it opens a new window.
   eventAfterLastWindow,
+  /// opens a recurring window right after the very first event on
+  /// the source [Stream] is emitted.
   firstEventOnly,
+  /// does not open any windows, rather all events are buffered and emitted
+  /// whenever the handler triggers, after this trigger, the buffer is cleared.
   onHandler
 }
 
@@ -25,17 +23,9 @@ enum WindowStrategy {
 /// The [StreamTransformer] works by creating windows, during which it
 /// buffers events to a [Queue].
 ///
-/// strategy is used to determine how and when a new window is created:
-/// [WindowStrategy.everyEvent] cancels the open window (if any) and
-/// immediately opens a fresh one.
-/// [WindowStrategy.eventAfterLastWindow] waits until the current open
-/// window completes, then when the source [Stream] emits a next event,
-/// it opens a new window.
-/// [WindowStrategy.firstEventOnly] opens a recurring window right after
-/// the very first event on the source [Stream] is emitted.
-/// [WindowStrategy.onHandler] does not open any windows, rather all events
-/// are buffered and emitted whenever closeWindowWhen triggers.
-/// When closeWindowWhen triggers, the active buffer is cleared.
+/// The [StreamTransformer] works by creating windows, during which it
+/// buffers events to a [Queue]. It uses a  [WindowStrategy] to determine
+/// how and when a new window is created.
 ///
 /// onWindowStart and onWindowEnd are handlers that fire when a window
 /// opens and closes, right before emitting the transformed event.
