@@ -19,6 +19,7 @@ import 'streams/defer_test.dart' as defer_test;
 import 'streams/empty_test.dart' as empty_test;
 import 'streams/error_test.dart' as error_test;
 import 'streams/event_transformed_test.dart' as event_transformed_test;
+import 'streams/fork_join_test.dart' as fork_join_test;
 import 'streams/from_future_test.dart' as from_future_test;
 import 'streams/from_iterable_test.dart' as from_iterable_test;
 import 'streams/just_test.dart' as just_test;
@@ -31,6 +32,7 @@ import 'streams/repeat_test.dart' as repeat_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
+import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -127,6 +129,7 @@ void main() {
   empty_test.main();
   error_test.main();
   event_transformed_test.main();
+  fork_join_test.main();
   from_future_test.main();
   from_iterable_test.main();
   just_test.main();
@@ -139,6 +142,7 @@ void main() {
   retry_test.main();
   retry_when_test.main();
   stream_test.main();
+  sequence_equals_test.main();
   switch_latest_test.main();
   zip_test.main();
 

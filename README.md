@@ -84,6 +84,7 @@ var myObservable = new Observable(myStream);
 - [repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.repeat.html) / [RepeatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RepeatStream-class.html)
 - [retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html) / [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html)
 - [retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retryWhen.html) / [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html)
+- [sequenceEqual](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.sequenceEqual.html) / [SequenceEqualStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SequenceEqualStream-class.html)
 - [switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html) / [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html)
 - [timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html) / [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html)
 
@@ -94,6 +95,7 @@ var myObservable = new Observable.merge([myFirstStream, mySecondStream]);
 
 ##### Available Static Methods
 - [combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) / [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combineLatest2, combineLatest... combineLatest9) 
+- [forkJoin](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html) / [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (forkJoin2, forkJoin... forkJoin9) 
 - [range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html) / [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html)
 - [tween](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/tween.html) / [TweenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TweenStream-class.html)
 - [zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html) / [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9)

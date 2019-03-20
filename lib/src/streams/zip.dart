@@ -234,63 +234,95 @@ class ZipStream<T, R> extends StreamView<R> {
   ) {
     {
       StreamController<R> controller;
-      final subscriptions = List<StreamSubscription<T>>(streams.length);
+      final len = streams.length;
+      List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
 
       controller = StreamController<R>(
           sync: true,
           onListen: () {
             try {
-              final values = List<List<T>>.generate(streams.length, (_) => []);
-              final completedStatus =
-                  List.generate(streams.length, (_) => false);
+              Completer<void> completeCurrent;
+              final window = _Window<T>(len);
+              var index = 0;
 
-              void doUpdate(int index, T value) {
-                values[index].add(value);
+              // resets variables for the next zip window
+              final next = () {
+                completeCurrent?.complete();
 
-                if (values.every((v) => v.isNotEmpty)) {
-                  try {
-                    controller.add(zipper(
-                        values.fold([], (prev, vals) => prev..add(vals[0]))));
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
+                completeCurrent = Completer<List<T>>();
 
-                  values.forEach((v) => v..removeAt(0));
-                }
-              }
+                pendingSubscriptions = subscriptions.toList();
+              };
 
-              void markDone(int i) {
-                completedStatus[i] = true;
+              final doUpdate = (int index) => (T value) {
+                    window.onValue(index, value);
 
-                if (completedStatus.reduce((bool a, bool b) => a && b))
-                  controller.close();
-              }
+                    if (window.isComplete) {
+                      // all streams emitted for the current zip index
+                      // dispatch event and reset for next
+                      try {
+                        controller.add(zipper(window.flush()));
+                        // reset for next zip event
+                        next();
+                      } catch (e, s) {
+                        controller.addError(e, s);
+                      }
+                    } else {
+                      // other streams are still pending to get to the next
+                      // zip event index.
+                      // pause this subscription while we await the others
+                      //ignore: cancel_subscriptions
+                      final subscription = subscriptions[index]
+                        ..pause(completeCurrent.future);
 
-              for (var i = 0, len = streams.length; i < len; i++) {
-                var stream = streams.elementAt(i);
+                      pendingSubscriptions.remove(subscription);
+                    }
+                  };
 
-                subscriptions[i] = stream.listen(
-                    (T value) => doUpdate(i, value),
-                    onError: controller.addError,
-                    onDone: () => markDone(i));
-              }
+              subscriptions = streams
+                  .map((stream) => stream.listen(doUpdate(index++),
+                      onError: controller.addError, onDone: controller.close))
+                  .toList(growable: false);
+
+              next();
             } catch (e, s) {
               controller.addError(e, s);
             }
           },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
-                  (StreamSubscription<dynamic> subscription) =>
-                      subscription.pause(resumeSignal)),
-          onResume: () =>
-              subscriptions.where((StreamSubscription<dynamic> subscription) => subscription != null).forEach(
-                  (StreamSubscription<dynamic> subscription) =>
-                      subscription.resume()),
+          onPause: ([Future<dynamic> resumeSignal]) => pendingSubscriptions
+              .forEach((subscription) => subscription.pause(resumeSignal)),
+          onResume: () => pendingSubscriptions
+              .forEach((subscription) => subscription.resume()),
           onCancel: () => Future.wait<dynamic>(subscriptions
-              .map((StreamSubscription<dynamic> subscription) => subscription.cancel())
-              .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+              .map((subscription) => subscription.cancel())
+              .where((cancelFuture) => cancelFuture != null)));
 
       return controller;
     }
+  }
+}
+
+/// A window keeps track of the values emitted by the different
+/// zipped Streams.
+class _Window<T> {
+  final int size;
+  final List<T> _values;
+
+  int _valuesReceived = 0;
+
+  bool get isComplete => _valuesReceived == size;
+
+  _Window(this.size) : _values = List<T>(size);
+
+  void onValue(int index, T value) {
+    _values[index] = value;
+
+    _valuesReceived++;
+  }
+
+  List<T> flush() {
+    _valuesReceived = 0;
+
+    return List.unmodifiable(_values);
   }
 }

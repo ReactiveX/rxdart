@@ -40,35 +40,55 @@ class ConcatEagerStream<T> extends Stream<T> {
       throw ArgumentError('One of the provided streams is null');
     }
 
-    final subscriptions = List<StreamSubscription<T>>(streams.length);
-    final completeEvents =
-        streams != null ? List<Completer<dynamic>>(streams.length) : null;
+    final len = streams.length;
+    final completeEvents = List.generate(len, (_) => Completer<dynamic>());
+    List<StreamSubscription<T>> subscriptions;
     StreamController<T> controller;
+    //ignore: cancel_subscriptions
+    StreamSubscription<T> activeSubscription;
 
     controller = StreamController<T>(
         sync: true,
         onListen: () {
-          for (var i = 0, len = streams.length; i < len; i++) {
-            completeEvents[i] = Completer<dynamic>();
+          var index = -1, completed = 0;
 
-            subscriptions[i] = streams.elementAt(i).listen(controller.add,
-                onError: controller.addError, onDone: () {
-              completeEvents[i].complete();
+          final onDone = (int index) {
+            final completer = completeEvents[index];
 
-              if (i == len - 1) controller.close();
-            });
+            return () {
+              completer.complete();
 
-            if (i > 0) subscriptions[i].pause(completeEvents[i - 1].future);
-          }
+              if (++completed == len)
+                controller.close();
+              else
+                activeSubscription = subscriptions[index + 1];
+            };
+          };
+
+          final createSubscription = (Stream<T> stream) {
+            index++;
+            //ignore: cancel_subscriptions
+            final subscription = stream.listen(controller.add,
+                onError: controller.addError, onDone: onDone(index));
+
+            // pause all subscriptions, except the first, initially
+            if (index > 0) subscription.pause(completeEvents[index - 1].future);
+
+            return subscription;
+          };
+
+          subscriptions =
+              streams.map(createSubscription).toList(growable: false);
+
+          // initially, the very first subscription is the active one
+          activeSubscription = subscriptions.first;
         },
-        onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-            (StreamSubscription<T> subscription) =>
-                subscription.pause(resumeSignal)),
-        onResume: () => subscriptions.forEach(
-            (StreamSubscription<T> subscription) => subscription.resume()),
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            activeSubscription.pause(resumeSignal),
+        onResume: () => activeSubscription.resume(),
         onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((StreamSubscription<T> subscription) => subscription.cancel())
-            .where((Future<dynamic> cancelFuture) => cancelFuture != null)));
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null)));
 
     return controller;
   }

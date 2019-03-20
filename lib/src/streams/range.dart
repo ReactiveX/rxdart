@@ -16,18 +16,16 @@ class RangeStream extends Stream<int> {
 
   @override
   StreamSubscription<int> listen(void onData(int event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static Stream<int> buildStream(int startInclusive, int endInclusive) {
     final length = (endInclusive - startInclusive).abs() + 1;
+    final nextValue = (int index) => startInclusive > endInclusive
+        ? startInclusive - index
+        : startInclusive + index;
 
-    return Stream.fromIterable(List.generate(
-        length,
-        (int i) => startInclusive > endInclusive
-            ? startInclusive - i
-            : startInclusive + i));
+    return Stream.fromIterable(List.generate(length, nextValue));
   }
 }

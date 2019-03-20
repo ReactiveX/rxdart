@@ -18,16 +18,15 @@ void main() {
     });
 
     test('starts emitting again after previous Stream is complete', () async {
-      var calls = 0;
-      final observable = Observable.range(0, 9)
-          .interval(Duration(milliseconds: 20))
-          .exhaustMap((i) {
-        calls++;
-        return Observable.timer(i, Duration(milliseconds: 100));
+      final observable =
+          Observable.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+              .interval(Duration(milliseconds: 30))
+              .exhaustMap((i) async* {
+        yield await Future.delayed(Duration(milliseconds: 70), () => i);
       });
 
-      await expectLater(observable, emitsInOrder(<dynamic>[0, 5, emitsDone]));
-      await expectLater(calls, 2);
+      await expectLater(
+          observable, emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
     });
 
     test('is reusable', () async {

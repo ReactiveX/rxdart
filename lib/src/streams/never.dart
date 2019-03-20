@@ -19,8 +19,7 @@ class NeverStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      controller.stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

@@ -259,54 +259,56 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R combiner(List<T> values),
   ) {
-    final subscriptions = List<StreamSubscription<dynamic>>(streams.length);
+    final len = streams.length;
+    List<StreamSubscription<dynamic>> subscriptions;
     StreamController<R> controller;
 
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>(streams.length);
-        final triggered = List.generate(streams.length, (_) => false);
-        final completedStatus = List.generate(streams.length, (_) => false);
-        var allStreamsHaveEvents = false;
+        final values = List<T>(len);
+        var triggered = 0, completed = 0, index = 0;
 
-        for (var i = 0, len = streams.length; i < len; i++) {
-          final stream = streams.elementAt(i);
+        final allHaveEvent = () => triggered == len;
 
-          subscriptions[i] = stream.listen(
+        final onDone = () {
+          if (++completed == len) controller.close();
+        };
+        final onUpdate = (int index) => (T value) => values[index] = value;
+
+        subscriptions = streams.map((stream) {
+          final onUpdateForStream = onUpdate(index++);
+          var hasFirstEvent = false;
+
+          return stream.listen(
             (T value) {
-              values[i] = value;
-              triggered[i] = true;
+              onUpdateForStream(value);
 
-              if (!allStreamsHaveEvents)
-                allStreamsHaveEvents = triggered.every((t) => t);
+              if (!hasFirstEvent) {
+                hasFirstEvent = true;
+                triggered++;
+              }
 
-              if (allStreamsHaveEvents) {
+              if (allHaveEvent()) {
                 try {
-                  controller.add(combiner(values.toList()));
+                  controller.add(combiner(List.unmodifiable(values)));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }
               }
             },
             onError: controller.addError,
-            onDone: () {
-              completedStatus[i] = true;
-
-              if (completedStatus.every((c) => c)) controller.close();
-            },
+            onDone: onDone,
           );
-        }
+        }).toList(growable: false);
       },
-      onPause: ([Future<dynamic> resumeSignal]) => subscriptions.forEach(
-          (StreamSubscription<dynamic> subscription) =>
-              subscription.pause(resumeSignal)),
-      onResume: () => subscriptions.forEach(
-          (StreamSubscription<dynamic> subscription) => subscription.resume()),
+      onPause: ([Future<dynamic> resumeSignal]) => subscriptions
+          .forEach((subscription) => subscription.pause(resumeSignal)),
+      onResume: () =>
+          subscriptions.forEach((subscription) => subscription.resume()),
       onCancel: () => Future.wait<dynamic>(subscriptions
-          .map((StreamSubscription<dynamic> subscription) =>
-              subscription.cancel())
-          .where((Future<dynamic> cancelFuture) => cancelFuture != null)),
+          .map((subscription) => subscription.cancel())
+          .where((cancelFuture) => cancelFuture != null)),
     );
 
     return controller;

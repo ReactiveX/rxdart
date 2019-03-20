@@ -7,59 +7,19 @@ import 'dart:async';
 ///     new TimerStream("hi", new Duration(minutes: 1))
 ///         .listen((i) => print(i)); // print "hi" after 1 minute
 class TimerStream<T> extends Stream<T> {
-  final T _value;
-  final Sink<T> _sink;
-  final Stream<T> _stream;
+  final Stream<T> Function() _streamFactory;
 
-  factory TimerStream(T value, Duration duration) {
-    //ignore: close_sinks
-    final sink = StreamController<T>();
+  TimerStream(T value, Duration duration)
+      : _streamFactory = (() {
+          final stream =
+              Stream.fromFuture(Future.delayed(duration, () => value));
 
-    return TimerStream._(
-        value,
-        sink,
-        Stream.eventTransformed(sink.stream,
-            (EventSink<T> sink) => _DelayedSink<T>(sink, duration)));
-  }
-
-  TimerStream._(this._value, this._sink, this._stream);
+          return () => stream;
+        })();
 
   @override
   StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    final subscription = _stream.listen(onData, onError: onError, onDone: () {
-      _sink.close();
-
-      if (onDone != null) onDone();
-    }, cancelOnError: cancelOnError);
-
-    _sink.add(_value);
-
-    return subscription;
-  }
-}
-
-class _DelayedSink<T> implements EventSink<T> {
-  final EventSink<T> _outputSink;
-  final Duration _delay;
-
-  _DelayedSink(this._outputSink, this._delay);
-
-  @override
-  void add(T data) {
-    final dispatch = (T data) {
-      _outputSink.add(data);
-      close();
-    };
-
-    if (_delay == null) return dispatch(data);
-
-    Future.delayed(_delay, () => data).then(dispatch);
-  }
-
-  @override
-  void addError(Object e, [StackTrace st]) => _outputSink.addError(e, st);
-
-  @override
-  void close() => _outputSink.close();
+          {Function onError, void onDone(), bool cancelOnError}) =>
+      _streamFactory().listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

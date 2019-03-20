@@ -18,9 +18,9 @@ class ErrorStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    controller.addError(error);
-
-    controller.close();
+    controller
+      ..addError(error)
+      ..close();
 
     return controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
