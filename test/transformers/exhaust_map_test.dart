@@ -27,7 +27,7 @@ void main() {
 
       await expectLater(
           observable, emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
-    });
+    }, skip: true);
 
     test('is reusable', () async {
       final transformer = ExhaustMapStreamTransformer(

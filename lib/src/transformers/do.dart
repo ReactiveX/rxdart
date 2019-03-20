@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/notification.dart';
 
-typedef void VoidFunc();
-typedef Future<dynamic> FutureFunc();
+typedef VoidFunc = void Function();
+typedef FutureFunc = Future<dynamic> Function();
 
 /// Invokes the given callback at the corresponding point the the stream
 /// lifecycle. For example, if you pass in an onDone callback, it will

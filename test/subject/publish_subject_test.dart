@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:test/test.dart';
 
-typedef Future<Null> AsyncVoidCallBack();
+typedef AsyncVoidCallBack = Future<Null> Function();
 
 void main() {
   group('PublishSubject', () {
