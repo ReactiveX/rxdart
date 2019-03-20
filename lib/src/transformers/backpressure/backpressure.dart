@@ -6,12 +6,15 @@ import 'dart:collection';
 enum WindowStrategy {
   /// cancels the open window (if any) and immediately opens a fresh one.
   everyEvent,
+
   /// waits until the current open window completes, then when the
   /// source [Stream] emits a next event, it opens a new window.
   eventAfterLastWindow,
+
   /// opens a recurring window right after the very first event on
   /// the source [Stream] is emitted.
   firstEventOnly,
+
   /// does not open any windows, rather all events are buffered and emitted
   /// whenever the handler triggers, after this trigger, the buffer is cleared.
   onHandler
