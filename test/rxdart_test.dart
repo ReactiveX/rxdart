@@ -32,6 +32,7 @@ import 'streams/repeat_test.dart' as repeat_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/stream_test.dart' as stream_test;
+import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -139,6 +140,7 @@ void main() {
   retry_test.main();
   retry_when_test.main();
   stream_test.main();
+  sequence_equals_test.main();
   switch_latest_test.main();
   zip_test.main();
 
