@@ -28,7 +28,6 @@ class ZipStream<T, R> extends StreamView<R> {
     R zipper(List<T> values),
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
-        assert(streams.length > 1, 'provide at least 2 streams'),
         assert(zipper != null, 'must provide a zipper function'),
         super(_buildController(streams, zipper).stream);
 
