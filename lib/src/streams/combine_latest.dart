@@ -53,7 +53,6 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     R combiner(List<T> values),
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
-        assert(streams.length > 1, 'provide at least 2 streams'),
         assert(combiner != null, 'must provide a combiner function'),
         super(_buildController(streams, combiner).stream);
 
