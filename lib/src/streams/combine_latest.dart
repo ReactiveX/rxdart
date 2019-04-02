@@ -42,7 +42,7 @@ import 'dart:async';
 /// [combine2] - [combine9] operators.
 ///
 ///     CombineLatestStream.combine2(
-///       Stream.fromIterable(1),
+///       Stream.fromIterable([1]),
 ///       Stream.fromIterable([2, 3]),
 ///       (a, b) => a + b,
 ///     )
