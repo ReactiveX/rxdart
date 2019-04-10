@@ -73,7 +73,7 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
           onCancel: () async {
             await subscription.cancel();
 
-            if (hasMainEvent) await otherSubscription.cancel();
+            if (hasMainEvent) await otherSubscription?.cancel();
           });
 
       return controller.stream.listen(null);
