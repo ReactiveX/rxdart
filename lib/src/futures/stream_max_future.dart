@@ -16,7 +16,7 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///
 /// ### Example with custom [Comparator]
 ///
-///     Stream<String> stream = new Stream.fromIterable("short", "loooooooong");
+///     Stream<String> stream = new Stream.fromIterable(["short", "loooooooong"]);
 ///     Comparator<String> stringLengthComparator = (a, b) => a.length - b.length;
 ///     String max = await new StreamMaxFuture(stream, stringLengthComparator);
 ///

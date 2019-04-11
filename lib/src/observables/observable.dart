@@ -2036,7 +2036,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example with custom [Comparator]
   ///
-  ///     final observable = new Observable.fromIterable("short", "looooooong");
+  ///     final observable = new Observable.fromIterable(["short", "looooooong"]);
   ///     final max = await observable.max((a, b) => a.length - b.length);
   ///
   ///     print(max); // prints "looooooong"
@@ -2069,7 +2069,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example with custom [Comparator]
   ///
-  ///     final observable = new Observable.fromIterable("short", "looooooong");
+  ///     final observable = new Observable.fromIterable(["short", "looooooong"]);
   ///     final min = await observable.min((a, b) => a.length - b.length);
   ///
   ///     print(min); // prints "short"

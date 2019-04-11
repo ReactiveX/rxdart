@@ -15,13 +15,28 @@ import 'dart:async';
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#zip)
 ///
-/// ### Example
+/// ### Basic Example
 ///
-///     new ZipStream([
-///         new Stream.fromIterable([1]),
-///         new Stream.fromIterable([2, 3])
-///       ], (a, b) => a + b)
-///       .listen(print); // prints 3
+///     ZipStream(
+///       [
+///         Stream.fromIterable(['A']),
+///         Stream.fromIterable(['B']),
+///         Stream.fromIterable(['C', 'D']),
+///       ],
+///       (values) => values.join(),
+///     ).listen(print); // prints 'ABC'
+///
+/// ### Example with a specific number of Streams
+///
+/// If you wish to zip a specific number of Streams together with proper types
+/// information for the value of each Stream, use the [zip2] - [zip9] operators.
+///
+///     ZipStream.zip2(
+///       Stream.fromIterable(['A']),
+///       Stream.fromIterable(['B', 'C']),
+///       (a, b) => a + b,
+///     )
+///     .listen(print); // prints 'AB'
 class ZipStream<T, R> extends StreamView<R> {
   ZipStream(
     Iterable<Stream<T>> streams,
