@@ -6,19 +6,19 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   final dragTarget = querySelector('#dragTarget');
-  final mouseUp = new Observable<MouseEvent>(document.onMouseUp);
-  final mouseMove = new Observable<MouseEvent>(document.onMouseMove);
-  final mouseDown = new Observable<MouseEvent>(document.onMouseDown);
+  final mouseUp = Observable<MouseEvent>(document.onMouseUp);
+  final mouseMove = Observable<MouseEvent>(document.onMouseMove);
+  final mouseDown = Observable<MouseEvent>(document.onMouseDown);
 
   mouseDown
       // Use map() to calculate the left and top properties on mouseDown
-      .map((event) => new Point<num>(event.client.x - dragTarget.offset.left,
+      .map((event) => Point<num>(event.client.x - dragTarget.offset.left,
           event.client.y - dragTarget.offset.top))
       // Use switchMap() to get the mouse position on each mouseMove
       .switchMap((startPosition) {
     return mouseMove
         // Use map() to calculate the left and top properties on each mouseMove
-        .map((event) => new Point<num>(
+        .map((event) => Point<num>(
             event.client.x - startPosition.x, event.client.y - startPosition.y))
         // Use takeUntil() to stop calculations when a mouseUp occurs
         .takeUntil(mouseUp);

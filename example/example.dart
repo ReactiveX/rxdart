@@ -30,7 +30,7 @@ void main(List<String> arguments) {
       // value each time a [Stream] event occurs
       // in this case, the accumulated value is always
       // the latest Fibonacci number
-      .scan((IndexedPair seq, _, __) => new IndexedPair.next(seq), seed)
+      .scan((IndexedPair seq, _, __) => IndexedPair.next(seq), seed)
       // finally, print the output
       .listen(print, onDone: () => print('done!'));
 }
@@ -40,7 +40,7 @@ class IndexedPair {
 
   const IndexedPair(this.n1, this.n2, this.index);
 
-  factory IndexedPair.next(IndexedPair prev) => new IndexedPair(
+  factory IndexedPair.next(IndexedPair prev) => IndexedPair(
       prev.n2, prev.index <= 1 ? prev.n1 : prev.n1 + prev.n2, prev.index + 1);
 
   @override

@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 void main() {
   final searchInput = querySelector('#searchInput');
   final resultsField = querySelector('#resultsField');
-  final keyUp = new Observable(searchInput.onKeyUp);
+  final keyUp = Observable(searchInput.onKeyUp);
 
   keyUp
       // return the event target
@@ -34,14 +34,14 @@ void main() {
       // entered, switchMap will cancel the previous request, and notify use
       // of the last result that comes in. Normal flatMap() would give us all
       // previous results as well.
-      .switchMap((term) => new Observable.fromFuture(_searchGithubFor(term)))
+      .switchMap((term) => Observable.fromFuture(_searchGithubFor(term)))
       .listen((result) => result.forEach((item) => resultsField.innerHtml +=
           "<li>${item['fullName']} (${item['url']})</li>"));
 }
 
 Future<List<Map<String, String>>> _searchGithubFor(String term) async {
   if (term.isEmpty) {
-    throw new ArgumentError('Need to provide a term');
+    throw ArgumentError('Need to provide a term');
   }
 
   final request = await HttpRequest.request(
