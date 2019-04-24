@@ -23,7 +23,7 @@ void main() {
       .where((term) => term.isNotEmpty)
       // Use debounce() to prevent calling the server on fast following
       // keystrokes
-      .debounce(const Duration(milliseconds: 250))
+      .debounceTime(const Duration(milliseconds: 250))
       // Use doOnData() to clear resultsField
       .doOnData((_) => resultsField.innerHtml = '')
       // Use switchMap to call the gitHub API

@@ -99,12 +99,12 @@ void main() {
   });
 }
 
-const noTerm = isInstanceOf<SearchNoTerm>();
+const noTerm = TypeMatcher<SearchNoTerm>();
 
-const loading = isInstanceOf<SearchLoading>();
+const loading = TypeMatcher<SearchLoading>();
 
-const empty = isInstanceOf<SearchEmpty>();
+const empty = TypeMatcher<SearchEmpty>();
 
-const populated = isInstanceOf<SearchPopulated>();
+const populated = TypeMatcher<SearchPopulated>();
 
-const error = isInstanceOf<SearchError>();
+const error = TypeMatcher<SearchError>();

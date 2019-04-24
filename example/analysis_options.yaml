@@ -1,7 +1,6 @@
 analyzer:
   errors:
     argument_type_not_assignable: ignore
-    deprecated_member_use: ignore
     extends_non_class: ignore
     implements_non_class: ignore
     non_type_as_type_argument: ignore
