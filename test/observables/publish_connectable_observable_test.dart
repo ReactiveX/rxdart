@@ -76,5 +76,13 @@ void main() {
 
       expect(observable, neverEmits(anything));
     });
+
+    test('refCount should emit done', () async {
+      final observable = Observable.fromIterable(const [1, 2, 3]);
+      expect(
+        PublishConnectableObservable<int>(observable).refCount(),
+        emitsInOrder(<dynamic>[1, 2, 3, emitsDone]),
+      );
+    });
   });
 }

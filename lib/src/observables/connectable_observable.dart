@@ -74,7 +74,7 @@ class PublishConnectableObservable<T> extends ConnectableObservable<T> {
 
     _subject.onListen = () {
       subscription = ConnectableObservableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add, onError: _subject.addError, onDone: () => _subject.close()),
         _subject,
       );
     };
@@ -141,7 +141,7 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
 
     _subject.onListen = () {
       subscription = ConnectableObservableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add, onError: _subject.addError, onDone: () => _subject.close()),
         _subject,
       );
     };
@@ -206,7 +206,7 @@ class ReplayConnectableObservable<T> extends ConnectableObservable<T>
 
     _subject.onListen = () {
       subscription = ConnectableObservableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
+        _source.listen(_subject.add, onError: _subject.addError, onDone: () => _subject.close()),
         _subject,
       );
     };

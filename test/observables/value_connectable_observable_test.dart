@@ -151,5 +151,13 @@ void main() {
 
       expect(observable, neverEmits(anything));
     });
+
+    test('refCount should emit done', () async {
+      final observable = Observable.fromIterable(const [1, 2, 3]);
+      expect(
+        ValueConnectableObservable<int>.seeded(observable, 0).refCount(),
+        emitsInOrder(<dynamic>[0, 1, 2, 3, emitsDone]),
+      );
+    });
   });
 }
