@@ -27,7 +27,7 @@ class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
           sync: true,
           onListen: () {
             subscription = input.listen(
-                (T value) {
+                (value) {
                   hasEvent = true;
                   try {
                     controller.add(value);
