@@ -32,7 +32,7 @@ void main() {
     KeyCode.A];
 
   final result = querySelector('#result');
-  final keyUp = new Observable<KeyboardEvent>(document.onKeyUp);
+  final keyUp = Observable<KeyboardEvent>(document.onKeyUp);
 
   keyUp
     .map((event) => event.keyCode)
