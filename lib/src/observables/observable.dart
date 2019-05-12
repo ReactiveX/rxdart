@@ -6,6 +6,7 @@ import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
+import 'package:rxdart/src/utils/partition.dart';
 
 /// A wrapper class that extends Stream. It combines all the Streams and
 /// StreamTransformers contained in this library into a fluent api.
@@ -2481,6 +2482,11 @@ class Observable<T> extends Stream<T> {
   /// Filters the elements of an observable sequence based on the test.
   @override
   Observable<T> where(bool test(T event)) => Observable<T>(_stream.where(test));
+
+  /// Splits the this Observable into two, one with values that satisfy a
+  /// predicate, and another with values that don't satisfy the predicate.
+  List<Observable<T>> partition(bool predicate(T event)) =>
+      ParititonUtil.parititon(this, predicate);
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence.
