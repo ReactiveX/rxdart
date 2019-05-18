@@ -58,7 +58,7 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 onDone: () {
                   leftClosed = true;
 
-                  if (rightClosed || !hasMainEvent) controller.close();
+                  if (rightClosed && !hasMainEvent) controller.close();
                 },
                 cancelOnError: cancelOnError);
           },
