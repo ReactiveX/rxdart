@@ -33,7 +33,7 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
           sync: true,
           onListen: () {
             subscription = input.listen(
-                (T value) {
+                (value) {
                   hasNoEvents = false;
 
                   try {

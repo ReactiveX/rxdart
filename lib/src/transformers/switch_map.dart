@@ -30,21 +30,21 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
       Stream<S> mapper(T value)) {
     return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
-      StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
+      StreamSubscription<T> leftSubscription;
+      StreamSubscription<S> rightSubscription;
       var leftClosed = false, rightClosed = false, hasMainEvent = false;
 
       controller = StreamController<S>(
           sync: true,
           onListen: () {
-            subscription = input.listen(
+            leftSubscription = input.listen(
                 (T value) {
                   try {
-                    otherSubscription?.cancel();
+                    rightSubscription?.cancel();
 
                     hasMainEvent = true;
 
-                    otherSubscription = mapper(value).listen(controller.add,
+                    rightSubscription = mapper(value).listen(controller.add,
                         onError: controller.addError, onDone: () {
                       rightClosed = true;
 
@@ -58,22 +58,22 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 onDone: () {
                   leftClosed = true;
 
-                  if (rightClosed || !hasMainEvent) controller.close();
+                  if (rightClosed && !hasMainEvent) controller.close();
                 },
                 cancelOnError: cancelOnError);
           },
           onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-            otherSubscription?.pause(resumeSignal);
+            leftSubscription.pause(resumeSignal);
+            rightSubscription?.pause(resumeSignal);
           },
           onResume: () {
-            subscription.resume();
-            otherSubscription?.resume();
+            leftSubscription.resume();
+            rightSubscription?.resume();
           },
           onCancel: () async {
-            await subscription.cancel();
+            await leftSubscription.cancel();
 
-            if (hasMainEvent) await otherSubscription.cancel();
+            if (hasMainEvent) await rightSubscription.cancel();
           });
 
       return controller.stream.listen(null);

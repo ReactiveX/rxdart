@@ -119,4 +119,24 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test(
+      'should not close when the switching stream and the previously mapped stream close',
+      () async {
+    final a = BehaviorSubject.seeded(1);
+    final a1 = BehaviorSubject.seeded(2);
+    final a2 = BehaviorSubject.seeded(3);
+
+    final sut = a.switchMap((int val) => val == 1 ? a1 : a2);
+    expect(sut, emitsInOrder(<dynamic>[2, 3, 10, emitsDone]));
+
+    a1.listen((_) {});
+    sut.listen((_) {});
+
+    await a1.close();
+    a.add(2);
+    await a.close();
+    a2.add(10);
+    await a2.close();
+  });
 }

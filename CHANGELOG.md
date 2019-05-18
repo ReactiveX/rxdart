@@ -1,3 +1,9 @@
+## 0.22.0
+  This version includes refactoring for the backpressure operators:
+  * Breaking Change: `debounce` is now split into `debounce` and `debounceTime`.
+  * Breaking Change: `sample` is now split into `sample` and `sampleTime`.
+  * Breaking Change: `throttle` is now split into `throttle` and `throttleTime`.
+
 ## 0.21.0
   * Breaking Change: `BehaviorSubject` now has a separate factory constructor `seeded()`
   This allows you to seed this Subject with a `null` value.
