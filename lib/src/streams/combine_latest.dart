@@ -264,7 +264,12 @@ class CombineLatestStream<T, R> extends StreamView<R> {
 
     controller = StreamController<R>(
       sync: true,
-      onListen: () {
+      onListen: () async {
+        if (len == 0) {
+          subscriptions = const [];
+          await controller.close();
+          return;
+        }
         final values = List<T>(len);
         var triggered = 0, completed = 0, index = 0;
 

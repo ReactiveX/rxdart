@@ -31,8 +31,16 @@ void main() {
         [1, 2, 3],
         [2, 2, 3],
         [3, 2, 3],
+        emitsDone,
       ]),
     );
+  });
+
+  test(
+      "rx.Observable.combineLatestList with 0 observables finishes immediately",
+      () {
+    final combinedEmptyList = Observable.combineLatestList<int>([]);
+    expect(combinedEmptyList, emitsInOrder(<dynamic>[emitsDone]));
   });
 
   test('rx.Observable.combineLatest', () async {
