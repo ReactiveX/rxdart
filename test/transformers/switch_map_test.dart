@@ -120,6 +120,19 @@ void main() {
     subscription.resume();
   });
 
+  test("rx.Observable.switchMap.closes", () async {
+    final a = BehaviorSubject.seeded(1);
+    final a1 = BehaviorSubject.seeded(2);
+    final a2 = BehaviorSubject.seeded(3);
+
+    final sut = a.switchMap((int val) => val == 1 ? a1 : a2);
+    expect(sut, emitsInOrder(<dynamic>[2, emitsDone]));
+
+    await a1.close();
+    await a2.close();
+    await a.close();
+  });
+
   test(
       'should not close when the switching stream and the previously mapped stream close',
       () async {
