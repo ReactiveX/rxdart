@@ -49,7 +49,6 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                     otherSubscription = otherStream.listen(controller.add,
                         onError: controller.addError, onDone: () {
                       openStreams--;
-                      subscriptions.remove(otherSubscription);
 
                       if (closeAfterNextEvent && openStreams == 0)
                         controller.close();
