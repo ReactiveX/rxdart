@@ -30,7 +30,7 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
       final subscriptions = <StreamSubscription<S>>[];
       StreamController<S> controller;
       StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
+
       var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
 
       controller = StreamController<S>(
@@ -39,6 +39,7 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
             subscription = input.listen(
                 (T value) {
                   try {
+                    StreamSubscription<S> otherSubscription;
                     var otherStream = mapper(value);
 
                     hasMainEvent = true;
