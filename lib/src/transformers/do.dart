@@ -85,6 +85,16 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       throw ArgumentError("Must provide at least one handler");
     }
 
+    if (onError != null) {
+      if (onError is! void Function(dynamic, StackTrace) &&
+          onError is! void Function(dynamic)) {
+        throw ArgumentError(
+          'onError callback must take either an Object '
+          '(the error), or both an Object (the error) and a StackTrace.',
+        );
+      }
+    }
+
     final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
@@ -121,7 +131,11 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
               onError: (dynamic e, StackTrace s) {
                 if (onError != null) {
                   try {
-                    onError(e, s);
+                    if (onError is void Function(dynamic, StackTrace)) {
+                      onError(e, s);
+                    } else if (onError is void Function(dynamic)) {
+                      onError(e);
+                    }
                   } catch (e2, s2) {
                     controller.addError(e2, s2);
                   }

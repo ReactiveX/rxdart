@@ -16,13 +16,39 @@ void main() {
       await expectLater(onDoneCalled, isTrue);
     });
 
-    test('calls onError when an error is emitted', () async {
+    test('calls onError when an error is emitted, onError take 2 parameters',
+        () async {
       var onErrorCalled = false;
       final observable = Observable<void>.error(Exception())
           .doOnError((dynamic e, dynamic s) => onErrorCalled = true);
 
       await expectLater(observable, emitsError(isException));
       await expectLater(onErrorCalled, isTrue);
+    });
+
+    test('calls onError when an error is emitted, onError take 1 parameters',
+        () async {
+      var onErrorCalled = false;
+      final observable = Observable<void>.error(Exception())
+          .doOnError((dynamic e) => onErrorCalled = true);
+
+      await expectLater(observable, emitsError(isException));
+      await expectLater(onErrorCalled, isTrue);
+    });
+
+    test('throws an error when onError are provided but wrong parameters', () {
+      expect(
+        () => DoStreamTransformer<void>(onError: () {}),
+        throwsArgumentError,
+      );
+      expect(
+        () => DoStreamTransformer<void>(onError: (String e) {}),
+        throwsArgumentError,
+      );
+      expect(
+        () => DoStreamTransformer<void>(onError: (dynamic e, String s) {}),
+        throwsArgumentError,
+      );
     });
 
     test(

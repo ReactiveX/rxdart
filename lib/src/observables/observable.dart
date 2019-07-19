@@ -1718,6 +1718,10 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.error(new Exception())
   ///       .doOnError((error, stacktrace) => print("oh no"))
   ///       .listen(null); // prints "Oh no"
+  /// 
+  ///     new Observable.error(new Exception())
+  ///       .doOnError((error) => print("oh no"))
+  ///       .listen(null); // prints "Oh no"
   Observable<T> doOnError(Function onError) =>
       transform(DoStreamTransformer<T>(onError: onError));
 
