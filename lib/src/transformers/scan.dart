@@ -22,17 +22,35 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       S accumulator(S accumulated, T value, int index),
       [S seed]) {
-    var index = 0;
-    var acc = seed;
+    return StreamTransformer<T, S>((input, bool cancelOnError) {
+      var index = 0;
+      var acc = seed;
+      StreamController<S> controller;
+      StreamSubscription<T> subscription;
 
-    return StreamTransformer<T, S>.fromHandlers(
-        handleData: (T data, EventSink<S> sink) {
-          acc = accumulator(acc, data, index++);
+      controller = StreamController<S>(
+          sync: true,
+          onListen: () {
+            subscription = input.listen((value) {
+              try {
+                acc = accumulator(acc, value, index++);
 
-          sink.add(acc);
-        },
-        handleError: (Object error, StackTrace s, EventSink<S> sink) =>
-            sink.addError(error));
+                controller.add(acc);
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            },
+                onError: controller.addError,
+                onDone: controller.close,
+                cancelOnError: cancelOnError);
+          },
+          onPause: ([Future<dynamic> resumeSignal]) =>
+              subscription.pause(resumeSignal),
+          onResume: () => subscription.resume(),
+          onCancel: () => subscription.cancel());
+
+      return controller.stream.listen(null);
+    });
   }
 }
 
