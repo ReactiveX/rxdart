@@ -50,8 +50,9 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                         onError: controller.addError, onDone: () {
                       openStreams--;
 
-                      if (closeAfterNextEvent && openStreams == 0)
+                      if (closeAfterNextEvent && openStreams == 0) {
                         controller.close();
+                      }
                     });
 
                     subscriptions.add(otherSubscription);
@@ -61,10 +62,11 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                 },
                 onError: controller.addError,
                 onDone: () {
-                  if (!hasMainEvent || openStreams == 0)
+                  if (!hasMainEvent || openStreams == 0) {
                     controller.close();
-                  else
+                  } else {
                     closeAfterNextEvent = true;
+                  }
                 },
                 cancelOnError: cancelOnError);
           },

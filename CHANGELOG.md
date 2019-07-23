@@ -1,3 +1,9 @@
+## 0.22.1
+  Fixes following issues:
+  * Erroneous behavior with scan and `BehaviorSubject`.
+  * Bug where `flatMap` would cancel inner subscriptions in `pause`/`resume`.
+  * Updates to make the current "pedantic" analyzer happy.
+
 ## 0.22.0
   This version includes refactoring for the backpressure operators:
   * Breaking Change: `debounce` is now split into `debounce` and `debounceTime`.
