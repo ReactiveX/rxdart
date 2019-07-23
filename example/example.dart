@@ -21,7 +21,7 @@ void main(List<String> arguments) {
 
   // seed value: this value will be used as the
   // starting value for the [scan] method
-  const seed = const IndexedPair(1, 1, 0);
+  const seed = IndexedPair(1, 1, 0);
 
   Observable
           // amount of numbers to compute

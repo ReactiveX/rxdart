@@ -6,7 +6,7 @@ import 'package:rxdart/rxdart.dart';
 // Side note: To maintain readability, this example was not formatted using dart_fmt.
 
 void main() {
-  const konamiKeyCodes = const <int>[
+  const konamiKeyCodes = <int>[
     KeyCode.UP,
     KeyCode.UP,
     KeyCode.DOWN,
