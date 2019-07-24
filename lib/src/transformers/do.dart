@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/notification.dart';
 
-typedef VoidFunc = void Function();
-typedef FutureFunc = Future<dynamic> Function();
-
 /// Invokes the given callback at the corresponding point the the stream
 /// lifecycle. For example, if you pass in an onDone callback, it will
 /// be invoked when the stream finishes emitting items.
@@ -99,7 +96,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      final VoidFunc onListenLocal = () {
+      final onListenLocal = () {
         if (onListen != null) {
           try {
             onListen();
@@ -109,69 +106,67 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
         subscriptions.putIfAbsent(
           input,
-          () {
-            return input.listen(
-              (T value) {
-                if (onData != null) {
-                  try {
-                    onData(value);
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                }
-                if (onEach != null) {
-                  try {
-                    onEach(Notification<T>.onData(value));
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                }
-                controller.add(value);
-              },
-              onError: (dynamic e, StackTrace s) {
-                if (onError != null) {
-                  try {
-                    if (onError is void Function(dynamic, StackTrace)) {
-                      onError(e, s);
-                    } else if (onError is void Function(dynamic)) {
-                      onError(e);
+          () => input.listen(
+                (T value) {
+                  if (onData != null) {
+                    try {
+                      onData(value);
+                    } catch (e, s) {
+                      controller.addError(e, s);
                     }
-                  } catch (e2, s2) {
-                    controller.addError(e2, s2);
                   }
-                }
-                if (onEach != null) {
-                  try {
-                    onEach(Notification<T>.onError(e, s));
-                  } catch (e, s) {
-                    controller.addError(e, s);
+                  if (onEach != null) {
+                    try {
+                      onEach(Notification<T>.onData(value));
+                    } catch (e, s) {
+                      controller.addError(e, s);
+                    }
                   }
-                }
-                controller.addError(e, s);
-              },
-              onDone: () {
-                if (onDone != null) {
-                  try {
-                    onDone();
-                  } catch (e, s) {
-                    controller.addError(e, s);
+                  controller.add(value);
+                },
+                onError: (dynamic e, StackTrace s) {
+                  if (onError != null) {
+                    try {
+                      if (onError is void Function(dynamic, StackTrace)) {
+                        onError(e, s);
+                      } else if (onError is void Function(dynamic)) {
+                        onError(e);
+                      }
+                    } catch (e2, s2) {
+                      controller.addError(e2, s2);
+                    }
                   }
-                }
-                if (onEach != null) {
-                  try {
-                    onEach(Notification<T>.onDone());
-                  } catch (e, s) {
-                    controller.addError(e, s);
+                  if (onEach != null) {
+                    try {
+                      onEach(Notification<T>.onError(e, s));
+                    } catch (e, s) {
+                      controller.addError(e, s);
+                    }
                   }
-                }
-                controller.close();
-              },
-              cancelOnError: cancelOnError,
-            );
-          },
+                  controller.addError(e, s);
+                },
+                onDone: () {
+                  if (onDone != null) {
+                    try {
+                      onDone();
+                    } catch (e, s) {
+                      controller.addError(e, s);
+                    }
+                  }
+                  if (onEach != null) {
+                    try {
+                      onEach(Notification<T>.onDone());
+                    } catch (e, s) {
+                      controller.addError(e, s);
+                    }
+                  }
+                  controller.close();
+                },
+                cancelOnError: cancelOnError,
+              ),
         );
       };
-      final FutureFunc onCancelLocal = () {
+      final onCancelLocal = () {
         dynamic onCancelResult;
 
         if (onCancel != null) {

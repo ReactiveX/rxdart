@@ -58,10 +58,11 @@ class ConcatEagerStream<T> extends Stream<T> {
             return () {
               completer.complete();
 
-              if (++completed == len)
+              if (++completed == len) {
                 controller.close();
-              else
+              } else {
                 activeSubscription = subscriptions[index + 1];
+              }
             };
           };
 

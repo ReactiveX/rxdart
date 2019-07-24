@@ -54,10 +54,11 @@ class ConcatStream<T> extends Stream<T> {
                 onError: controller.addError, onDone: () {
               index++;
 
-              if (index == len)
+              if (index == len) {
                 controller.close();
-              else
+              } else {
                 moveNext();
+              }
             });
           }
 
