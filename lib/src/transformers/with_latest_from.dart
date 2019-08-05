@@ -356,15 +356,18 @@ class WithLatestFromStreamTransformer<T, S, R>
             onDone: onDone,
           );
 
-          for (var i = 0; i < len; i++) {
-            subscriptions[i] = latestFromStreams.elementAt(i).listen(
+          var index = 0;
+          for (final latestFromStream in latestFromStreams) {
+            final currentIndex = index;
+            subscriptions[index] = latestFromStream.listen(
               (latest) {
-                hasValues[i] = true;
-                latestValues[i] = latest;
+                hasValues[currentIndex] = true;
+                latestValues[currentIndex] = latest;
               },
               onError: controller.addError,
               cancelOnError: cancelOnError,
             );
+            index++;
           }
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
