@@ -34,7 +34,7 @@ class FromCallableStream<T> extends Stream<T> {
             } else {
               return Stream.fromIterable([result as T]);
             }
-          } catch (e, s) {
+          } catch (e) {
             return Observable.error(e);
           }
         });
