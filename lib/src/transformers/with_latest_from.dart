@@ -25,7 +25,7 @@ class WithLatestFromStreamTransformer<T, S, R>
   @override
   Stream<R> bind(Stream<T> stream) => transformer.bind(stream);
 
-  static WithLatestFromStreamTransformer<T, T, List<T>> list<T>(
+  static WithLatestFromStreamTransformer<T, T, List<T>> withList<T>(
     Iterable<Stream<T>> latestFromStreams,
   ) {
     return WithLatestFromStreamTransformer<T, T, List<T>>(

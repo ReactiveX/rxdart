@@ -2588,7 +2588,7 @@ class Observable<T> extends Stream<T> {
   ///
   Observable<List<T>> withLatestFromList(
           Iterable<Stream<T>> latestFromStreams) =>
-      transform(WithLatestFromStreamTransformer.list(latestFromStreams));
+      transform(WithLatestFromStreamTransformer.withList(latestFromStreams));
 
   /// Creates an Observable that emits when the source stream emits, combining
   /// the latest values from the three streams using the provided function.
