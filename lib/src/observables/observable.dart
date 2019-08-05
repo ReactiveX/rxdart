@@ -2567,18 +2567,46 @@ class Observable<T> extends Stream<T> {
       transform(WithLatestFromStreamTransformer.with1(latestFromStream, fn));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the streams into a list. This is helpful when you need to
+  /// combine a dynamic number of Streams.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
+  /// emit either.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
+  ///
+  /// ### Example
+  ///     Observable.fromIterable([1, 2]).withLatestFromList(
+  ///         [
+  ///           Observable.fromIterable([2, 3]),
+  ///           Observable.fromIterable([3, 4]),
+  ///           Observable.fromIterable([4, 5]),
+  ///           Observable.fromIterable([5, 6]),
+  ///           Observable.fromIterable([6, 7]),
+  ///         ],
+  ///       ).listen(print); // print [2, 2, 3, 4, 5, 6] (due to the async nature of streams)
+  ///
+  Observable<List<T>> withLatestFromList(
+          Iterable<Stream<T>> latestFromStreams) =>
+      transform(WithLatestFromStreamTransformer.list(latestFromStreams));
+
+  /// Creates an Observable that emits when the source stream emits, combining
+  /// the latest values from the three streams using the provided function.
+  ///
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom2(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         (int a, int b, int c) => a + b + c,
+  ///       )
+  ///       .listen(print); // prints 7 (due to the async nature of streams)
   Observable<R> withLatestFrom2<A, B, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2588,18 +2616,23 @@ class Observable<T> extends Stream<T> {
           latestFromStream1, latestFromStream2, fn));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the four streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom3(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         (int a, int b, int c, int d) => a + b + c + d,
+  ///       )
+  ///       .listen(print); // prints 11 (due to the async nature of streams)
   Observable<R> withLatestFrom3<A, B, C, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2614,18 +2647,24 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the five streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom4(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         (int a, int b, int c, int d, int e) => a + b + c + d + e,
+  ///       )
+  ///       .listen(print); // prints 16 (due to the async nature of streams)
   Observable<R> withLatestFrom4<A, B, C, D, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2642,18 +2681,25 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the six streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom5(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         Observable.fromIterable([6, 7]),
+  ///         (int a, int b, int c, int d, int e, int f) => a + b + c + d + e + f,
+  ///       )
+  ///       .listen(print); // prints 22 (due to the async nature of streams)
   Observable<R> withLatestFrom5<A, B, C, D, E, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2672,18 +2718,27 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the seven streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom6(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         Observable.fromIterable([6, 7]),
+  ///         Observable.fromIterable([7, 8]),
+  ///         (int a, int b, int c, int d, int e, int f, int g) =>
+  ///             a + b + c + d + e + f + g,
+  ///       )
+  ///       .listen(print); // prints 29 (due to the async nature of streams)
   Observable<R> withLatestFrom6<A, B, C, D, E, F, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2704,18 +2759,28 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the eight streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom7(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         Observable.fromIterable([6, 7]),
+  ///         Observable.fromIterable([7, 8]),
+  ///         Observable.fromIterable([8, 9]),
+  ///         (int a, int b, int c, int d, int e, int f, int g, int h) =>
+  ///             a + b + c + d + e + f + g + h,
+  ///       )
+  ///       .listen(print); // prints 37 (due to the async nature of streams)
   Observable<R> withLatestFrom7<A, B, C, D, E, F, G, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2738,18 +2803,29 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the nine streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom8(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         Observable.fromIterable([6, 7]),
+  ///         Observable.fromIterable([7, 8]),
+  ///         Observable.fromIterable([8, 9]),
+  ///         Observable.fromIterable([9, 10]),
+  ///         (int a, int b, int c, int d, int e, int f, int g, int h, int i) =>
+  ///             a + b + c + d + e + f + g + h + i,
+  ///       )
+  ///       .listen(print); // prints 46 (due to the async nature of streams)
   Observable<R> withLatestFrom8<A, B, C, D, E, F, G, H, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -2774,18 +2850,30 @@ class Observable<T> extends Stream<T> {
       ));
 
   /// Creates an Observable that emits when the source stream emits, combining
-  /// the latest values from the two streams using the provided function.
+  /// the latest values from the ten streams using the provided function.
   ///
-  /// If the latestFromStream has not emitted any values, this stream will not
+  /// If any of latestFromStreams has not emitted any values, this stream will not
   /// emit either.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#withLatestFrom)
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).withLatestFrom(
-  ///       new Observable.fromIterable([2, 3]), (a, b) => a + b)
-  ///       .listen(print); // prints 4 (due to the async nature of streams)
+  ///     Observable.fromIterable([1, 2])
+  ///       .withLatestFrom9(
+  ///         Observable.fromIterable([2, 3]),
+  ///         Observable.fromIterable([3, 4]),
+  ///         Observable.fromIterable([4, 5]),
+  ///         Observable.fromIterable([5, 6]),
+  ///         Observable.fromIterable([6, 7]),
+  ///         Observable.fromIterable([7, 8]),
+  ///         Observable.fromIterable([8, 9]),
+  ///         Observable.fromIterable([9, 10]),
+  ///         Observable.fromIterable([10, 11]),
+  ///         (int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) =>
+  ///             a + b + c + d + e + f + g + h + i + j,
+  ///       )
+  ///       .listen(print); // prints 46 (due to the async nature of streams)
   Observable<R> withLatestFrom9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
