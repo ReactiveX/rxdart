@@ -38,6 +38,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<S> latestFromStream,
     R fn(T t, S s),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, S, R>(
       [latestFromStream],
       (s, values) => fn(s, values[0]),
@@ -49,6 +52,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<B> latestFromStream2,
     R fn(T t, A a, B b),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [latestFromStream1, latestFromStream2],
       (s, values) => fn(s, values[0] as A, values[1] as B),
@@ -61,6 +67,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<C> latestFromStream3,
     R fn(T t, A a, B b, C c),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -85,6 +94,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<D> latestFromStream4,
     R fn(T t, A a, B b, C c, D d),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -113,6 +125,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<E> latestFromStream5,
     R fn(T t, A a, B b, C c, D d, E e),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -144,6 +159,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<F> latestFromStream6,
     R fn(T t, A a, B b, C c, D d, E e, F f),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -178,6 +196,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<G> latestFromStream7,
     R fn(T t, A a, B b, C c, D d, E e, F f, G g),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -215,6 +236,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<H> latestFromStream8,
     R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
@@ -255,6 +279,9 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<I> latestFromStream9,
     R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i),
   ) {
+    if (fn == null) {
+      throw ArgumentError('Combiner cannot be null');
+    }
     return WithLatestFromStreamTransformer<T, dynamic, R>(
       [
         latestFromStream1,
