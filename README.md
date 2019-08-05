@@ -76,6 +76,7 @@ var myObservable = new Observable(myStream);
 - [concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html)
 - [defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html) / [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html)
 - [error](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.error.html) / [ErrorStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ErrorStream-class.html)
+- [fromCallable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.fromCallable.html) / [FromCallableStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/FromCallableStream-class.html)
 - [just](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.just.html)
 - [merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html) / [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html)
 - [never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html) / [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html)

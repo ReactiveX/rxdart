@@ -4,6 +4,7 @@ import 'package:rxdart/futures.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
+import 'package:rxdart/src/streams/from_callable.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -729,7 +730,24 @@ class Observable<T> extends Stream<T> {
         ),
       );
 
-  /// Creates an Observable from the future.
+  /// Creates an [Observable] that, when subscribed upon,
+  /// invokes a function you specify and then emits the value returned from that function.
+  ///
+  /// The function expects a return type of [FutureOr]
+  /// - if you return a [Future], it will be auto-awaited, so there is no need
+  ///   to do [asyncMap] immediately.
+  /// - if you return a non-future, then that value is simply returned.
+  ///
+  /// [Observable]s created by fromCallable are always broadcast [Observable]s.
+  ///
+  /// ### Example
+  ///
+  ///     new FromCallableStream(() => 1).listen(print); //prints 1
+  ///     new FromCallableStream(() => Future.value(1)).listen(print); //prints 1
+  factory Observable.fromCallable(FutureOr<T> callable()) =>
+      Observable<T>(FromCallableStream<T>(callable));
+
+  /// Creates an Observable from a future.
   ///
   /// When the future completes, the stream will fire one event, either
   /// data or error, and then close with a done-event.
