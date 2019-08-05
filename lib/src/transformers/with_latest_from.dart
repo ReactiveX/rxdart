@@ -304,46 +304,56 @@ class WithLatestFromStreamTransformer<T, S, R>
       StreamSubscription<T> subscription;
       final subscriptions = List<StreamSubscription<S>>(len);
 
-      controller = StreamController<R>(
-          sync: true,
-          onListen: () {
-            final latestValues = List<S>(len);
+      void onDone() {
+        if (controller.isClosed) return;
+        controller.close();
+      }
 
-            subscription = input.listen(
-              (T value) {
-                if (latestValues.every((v) => v != null)) {
-                  try {
-                    controller.add(fn(value, latestValues));
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
+      controller = StreamController<R>(
+        sync: true,
+        onListen: () {
+          final latestValues = List<S>(len);
+          final hasValues = List.filled(len, false);
+
+          subscription = input.listen(
+            (T value) {
+              if (hasValues.every((hasValue) => hasValue)) {
+                try {
+                  controller.add(fn(value, latestValues));
+                } catch (e, s) {
+                  controller.addError(e, s);
                 }
+              }
+            },
+            onError: controller.addError,
+            onDone: onDone,
+          );
+
+          for (var i = 0; i < len; i++) {
+            subscriptions[i] = latestFromStreams.elementAt(i).listen(
+              (latest) {
+                hasValues[i] = true;
+                latestValues[i] = latest;
               },
               onError: controller.addError,
+              cancelOnError: cancelOnError,
             );
+          }
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () {
+          final list = List<StreamSubscription>.of(subscriptions)
+            ..add(subscription);
 
-            for (var i = 0; i < len; i++) {
-              subscriptions[i] = latestFromStreams.elementAt(i).listen(
-                    (S latest) => latestValues[i] = latest,
-                    onError: controller.addError,
-                    onDone: controller.close,
-                    cancelOnError: cancelOnError,
-                  );
-            }
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () {
-            final list = List<StreamSubscription>.of(subscriptions)
-              ..add(subscription);
+          final cancelFutures = list
+              .map((subscription) => subscription.cancel())
+              .where((cancelFuture) => cancelFuture != null);
 
-            final cancelFutures = list
-                .map((subscription) => subscription.cancel())
-                .where((cancelFuture) => cancelFuture != null);
-
-            return Future.wait<dynamic>(cancelFutures);
-          });
+          return Future.wait<dynamic>(cancelFutures);
+        },
+      );
 
       return controller.stream.listen(null);
     });
