@@ -2,7 +2,8 @@ language: dart
 # Speed up builds by using containerization.
 sudo: false
 dart:
-  - 2.2.0
+  - dev
+  - stable
 with_content_shell: false
 before_install:
   - export DISPLAY=:99.0
