@@ -373,6 +373,22 @@ void main() {
       emits(expected),
     );
   });
+
+  test('rx.Observable.withLatestFromList.emptyList', () async {
+    final observable =
+        Observable.fromIterable([1, 2, 3]).withLatestFromList([]);
+
+    await expectLater(
+      observable,
+      emitsInOrder(
+        <List<int>>[
+          [1],
+          [2],
+          [3],
+        ],
+      ),
+    );
+  });
 }
 
 class Pair {

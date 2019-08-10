@@ -346,7 +346,7 @@ class WithLatestFromStreamTransformer<T, S, R>
             (T value) {
               if (hasValues.every((hasValue) => hasValue)) {
                 try {
-                  controller.add(fn(value, latestValues));
+                  controller.add(fn(value, List.unmodifiable(latestValues)));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }
