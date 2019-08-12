@@ -74,7 +74,6 @@ import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
-import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
@@ -99,6 +98,7 @@ import 'transformers/to_list_test.dart' as to_list_test;
 import 'transformers/to_set_test.dart' as to_set_test;
 import 'transformers/transform_test.dart' as transform_test;
 import 'transformers/where_test.dart' as where_test;
+import 'transformers/where_type_test.dart' as where_type_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
 
@@ -184,7 +184,6 @@ void main() {
   map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
-  of_type_test.main();
   on_error_resume_test.main();
   on_error_return_test.main();
   on_error_return_with_test.main();
@@ -209,6 +208,7 @@ void main() {
   transform_test.main();
   timer_test.main();
   where_test.main();
+  where_type_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
 

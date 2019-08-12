@@ -4,6 +4,7 @@ import 'package:rxdart/futures.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
+import 'package:rxdart/src/transformers/where_type.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -2076,37 +2077,6 @@ class Observable<T> extends Stream<T> {
   AsObservableFuture<T> min([Comparator<T> comparator]) =>
       AsObservableFuture<T>(StreamMinFuture<T>(_stream, comparator));
 
-  /// Filters a sequence so that only events of a given type pass
-  ///
-  /// In order to capture the Type correctly, it needs to be wrapped
-  /// in a [TypeToken] as the generic parameter.
-  ///
-  /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
-  /// checks and castings with this method alone. Therefore, the
-  /// [TypeToken] class was introduced to capture the type of class you'd
-  /// like `ofType` to filter down to.
-  ///
-  /// ### Examples
-  ///
-  ///     new Observable.fromIterable([1, "hi"])
-  ///       .ofType(new TypeToken<String>)
-  ///       .listen(print); // prints "hi"
-  ///
-  /// As a shortcut, you can use some pre-defined constants to write the above
-  /// in the following way:
-  ///
-  ///     new Observable.fromIterable([1, "hi"])
-  ///       .ofType(kString)
-  ///       .listen(print); // prints "hi"
-  ///
-  /// If you'd like to create your own shortcuts like the example above,
-  /// simply create a constant:
-  ///
-  ///     const TypeToken<Map<Int, String>> kMapIntString =
-  ///       const TypeToken<Map<Int, String>>();
-  Observable<S> ofType<S>(TypeToken<S> typeToken) =>
-      transform(OfTypeStreamTransformer<T, S>(typeToken));
-
   /// Intercepts error events and switches to the given recovery stream in
   /// that case
   ///
@@ -2481,6 +2451,25 @@ class Observable<T> extends Stream<T> {
   /// Filters the elements of an observable sequence based on the test.
   @override
   Observable<T> where(bool test(T event)) => Observable<T>(_stream.where(test));
+
+  /// This transformer is a shorthand for [Stream.where] followed by [Stream.cast].
+  ///
+  /// Events that do not match [T] are filtered out, the resulting
+  /// [Observable] will be of Type [T].
+  ///
+  /// ### Example
+  ///
+  ///     Observable.fromIterable([1, 'two', 3, 'four'])
+  ///       .whereType<int>()
+  ///       .listen(print); // prints 1, 3
+  ///
+  /// ## as opposed to:
+  ///
+  ///     Observable.fromIterable([1, 'two', 3, 'four'])
+  ///       .where((event) => event is int)
+  ///       .cast<int>()
+  ///       .listen(print); // prints 1, 3
+  Observable<S> whereType<S>() => transform(WhereTypeStreamTransformer<T, S>());
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence.
