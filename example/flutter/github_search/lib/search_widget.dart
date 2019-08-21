@@ -17,9 +17,7 @@ import 'package:github_search/search_state.dart';
 class SearchScreen extends StatefulWidget {
   final GithubApi api;
 
-  SearchScreen({Key key, GithubApi api})
-      : this.api = api ?? GithubApi(),
-        super(key: key);
+  SearchScreen({Key key, this.api}) : super(key: key);
 
   @override
   SearchScreenState createState() {
@@ -71,29 +69,9 @@ class SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
                 Expanded(
-                  child: Stack(
-                    children: <Widget>[
-                      // Fade in an intro screen if no term has been entered
-                      SearchIntro(visible: state is SearchNoTerm),
-
-                      // Fade in an Empty Result screen if the search contained
-                      // no items
-                      EmptyWidget(visible: state is SearchEmpty),
-
-                      // Fade in a loading screen when results are being fetched
-                      // from Github
-                      LoadingWidget(visible: state is SearchLoading),
-
-                      // Fade in an error if something went wrong when fetching
-                      // the results
-                      SearchErrorWidget(visible: state is SearchError),
-
-                      // Fade in the Result if available
-                      SearchResultWidget(
-                        items:
-                            state is SearchPopulated ? state.result.items : [],
-                      ),
-                    ],
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _buildChild(state),
                   ),
                 )
               ])
@@ -102,5 +80,21 @@ class SearchScreenState extends State<SearchScreen> {
         );
       },
     );
+  }
+
+  Widget _buildChild(SearchState state) {
+    if (state is SearchNoTerm) {
+      return SearchIntro();
+    } else if (state is SearchEmpty) {
+      return EmptyWidget();
+    } else if (state is SearchLoading) {
+      return LoadingWidget();
+    } else if (state is SearchError) {
+      return SearchErrorWidget();
+    } else if (state is SearchPopulated) {
+      return SearchResultWidget(items: state.result.items);
+    }
+
+    throw Exception('${state.runtimeType} is not supported');
   }
 }
