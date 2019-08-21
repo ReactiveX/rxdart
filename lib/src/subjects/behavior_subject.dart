@@ -62,17 +62,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
     return BehaviorSubject<T>._(
         controller,
-        Observable<T>.defer(() {
-          if (wrapper.latestIsError) {
-            scheduleMicrotask(() => controller.addError(
-                wrapper.latestError, wrapper.latestStackTrace));
-          } else if (wrapper.latestIsValue) {
-            return Observable<T>(controller.stream)
-                .startWith(wrapper.latestValue);
-          }
-
-          return controller.stream;
-        }, reusable: true),
+        Observable<T>.defer(_deferStream(wrapper, controller), reusable: true),
         wrapper);
   }
 
@@ -93,17 +83,23 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
     return BehaviorSubject<T>._(
         controller,
-        Observable<T>.defer(() {
-          if (wrapper.latestIsError) {
-            scheduleMicrotask(() => controller.addError(
-                wrapper.latestError, wrapper.latestStackTrace));
-          }
-
-          return Observable<T>(controller.stream)
-              .startWith(wrapper.latestValue);
-        }, reusable: true),
+        Observable<T>.defer(_deferStream(wrapper, controller), reusable: true),
         wrapper);
   }
+
+  static Stream<T> Function() _deferStream<T>(
+          _Wrapper<T> wrapper, StreamController<T> controller) =>
+      () {
+        if (wrapper.latestIsError) {
+          scheduleMicrotask(() => controller.addError(
+              wrapper.latestError, wrapper.latestStackTrace));
+        } else if (wrapper.latestIsValue) {
+          return Observable<T>(controller.stream)
+              .startWith(wrapper.latestValue);
+        }
+
+        return controller.stream;
+      };
 
   @override
   void onAdd(T event) => _wrapper.setValue(event);
