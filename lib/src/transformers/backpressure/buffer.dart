@@ -51,11 +51,13 @@ class BufferCountStreamTransformer<T>
             startBufferEvery: startBufferEvery,
             closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
     if (count == null) throw ArgumentError.notNull('count');
-    if (startBufferEvery == null)
+    if (startBufferEvery == null) {
       throw ArgumentError.notNull('startBufferEvery');
+    }
     if (count < 1) throw ArgumentError.value(count, 'count');
-    if (startBufferEvery < 0)
+    if (startBufferEvery < 0) {
       throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
+    }
   }
 }
 

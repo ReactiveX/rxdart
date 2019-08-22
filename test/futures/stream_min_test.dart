@@ -32,7 +32,7 @@ void main() {
     test('emits the minimum value from a list with a comparator', () async {
       final stream = Stream.fromIterable(const ["one", "two", "three"]);
 
-      final Comparator<String> stringLengthComparator =
+      final stringLengthComparator =
           (String a, String b) => a.length - b.length;
 
       await expectLater(StreamMinFuture<String>(stream, stringLengthComparator),

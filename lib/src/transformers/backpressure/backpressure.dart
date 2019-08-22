@@ -175,9 +175,10 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                 controller.addError(e, s);
               }
 
-              if (stream == null)
+              if (stream == null) {
                 controller
                     .addError(ArgumentError.notNull('windowStreamFactory'));
+              }
 
               return stream;
             };
