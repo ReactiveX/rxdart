@@ -25,6 +25,7 @@ Stream<Object> _getStream() {
 void main() {
   test('rx.Observable.ofType', () async {
     Observable(_getStream())
+        // ignore: deprecated_member_use_from_same_package
         .ofType(TypeToken<Map<String, int>>())
         .listen(expectAsync1((result) {
           expect(result, isMap);
@@ -32,12 +33,14 @@ void main() {
   });
 
   test('rx.Observable.ofType.polymorphism', () async {
+    // ignore: deprecated_member_use_from_same_package
     Observable(_getStream()).ofType(kNum).listen(expectAsync1((result) {
           expect(result is num, true);
         }, count: 2));
   });
 
   test('rx.Observable.ofType.asBroadcastStream', () async {
+    // ignore: deprecated_member_use_from_same_package
     final stream = Observable(_getStream().asBroadcastStream()).ofType(kInt);
 
     // listen twice on same stream
@@ -48,8 +51,9 @@ void main() {
   });
 
   test('rx.Observable.ofType.error.shouldThrow', () async {
-    final observableWithError =
-        Observable(ErrorStream<void>(Exception())).ofType(kNum);
+    final observableWithError = Observable(ErrorStream<void>(Exception()))
+        // ignore: deprecated_member_use_from_same_package
+        .ofType(kNum);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -59,7 +63,9 @@ void main() {
 
   test('rx.Observable.ofType.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.just(1).ofType(kInt);
+    final stream = Observable.just(1)
+        // ignore: deprecated_member_use_from_same_package
+        .ofType(kInt);
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
