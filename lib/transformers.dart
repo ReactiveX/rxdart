@@ -12,6 +12,7 @@ export 'package:rxdart/src/transformers/ignore_elements.dart';
 export 'package:rxdart/src/transformers/interval.dart';
 export 'package:rxdart/src/transformers/map_to.dart';
 export 'package:rxdart/src/transformers/materialize.dart';
+export 'package:rxdart/src/transformers/of_type.dart';
 export 'package:rxdart/src/transformers/on_error_resume.dart';
 export 'package:rxdart/src/transformers/scan.dart';
 export 'package:rxdart/src/transformers/skip_until.dart';
@@ -25,6 +26,7 @@ export 'package:rxdart/src/transformers/timestamp.dart';
 export 'package:rxdart/src/transformers/where_type.dart';
 export 'package:rxdart/src/transformers/with_latest_from.dart';
 export 'package:rxdart/src/utils/notification.dart';
+export 'package:rxdart/src/utils/type_token.dart';
 
 export 'package:rxdart/src/transformers/backpressure/buffer.dart';
 export 'package:rxdart/src/transformers/backpressure/debounce.dart';

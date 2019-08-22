@@ -74,6 +74,7 @@ import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
+import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
@@ -184,6 +185,7 @@ void main() {
   map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
+  of_type_test.main();
   on_error_resume_test.main();
   on_error_return_test.main();
   on_error_return_with_test.main();

@@ -4,7 +4,6 @@ import 'package:rxdart/futures.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
-import 'package:rxdart/src/transformers/where_type.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -2076,6 +2075,38 @@ class Observable<T> extends Stream<T> {
   ///     print(min); // prints "short"
   AsObservableFuture<T> min([Comparator<T> comparator]) =>
       AsObservableFuture<T>(StreamMinFuture<T>(_stream, comparator));
+
+  /// Filters a sequence so that only events of a given type pass
+  ///
+  /// In order to capture the Type correctly, it needs to be wrapped
+  /// in a [TypeToken] as the generic parameter.
+  ///
+  /// Given the way Dart generics work, one cannot simply use the `is T` / `as T`
+  /// checks and castings with this method alone. Therefore, the
+  /// [TypeToken] class was introduced to capture the type of class you'd
+  /// like `ofType` to filter down to.
+  ///
+  /// ### Examples
+  ///
+  ///     new Observable.fromIterable([1, "hi"])
+  ///       .ofType(new TypeToken<String>)
+  ///       .listen(print); // prints "hi"
+  ///
+  /// As a shortcut, you can use some pre-defined constants to write the above
+  /// in the following way:
+  ///
+  ///     new Observable.fromIterable([1, "hi"])
+  ///       .ofType(kString)
+  ///       .listen(print); // prints "hi"
+  ///
+  /// If you'd like to create your own shortcuts like the example above,
+  /// simply create a constant:
+  ///
+  ///     const TypeToken<Map<Int, String>> kMapIntString =
+  ///       const TypeToken<Map<Int, String>>();
+  @Deprecated('Please use whereType instead')
+  Observable<S> ofType<S>(TypeToken<S> typeToken) =>
+      transform(OfTypeStreamTransformer<T, S>(typeToken));
 
   /// Intercepts error events and switches to the given recovery stream in
   /// that case
