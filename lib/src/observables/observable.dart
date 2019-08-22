@@ -1712,6 +1712,13 @@ class Observable<T> extends Stream<T> {
       transform(DoStreamTransformer<T>(onEach: onEach));
 
   /// Invokes the given callback function when the stream emits an error.
+  /// 
+  /// The [onError] callback must be of type `void onError(error)` or
+  /// `void onError(error, StackTrace stackTrace)`.
+  /// The function type determines whether [onError] is invoked with a stack
+  /// trace argument.
+  /// The stack trace argument may be `null` if this stream received an error
+  /// without a stack trace.
   ///
   /// ### Example
   ///
