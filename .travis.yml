@@ -5,9 +5,6 @@ dart:
   - dev
   - stable
 with_content_shell: false
-before_install:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
 script:
   - set -e
   - sh tool/check_format.sh
