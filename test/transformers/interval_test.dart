@@ -15,8 +15,9 @@ void main() {
         expectAsync1((result) {
           expect(expectedOutput[count++], result);
 
-          if (lastInterval != -1)
+          if (lastInterval != -1) {
             expect(stopwatch.elapsedMilliseconds - lastInterval >= 1, true);
+          }
 
           lastInterval = stopwatch.elapsedMilliseconds;
         }, count: expectedOutput.length),

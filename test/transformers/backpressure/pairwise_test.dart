@@ -18,8 +18,9 @@ void main() {
       // test to see if the combined output matches
       expect(expectedOutput[count].length, result.length);
       expect(expectedOutput[count][0], result.elementAt(0));
-      if (expectedOutput[count].length > 1)
+      if (expectedOutput[count].length > 1) {
         expect(expectedOutput[count][1], result.elementAt(1));
+      }
       count++;
     }, count: expectedOutput.length));
   });

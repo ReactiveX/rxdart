@@ -2494,7 +2494,7 @@ class Observable<T> extends Stream<T> {
   ///       .whereType<int>()
   ///       .listen(print); // prints 1, 3
   ///
-  /// ## as opposed to:
+  /// #### as opposed to:
   ///
   ///     Observable.fromIterable([1, 'two', 3, 'four'])
   ///       .where((event) => event is int)
