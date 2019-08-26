@@ -1,3 +1,12 @@
+## 0.22.2
+  * Bugfix: When using a seeded `BehaviorSubject` and adding an `Error`,
+    upon listening, the `BehaviorSubject` emits `null` instead of the last `Error`.
+  * Bugfix: calling cancel after a `switchMap` can cause a `NoSuchMethodError`.
+  * Updated Flutter example to match the latest Flutter release
+  * `Observable.withLatestFrom` is now expanded to accept 2 or more `Stream`s
+    thanks to Petrus Nguyễn Thái Học (@hoc081098)!
+  * Deprecates `ofType` in favor of `whereType`, drop `TypeToken`.
+
 ## 0.22.1
   Fixes following issues:
   * Erroneous behavior with scan and `BehaviorSubject`.
