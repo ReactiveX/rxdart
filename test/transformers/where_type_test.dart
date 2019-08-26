@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/utils/type_token.dart';
 import 'package:test/test.dart';
 
 Stream<Object> _getStream() {
@@ -23,25 +22,29 @@ Stream<Object> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.ofType', () async {
+  test('rx.Observable.whereType', () async {
     Observable(_getStream())
-        // ignore: deprecated_member_use_from_same_package
-        .ofType(TypeToken<Map<String, int>>())
+        .whereType<Map<String, int>>()
         .listen(expectAsync1((result) {
           expect(result, isMap);
         }, count: 1));
   });
 
-  test('rx.Observable.ofType.polymorphism', () async {
-    // ignore: deprecated_member_use_from_same_package
-    Observable(_getStream()).ofType(kNum).listen(expectAsync1((result) {
+  test('rx.Observable.whereType.polymorphism', () async {
+    Observable(_getStream()).whereType<num>().listen(expectAsync1((result) {
           expect(result is num, true);
         }, count: 2));
   });
 
-  test('rx.Observable.ofType.asBroadcastStream', () async {
-    // ignore: deprecated_member_use_from_same_package
-    final stream = Observable(_getStream().asBroadcastStream()).ofType(kInt);
+  test('rx.Observable.whereType.null.values', () async {
+    await expectLater(
+        Observable.fromIterable([null, 1, null, 'two', 3]).whereType<String>(),
+        emitsInOrder(const <String>['two']));
+  });
+
+  test('rx.Observable.whereType.asBroadcastStream', () async {
+    final stream =
+        Observable(_getStream().asBroadcastStream()).whereType<int>();
 
     // listen twice on same stream
     stream.listen(null);
@@ -50,10 +53,9 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.ofType.error.shouldThrow', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
-        // ignore: deprecated_member_use_from_same_package
-        .ofType(kNum);
+  test('rx.Observable.whereType.error.shouldThrow', () async {
+    final observableWithError =
+        Observable(ErrorStream<void>(Exception())).whereType<num>();
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -61,11 +63,9 @@ void main() {
     }));
   });
 
-  test('rx.Observable.ofType.pause.resume', () async {
+  test('rx.Observable.whereType.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.just(1)
-        // ignore: deprecated_member_use_from_same_package
-        .ofType(kInt);
+    final stream = Observable.just(1).whereType<int>();
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

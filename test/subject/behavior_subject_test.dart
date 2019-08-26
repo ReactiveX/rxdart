@@ -9,108 +9,187 @@ void main() {
   group('BehaviorSubject', () {
     test('emits the most recently emitted item to every subscriber', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
 
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
     });
 
     test('emits the most recently emitted null item to every subscriber',
         () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(null);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(null);
 
-      await expectLater(subject.stream, emits(isNull));
-      await expectLater(subject.stream, emits(isNull));
-      await expectLater(subject.stream, emits(isNull));
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(null);
+
+      await expectLater(unseeded.stream, emits(isNull));
+      await expectLater(unseeded.stream, emits(isNull));
+      await expectLater(unseeded.stream, emits(isNull));
+
+      await expectLater(seeded.stream, emits(isNull));
+      await expectLater(seeded.stream, emits(isNull));
+      await expectLater(seeded.stream, emits(isNull));
     });
 
     test(
         'emits the most recently emitted item to every subscriber that subscribe to the subject directly',
         () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
 
-      await expectLater(subject, emits(3));
-      await expectLater(subject, emits(3));
-      await expectLater(subject, emits(3));
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+
+      await expectLater(unseeded, emits(3));
+      await expectLater(unseeded, emits(3));
+      await expectLater(unseeded, emits(3));
+
+      await expectLater(seeded, emits(3));
+      await expectLater(seeded, emits(3));
+      await expectLater(seeded, emits(3));
     });
 
     test('emits errors to every subscriber', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
-      subject.addError(Exception('oh noes!'));
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
+      unseeded.addError(Exception('oh noes!'));
 
-      await expectLater(subject.stream, emitsError(isException));
-      await expectLater(subject.stream, emitsError(isException));
-      await expectLater(subject.stream, emitsError(isException));
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+      seeded.addError(Exception('oh noes!'));
+
+      await expectLater(unseeded.stream, emitsError(isException));
+      await expectLater(unseeded.stream, emitsError(isException));
+      await expectLater(unseeded.stream, emitsError(isException));
+
+      await expectLater(seeded.stream, emitsError(isException));
+      await expectLater(seeded.stream, emitsError(isException));
+      await expectLater(seeded.stream, emitsError(isException));
     });
 
     test('emits event after error to every subscriber', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.addError(Exception('oh noes!'));
-      subject.add(3);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.addError(Exception('oh noes!'));
+      unseeded.add(3);
 
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
+      seeded.add(1);
+      seeded.add(2);
+      seeded.addError(Exception('oh noes!'));
+      seeded.add(3);
+
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
     });
 
     test('emits errors to every subscriber, ensures value is null', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
-      subject.addError(Exception('oh noes!'));
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
+      unseeded.addError(Exception('oh noes!'));
 
-      await expectLater(subject.value, isNull);
-      await expectLater(subject.value, isNull);
-      await expectLater(subject.value, isNull);
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+      seeded.addError(Exception('oh noes!'));
+
+      await expectLater(unseeded.value, isNull);
+      await expectLater(unseeded.value, isNull);
+      await expectLater(unseeded.value, isNull);
+
+      await expectLater(seeded.value, isNull);
+      await expectLater(seeded.value, isNull);
+      await expectLater(seeded.value, isNull);
     });
 
     test('can synchronously get the latest value', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(3);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
 
-      await expectLater(subject.value, 3);
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+
+      await expectLater(unseeded.value, 3);
+
+      await expectLater(seeded.value, 3);
     });
 
     test('can synchronously get the latest null value', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      subject.add(1);
-      subject.add(2);
-      subject.add(null);
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(null);
 
-      await expectLater(subject.value, isNull);
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(null);
+
+      await expectLater(unseeded.value, isNull);
+
+      await expectLater(seeded.value, isNull);
     });
 
     test('emits the seed item if no new items have been emitted', () async {
@@ -154,35 +233,56 @@ void main() {
     });
 
     test('emits done event to listeners when the subject is closed', () async {
-      final subject = BehaviorSubject<int>();
+      // ignore: close_sinks
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      await expectLater(subject.isClosed, isFalse);
+      await expectLater(unseeded.isClosed, isFalse);
+      await expectLater(seeded.isClosed, isFalse);
 
-      subject.add(1);
-      scheduleMicrotask(() => subject.close());
+      unseeded.add(1);
+      scheduleMicrotask(() => unseeded.close());
 
-      await expectLater(subject.stream, emitsInOrder(<dynamic>[1, emitsDone]));
-      await expectLater(subject.isClosed, isTrue);
+      seeded.add(1);
+      scheduleMicrotask(() => seeded.close());
+
+      await expectLater(unseeded.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(unseeded.isClosed, isTrue);
+
+      await expectLater(seeded.stream, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(seeded.isClosed, isTrue);
     });
 
     test('emits error events to subscribers', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      scheduleMicrotask(() => subject.addError(Exception()));
+      scheduleMicrotask(() => unseeded.addError(Exception()));
+      scheduleMicrotask(() => seeded.addError(Exception()));
 
-      await expectLater(subject.stream, emitsError(isException));
+      await expectLater(unseeded.stream, emitsError(isException));
+      await expectLater(seeded.stream, emitsError(isException));
     });
 
     test('replays the previously emitted items from addStream', () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<int>();
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
 
-      await subject.addStream(Stream.fromIterable(const [1, 2, 3]));
+      await unseeded.addStream(Stream.fromIterable(const [1, 2, 3]));
+      await seeded.addStream(Stream.fromIterable(const [1, 2, 3]));
 
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
-      await expectLater(subject.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+      await expectLater(unseeded.stream, emits(3));
+
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
+      await expectLater(seeded.stream, emits(3));
     });
 
     test('allows items to be added once addStream is complete', () async {

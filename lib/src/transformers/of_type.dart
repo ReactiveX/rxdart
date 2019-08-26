@@ -30,6 +30,7 @@ import 'package:rxdart/src/utils/type_token.dart';
 ///
 ///     const TypeToken<Map<Int, String>> kMapIntString =
 ///       const TypeToken<Map<Int, String>>();
+@Deprecated('Please use WhereTypeStreamTransformer instead')
 class OfTypeStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> transformer;
 
