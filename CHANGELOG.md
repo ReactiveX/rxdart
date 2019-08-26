@@ -4,6 +4,7 @@
   * Bugfix: calling cancel after a `switchMap` can cause a `NoSuchMethodError`.
   * Updated Flutter example to match the latest Flutter release
   * `Observable.withLatestFrom` is now expanded to accept 2 or more `Stream`s
+    thanks to Petrus Nguyễn Thái Học (@hoc081098)!
   * Deprecates `ofType` in favor of `whereType`, drop `TypeToken`.
 
 ## 0.22.1
