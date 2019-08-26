@@ -106,64 +106,66 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
         subscriptions.putIfAbsent(
           input,
-          () => input.listen(
-                (T value) {
-                  if (onData != null) {
-                    try {
-                      onData(value);
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
+          () {
+            return input.listen(
+              (T value) {
+                if (onData != null) {
+                  try {
+                    onData(value);
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                  if (onEach != null) {
-                    try {
-                      onEach(Notification<T>.onData(value));
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
+                }
+                if (onEach != null) {
+                  try {
+                    onEach(Notification<T>.onData(value));
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                  controller.add(value);
-                },
-                onError: (dynamic e, StackTrace s) {
-                  if (onError != null) {
-                    try {
-                      if (onError is void Function(dynamic, StackTrace)) {
-                        onError(e, s);
-                      } else if (onError is void Function(dynamic)) {
-                        onError(e);
-                      }
-                    } catch (e2, s2) {
-                      controller.addError(e2, s2);
+                }
+                controller.add(value);
+              },
+              onError: (dynamic e, StackTrace s) {
+                if (onError != null) {
+                  try {
+                    if (onError is void Function(dynamic, StackTrace)) {
+                      onError(e, s);
+                    } else if (onError is void Function(dynamic)) {
+                      onError(e);
                     }
+                  } catch (e2, s2) {
+                    controller.addError(e2, s2);
                   }
-                  if (onEach != null) {
-                    try {
-                      onEach(Notification<T>.onError(e, s));
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
+                }
+                if (onEach != null) {
+                  try {
+                    onEach(Notification<T>.onError(e, s));
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                  controller.addError(e, s);
-                },
-                onDone: () {
-                  if (onDone != null) {
-                    try {
-                      onDone();
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
+                }
+                controller.addError(e, s);
+              },
+              onDone: () {
+                if (onDone != null) {
+                  try {
+                    onDone();
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                  if (onEach != null) {
-                    try {
-                      onEach(Notification<T>.onDone());
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
+                }
+                if (onEach != null) {
+                  try {
+                    onEach(Notification<T>.onDone());
+                  } catch (e, s) {
+                    controller.addError(e, s);
                   }
-                  controller.close();
-                },
-                cancelOnError: cancelOnError,
-              ),
+                }
+                controller.close();
+              },
+              cancelOnError: cancelOnError,
+            );
+          },
         );
       };
       final onCancelLocal = () {
