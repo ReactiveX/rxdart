@@ -55,8 +55,9 @@ void main() {
 
     observable.listen(expectAsync1((result) {
       // test to see if the combined output matches
-      for (var i = 0, len = result.length; i < len; i++)
+      for (var i = 0, len = result.length; i < len; i++) {
         expect(result[i], expectedOutput[count][i]);
+      }
 
       count++;
     }, count: expectedOutput.length));

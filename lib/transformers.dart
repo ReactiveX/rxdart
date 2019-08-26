@@ -23,6 +23,7 @@ export 'package:rxdart/src/transformers/switch_map.dart';
 export 'package:rxdart/src/transformers/take_until.dart';
 export 'package:rxdart/src/transformers/time_interval.dart';
 export 'package:rxdart/src/transformers/timestamp.dart';
+export 'package:rxdart/src/transformers/where_type.dart';
 export 'package:rxdart/src/transformers/with_latest_from.dart';
 export 'package:rxdart/src/utils/notification.dart';
 export 'package:rxdart/src/utils/type_token.dart';

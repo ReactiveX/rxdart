@@ -168,13 +168,18 @@ Iterable<int> range(int start_or_stop, [int stop, int step]) sync* {
   step ??= 1;
 
   if (step == 0) throw ArgumentError('step cannot be 0');
-  if (step > 0 && stop < start)
+  if (step > 0 && stop < start) {
     throw ArgumentError('if step is positive,'
         ' stop must be greater than start');
-  if (step < 0 && stop > start)
+  }
+  if (step < 0 && stop > start) {
     throw ArgumentError('if step is negative,'
         ' stop must be less than start');
+  }
 
-  for (var value = start; step < 0 ? value > stop : value < stop; value += step)
+  for (var value = start;
+      step < 0 ? value > stop : value < stop;
+      value += step) {
     yield value;
+  }
 }

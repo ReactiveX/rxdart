@@ -23,12 +23,13 @@ void main() {
         .listen(expectAsync1((result) {
           expect(result.value, value++);
 
-          if (result.value == 1)
+          if (result.value == 1) {
             expect(result.interval.inMilliseconds,
                 greaterThanOrEqualTo(500)); // should be delayed
-          else
+          } else {
             expect(result.interval.inMilliseconds,
                 lessThanOrEqualTo(20)); // should be near instantaneous
+          }
         }, count: 4));
   });
 

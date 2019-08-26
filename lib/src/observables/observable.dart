@@ -2104,6 +2104,7 @@ class Observable<T> extends Stream<T> {
   ///
   ///     const TypeToken<Map<Int, String>> kMapIntString =
   ///       const TypeToken<Map<Int, String>>();
+  @Deprecated('Please use whereType instead')
   Observable<S> ofType<S>(TypeToken<S> typeToken) =>
       transform(OfTypeStreamTransformer<T, S>(typeToken));
 
@@ -2481,6 +2482,25 @@ class Observable<T> extends Stream<T> {
   /// Filters the elements of an observable sequence based on the test.
   @override
   Observable<T> where(bool test(T event)) => Observable<T>(_stream.where(test));
+
+  /// This transformer is a shorthand for [Stream.where] followed by [Stream.cast].
+  ///
+  /// Events that do not match [T] are filtered out, the resulting
+  /// [Observable] will be of Type [T].
+  ///
+  /// ### Example
+  ///
+  ///     Observable.fromIterable([1, 'two', 3, 'four'])
+  ///       .whereType<int>()
+  ///       .listen(print); // prints 1, 3
+  ///
+  /// #### as opposed to:
+  ///
+  ///     Observable.fromIterable([1, 'two', 3, 'four'])
+  ///       .where((event) => event is int)
+  ///       .cast<int>()
+  ///       .listen(print); // prints 1, 3
+  Observable<S> whereType<S>() => transform(WhereTypeStreamTransformer<T, S>());
 
   /// Creates an Observable where each item is a [Stream] containing the items
   /// from the source sequence.

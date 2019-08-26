@@ -13,7 +13,7 @@ void main() {
       // return the event target
       .map((event) => event.target)
       // cast the event target as InputElement
-      .ofType(const TypeToken<InputElement>())
+      .whereType<InputElement>()
       // Use map() to take the value from the input field
       .map((inputElement) => (inputElement.value))
       // Use distinct() to ignore all keystrokes that don't have an impact on
@@ -48,8 +48,9 @@ Future<List<Map<String, String>>> _searchGithubFor(String term) async {
     'https://api.github.com/search/repositories?q=$term',
     requestHeaders: {"Content-Type": "application/json"},
   );
+  final List itemList = json.decode(request.responseText)['items'] as List;
   final List<Map<String, dynamic>> items =
-      json.decode(request.responseText)['items'].cast<Map<String, dynamic>>();
+      itemList.cast<Map<String, dynamic>>();
 
   return items.map((item) {
     return {
