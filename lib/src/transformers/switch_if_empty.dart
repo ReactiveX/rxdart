@@ -60,7 +60,10 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
                   hasEvent = true;
                   controller.add(value);
                 },
-                onError: controller.addError,
+                onError: (Object err, [StackTrace stacktrace]) {
+                  hasEvent = true;
+                  controller.addError(err, stacktrace);
+                },
                 onDone: () {
                   if (hasEvent) {
                     controller.close();
