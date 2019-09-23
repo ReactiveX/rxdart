@@ -40,7 +40,7 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                     controller.add(event as T);
                   }
                 } catch (e, s) {
-                  return controller.addError(e, s);
+                  controller.addError(e, s);
                 }
               },
                   onError: controller.addError,
