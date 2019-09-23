@@ -37,7 +37,7 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
               subscription = input.listen((event) {
                 try {
                   if (event is T) {
-                    controller.add(event as T);
+                    controller.add(event);
                   }
                 } catch (e, s) {
                   controller.addError(e, s);
