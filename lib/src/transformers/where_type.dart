@@ -35,19 +35,13 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             sync: true,
             onListen: () {
               subscription = input.listen((event) {
-                if (event == null) return;
-
-                T eventCast;
-
                 try {
-                  eventCast = event as T;
-                } on CastError catch (_) {
-                  return;
+                  if (event is T) {
+                    controller.add(event as T);
+                  }
                 } catch (e, s) {
                   return controller.addError(e, s);
                 }
-
-                controller.add(eventCast);
               },
                   onError: controller.addError,
                   onDone: controller.close,
