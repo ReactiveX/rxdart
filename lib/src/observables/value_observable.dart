@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/streams.dart';
 
