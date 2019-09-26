@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:test/test.dart';
 
 Stream<int> get streamA =>
@@ -365,5 +366,221 @@ void main() {
     }, count: 1));
 
     subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
+
+  /// ValueObservable
+
+  test('rx.ValueObservable.combineLatest2', () async {
+    const expected = [1, 2];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2);
+
+    final observable = ValueObservable.combineLatest2(
+        a, b, (int first, int second) => [first, second]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest3', () async {
+    const expected = [1, "2", 3.0];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<String>.just("2").shareValueSeeded("2"),
+        c = Observable<double>.just(3.0).shareValueSeeded(3.0);
+
+    final observable = ValueObservable.combineLatest3(a, b, c,
+        (int first, String second, double third) => [first, second, third]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest4', () async {
+    const expected = [1, 2, 3, 4];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4);
+
+    final observable = ValueObservable.combineLatest4(
+        a,
+        b,
+        c,
+        d,
+        (int first, int second, int third, int fourth) =>
+            [first, second, third, fourth]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest5', () async {
+    const expected = [1, 2, 3, 4, 5];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4),
+        e = Observable<int>.just(5).shareValueSeeded(5);
+
+    final observable = ValueObservable.combineLatest5(
+        a,
+        b,
+        c,
+        d,
+        e,
+        (int first, int second, int third, int fourth, int fifth) =>
+            <int>[first, second, third, fourth, fifth]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest6', () async {
+    const expected = [1, 2, 3, 4, 5, 6];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4),
+        e = Observable<int>.just(5).shareValueSeeded(5),
+        f = Observable<int>.just(6).shareValueSeeded(6);
+
+    final observable = ValueObservable.combineLatest6(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f,
+        (int first, int second, int third, int fourth, int fifth, int sixth) =>
+            [first, second, third, fourth, fifth, sixth]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest7', () async {
+    const expected = [1, 2, 3, 4, 5, 6, 7];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4),
+        e = Observable<int>.just(5).shareValueSeeded(5),
+        f = Observable<int>.just(6).shareValueSeeded(6),
+        g = Observable<int>.just(7).shareValueSeeded(7);
+
+    final observable = ValueObservable.combineLatest7(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f,
+        g,
+        (int first, int second, int third, int fourth, int fifth, int sixth,
+                int seventh) =>
+            [first, second, third, fourth, fifth, sixth, seventh]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest8', () async {
+    const expected = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4),
+        e = Observable<int>.just(5).shareValueSeeded(5),
+        f = Observable<int>.just(6).shareValueSeeded(6),
+        g = Observable<int>.just(7).shareValueSeeded(7),
+        h = Observable<int>.just(8).shareValueSeeded(8);
+
+    final observable = ValueObservable.combineLatest8(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f,
+        g,
+        h,
+        (int first, int second, int third, int fourth, int fifth, int sixth,
+                int seventh, int eighth) =>
+            [first, second, third, fourth, fifth, sixth, seventh, eighth]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
+  });
+
+  test('rx.ValueObservable.combineLatest9', () async {
+    const expected = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+    var a = Observable<int>.just(1).shareValueSeeded(1),
+        b = Observable<int>.just(2).shareValueSeeded(2),
+        c = Observable<int>.just(3).shareValueSeeded(3),
+        d = Observable<int>.just(4).shareValueSeeded(4),
+        e = Observable<int>.just(5).shareValueSeeded(5),
+        f = Observable<int>.just(6).shareValueSeeded(6),
+        g = Observable<int>.just(7).shareValueSeeded(7),
+        h = Observable<int>.just(8).shareValueSeeded(8),
+        i = Observable<int>.just(9).shareValueSeeded(9);
+
+    final observable = ValueObservable.combineLatest9(
+        a,
+        b,
+        c,
+        d,
+        e,
+        f,
+        g,
+        h,
+        i,
+        (int first, int second, int third, int fourth, int fifth, int sixth,
+                int seventh, int eighth, int ninth) =>
+            [
+              first,
+              second,
+              third,
+              fourth,
+              fifth,
+              sixth,
+              seventh,
+              eighth,
+              ninth
+            ]);
+
+    expect(observable.value, equals(expected));
+
+    observable.listen(expectAsync1((result) {
+      expect(result, expected);
+    }, count: 2));
   });
 }
