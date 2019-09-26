@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:test/test.dart';
 
 Stream<int> get streamA =>
