@@ -1,3 +1,6 @@
+## 0.22.3
+  * Bugfix: whereType failing in Flutter production builds only
+
 ## 0.22.2
   * Bugfix: When using a seeded `BehaviorSubject` and adding an `Error`,
     upon listening, the `BehaviorSubject` emits `null` instead of the last `Error`.
