@@ -73,7 +73,7 @@ var myObservable = new Observable(myStream);
 
 #### Available Factory Methods
 - [concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html)
-- [concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html) / [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html)
+- [concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concatEager.html) / [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html)
 - [defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html) / [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html)
 - [error](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.error.html) / [ErrorStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ErrorStream-class.html)
 - [just](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.just.html)
