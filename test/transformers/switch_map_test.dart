@@ -119,4 +119,18 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('rx.Observable.switchMap stream close after switch', () async {
+    final controller = StreamController<int>();
+
+    Observable(controller.stream)
+        .switchMap((it) => Stream.fromIterable([it, it]))
+        .toList();
+
+    controller.add(1);
+    await Future<void>.delayed(Duration(microseconds: 1));
+    controller.add(2);
+
+    await controller.close();
+  });
 }
