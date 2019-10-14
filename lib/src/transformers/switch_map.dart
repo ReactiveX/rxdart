@@ -42,6 +42,9 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                   try {
                     otherSubscription?.cancel();
 
+                    // Since we start a new listener on mapper(value),
+                    // this state needs to be set to false again.
+                    rightClosed = false;
                     hasMainEvent = true;
 
                     otherSubscription = mapper(value).listen(controller.add,
