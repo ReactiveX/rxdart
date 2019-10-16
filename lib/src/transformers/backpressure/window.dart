@@ -97,3 +97,72 @@ class WindowTestStreamTransformer<T>
     if (test == null) throw ArgumentError.notNull('test');
   }
 }
+
+extension WindowExtensions<T> on Stream<T> {
+  /// Creates a Stream where each item is a [Stream] containing the items from
+  /// the source sequence.
+  ///
+  /// This [List] is emitted every time [window] emits an event.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.periodic(Duration(milliseconds: 100), (i) => i)
+  ///       .window(Stream.periodic(Duration(milliseconds: 160), (i) => i))
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
+  Stream<Stream<T>> window(Stream window) =>
+      transform(WindowStreamTransformer((_) => window));
+
+  /// Buffers a number of values from the source Stream by [count] then emits
+  /// the buffer as a [Stream] and clears it, and starts a new buffer each
+  /// [startBufferEvery] values. If [startBufferEvery] is not provided, then new
+  /// buffers are started immediately at the start of the source and when each
+  /// buffer closes and is emitted.
+  ///
+  /// ### Example
+  /// [count] is the maximum size of the buffer emitted
+  ///
+  ///     RangeStream(1, 4)
+  ///       .windowCount(2)
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [1, 2], [3, 4] done!
+  ///
+  /// ### Example
+  /// if [startBufferEvery] is 2, then a new buffer will be started
+  /// on every other value from the source. A new buffer is started at the
+  /// beginning of the source by default.
+  ///
+  ///     RangeStream(1, 5)
+  ///       .bufferCount(3, 2)
+  ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
+  Stream<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
+      transform(WindowCountStreamTransformer(count, startBufferEvery));
+
+  /// Creates a Stream where each item is a [Stream] containing the items from
+  /// the source sequence, batched whenever test passes.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.periodic(Duration(milliseconds: 100), (int i) => i)
+  ///       .windowTest((i) => i % 2 == 0)
+  ///       .asyncMap((stream) => stream.toList())
+  ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
+  Stream<Stream<T>> windowTest(bool onTestHandler(T event)) =>
+      transform(WindowTestStreamTransformer(onTestHandler));
+
+  /// Creates a Stream where each item is a [Stream] containing the items from
+  /// the source sequence, sampled on a time frame with [duration].
+  ///
+  /// ### Example
+  ///
+  ///     Stream.periodic(Duration(milliseconds: 100), (int i) => i)
+  ///       .windowTime(Duration(milliseconds: 220))
+  ///       .doOnData((_) => print('next window'))
+  ///       .flatMap((s) => s)
+  ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
+  Stream<Stream<T>> windowTime(Duration duration) {
+    if (duration == null) throw ArgumentError.notNull('duration');
+
+    return window(Stream<void>.periodic(duration));
+  }
+}

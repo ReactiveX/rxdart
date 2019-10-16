@@ -62,3 +62,23 @@ class MaterializeStreamTransformer<T>
     });
   }
 }
+
+extension MaterializeExtension<T> on Stream<T> {
+  /// Converts the onData, on Done, and onError events into [Notification]
+  /// objects that are passed into the downstream onData listener.
+  ///
+  /// The [Notification] object contains the [Kind] of event (OnData, onDone, or
+  /// OnError), and the item or error that was emitted. In the case of onDone,
+  /// no data is emitted as part of the [Notification].
+  ///
+  /// Example:
+  ///     Stream<int>.fromIterable([1])
+  ///         .materialize()
+  ///         .listen((i) => print(i)); // Prints onData & onDone Notification
+  ///
+  ///     Stream<int>.error(new Exception())
+  ///         .materialize()
+  ///         .listen((i) => print(i)); // Prints onError Notification
+  Stream<Notification<T>> materialize() =>
+      transform(MaterializeStreamTransformer<T>());
+}

@@ -46,3 +46,13 @@ class StartWithStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+extension StartWithExtension<T> on Stream<T> {
+  /// Prepends a value to the source Stream.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([2]).startWith(1).listen(print); // prints 1, 2
+  Stream<T> startWith(T startValue) =>
+      transform(StartWithStreamTransformer<T>(startValue));
+}

@@ -88,3 +88,24 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     });
   }
 }
+
+extension SwitchMapExtension<T> on Stream<T> {
+  /// Converts each emitted item into a Stream using the given mapper function.
+  /// The newly created Stream will be be listened to and begin emitting items,
+  /// and any previously created Stream will stop emitting.
+  ///
+  /// The switchMap operator is similar to the flatMap and concatMap methods,
+  /// but it only emits items from the most recently created Stream.
+  ///
+  /// This can be useful when you only want the very latest state from
+  /// asynchronous APIs, for example.
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(4, 1)
+  ///       .switchMap((i) =>
+  ///         TimerStream(i, Duration(minutes: i))
+  ///       .listen(print); // prints 1
+  Stream<S> switchMap<S>(Stream<S> mapper(T value)) =>
+      transform(SwitchMapStreamTransformer<T, S>(mapper));
+}

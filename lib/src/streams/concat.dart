@@ -76,3 +76,17 @@ class ConcatStream<T> extends Stream<T> {
     return controller;
   }
 }
+
+extension ConcatExtensions<T> on Stream<T> {
+  /// Returns a Stream that emits all items from the current Stream,
+  /// then emits all items from the given streams, one after the next.
+  ///
+  /// ### Example
+  ///
+  ///     TimerStream(1, Duration(seconds: 10))
+  ///         .concatWith([Stream.fromIterable([2])])
+  ///         .listen(print); // prints 1, 2
+  Stream<T> concatWith(Iterable<Stream<T>> other) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => ConcatStream<T>([stream, ...other])));
+}

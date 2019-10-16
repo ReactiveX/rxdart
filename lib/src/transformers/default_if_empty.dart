@@ -53,3 +53,14 @@ class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+extension DefaultIfEmptyExtension<T> on Stream<T> {
+  /// Emit items from the source Stream, or a single default item if the source
+  /// Stream emits nothing.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.empty().defaultIfEmpty(10).listen(print); // prints 10
+  Stream<T> defaultIfEmpty(T defaultValue) =>
+      transform(DefaultIfEmptyStreamTransformer<T>(defaultValue));
+}

@@ -8,6 +8,7 @@ void main() {
     const expectedOutput = [1, 1, 2, 2, 3, 3];
     var count = 0;
 
+    // ignore: deprecated_member_use_from_same_package
     Observable(_getStream()).concatMap(_getOtherStream).listen(
         expectAsync1((result) {
           expect(result, expectedOutput[count++]);
@@ -18,6 +19,7 @@ void main() {
 
   test('rx.Observable.concatMap.error.shouldThrow', () async {
     final observableWithError =
+        // ignore: deprecated_member_use_from_same_package
         Observable(ErrorStream<int>(Exception())).concatMap(_getOtherStream);
 
     observableWithError.listen(null,
@@ -28,6 +30,7 @@ void main() {
 
   test('rx.Observable.concatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
+    // ignore: deprecated_member_use_from_same_package
     final stream = Observable.just(0).concatMap((_) => Observable.just(1));
 
     subscription = stream.listen(expectAsync1((value) {
@@ -43,6 +46,7 @@ void main() {
 
   test('rx.Observable.concatMap.cancel', () async {
     StreamSubscription<int> subscription;
+    // ignore: deprecated_member_use_from_same_package
     final stream = Observable(_getStream()).concatMap(_getOtherStream);
 
     // Cancel the subscription before any events come through

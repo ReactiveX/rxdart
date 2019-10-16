@@ -97,3 +97,16 @@ class TimeInterval<T> {
     return 'TimeInterval{interval: $interval, value: $value}';
   }
 }
+
+extension TimeIntervalExtension<T> on Stream<T> {
+  /// Records the time interval between consecutive values in a Stream sequence.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///       .interval(Duration(seconds: 1))
+  ///       .timeInterval()
+  ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
+  Stream<TimeInterval<T>> timeInterval() =>
+      transform(TimeIntervalStreamTransformer<T>());
+}

@@ -273,3 +273,264 @@ class ConnectableObservableStreamSubscription<T> extends StreamSubscription<T> {
   @override
   void resume() => _source.resume();
 }
+
+extension ConnectableObservableExtensions<T> on Stream<T> {
+  /// Convert the current Observable into a [ConnectableObservable]
+  /// that can be listened to multiple times. It will not begin emitting items
+  /// from the original Observable until the `connect` method is invoked.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final connectable = source.publish();
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  ///
+  /// // Start listening to the source Observable. Will cause the previous
+  /// // line to start printing 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // Subject
+  /// subscription.cancel();
+  /// ```
+  ConnectableObservable<T> publish() => PublishConnectableObservable<T>(this);
+
+  /// Convert the current Observable into a [ValueConnectableObservable]
+  /// that can be listened to multiple times. It will not begin emitting items
+  /// from the original Observable until the `connect` method is invoked.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream that replays the latest emitted value to any new
+  /// listener. It also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final connectable = source.publishValue();
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  ///
+  /// // Start listening to the source Observable. Will cause the previous
+  /// // line to start printing 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Late subscribers will receive the last emitted value
+  /// connectable.listen(print); // Prints 3
+  ///
+  /// // Can access the latest emitted value synchronously. Prints 3
+  /// print(connectable.value);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // BehaviorSubject
+  /// subscription.cancel();
+  /// ```
+  ValueConnectableObservable<T> publishValue() =>
+      ValueConnectableObservable<T>(this);
+
+  /// Convert the current Observable into a [ValueConnectableObservable]
+  /// that can be listened to multiple times, providing an initial seeded value.
+  /// It will not begin emitting items from the original Observable
+  /// until the `connect` method is invoked.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream that replays the latest emitted value to any new
+  /// listener. It also provides access to the latest value synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final connectable = source.publishValueSeeded(0);
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  ///
+  /// // Start listening to the source Observable. Will cause the previous
+  /// // line to start printing 0, 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Late subscribers will receive the last emitted value
+  /// connectable.listen(print); // Prints 3
+  ///
+  /// // Can access the latest emitted value synchronously. Prints 3
+  /// print(connectable.value);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // BehaviorSubject
+  /// subscription.cancel();
+  /// ```
+  ValueConnectableObservable<T> publishValueSeeded(T seedValue) =>
+      ValueConnectableObservable<T>.seeded(this, seedValue);
+
+  /// Convert the current Observable into a [ReplayConnectableObservable]
+  /// that can be listened to multiple times. It will not begin emitting items
+  /// from the original Observable until the `connect` method is invoked.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream that replays a given number of items to any new
+  /// listener. It also provides access to the emitted values synchronously.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final connectable = source.publishReplay();
+  ///
+  /// // Does not print anything at first
+  /// connectable.listen(print);
+  ///
+  /// // Start listening to the source Observable. Will cause the previous
+  /// // line to start printing 1, 2, 3
+  /// final subscription = connectable.connect();
+  ///
+  /// // Late subscribers will receive the emitted value, up to a specified
+  /// // maxSize
+  /// connectable.listen(print); // Prints 1, 2, 3
+  ///
+  /// // Can access a list of the emitted values synchronously. Prints [1, 2, 3]
+  /// print(connectable.values);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // ReplaySubject
+  /// subscription.cancel();
+  /// ```
+  ReplayConnectableObservable<T> publishReplay({int maxSize}) =>
+      ReplayConnectableObservable<T>(this, maxSize: maxSize);
+
+  /// Convert the current Observable into a new Observable that can be listened
+  /// to multiple times. It will automatically begin emitting items when first
+  /// listened to, and shut down when no listeners remain.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast
+  /// // stream
+  /// final observable = Observable.fromIterable([1, 2, 3]).share();
+  ///
+  /// // Start listening to the source Observable. Will start printing 1, 2, 3
+  /// final subscription = observable.listen(print);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // PublishSubject
+  /// subscription.cancel();
+  /// ```
+  Stream<T> share() => publish().refCount();
+
+  /// Convert the current Observable into a new [ValueObservable] that can
+  /// be listened to multiple times. It will automatically begin emitting items
+  /// when first listened to, and shut down when no listeners remain.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream. It's also useful for providing sync access to the latest
+  /// emitted value.
+  ///
+  /// It will replay the latest emitted value to any new listener.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast
+  /// // stream that will emit the latest value to any new listeners
+  /// final observable = Observable.fromIterable([1, 2, 3]).shareValue();
+  ///
+  /// // Start listening to the source Observable. Will start printing 1, 2, 3
+  /// final subscription = observable.listen(print);
+  ///
+  /// // Synchronously print the latest value
+  /// print(observable.value);
+  ///
+  /// // Subscribe again later. This will print 3 because it receives the last
+  /// // emitted value.
+  /// final subscription2 = observable.listen(print);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // BehaviorSubject by cancelling all subscriptions.
+  /// subscription.cancel();
+  /// subscription2.cancel();
+  /// ```
+  ValueObservable<T> shareValue() => publishValue().refCount();
+
+  /// Convert the current Observable into a new [ValueObservable] that can
+  /// be listened to multiple times, providing an initial value.
+  /// It will automatically begin emitting items when first listened to,
+  /// and shut down when no listeners remain.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream. It's also useful for providing sync access to the latest
+  /// emitted value.
+  ///
+  /// It will replay the latest emitted value to any new listener.
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast
+  /// // stream that will emit the latest value to any new listeners
+  /// final observable = Observable.fromIterable([1, 2, 3]).shareValueSeeded(0);
+  ///
+  /// // Start listening to the source Observable. Will start printing 0, 1, 2, 3
+  /// final subscription = observable.listen(print);
+  ///
+  /// // Synchronously print the latest value
+  /// print(observable.value);
+  ///
+  /// // Subscribe again later. This will print 3 because it receives the last
+  /// // emitted value.
+  /// final subscription2 = observable.listen(print);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // BehaviorSubject by cancelling all subscriptions.
+  /// subscription.cancel();
+  /// subscription2.cancel();
+  /// ```
+  ValueObservable<T> shareValueSeeded(T seedValue) =>
+      publishValueSeeded(seedValue).refCount();
+
+  /// Convert the current Observable into a new [ReplayObservable] that can
+  /// be listened to multiple times. It will automatically begin emitting items
+  /// when first listened to, and shut down when no listeners remain.
+  ///
+  /// This is useful for converting a single-subscription stream into a
+  /// broadcast Stream. It's also useful for gaining access to the l
+  ///
+  /// It will replay the emitted values to any new listener, up to a given
+  /// [maxSize].
+  ///
+  /// ### Example
+  ///
+  /// ```
+  /// // Convert a single-subscription fromIterable stream into a broadcast
+  /// // stream that will emit the latest value to any new listeners
+  /// final observable = Observable.fromIterable([1, 2, 3]).shareReplay();
+  ///
+  /// // Start listening to the source Observable. Will start printing 1, 2, 3
+  /// final subscription = observable.listen(print);
+  ///
+  /// // Synchronously print the emitted values up to a given maxSize
+  /// // Prints [1, 2, 3]
+  /// print(observable.values);
+  ///
+  /// // Subscribe again later. This will print 1, 2, 3 because it receives the
+  /// // last emitted value.
+  /// final subscription2 = observable.listen(print);
+  ///
+  /// // Stop emitting items from the source stream and close the underlying
+  /// // ReplaySubject by cancelling all subscriptions.
+  /// subscription.cancel();
+  /// subscription2.cancel();
+  /// ```
+  ReplayObservable<T> shareReplay({int maxSize}) =>
+      publishReplay(maxSize: maxSize).refCount();
+}

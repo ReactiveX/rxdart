@@ -48,3 +48,14 @@ class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+extension StartWithManyExtension<T> on Stream<T> {
+  /// Prepends a sequence of values to the source Stream.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([3]).startWithMany([1, 2])
+  ///       .listen(print); // prints 1, 2, 3
+  Stream<T> startWithMany(List<T> startValues) =>
+      transform(StartWithManyStreamTransformer<T>(startValues));
+}

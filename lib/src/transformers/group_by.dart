@@ -87,3 +87,16 @@ class GroupByObservable<T, S> extends Observable<T> {
   /// categorized under [key].
   GroupByObservable(this.key, Stream<T> stream) : super(stream);
 }
+
+extension GroupByExtension<T> on Stream<T> {
+  /// The GroupBy operator divides an [Stream] that emits items into an [Stream]
+  /// that emits [GroupByStream], each one of which emits some subset of the
+  /// items from the original source [Stream].
+  ///
+  /// [GroupByStream] acts like a regular [Stream], yet adding a 'key' property,
+  /// which receives its [Type] and value from the [grouper] Function.
+  ///
+  /// All items with the same key are emitted by the same [GroupByStream].
+  Stream<GroupByObservable<T, S>> groupBy<S>(S grouper(T value)) =>
+      transform(GroupByStreamTransformer<T, S>(grouper));
+}

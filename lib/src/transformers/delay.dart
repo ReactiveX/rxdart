@@ -82,3 +82,20 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
     }
   }
 }
+
+extension DelayExtension<T> on Stream<T> {
+  /// The Delay operator modifies its source Stream by pausing for a particular
+  /// increment of time (that you specify) before emitting each of the source
+  /// Stream’s items. This has the effect of shifting the entire sequence of
+  /// items emitted by the Stream forward in time by that specified increment.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#delay)
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3, 4])
+  ///       .delay(Duration(seconds: 1))
+  ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
+  Stream<T> delay(Duration duration) =>
+      transform(DelayStreamTransformer<T>(duration));
+}

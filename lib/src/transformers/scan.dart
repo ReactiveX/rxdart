@@ -56,3 +56,20 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     });
   }
 }
+
+extension ScanExtension<T> on Stream<T> {
+  /// Applies an accumulator function over a Stream sequence and returns each
+  /// intermediate result. The optional seed value is used as the initial
+  /// accumulator value.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///        .scan((acc, curr, i) => acc + curr, 0)
+  ///        .listen(print); // prints 1, 3, 6
+  Stream<S> scan<S>(
+    S accumulator(S accumulated, T value, int index), [
+    S seed,
+  ]) =>
+      transform(ScanStreamTransformer<T, S>(accumulator, seed));
+}

@@ -78,3 +78,16 @@ class Timestamped<T> {
     return 'TimeStamp{timestamp: $timestamp, value: $value}';
   }
 }
+
+extension TimeStampExtension<T> on Stream<T> {
+  /// Wraps each item emitted by the source Stream in a [Timestamped] object
+  /// that includes the emitted item and the time when the item was emitted.
+  ///
+  /// Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///        .timestamp()
+  ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
+  Stream<Timestamped<T>> timestamp() =>
+      transform(TimestampStreamTransformer<T>());
+}

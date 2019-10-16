@@ -68,3 +68,18 @@ class MergeStream<T> extends Stream<T> {
     return controller;
   }
 }
+
+extension MergeExtension<T> on Stream<T> {
+  /// Combines the items emitted by multiple streams into a single stream of
+  /// items. The items are emitted in the order they are emitted by their
+  /// sources.
+  ///
+  /// ### Example
+  ///
+  ///     TimerStream(1, Duration(seconds: 10))
+  ///         .mergeWith([Stream.fromIterable([2])])
+  ///         .listen(print); // prints 2, 1
+  Stream<T> mergeWith(Iterable<Stream<T>> streams) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => MergeStream<T>([stream, ...streams])));
+}

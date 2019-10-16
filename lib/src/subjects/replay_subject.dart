@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/extensions.dart';
 import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
+import 'package:rxdart/src/transformers/start_with_many.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new

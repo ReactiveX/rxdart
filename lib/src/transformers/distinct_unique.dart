@@ -68,3 +68,22 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+extension DistinctUniqueExtension<T> on Stream<T> {
+  /// WARNING: More commonly known as distinct in other Rx implementations.
+  /// Creates a Stream where data events are skipped if they have already
+  /// been emitted before.
+  ///
+  /// Equality is determined by the provided equals and hashCode methods.
+  /// If these are omitted, the '==' operator and hashCode on the last provided
+  /// data element are used.
+  ///
+  /// The returned stream is a broadcast stream if this stream is. If a
+  /// broadcast stream is listened to more than once, each subscription will
+  /// individually perform the equals and hashCode tests.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#distinct)
+  Stream<T> distinctUnique({bool equals(T e1, T e2), int hashCode(T e)}) =>
+      transform(DistinctUniqueStreamTransformer<T>(
+          equals: equals, hashCode: hashCode));
+}
