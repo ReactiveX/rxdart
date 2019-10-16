@@ -1,9 +1,5 @@
 library test.rx;
 
-import 'futures/as_observable_future_test.dart' as as_observable_future_test;
-import 'futures/stream_max_test.dart' as stream_max_test;
-import 'futures/stream_min_test.dart' as stream_min_test;
-import 'futures/wrapped_future_test.dart' as wrapped_future_test;
 import 'observables/composite_subscription_test.dart'
     as composite_subscription_test;
 import 'observables/publish_connectable_observable_test.dart'
@@ -31,8 +27,8 @@ import 'streams/range_test.dart' as range_test;
 import 'streams/repeat_test.dart' as repeat_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
-import 'streams/stream_test.dart' as stream_test;
 import 'streams/sequence_equals_test.dart' as sequence_equals_test;
+import 'streams/stream_test.dart' as stream_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -43,6 +39,23 @@ import 'transformers/any_test.dart' as any_test;
 import 'transformers/as_broadcast_stream.dart' as as_broadcast_stream;
 import 'transformers/async_expand_test.dart' as async_expand_test;
 import 'transformers/async_map_test.dart' as async_map_test;
+import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
+import 'transformers/backpressure/buffer_test.dart' as buffer_test;
+import 'transformers/backpressure/buffer_test_test.dart' as buffer_test_test;
+import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
+import 'transformers/backpressure/debounce_test.dart' as debounce_test;
+import 'transformers/backpressure/debounce_time_test.dart'
+    as debounce_time_test;
+import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
+import 'transformers/backpressure/sample_test.dart' as sample_test;
+import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
+import 'transformers/backpressure/throttle_test.dart' as throttle_test;
+import 'transformers/backpressure/throttle_time_test.dart'
+    as throttle_time_test;
+import 'transformers/backpressure/window_count_test.dart' as window_count_test;
+import 'transformers/backpressure/window_test.dart' as window_test;
+import 'transformers/backpressure/window_test_test.dart' as window_test_test;
+import 'transformers/backpressure/window_time_test.dart' as window_time_test;
 import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
@@ -74,7 +87,6 @@ import 'transformers/last_where_test.dart' as last_where_test;
 import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
-import 'transformers/of_type_test.dart' as of_type_test;
 import 'transformers/on_error_return_test.dart' as on_error_resume_test;
 import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
@@ -102,24 +114,6 @@ import 'transformers/where_test.dart' as where_test;
 import 'transformers/where_type_test.dart' as where_type_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
-
-import 'transformers/backpressure/buffer_count_test.dart' as buffer_count_test;
-import 'transformers/backpressure/buffer_test.dart' as buffer_test;
-import 'transformers/backpressure/buffer_test_test.dart' as buffer_test_test;
-import 'transformers/backpressure/buffer_time_test.dart' as buffer_time_test;
-import 'transformers/backpressure/debounce_test.dart' as debounce_test;
-import 'transformers/backpressure/debounce_time_test.dart'
-    as debounce_time_test;
-import 'transformers/backpressure/pairwise_test.dart' as pairwise_test;
-import 'transformers/backpressure/sample_test.dart' as sample_test;
-import 'transformers/backpressure/sample_time_test.dart' as sample_time_test;
-import 'transformers/backpressure/throttle_test.dart' as throttle_test;
-import 'transformers/backpressure/throttle_time_test.dart'
-    as throttle_time_test;
-import 'transformers/backpressure/window_count_test.dart' as window_count_test;
-import 'transformers/backpressure/window_test.dart' as window_test;
-import 'transformers/backpressure/window_test_test.dart' as window_test_test;
-import 'transformers/backpressure/window_time_test.dart' as window_time_test;
 
 void main() {
   // Streams
@@ -185,7 +179,6 @@ void main() {
   map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
-  of_type_test.main();
   on_error_resume_test.main();
   on_error_return_test.main();
   on_error_return_with_test.main();
@@ -235,12 +228,6 @@ void main() {
   behaviour_subject_test.main();
   publish_subject_test.main();
   replay_subject_test.main();
-
-  // Futures
-  as_observable_future_test.main();
-  stream_max_test.main();
-  stream_min_test.main();
-  wrapped_future_test.main();
 
   // Observables
   value_connectable_observable_test.main();

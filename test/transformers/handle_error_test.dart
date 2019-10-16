@@ -12,7 +12,6 @@ void main() {
 
     obs.listen(null, onError: expectAsync2((ArgumentError e, StackTrace s) {
       expect(e, isArgumentError);
-      expect(obs is Observable, isTrue);
     }));
   });
 }

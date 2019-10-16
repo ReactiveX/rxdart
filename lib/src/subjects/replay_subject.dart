@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/extensions.dart';
 import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
