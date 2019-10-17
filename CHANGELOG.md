@@ -1,3 +1,6 @@
+## 0.22.4
+  * Bugfix: switchMap controller no longer closes prematurely
+  
 ## 0.22.3
   * Bugfix: whereType failing in Flutter production builds only
 
