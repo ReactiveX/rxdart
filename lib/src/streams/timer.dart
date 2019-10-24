@@ -7,19 +7,49 @@ import 'dart:async';
 ///     new TimerStream("hi", new Duration(minutes: 1))
 ///         .listen((i) => print(i)); // print "hi" after 1 minute
 class TimerStream<T> extends Stream<T> {
-  final Stream<T> Function() _streamFactory;
+  final StreamController<T> _controller;
 
   TimerStream(T value, Duration duration)
-      : _streamFactory = (() {
-          final stream =
-              Stream.fromFuture(Future.delayed(duration, () => value));
-
-          return () => stream;
-        })();
+      : _controller = _buildController(value, duration);
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
-      _streamFactory().listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  StreamSubscription<T> listen(void Function(T event) onData,
+      {Function onError, void Function() onDone, bool cancelOnError}) {
+    return _controller.stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
+
+  static StreamController<T> _buildController<T>(T value, Duration duration) {
+    if (duration == null) {
+      throw ArgumentError('duration cannot be null');
+    }
+
+    StreamSubscription<T> subscription;
+    StreamController<T> controller;
+
+    controller = StreamController(
+      sync: true,
+      onListen: () {
+        subscription =
+            Stream.fromFuture(Future.delayed(duration, () => value)).listen(
+          controller.add,
+          onError: controller.addError,
+          onDone: () {
+            if (!controller.isClosed) {
+              controller.close();
+            }
+          },
+        );
+      },
+      onPause: ([Future<dynamic> resumeSignal]) =>
+          subscription.pause(resumeSignal),
+      onResume: () => subscription.resume(),
+      onCancel: () => subscription.cancel(),
+    );
+    return controller;
+  }
 }
