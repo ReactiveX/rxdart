@@ -28,14 +28,42 @@ void main() {
     }, count: 1));
   });
 
+  test('rx.Observable.defer.reusable', () async {
+    const value = 1;
+
+    final observable = Observable.defer(
+      () => Stream.fromFuture(
+        Future.delayed(
+          Duration(seconds: 1),
+          () => value,
+        ),
+      ),
+      reusable: true,
+    );
+
+    observable.listen(
+      expectAsync1(
+        (actual) => expect(actual, value),
+        count: 1,
+      ),
+    );
+    observable.listen(
+      expectAsync1(
+        (actual) => expect(actual, value),
+        count: 1,
+      ),
+    );
+  });
+
   test('rx.Observable.defer.single.subscription', () async {
     final observable = _getDeferStream();
 
     try {
       observable.listen(null);
       observable.listen(null);
+      expect(true, false);
     } catch (e) {
-      await expectLater(e, isStateError);
+      expect(e, isStateError);
     }
   });
 
