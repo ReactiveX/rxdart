@@ -28,6 +28,28 @@ void main() {
     }, count: 1));
   });
 
+  test('rx.Observable.defer.streamFactory.called', () async {
+    var count = 0;
+
+    streamFactory() {
+      ++count;
+      return Observable.just(1);
+    }
+
+    var deferStream = DeferStream(
+      streamFactory,
+      reusable: false,
+    );
+
+    expect(count, 0);
+
+    deferStream.listen(
+      expectAsync1((_) {
+        expect(count, 1);
+      }),
+    );
+  });
+
   test('rx.Observable.defer.reusable', () async {
     const value = 1;
 
