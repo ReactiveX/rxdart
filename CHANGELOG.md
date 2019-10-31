@@ -1,3 +1,8 @@
+## 0.22.5
+
+  * Bugfix: DeferStream created Stream too early
+  * Bugfix: TimerStream created Timer too early
+
 ## 0.22.4
   * Bugfix: switchMap controller no longer closes prematurely
   
