@@ -12,7 +12,6 @@ export 'src/transformers/ignore_elements.dart';
 export 'src/transformers/interval.dart';
 export 'src/transformers/map_to.dart';
 export 'src/transformers/materialize.dart';
-export 'src/transformers/of_type.dart';
 export 'src/transformers/on_error_resume.dart';
 export 'src/transformers/scan.dart';
 export 'src/transformers/skip_until.dart';
@@ -26,7 +25,6 @@ export 'src/transformers/timestamp.dart';
 export 'src/transformers/where_type.dart';
 export 'src/transformers/with_latest_from.dart';
 export 'src/utils/notification.dart';
-export 'src/utils/type_token.dart';
 
 export 'src/transformers/backpressure/buffer.dart';
 export 'src/transformers/backpressure/debounce.dart';
