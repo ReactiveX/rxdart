@@ -23,11 +23,10 @@ class DeferStream<T> extends Stream<T> {
   DeferStream(Stream<T> streamFactory(), {bool reusable = false})
       : _isReusable = reusable,
         _factory = reusable
-            ? (() => streamFactory())
+            ? streamFactory
             : (() {
-                final stream = streamFactory();
-
-                return () => stream;
+                Stream<T> stream;
+                return () => stream ??= streamFactory();
               }());
 
   @override
