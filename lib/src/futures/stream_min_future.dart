@@ -22,6 +22,8 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///
 ///     print(min); // prints "short"
 class StreamMinFuture<T> extends WrappedFuture<T> {
+  /// Constructs a [Future] which contains only the smallest value emitted by a [Stream],
+  /// optionally using a [Comparator] to determine that value.
   StreamMinFuture(Stream<T> stream, [Comparator<T> comparator])
       : super(stream
             .toList()

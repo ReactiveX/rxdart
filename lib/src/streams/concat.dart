@@ -17,15 +17,15 @@ import 'dart:async';
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
 class ConcatStream<T> extends Stream<T> {
-  final StreamController<T> controller;
+  final StreamController<T> _controller;
 
   ConcatStream(Iterable<Stream<T>> streams)
-      : controller = _buildController(streams);
+      : _controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      controller.stream.listen(onData,
+      _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {

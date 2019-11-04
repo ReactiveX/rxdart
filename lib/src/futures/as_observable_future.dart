@@ -16,9 +16,9 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///         .asObservable() // Fluently convert the Future back to an Observable
 ///         .flatMap((message) => new Observable.just(message.length)); // Use the operators you need
 class AsObservableFuture<T> extends WrappedFuture<T> {
+  /// Wraps a [Future] so that it can be exposed again as an [Observable].
   AsObservableFuture(Future<T> wrapped) : super(wrapped);
 
-  Observable<T> asObservable() {
-    return Observable<T>.fromFuture(wrapped);
-  }
+  /// Returns an [Observable] containing the value from the wrapped [Future].
+  Observable<T> asObservable() => Observable<T>.fromFuture(wrapped);
 }

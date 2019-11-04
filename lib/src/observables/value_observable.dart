@@ -6,5 +6,6 @@ abstract class ValueObservable<T> implements Observable<T> {
   /// See [hasValue]
   T get value;
 
+  /// A flag that turns true as soon as at least one event has been emitted.
   bool get hasValue;
 }

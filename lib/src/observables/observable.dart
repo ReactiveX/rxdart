@@ -77,6 +77,8 @@ import 'package:rxdart/transformers.dart';
 class Observable<T> extends Stream<T> {
   final Stream<T> _stream;
 
+  /// Constructs an [Observable], exposing rx methods which can be
+  /// invoked to transform the wrapped [Stream].
   Observable(Stream<T> stream) : this._stream = stream;
 
   @override

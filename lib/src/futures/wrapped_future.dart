@@ -9,8 +9,10 @@ import 'dart:async';
 /// For example, the AsObservableFuture adds one method to the Futures returned
 /// by some Stream methods.
 class WrappedFuture<T> implements Future<T> {
+  /// A reference to the wrapped [Future].
   final Future<T> wrapped;
 
+  /// Constructs a [Future] which wraps another [Future].
   WrappedFuture(this.wrapped);
 
   @override

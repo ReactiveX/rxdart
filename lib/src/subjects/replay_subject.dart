@@ -89,7 +89,6 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
     _queue.add(event);
   }
 
-  /// Synchronously get the values stored in Subject. May be empty.
   @override
   List<T> get values => _queue.toList(growable: false);
 }
