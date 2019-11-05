@@ -19,13 +19,13 @@ import 'dart:async';
 ///           new Observable.just(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   OnErrorResumeStreamTransformer(Stream<T> Function(dynamic error) recoveryFn)
-      : transformer = _buildTransformer(recoveryFn);
+      : _transformer = _buildTransformer(recoveryFn);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
     Stream<T> Function(dynamic error) recoveryFn,

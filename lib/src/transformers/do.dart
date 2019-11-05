@@ -38,7 +38,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///           onDone: () => print("Done")))
 ///         .listen(null); // Prints: 1, "Done"
 class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   DoStreamTransformer(
       {void onCancel(),
@@ -49,7 +49,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       void onListen(),
       void onPause(Future<dynamic> resumeSignal),
       void onResume()})
-      : transformer = _buildTransformer(
+      : _transformer = _buildTransformer(
             onCancel: onCancel,
             onData: onData,
             onDone: onDone,
@@ -60,7 +60,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
             onResume: onResume);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       {dynamic onCancel(),

@@ -16,14 +16,14 @@ import 'dart:async';
 ///       .listen(print); // prints 4 (due to the async nature of streams)
 class WithLatestFromStreamTransformer<T, S, R>
     extends StreamTransformerBase<T, R> {
-  final StreamTransformer<T, R> transformer;
+  final StreamTransformer<T, R> _transformer;
 
   WithLatestFromStreamTransformer(
       Iterable<Stream<S>> latestFromStreams, R fn(T t, List<S> values))
-      : transformer = _buildTransformer(latestFromStreams, fn);
+      : _transformer = _buildTransformer(latestFromStreams, fn);
 
   @override
-  Stream<R> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<R> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static WithLatestFromStreamTransformer<T, T, List<T>> withList<T>(
     Iterable<Stream<T>> latestFromStreams,

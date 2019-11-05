@@ -19,12 +19,12 @@ import 'dart:async';
 ///       .listen(print); // prints 1, 3
 ///
 class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
-  final StreamTransformer<S, T> transformer;
+  final StreamTransformer<S, T> _transformer;
 
-  WhereTypeStreamTransformer() : transformer = _buildTransformer();
+  WhereTypeStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) => _transformer.bind(stream);
 
   static StreamTransformer<S, T> _buildTransformer<S, T>() =>
       StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {

@@ -9,13 +9,13 @@ import 'dart:async';
 ///       .transform(new DefaultIfEmptyStreamTransformer(10))
 ///       .listen(print); // prints 10
 class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   DefaultIfEmptyStreamTransformer(T defaultValue)
-      : transformer = _buildTransformer(defaultValue);
+      : _transformer = _buildTransformer(defaultValue);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(T defaultValue) {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {

@@ -8,13 +8,13 @@ import 'dart:async';
 ///       .transform(new StartWithStreamTransformer(1))
 ///       .listen(print); // prints 1, 2
 class StartWithStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   StartWithStreamTransformer(T startValue)
-      : transformer = _buildTransformer(startValue);
+      : _transformer = _buildTransformer(startValue);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(T startValue) {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {

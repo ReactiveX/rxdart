@@ -16,12 +16,12 @@ import 'package:rxdart/src/utils/notification.dart';
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification
 class MaterializeStreamTransformer<T>
     extends StreamTransformerBase<T, Notification<T>> {
-  final StreamTransformer<T, Notification<T>> transformer;
+  final StreamTransformer<T, Notification<T>> _transformer;
 
-  MaterializeStreamTransformer() : transformer = _buildTransformer();
+  MaterializeStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<Notification<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Notification<T>> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, Notification<T>> _buildTransformer<T>() {
     return StreamTransformer<T, Notification<T>>(

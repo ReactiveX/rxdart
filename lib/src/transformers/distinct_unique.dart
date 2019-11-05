@@ -22,13 +22,13 @@ import 'dart:collection';
 /// `Object.==` and `Object.hashCode`. If you supply one of `equals` and
 /// `hashCode`, you should generally also to supply the other.
 class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   DistinctUniqueStreamTransformer({bool equals(T e1, T e2), int hashCode(T e)})
-      : transformer = _buildTransformer(equals, hashCode);
+      : _transformer = _buildTransformer(equals, hashCode);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       bool equals(T e1, T e2), int hashCode(T e)) {

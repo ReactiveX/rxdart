@@ -16,13 +16,13 @@ import 'dart:async';
 ///       ))
 ///     .listen(print); // prints 0, 2
 class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> transformer;
+  final StreamTransformer<T, S> _transformer;
 
   ExhaustMapStreamTransformer(Stream<S> mapper(T value))
-      : transformer = _buildTransformer(mapper);
+      : _transformer = _buildTransformer(mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       Stream<S> mapper(T value)) {

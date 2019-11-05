@@ -18,13 +18,13 @@ import 'dart:async';
 ///           new Future.delayed(new Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
 class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> transformer;
+  final StreamTransformer<T, S> _transformer;
 
   SwitchMapStreamTransformer(Stream<S> mapper(T value))
-      : transformer = _buildTransformer(mapper);
+      : _transformer = _buildTransformer(mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       Stream<S> mapper(T value)) {

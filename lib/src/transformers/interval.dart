@@ -9,13 +9,13 @@ import 'dart:async';
 ///       .transform(new IntervalStreamTransformer(Duration(seconds: 1)))
 ///       .listen((i) => print("$i sec"); // prints 1 sec, 2 sec, 3 sec
 class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   IntervalStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+      : _transformer = _buildTransformer(duration);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) =>
       StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {

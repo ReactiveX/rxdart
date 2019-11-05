@@ -9,19 +9,19 @@ import 'package:rxdart/src/observables/observable.dart' show Observable;
 ///
 /// [GroupByObservable] acts like a regular [Observable], yet
 /// adding a 'key' property, which receives its [Type] and value from
-/// the [grouper] Function.
+/// the [_grouper] Function.
 ///
 /// All items with the same key are emitted by the same [GroupByObservable].
 
 class GroupByStreamTransformer<T, S>
     extends StreamTransformerBase<T, GroupByObservable<T, S>> {
-  final S Function(T) grouper;
+  final S Function(T) _grouper;
 
-  GroupByStreamTransformer(this.grouper);
+  GroupByStreamTransformer(this._grouper);
 
   @override
   Stream<GroupByObservable<T, S>> bind(Stream<T> stream) =>
-      _buildTransformer<T, S>(grouper).bind(stream);
+      _buildTransformer<T, S>(_grouper).bind(stream);
 
   static StreamTransformer<T, GroupByObservable<T, S>> _buildTransformer<T, S>(
       S Function(T) grouper) {

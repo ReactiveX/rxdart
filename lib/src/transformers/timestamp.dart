@@ -10,12 +10,12 @@ import 'dart:async';
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
     extends StreamTransformerBase<T, Timestamped<T>> {
-  final StreamTransformer<T, Timestamped<T>> transformer;
+  final StreamTransformer<T, Timestamped<T>> _transformer;
 
-  TimestampStreamTransformer() : transformer = _buildTransformer();
+  TimestampStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<Timestamped<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Timestamped<T>> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, Timestamped<T>> _buildTransformer<T>() {
     return StreamTransformer<T, Timestamped<T>>(

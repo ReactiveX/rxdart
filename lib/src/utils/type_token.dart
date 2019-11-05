@@ -12,12 +12,15 @@
 ///       .listen(print); // prints "hi"
 @Deprecated('Please use Observable.whereType instead')
 class TypeToken<S> {
+  /// Constructs a token which is used to filter and cast the events of an [Observable].
   const TypeToken();
 
+  /// A test to determine whether the provided object is of type [S].
   bool isType(dynamic other) {
     return other is S;
   }
 
+  /// Casts an object to be of type [S].
   S toType(dynamic other) {
     // ignore: avoid_as
     return other as S;

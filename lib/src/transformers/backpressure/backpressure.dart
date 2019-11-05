@@ -44,7 +44,7 @@ enum WindowStrategy {
 /// emitted when the source [Stream] closes.
 /// When false, the remaining buffer is discarded on close.
 class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
-  final StreamTransformer<S, T> transformer;
+  final StreamTransformer<S, T> _transformer;
 
   BackpressureStreamTransformer(
       WindowStrategy strategy, Stream<dynamic> windowStreamFactory(S event),
@@ -54,7 +54,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       bool closeWindowWhen(List<S> queue),
       bool ignoreEmptyWindows = true,
       bool dispatchOnClose = true})
-      : transformer = _buildTransformer(
+      : _transformer = _buildTransformer(
             strategy,
             windowStreamFactory,
             onWindowStart,
@@ -65,7 +65,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             dispatchOnClose);
 
   @override
-  Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) => _transformer.bind(stream);
 
   static StreamTransformer<S, T> _buildTransformer<S, T>(
       WindowStrategy strategy,

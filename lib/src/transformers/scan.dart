@@ -10,14 +10,14 @@ import 'dart:async';
 ///        .transform(new ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
 class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final _ScanStreamTransformerAccumulator<T, S> accumulator;
-  final S seed;
+  final _ScanStreamTransformerAccumulator<T, S> _accumulator;
+  final S _seed;
 
-  ScanStreamTransformer(this.accumulator, [this.seed]);
+  ScanStreamTransformer(this._accumulator, [this._seed]);
 
   @override
   Stream<S> bind(Stream<T> stream) =>
-      _buildTransformer<T, S>(accumulator, seed).bind(stream);
+      _buildTransformer<T, S>(_accumulator, _seed).bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       S accumulator(S accumulated, T value, int index),

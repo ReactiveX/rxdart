@@ -13,13 +13,13 @@ import 'dart:async';
 ///         new TimerStream(3, new Duration(seconds: 10))))
 ///       .listen(print); // prints 1
 class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
   TakeUntilStreamTransformer(Stream<S> otherStream)
-      : transformer = _buildTransformer(otherStream);
+      : _transformer = _buildTransformer(otherStream);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T, S>(
       Stream<S> otherStream) {
