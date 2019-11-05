@@ -9,6 +9,7 @@ import 'dart:async';
 class TimerStream<T> extends Stream<T> {
   final StreamController<T> _controller;
 
+  /// Constructs a [Stream] which emits [value] after the specified [Duration].
   TimerStream(T value, Duration duration)
       : _controller = _buildController(value, duration);
 

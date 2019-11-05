@@ -1,8 +1,8 @@
 import 'dart:async';
 
-/// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
-/// single Stream that emits the items emitted by the most-recently-emitted of
-/// those Streams.
+/// Convert a [Stream] that emits [Stream]s (aka a "Higher Order Stream") into a
+/// single [Stream] that emits the items emitted by the most-recently-emitted of
+/// those [Stream]s.
 ///
 /// This stream will unsubscribe from the previously-emitted Stream when a new
 /// Stream is emitted from the source Stream.
@@ -29,6 +29,9 @@ class SwitchLatestStream<T> extends Stream<T> {
   // ignore: close_sinks
   StreamController<T> _controller;
 
+  /// Constructs a [Stream] that emits [Stream]s (aka a "Higher Order Stream") into a
+  /// single [Stream] that emits the items emitted by the most-recently-emitted of
+  /// those [Stream]s.
   SwitchLatestStream(this._streams);
 
   @override

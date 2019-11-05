@@ -66,6 +66,10 @@ class RetryWhenStream<T> extends Stream<T> {
   StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
+  /// Constructs a [Stream] that will recreate and re-listen to the source
+  /// [Stream] (created by the provided factory method).
+  /// The retry will trigger whenever the [Stream] created by the retryWhen
+  /// factory emits and event.
   RetryWhenStream(this._streamFactory, this._retryWhenFactory);
 
   @override

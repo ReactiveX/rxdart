@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Merges the specified streams into one observable sequence using the given
-/// zipper function whenever all of the observable sequences have produced
+/// zipper Function whenever all of the observable sequences have produced
 /// an element at a corresponding index.
 ///
 /// It applies this function in strict sequence, so the first item emitted by
@@ -38,6 +38,9 @@ import 'dart:async';
 ///     )
 ///     .listen(print); // prints 'AB'
 class ZipStream<T, R> extends StreamView<R> {
+  /// Constructs a [Stream] which merges the specified [streams] into a sequence using the given
+  /// [zipper] Function, whenever all of the [streams] have produced
+  /// an element at a corresponding index.
   ZipStream(
     Iterable<Stream<T>> streams,
     R zipper(List<T> values),
@@ -46,6 +49,8 @@ class ZipStream<T, R> extends StreamView<R> {
         assert(zipper != null, 'must provide a zipper function'),
         super(_buildController(streams, zipper).stream);
 
+  /// Constructs a [Stream] which merges the specified [streams] into a [List],
+  /// containing values that were produced by the [streams] at a corresponding index.
   static ZipStream<T, List<T>> list<T>(Iterable<Stream<T>> streams) {
     return ZipStream<T, List<T>>(
       streams,
@@ -53,6 +58,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
@@ -64,6 +72,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip3<A, B, C, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -82,6 +93,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip4<A, B, C, D, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -102,6 +116,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip5<A, B, C, D, E, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -124,6 +141,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip6<A, B, C, D, E, F, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -148,6 +168,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip7<A, B, C, D, E, F, G, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -174,6 +197,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip8<A, B, C, D, E, F, G, H, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -202,6 +228,9 @@ class ZipStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [Stream] which merges the specified [Stream]s into a sequence using the given
+  /// [zipper] Function, whenever all of the provided [Stream]s have produced
+  /// an element at a corresponding index.
   static ZipStream<dynamic, R> zip9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> streamA,
     Stream<B> streamB,

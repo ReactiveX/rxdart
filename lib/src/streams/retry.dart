@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/utils.dart';
 
-/// Creates a Stream that will recreate and re-listen to the source
-/// Stream the specified number of times until the Stream terminates
+/// Creates a [Stream] that will recreate and re-listen to the source
+/// [Stream] the specified number of times until the [Stream] terminates
 /// successfully.
 ///
 /// If the retry count is not specified, it retries indefinitely. If the retry
 /// count is met, but the Stream has not terminated successfully, a
-/// `RetryError` will be thrown. The RetryError will contain all of the Errors
+/// [RetryError] will be thrown. The RetryError will contain all of the Errors
 /// and StackTraces that caused the failure.
 ///
 /// ### Example
@@ -29,6 +29,10 @@ class RetryStream<T> extends Stream<T> {
   StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
+  /// Constructs a [Stream] that will recreate and re-listen to the source
+  /// [Stream] (created by the provided factory method) the specified number
+  /// of times until the [Stream] terminates successfully.
+  /// If [count] is not specified, it retries indefinitely.
   RetryStream(this._streamFactory, [this._count]);
 
   @override
