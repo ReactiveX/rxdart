@@ -46,6 +46,14 @@ enum WindowStrategy {
 class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final StreamTransformer<S, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which buffers events emitted by the
+  /// [Stream] that is created by [windowStreamFactory].
+  ///
+  /// Use the various optional parameters to precisely determine how and when
+  /// this buffer should be created.
+  ///
+  /// For more info on the parameters, see [BackpressureStreamTransformer],
+  /// or see the various back pressure [StreamTransformer]s for examples.
   BackpressureStreamTransformer(
       WindowStrategy strategy, Stream<dynamic> windowStreamFactory(S event),
       {T onWindowStart(S event),

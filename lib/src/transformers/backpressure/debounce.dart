@@ -21,9 +21,14 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 /// ### Example
 ///
 ///     new Observable.fromIterable([1, 2, 3, 4])
-///       .debounce(new Duration(seconds: 1))
+///       .debounceTime(new Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
+  /// Constructs a [StreamTransformer] which buffers events into a [List] and
+  /// emits this [List] whenever the current [window] fires.
+  ///
+  /// The [window] is reset whenever the [Stream] that is being transformed
+  /// emits an event.
   DebounceStreamTransformer(Stream window(T event))
       : super(WindowStrategy.everyEvent, window,
             onWindowEnd: (Iterable<T> queue) => queue.last) {

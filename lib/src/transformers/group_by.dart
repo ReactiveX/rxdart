@@ -74,8 +74,13 @@ class GroupByStreamTransformer<T, S>
   }
 }
 
+/// The [Observable] used by [GroupByStreamTransformer], it contains events
+/// that are groupd by a key value.
 class GroupByObservable<T, S> extends Observable<T> {
+  /// The key is the category to which all events in this group belong to.
   final S key;
 
+  /// Constructs an [Observable] which only emits events that can be
+  /// categorized under [key].
   GroupByObservable(this.key, Stream<T> stream) : super(stream);
 }

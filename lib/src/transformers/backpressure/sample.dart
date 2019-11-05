@@ -13,6 +13,10 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .transform(new SampleStreamTransformer(new TimerStream(1, const Duration(seconds: 1)))
 ///       .listen(print); // prints 3
 class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
+  /// Constructs a [StreamTransformer] that, when the specified [window] emits
+  /// an item or completes, emits the most recently emitted item (if any)
+  /// emitted by the source [Stream] since the previous emission from
+  /// the sample [Stream].
   SampleStreamTransformer(Stream window(T event))
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (Iterable<T> queue) => queue.last) {

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Emit items from the source Stream, or a single default item if the source
+/// Emit items from the source [Stream], or a single default item if the source
 /// Stream emits nothing.
 ///
 /// ### Example
@@ -11,6 +11,8 @@ import 'dart:async';
 class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which either emits from the source [Stream],
+  /// or just a [defaultValue] if the source [Stream] emits nothing.
   DefaultIfEmptyStreamTransformer(T defaultValue)
       : _transformer = _buildTransformer(defaultValue);
 

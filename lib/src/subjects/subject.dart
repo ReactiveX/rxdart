@@ -17,6 +17,8 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
 
   bool _isAddingStreamItems = false;
 
+  /// Constructs a [Subject] which wraps the provided [controller].
+  /// This constructor is applicable only for classes that extend [Subject].
   Subject(StreamController<T> controller, Observable<T> observable)
       : this._controller = controller,
         super(observable);
