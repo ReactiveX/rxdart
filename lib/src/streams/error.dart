@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Returns an observable sequence that emits an [error], then immediately
+/// Returns an observable sequence that emits an [_error], then immediately
 /// completes.
 ///
 /// The error operator is one with very specific and limited behavior. It is
@@ -10,19 +10,21 @@ import 'dart:async';
 ///
 ///     new ErrorStream(new ArgumentError());
 class ErrorStream<T> extends Stream<T> {
-  final Object error;
-  StreamController<T> controller = StreamController<T>();
+  final Object _error;
+  StreamController<T> _controller = StreamController<T>();
 
-  ErrorStream(this.error);
+  /// Constructs a [Stream] which immediately throws an error and then
+  /// subsequently closes.
+  ErrorStream(this._error);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    controller
-      ..addError(error)
+    _controller
+      ..addError(_error)
       ..close();
 
-    return controller.stream.listen(onData,
+    return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 }

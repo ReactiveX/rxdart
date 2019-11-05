@@ -84,7 +84,7 @@ void main() {
             predicate<RetryError>((a) {
               return a.errors.length == 3 &&
                   a.errors
-                      .every((es) => es.error != null && es.stacktrace != null);
+                      .every((es) => es.error != null && es.stackTrace != null);
             }),
           ),
           emitsDone,

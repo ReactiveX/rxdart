@@ -4,7 +4,7 @@ import 'dart:async';
 /// Stream the specified number of times until the [Stream] terminates
 /// successfully.
 ///
-/// If [count] is not specified, it repeats indefinitely.
+/// If [_count] is not specified, it repeats indefinitely.
 ///
 /// ### Example
 ///
@@ -12,13 +12,19 @@ import 'dart:async';
 ///       Observable.just('repeat index: $repeatCount'), 3)
 ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {
-  final Stream<T> Function(int) streamFactory;
-  final int count;
-  int repeatStep = 0;
-  StreamController<T> controller;
-  StreamSubscription<T> subscription;
+  final Stream<T> Function(int) _streamFactory;
+  final int _count;
+  int _repeatStep = 0;
+  StreamController<T> _controller;
+  StreamSubscription<T> _subscription;
 
-  RepeatStream(this.streamFactory, [this.count]);
+  /// Constructs a [Stream] that will recreate and re-listen to the source
+  /// [Stream] (created with the provided factory method).
+  /// The count parameter specifies number of times the repeat will take place,
+  /// until this [Stream] terminates successfully.
+  /// If the count parameter is not specified, then this [Stream] will repeat
+  /// indefinitely.
+  RepeatStream(this._streamFactory, [this._count]);
 
   @override
   StreamSubscription<T> listen(
@@ -27,15 +33,15 @@ class RepeatStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    controller ??= StreamController<T>(
+    _controller ??= StreamController<T>(
         sync: true,
-        onListen: maybeRepeatNext,
+        onListen: _maybeRepeatNext,
         onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription?.cancel());
+            _subscription.pause(resumeSignal),
+        onResume: () => _subscription.resume(),
+        onCancel: () => _subscription?.cancel());
 
-    return controller.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -43,26 +49,26 @@ class RepeatStream<T> extends Stream<T> {
     );
   }
 
-  void repeatNext() {
+  void _repeatNext() {
     void onDone() {
-      subscription?.cancel();
+      _subscription?.cancel();
 
-      maybeRepeatNext();
+      _maybeRepeatNext();
     }
 
     try {
-      subscription = streamFactory(repeatStep++).listen(controller.add,
-          onError: controller.addError, onDone: onDone, cancelOnError: false);
+      _subscription = _streamFactory(_repeatStep++).listen(_controller.add,
+          onError: _controller.addError, onDone: onDone, cancelOnError: false);
     } catch (e, s) {
-      controller.addError(e, s);
+      _controller.addError(e, s);
     }
   }
 
-  void maybeRepeatNext() {
-    if (repeatStep == count) {
-      controller.close();
+  void _maybeRepeatNext() {
+    if (_repeatStep == _count) {
+      _controller.close();
     } else {
-      repeatNext();
+      _repeatNext();
     }
   }
 }

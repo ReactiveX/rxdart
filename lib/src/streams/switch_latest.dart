@@ -24,12 +24,12 @@ import 'dart:async';
 /// switchLatestStream.listen(print); // prints 'C'
 /// ```
 class SwitchLatestStream<T> extends Stream<T> {
-  final Stream<Stream<T>> streams;
+  final Stream<Stream<T>> _streams;
 
   // ignore: close_sinks
   StreamController<T> _controller;
 
-  SwitchLatestStream(this.streams);
+  SwitchLatestStream(this._streams);
 
   @override
   StreamSubscription<T> listen(
@@ -38,7 +38,7 @@ class SwitchLatestStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    _controller ??= _buildController(streams, cancelOnError);
+    _controller ??= _buildController(_streams, cancelOnError);
 
     return _controller.stream.listen(
       onData,

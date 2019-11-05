@@ -59,6 +59,9 @@ import 'dart:async';
 ///     )
 ///     .listen(print); // prints 4
 class ForkJoinStream<T, R> extends StreamView<R> {
+  /// Constructs a [Stream] that awaits the last values of the [Stream]s
+  /// in [streams], then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   ForkJoinStream(
     Iterable<Stream<T>> streams,
     R combiner(List<T> values),
@@ -68,6 +71,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         assert(combiner != null, 'must provide a combiner function'),
         super(_buildController(streams, combiner).stream);
 
+  /// Constructs a [Stream] that awaits the last values of the [Stream]s
+  /// in [streams] and then emits these values as a [List].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<T, List<T>> list<T>(
     Iterable<Stream<T>> streams,
   ) =>
@@ -76,6 +82,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         (List<T> values) => values,
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
@@ -86,6 +95,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         (List<dynamic> values) => combiner(values[0] as A, values[1] as B),
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine3<A, B, C, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -103,6 +115,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine4<A, B, C, D, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -122,6 +137,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine5<A, B, C, D, E, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -143,6 +161,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine6<A, B, C, D, E, F, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -166,6 +187,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine7<A, B, C, D, E, F, G, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -191,6 +215,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine8<A, B, C, D, E, F, G, H, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -227,6 +254,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
+  /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
+  /// then calls the [combiner] to emit an event of type [R].
+  /// After this event, the [Stream] closes.
   static ForkJoinStream<dynamic, R> combine9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> streamA,
     Stream<B> streamB,

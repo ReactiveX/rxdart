@@ -22,14 +22,14 @@ import 'package:rxdart/src/streams/utils.dart';
 ///        }, 1)
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
-  final Stream<T> Function() streamFactory;
-  int count;
-  int retryStep = 0;
-  StreamController<T> controller;
-  StreamSubscription<T> subscription;
+  final Stream<T> Function() _streamFactory;
+  int _count;
+  int _retryStep = 0;
+  StreamController<T> _controller;
+  StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
-  RetryStream(this.streamFactory, [this.count]);
+  RetryStream(this._streamFactory, [this._count]);
 
   @override
   StreamSubscription<T> listen(
@@ -41,36 +41,36 @@ class RetryStream<T> extends Stream<T> {
     void Function([int]) retry;
 
     final combinedErrors = () => RetryError.withCount(
-          count,
+          _count,
           _errors,
         );
 
     retry = ([_]) {
-      subscription = streamFactory().listen(controller.add,
+      _subscription = _streamFactory().listen(_controller.add,
           onError: (dynamic e, StackTrace s) {
-        subscription.cancel();
+        _subscription.cancel();
 
         _errors.add(ErrorAndStacktrace(e, s));
 
-        if (count == retryStep) {
-          controller
+        if (_count == _retryStep) {
+          _controller
             ..addError(combinedErrors())
             ..close();
         } else {
-          retry(++retryStep);
+          retry(++_retryStep);
         }
-      }, onDone: controller.close, cancelOnError: false);
+      }, onDone: _controller.close, cancelOnError: false);
     };
 
-    controller ??= StreamController<T>(
+    _controller ??= StreamController<T>(
         sync: true,
         onListen: retry,
         onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
+            _subscription.pause(resumeSignal),
+        onResume: () => _subscription.resume(),
+        onCancel: () => _subscription.cancel());
 
-    return controller.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,

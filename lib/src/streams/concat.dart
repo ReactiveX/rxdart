@@ -19,6 +19,11 @@ import 'dart:async';
 class ConcatStream<T> extends Stream<T> {
   final StreamController<T> _controller;
 
+  /// Constructs a [Stream] which emits all events from [streams].
+  /// The [Iterable] is traversed upwards, meaning that the current first
+  /// [Stream] in the [Iterable] needs to complete, before events from the
+  /// next [Stream] will be emitted.
+  /// Events from next Streams are buffered where needed.
   ConcatStream(Iterable<Stream<T>> streams)
       : _controller = _buildController(streams);
 

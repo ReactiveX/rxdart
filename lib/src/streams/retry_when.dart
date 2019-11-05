@@ -6,7 +6,7 @@ import 'package:rxdart/src/streams/utils.dart';
 /// Stream when the notifier emits a new value. If the source Stream
 /// emits an error or it completes, the Stream terminates.
 ///
-/// If the [retryWhenFactory] emits an error a [RetryError] will be
+/// If the [_retryWhenFactory] emits an error a [RetryError] will be
 /// thrown. The RetryError will contain all of the [Error]s and
 /// [StackTrace]s that caused the failure.
 ///
@@ -60,13 +60,13 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
 /// ```
 class RetryWhenStream<T> extends Stream<T> {
-  final Stream<T> Function() streamFactory;
-  final RetryWhenStreamFactory retryWhenFactory;
-  StreamController<T> controller;
-  StreamSubscription<T> subscription;
+  final Stream<T> Function() _streamFactory;
+  final RetryWhenStreamFactory _retryWhenFactory;
+  StreamController<T> _controller;
+  StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
-  RetryWhenStream(this.streamFactory, this.retryWhenFactory);
+  RetryWhenStream(this._streamFactory, this._retryWhenFactory);
 
   @override
   StreamSubscription<T> listen(
@@ -75,16 +75,16 @@ class RetryWhenStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    controller ??= StreamController<T>(
+    _controller ??= StreamController<T>(
       sync: true,
       onListen: _retry,
       onPause: ([Future<dynamic> resumeSignal]) =>
-          subscription.pause(resumeSignal),
-      onResume: () => subscription.resume(),
-      onCancel: () => subscription.cancel(),
+          _subscription.pause(resumeSignal),
+      onResume: () => _subscription.resume(),
+      onCancel: () => _subscription.cancel(),
     );
 
-    return controller.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -93,13 +93,13 @@ class RetryWhenStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    subscription = streamFactory().listen(
-      controller.add,
+    _subscription = _streamFactory().listen(
+      _controller.add,
       onError: (Object e, [StackTrace s]) {
-        subscription.cancel();
+        _subscription.cancel();
 
         StreamSubscription<void> sub;
-        sub = retryWhenFactory(e, s).listen(
+        sub = _retryWhenFactory(e, s).listen(
           (event) {
             sub.cancel();
             _errors.add(ErrorAndStacktrace(e, s));
@@ -107,7 +107,7 @@ class RetryWhenStream<T> extends Stream<T> {
           },
           onError: (Object e, [StackTrace s]) {
             sub.cancel();
-            controller
+            _controller
               ..addError(RetryError.onReviveFailed(
                 _errors..add(ErrorAndStacktrace(e, s)),
               ))
@@ -115,7 +115,7 @@ class RetryWhenStream<T> extends Stream<T> {
           },
         );
       },
-      onDone: controller.close,
+      onDone: _controller.close,
       cancelOnError: false,
     );
   }

@@ -20,6 +20,8 @@ class DeferStream<T> extends Stream<T> {
   @override
   bool get isBroadcast => _isReusable;
 
+  /// Constructs a [Stream] lazily, at the moment of subscription, using
+  /// the [streamFactory]
   DeferStream(Stream<T> streamFactory(), {bool reusable = false})
       : _isReusable = reusable,
         _factory = reusable
