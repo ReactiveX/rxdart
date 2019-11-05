@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
+import 'package:rxdart/src/transformers/start_with.dart';
+import 'package:rxdart/src/transformers/start_with_error.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -91,11 +93,11 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
           _Wrapper<T> wrapper, StreamController<T> controller) =>
       () {
         if (wrapper.latestIsError) {
-          scheduleMicrotask(() => controller.addError(
+          return controller.stream.transform(StartWithErrorStreamTransformer(
               wrapper.latestError, wrapper.latestStackTrace));
         } else if (wrapper.latestIsValue) {
-          return Observable<T>(controller.stream)
-              .startWith(wrapper.latestValue);
+          return controller.stream
+              .transform(StartWithStreamTransformer(wrapper.latestValue));
         }
 
         return controller.stream;
