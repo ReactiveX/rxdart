@@ -69,6 +69,7 @@ class TimeIntervalStreamTransformer<T>
 class TimeInterval<T> {
   /// The interval at which this snapshot was taken
   final Duration interval;
+
   /// The value at the moment of [interval]
   final T value;
 

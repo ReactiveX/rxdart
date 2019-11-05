@@ -21,6 +21,7 @@ import 'dart:async';
 class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final StreamTransformer<S, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which combines [Stream.where] followed by [Stream.cast].
   WhereTypeStreamTransformer() : _transformer = _buildTransformer();
 
   @override

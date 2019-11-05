@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Intercepts error events and switches to a recovery stream created by the
-/// provided recoveryFn function.
+/// provided recoveryFn Function.
 ///
 /// The OnErrorResumeStreamTransformer intercepts an onError notification from
 /// the source Stream. Instead of passing the error through to any
@@ -21,6 +21,8 @@ import 'dart:async';
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which intercepts error events and
+  /// switches to a recovery [Stream] created by the provided [recoveryFn] Function.
   OnErrorResumeStreamTransformer(Stream<T> Function(dynamic error) recoveryFn)
       : _transformer = _buildTransformer(recoveryFn);
 

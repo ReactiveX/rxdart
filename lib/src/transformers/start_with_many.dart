@@ -10,6 +10,8 @@ import 'dart:async';
 class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which prepends the source [Stream]
+  /// with all values from [startValues].
   StartWithManyStreamTransformer(Iterable<T> startValues)
       : _transformer = _buildTransformer(startValues);
 

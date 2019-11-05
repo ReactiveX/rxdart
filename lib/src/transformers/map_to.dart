@@ -10,6 +10,8 @@ import 'dart:async';
 class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final StreamTransformer<S, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which always maps every event from
+  /// the source [Stream] to a constant [value].
   MapToStreamTransformer(T value) : _transformer = _buildTransformer(value);
 
   @override

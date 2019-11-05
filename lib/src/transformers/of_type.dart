@@ -34,6 +34,8 @@ import 'package:rxdart/src/utils/type_token.dart';
 class OfTypeStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;
 
+  /// Constructs a [StreamTransformer] which uses a [typeToken] to filter and
+  /// cast events from the source [Stream] into events of type [S].
   OfTypeStreamTransformer(TypeToken<S> typeToken)
       : _transformer = _buildTransformer(typeToken);
 

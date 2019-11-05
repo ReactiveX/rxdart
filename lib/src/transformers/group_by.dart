@@ -17,6 +17,8 @@ class GroupByStreamTransformer<T, S>
     extends StreamTransformerBase<T, GroupByObservable<T, S>> {
   final S Function(T) _grouper;
 
+  /// Constructs a [StreamTransformer] which groups events from the source
+  /// [Stream] and emits them as [GroupByObservable].
   GroupByStreamTransformer(this._grouper);
 
   @override

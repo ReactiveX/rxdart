@@ -27,6 +27,8 @@ import 'dart:async';
 class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which, when the source [Stream] emits
+  /// no events, switches over to [fallbackStream].
   SwitchIfEmptyStreamTransformer(Stream<T> fallbackStream)
       : _transformer = _buildTransformer(fallbackStream);
 

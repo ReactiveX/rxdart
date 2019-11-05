@@ -13,6 +13,8 @@ import 'dart:async';
 class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which simply ignores all events from
+  /// the source [Stream], except for error or completed events.
   IgnoreElementsStreamTransformer() : _transformer = _buildTransformer();
 
   @override

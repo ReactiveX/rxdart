@@ -11,6 +11,8 @@ import 'dart:async';
 class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which emits each item from the source [Stream],
+  /// after a given duration.
   IntervalStreamTransformer(Duration duration)
       : _transformer = _buildTransformer(duration);
 

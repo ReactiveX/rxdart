@@ -15,6 +15,8 @@ import 'dart:async';
 class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which emits events from the source [Stream],
+  /// until [otherStream] fires.
   TakeUntilStreamTransformer(Stream<S> otherStream)
       : _transformer = _buildTransformer(otherStream);
 

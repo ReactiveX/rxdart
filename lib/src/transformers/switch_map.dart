@@ -20,6 +20,11 @@ import 'dart:async';
 class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;
 
+  /// Constructs a [StreamTransformer] which maps each event from the source [Stream]
+  /// using [mapper].
+  ///
+  /// The mapped [Stream] will be be listened to and begin
+  /// emitting items, and any previously created mapper [Stream]s will stop emitting.
   SwitchMapStreamTransformer(Stream<S> mapper(T value))
       : _transformer = _buildTransformer(mapper);
 

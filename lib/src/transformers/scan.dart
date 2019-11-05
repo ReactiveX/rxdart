@@ -13,6 +13,9 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final _ScanStreamTransformerAccumulator<T, S> _accumulator;
   final S _seed;
 
+  /// Constructs a [ScanStreamTransformer] which applies an accumulator Function
+  /// over the source [Stream] and returns each intermediate result.
+  /// The optional seed value is used as the initial accumulator value.
   ScanStreamTransformer(this._accumulator, [this._seed]);
 
   @override

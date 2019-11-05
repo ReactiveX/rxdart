@@ -18,6 +18,8 @@ class MaterializeStreamTransformer<T>
     extends StreamTransformerBase<T, Notification<T>> {
   final StreamTransformer<T, Notification<T>> _transformer;
 
+  /// Constructs a [StreamTransformer] which transforms the onData, on Done,
+  /// and onError events into [Notification] objects.
   MaterializeStreamTransformer() : _transformer = _buildTransformer();
 
   @override
