@@ -1,7 +1,3 @@
-## 0.22.6
-  * Introduces the public_member_api_docs linter rule
-  * Added missing docs where applicable
-
 ## 0.22.5
 
   * Bugfix: DeferStream created Stream too early
