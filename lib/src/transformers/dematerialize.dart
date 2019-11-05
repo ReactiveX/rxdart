@@ -26,6 +26,9 @@ class DematerializeStreamTransformer<T>
     extends StreamTransformerBase<Notification<T>, T> {
   final StreamTransformer<Notification<T>, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which converts the onData, onDone, and
+  /// onError [Notification] objects from a materialized stream into normal
+  /// onData, onDone, and onError events.
   DematerializeStreamTransformer() : _transformer = _buildTransformer();
 
   @override

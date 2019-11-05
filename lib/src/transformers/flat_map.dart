@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Converts each emitted item into a new Stream using the given mapper
-/// function. The newly created Stream will be be listened to and begin
+/// function. The newly created Stream will be listened to and begin
 /// emitting items downstream.
 ///
 /// The items emitted by each of the new Streams are emitted downstream in the
@@ -18,6 +18,8 @@ import 'dart:async';
 class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;
 
+  /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
+  /// The mapped [Stream] will be listened to and begin emitting items downstream.
   FlatMapStreamTransformer(Stream<S> mapper(T value))
       : _transformer = _buildTransformer(mapper);
 

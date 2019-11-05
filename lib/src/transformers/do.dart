@@ -40,6 +40,8 @@ import 'package:rxdart/src/utils/notification.dart';
 class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which will trigger any of the provided
+  /// handlers as they occur.
   DoStreamTransformer(
       {void onCancel(),
       void onData(T event),

@@ -16,6 +16,8 @@ import 'dart:async';
 class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which will first pause for [duration] of time,
+  /// before submitting events from the source [Stream].
   DelayStreamTransformer(Duration duration)
       : _transformer = _buildTransformer(duration);
 

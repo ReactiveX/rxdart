@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Converts items from the source stream into a new Stream using a given
+/// Converts events from the source stream into a new Stream using a given
 /// mapper. It ignores all items from the source stream until the new stream
 /// completes.
 ///
@@ -18,6 +18,9 @@ import 'dart:async';
 class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;
 
+  /// Constructs a [StreamTransformer] which maps events from the source [Stream] using [mapper].
+  ///
+  /// It ignores all items from the source [Stream] until the mapped [Stream] completes.
   ExhaustMapStreamTransformer(Stream<S> mapper(T value))
       : _transformer = _buildTransformer(mapper);
 
