@@ -514,5 +514,22 @@ void main() {
 
       expect(subject.hasValue, isTrue);
     });
+
+    test(
+        'issue/350: emits duplicate values when listening multiple times and starting with an Error',
+        () async {
+      final subject = BehaviorSubject<dynamic>();
+
+      subject.addError('error');
+
+      await subject.close();
+
+      await expectLater(subject,
+          emitsInOrder(<StreamMatcher>[emitsError('error'), emitsDone]));
+      await expectLater(subject,
+          emitsInOrder(<StreamMatcher>[emitsError('error'), emitsDone]));
+      await expectLater(subject,
+          emitsInOrder(<StreamMatcher>[emitsError('error'), emitsDone]));
+    });
   });
 }
