@@ -1,5 +1,10 @@
-## 0.22.5
+## 0.22.6
+  * Bugfix: When listening multiple times to a`BehaviorSubject` that starts with an Error,
+  it emits duplicate events.
+  * Linter: public_member_api_docs is now used, we have added extra documentation
+  where required.
 
+## 0.22.5
   * Bugfix: DeferStream created Stream too early
   * Bugfix: TimerStream created Timer too early
 
