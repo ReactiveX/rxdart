@@ -11,6 +11,8 @@ import 'package:rxdart/src/observables/replay_observable.dart';
 /// can be used to wait for all intended Observers to [listen] to the
 /// Observable before it begins emitting items.
 abstract class ConnectableObservable<T> extends Observable<T> {
+  /// Constructs an [Observable] which only begins emitting events when
+  /// the [connect] method is called.
   ConnectableObservable(Stream<T> stream) : super(stream);
 
   /// Returns an Observable that automatically connects (at most once) to this
@@ -34,11 +36,14 @@ abstract class ConnectableObservable<T> extends Observable<T> {
 }
 
 /// A [ConnectableObservable] that converts a single-subscription Stream into
-/// a broadcast Stream.
+/// a broadcast [Stream].
 class PublishConnectableObservable<T> extends ConnectableObservable<T> {
   final Stream<T> _source;
   final PublishSubject<T> _subject;
 
+  /// Constructs an [Observable] which only begins emitting events when
+  /// the [connect] method is called, this [Observable] acts like a
+  /// [PublishSubject].
   factory PublishConnectableObservable(Stream<T> source) {
     return PublishConnectableObservable<T>._(source, PublishSubject<T>());
   }
@@ -97,12 +102,18 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
 
   ValueConnectableObservable._(this._source, this._subject) : super(_subject);
 
+  /// Constructs an [Observable] which only begins emitting events when
+  /// the [connect] method is called, this [Observable] acts like a
+  /// [BehaviorSubject].
   factory ValueConnectableObservable(Stream<T> source) =>
       ValueConnectableObservable<T>._(
         source,
         BehaviorSubject<T>(),
       );
 
+  /// Constructs an [Observable] which only begins emitting events when
+  /// the [connect] method is called, this [Observable] acts like a
+  /// [BehaviorSubject.seeded].
   factory ValueConnectableObservable.seeded(
     Stream<T> source,
     T seedValue,
@@ -168,6 +179,9 @@ class ReplayConnectableObservable<T> extends ConnectableObservable<T>
   final Stream<T> _source;
   final ReplaySubject<T> _subject;
 
+  /// Constructs an [Observable] which only begins emitting events when
+  /// the [connect] method is called, this [Observable] acts like a
+  /// [ReplaySubject].
   factory ReplayConnectableObservable(Stream<T> stream, {int maxSize}) {
     return ReplayConnectableObservable<T>._(
       stream,
@@ -228,6 +242,8 @@ class ConnectableObservableStreamSubscription<T> extends StreamSubscription<T> {
   final StreamSubscription<T> _source;
   final Subject<T> _subject;
 
+  /// Constructs a special [StreamSubscription], which will close the provided subject
+  /// when [cancel] is called.
   ConnectableObservableStreamSubscription(this._source, this._subject);
 
   @override

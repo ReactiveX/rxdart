@@ -11,12 +11,14 @@ import 'dart:async';
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T>
     extends StreamTransformerBase<T, TimeInterval<T>> {
-  final StreamTransformer<T, TimeInterval<T>> transformer;
+  final StreamTransformer<T, TimeInterval<T>> _transformer;
 
-  TimeIntervalStreamTransformer() : transformer = _buildTransformer();
+  /// Constructs a [StreamTransformer] which emits events from the
+  /// source [Stream] as snapshots in the form of [TimeInterval].
+  TimeIntervalStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<TimeInterval<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<TimeInterval<T>> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, TimeInterval<T>> _buildTransformer<T>() {
     return StreamTransformer<T, TimeInterval<T>>(
@@ -62,10 +64,17 @@ class TimeIntervalStreamTransformer<T>
   }
 }
 
+/// A class that represents a snapshot of the current value emitted by a
+/// [Stream], at a specified interval.
 class TimeInterval<T> {
+  /// The interval at which this snapshot was taken
   final Duration interval;
+
+  /// The value at the moment of [interval]
   final T value;
 
+  /// Constructs a snapshot of a [Stream], containing the [Stream]'s event
+  /// at the specified [interval] as [value].
   TimeInterval(this.value, this.interval);
 
   @override

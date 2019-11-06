@@ -13,13 +13,15 @@ import 'dart:async';
 ///     new NeverStream().listen(print); // Neither prints nor terminates
 class NeverStream<T> extends Stream<T> {
   // ignore: close_sinks
-  StreamController<T> controller = StreamController<T>();
+  StreamController<T> _controller = StreamController<T>();
 
+  /// Constructs a [Stream] which never emits an event and simply remains
+  /// open until implicitly closed by the developer.
   NeverStream();
 
   @override
   StreamSubscription<T> listen(void onData(T event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      controller.stream.listen(onData,
+      _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

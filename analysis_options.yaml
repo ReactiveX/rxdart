@@ -6,3 +6,7 @@ analyzer:
     implicit-dynamic: false
   exclude:
     - 'example/**'
+
+linter:
+  rules:
+    - public_member_api_docs

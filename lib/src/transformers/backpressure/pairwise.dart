@@ -10,6 +10,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
 class PairwiseStreamTransformer<T>
     extends BackpressureStreamTransformer<T, Iterable<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into pairs as a [List].
   PairwiseStreamTransformer()
       : super(WindowStrategy.firstEventOnly, (_) => NeverStream<void>(),
             onWindowEnd: (Iterable<T> queue) => queue,

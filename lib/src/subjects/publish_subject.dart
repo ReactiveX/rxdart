@@ -29,6 +29,10 @@ class PublishSubject<T> extends Subject<T> {
   PublishSubject._(StreamController<T> controller, Observable<T> observable)
       : super(controller, observable);
 
+  /// Constructs a [PublishSubject], optionally pass handlers for
+  /// [onListen], [onCancel] and a flag to handle events [sync].
+  ///
+  /// See also [StreamController.broadcast]
   factory PublishSubject(
       {void onListen(), void onCancel(), bool sync = false}) {
     // ignore: close_sinks

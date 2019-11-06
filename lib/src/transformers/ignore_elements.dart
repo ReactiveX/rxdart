@@ -11,12 +11,14 @@ import 'dart:async';
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
 class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
-  IgnoreElementsStreamTransformer() : transformer = _buildTransformer();
+  /// Constructs a [StreamTransformer] which simply ignores all events from
+  /// the source [Stream], except for error or completed events.
+  IgnoreElementsStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>() {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {

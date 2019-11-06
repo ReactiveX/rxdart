@@ -15,6 +15,10 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class BufferStreamTransformer<T>
     extends BackpressureStreamTransformer<T, List<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [List] and
+  /// emits this [List] whenever [window] fires an event.
+  ///
+  /// The [List] is cleared upon every [window] event.
   BufferStreamTransformer(Stream window(T event))
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => queue, ignoreEmptyWindows: false) {
@@ -45,6 +49,15 @@ class BufferStreamTransformer<T>
 ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
 class BufferCountStreamTransformer<T>
     extends BackpressureStreamTransformer<T, List<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [List] and
+  /// emits this [List] whenever its length is equal to [count].
+  ///
+  /// A new buffer is created for every n-th event emitted
+  /// by the [Stream] that is being transformed, as specified by
+  /// the [startBufferEvery] parameter.
+  ///
+  /// If [startBufferEvery] is omitted or equals 0, then a new buffer is started whenever
+  /// the previous one reaches a length of [count].
   BufferCountStreamTransformer(int count, [int startBufferEvery = 0])
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => queue,
@@ -71,6 +84,8 @@ class BufferCountStreamTransformer<T>
 ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
 class BufferTestStreamTransformer<T>
     extends BackpressureStreamTransformer<T, List<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [List] and
+  /// emits this [List] whenever the [test] Function yields true.
   BufferTestStreamTransformer(bool test(T value))
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => queue,

@@ -32,13 +32,15 @@ import 'package:rxdart/src/utils/type_token.dart';
 ///       const TypeToken<Map<Int, String>>();
 @Deprecated('Please use WhereTypeStreamTransformer instead')
 class OfTypeStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> transformer;
+  final StreamTransformer<T, S> _transformer;
 
+  /// Constructs a [StreamTransformer] which uses a [typeToken] to filter and
+  /// cast events from the source [Stream] into events of type [S].
   OfTypeStreamTransformer(TypeToken<S> typeToken)
-      : transformer = _buildTransformer(typeToken);
+      : _transformer = _buildTransformer(typeToken);
 
   @override
-  Stream<S> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       TypeToken<S> typeToken) {

@@ -48,6 +48,9 @@ import 'dart:async';
 ///     )
 ///     .listen(print); // prints 3, 4
 class CombineLatestStream<T, R> extends StreamView<R> {
+  /// Constructs a [Stream] that observes an [Iterable] of [Stream]
+  /// and builds a [List] containing all latest events emitted by the provided [Iterable] of [Stream].
+  /// The [combiner] maps this [List] into a new event of type [R]
   CombineLatestStream(
     Iterable<Stream<T>> streams,
     R combiner(List<T> values),
@@ -56,6 +59,8 @@ class CombineLatestStream<T, R> extends StreamView<R> {
         assert(combiner != null, 'must provide a combiner function'),
         super(_buildController(streams, combiner).stream);
 
+  /// Constructs a [CombineLatestStream] using a default combiner, which simply
+  /// yields a [List] of all latest events emitted by the provided [Iterable] of [Stream].
   static CombineLatestStream<T, List<T>> list<T>(
     Iterable<Stream<T>> streams,
   ) {
@@ -65,6 +70,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from a pair of [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
@@ -76,6 +84,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 3 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine3<A, B, C, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -94,6 +105,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 4 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine4<A, B, C, D, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -114,6 +128,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 5 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine5<A, B, C, D, E, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -136,6 +153,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 6 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine6<A, B, C, D, E, F, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -160,6 +180,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 7 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine7<A, B, C, D, E, F, G, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -186,6 +209,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 8 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine8<A, B, C, D, E, F, G, H, R>(
     Stream<A> streamA,
     Stream<B> streamB,
@@ -214,6 +240,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     );
   }
 
+  /// Constructs a [CombineLatestStream] from 9 [Stream]s
+  /// where [combiner] is used to create a new event of type [R], based on the
+  /// latest events emitted by the provided [Stream]s.
   static CombineLatestStream<dynamic, R> combine9<A, B, C, D, E, F, G, H, I, R>(
     Stream<A> streamA,
     Stream<B> streamB,

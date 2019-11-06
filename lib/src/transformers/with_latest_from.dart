@@ -16,15 +16,19 @@ import 'dart:async';
 ///       .listen(print); // prints 4 (due to the async nature of streams)
 class WithLatestFromStreamTransformer<T, S, R>
     extends StreamTransformerBase<T, R> {
-  final StreamTransformer<T, R> transformer;
+  final StreamTransformer<T, R> _transformer;
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from [latestFromStreams] using the provided function [fn].
   WithLatestFromStreamTransformer(
       Iterable<Stream<S>> latestFromStreams, R fn(T t, List<S> values))
-      : transformer = _buildTransformer(latestFromStreams, fn);
+      : _transformer = _buildTransformer(latestFromStreams, fn);
 
   @override
-  Stream<R> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<R> bind(Stream<T> stream) => _transformer.bind(stream);
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from [latestFromStreams] using a [List].
   static WithLatestFromStreamTransformer<T, T, List<T>> withList<T>(
     Iterable<Stream<T>> latestFromStreams,
   ) {
@@ -34,6 +38,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from [latestFromStream] using the provided function [fn].
   static WithLatestFromStreamTransformer<T, S, R> with1<T, S, R>(
     Stream<S> latestFromStream,
     R fn(T t, S s),
@@ -47,6 +53,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R> with2<T, A, B, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -61,6 +69,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R> with3<T, A, B, C, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -87,6 +97,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R> with4<T, A, B, C, D, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
@@ -116,6 +128,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R>
       with5<T, A, B, C, D, E, R>(
     Stream<A> latestFromStream1,
@@ -149,6 +163,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R>
       with6<T, A, B, C, D, E, F, R>(
     Stream<A> latestFromStream1,
@@ -185,6 +201,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R>
       with7<T, A, B, C, D, E, F, G, R>(
     Stream<A> latestFromStream1,
@@ -224,6 +242,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R>
       with8<T, A, B, C, D, E, F, G, H, R>(
     Stream<A> latestFromStream1,
@@ -266,6 +286,8 @@ class WithLatestFromStreamTransformer<T, S, R>
     );
   }
 
+  /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
+  /// the latest values from all [latestFromStream]s using the provided function [fn].
   static WithLatestFromStreamTransformer<T, dynamic, R>
       with9<T, A, B, C, D, E, F, G, H, I, R>(
     Stream<A> latestFromStream1,

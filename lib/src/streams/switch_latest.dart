@@ -1,8 +1,8 @@
 import 'dart:async';
 
-/// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
-/// single Stream that emits the items emitted by the most-recently-emitted of
-/// those Streams.
+/// Convert a [Stream] that emits [Stream]s (aka a "Higher Order Stream") into a
+/// single [Stream] that emits the items emitted by the most-recently-emitted of
+/// those [Stream]s.
 ///
 /// This stream will unsubscribe from the previously-emitted Stream when a new
 /// Stream is emitted from the source Stream.
@@ -24,12 +24,14 @@ import 'dart:async';
 /// switchLatestStream.listen(print); // prints 'C'
 /// ```
 class SwitchLatestStream<T> extends Stream<T> {
-  final Stream<Stream<T>> streams;
-
   // ignore: close_sinks
   StreamController<T> _controller;
 
-  SwitchLatestStream(this.streams);
+  /// Constructs a [Stream] that emits [Stream]s (aka a "Higher Order Stream") into a
+  /// single [Stream] that emits the items emitted by the most-recently-emitted of
+  /// those [Stream]s.
+  SwitchLatestStream(Stream<Stream<T>> streams)
+      : _controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(
@@ -37,21 +39,15 @@ class SwitchLatestStream<T> extends Stream<T> {
     Function onError,
     void onDone(),
     bool cancelOnError,
-  }) {
-    _controller ??= _buildController(streams, cancelOnError);
+  }) =>
+      _controller.stream.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
 
-    return _controller.stream.listen(
-      onData,
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
-    );
-  }
-
-  static StreamController<T> _buildController<T>(
-    Stream<Stream<T>> streams,
-    bool cancelOnError,
-  ) {
+  static StreamController<T> _buildController<T>(Stream<Stream<T>> streams) {
     StreamController<T> controller;
     StreamSubscription<Stream<T>> subscription;
     StreamSubscription<T> otherSubscription;
@@ -72,26 +68,21 @@ class SwitchLatestStream<T> extends Stream<T> {
             if (leftClosed) controller.close();
           };
 
-          subscription = streams.listen(
-            (stream) {
-              try {
-                otherSubscription?.cancel();
+          subscription = streams.listen((stream) {
+            try {
+              otherSubscription?.cancel();
 
-                hasMainEvent = true;
+              hasMainEvent = true;
 
-                otherSubscription = stream.listen(
-                  controller.add,
-                  onError: controller.addError,
-                  onDone: closeRight,
-                );
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-            onError: controller.addError,
-            onDone: closeLeft,
-            cancelOnError: cancelOnError,
-          );
+              otherSubscription = stream.listen(
+                controller.add,
+                onError: controller.addError,
+                onDone: closeRight,
+              );
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
+          }, onError: controller.addError, onDone: closeLeft);
         },
         onPause: ([Future<dynamic> resumeSignal]) {
           subscription.pause(resumeSignal);

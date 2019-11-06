@@ -60,12 +60,19 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
 /// ```
 class RetryWhenStream<T> extends Stream<T> {
+  /// The factory method used at subscription time
   final Stream<T> Function() streamFactory;
+
+  /// The factory method used to create the [Stream] which triggers a re-listen
   final RetryWhenStreamFactory retryWhenFactory;
-  StreamController<T> controller;
-  StreamSubscription<T> subscription;
+  StreamController<T> _controller;
+  StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
 
+  /// Constructs a [Stream] that will recreate and re-listen to the source
+  /// [Stream] (created by the provided factory method).
+  /// The retry will trigger whenever the [Stream] created by the retryWhen
+  /// factory emits and event.
   RetryWhenStream(this.streamFactory, this.retryWhenFactory);
 
   @override
@@ -75,16 +82,16 @@ class RetryWhenStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    controller ??= StreamController<T>(
+    _controller ??= StreamController<T>(
       sync: true,
       onListen: _retry,
       onPause: ([Future<dynamic> resumeSignal]) =>
-          subscription.pause(resumeSignal),
-      onResume: () => subscription.resume(),
-      onCancel: () => subscription.cancel(),
+          _subscription.pause(resumeSignal),
+      onResume: () => _subscription.resume(),
+      onCancel: () => _subscription.cancel(),
     );
 
-    return controller.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -93,10 +100,10 @@ class RetryWhenStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    subscription = streamFactory().listen(
-      controller.add,
+    _subscription = streamFactory().listen(
+      _controller.add,
       onError: (Object e, [StackTrace s]) {
-        subscription.cancel();
+        _subscription.cancel();
 
         StreamSubscription<void> sub;
         sub = retryWhenFactory(e, s).listen(
@@ -107,7 +114,7 @@ class RetryWhenStream<T> extends Stream<T> {
           },
           onError: (Object e, [StackTrace s]) {
             sub.cancel();
-            controller
+            _controller
               ..addError(RetryError.onReviveFailed(
                 _errors..add(ErrorAndStacktrace(e, s)),
               ))
@@ -115,7 +122,7 @@ class RetryWhenStream<T> extends Stream<T> {
           },
         );
       },
-      onDone: controller.close,
+      onDone: _controller.close,
       cancelOnError: false,
     );
   }

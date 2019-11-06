@@ -13,15 +13,17 @@ import 'dart:async';
 ///     ])
 ///     .listen(print); // prints 2, 1
 class MergeStream<T> extends Stream<T> {
-  final StreamController<T> controller;
+  final StreamController<T> _controller;
 
+  /// Constructs a [Stream] which flattens all events in [streams] and emits
+  /// them in a single sequence.
   MergeStream(Iterable<Stream<T>> streams)
-      : controller = _buildController(streams);
+      : _controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      controller.stream.listen(onData,
+      _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {

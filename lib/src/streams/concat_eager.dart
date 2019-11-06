@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/streams/concat.dart';
+
 /// Concatenates all of the specified stream sequences, as long as the
 /// previous stream sequence terminated successfully.
 ///
@@ -19,15 +21,20 @@ import 'dart:async';
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
 class ConcatEagerStream<T> extends Stream<T> {
-  final StreamController<T> controller;
+  final StreamController<T> _controller;
 
+  /// Constructs a [Stream] which emits all events from [streams].
+  /// Unlike [ConcatStream], all [Stream]s inside [streams] are
+  /// immediately subscribed to and events captured at the correct time,
+  /// but emitted only after the previous [Stream] in [streams] is
+  /// successfully closed.
   ConcatEagerStream(Iterable<Stream<T>> streams)
-      : controller = _buildController(streams);
+      : _controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
+    return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 

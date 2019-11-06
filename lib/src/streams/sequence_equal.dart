@@ -19,16 +19,20 @@ import 'package:rxdart/src/utils/notification.dart';
 ///     ])
 ///     .listen(print); // prints true
 class SequenceEqualStream<S, T> extends Stream<bool> {
-  final StreamController<bool> controller;
+  final StreamController<bool> _controller;
 
+  /// Creates a [Stream] that emits true or false, depending on the
+  /// equality between the provided [Stream]s.
+  /// This single value is emitted when both provided [Stream]s are complete.
+  /// After this event, the [Stream] closes.
   SequenceEqualStream(Stream<S> stream, Stream<T> other,
       {bool equals(S s, T t)})
-      : controller = _buildController(stream, other, equals);
+      : _controller = _buildController(stream, other, equals);
 
   @override
   StreamSubscription<bool> listen(void onData(bool event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      controller.stream.listen(onData,
+      _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<bool> _buildController<S, T>(

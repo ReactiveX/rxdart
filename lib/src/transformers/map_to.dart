@@ -8,12 +8,14 @@ import 'dart:async';
 ///       .mapTo(true)
 ///       .listen(print); // prints true, true, true, true
 class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
-  final StreamTransformer<S, T> transformer;
+  final StreamTransformer<S, T> _transformer;
 
-  MapToStreamTransformer(T value) : transformer = _buildTransformer(value);
+  /// Constructs a [StreamTransformer] which always maps every event from
+  /// the source [Stream] to a constant [value].
+  MapToStreamTransformer(T value) : _transformer = _buildTransformer(value);
 
   @override
-  Stream<T> bind(Stream<S> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) => _transformer.bind(stream);
 
   static StreamTransformer<S, T> _buildTransformer<S, T>(T value) =>
       StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {

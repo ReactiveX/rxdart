@@ -12,12 +12,22 @@ import 'dart:async';
 ///       Observable.just('repeat index: $repeatCount'), 3)
 ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {
+  /// The factory method used at subscription time
   final Stream<T> Function(int) streamFactory;
-  final int count;
-  int repeatStep = 0;
-  StreamController<T> controller;
-  StreamSubscription<T> subscription;
 
+  /// The amount of repeat attempts that will be made
+  /// If null or 0, then an indefinite amount of attempts will be made.
+  final int count;
+  int _repeatStep = 0;
+  StreamController<T> _controller;
+  StreamSubscription<T> _subscription;
+
+  /// Constructs a [Stream] that will recreate and re-listen to the source
+  /// [Stream] (created with the provided factory method).
+  /// The count parameter specifies number of times the repeat will take place,
+  /// until this [Stream] terminates successfully.
+  /// If the count parameter is not specified, then this [Stream] will repeat
+  /// indefinitely.
   RepeatStream(this.streamFactory, [this.count]);
 
   @override
@@ -27,15 +37,15 @@ class RepeatStream<T> extends Stream<T> {
     void onDone(),
     bool cancelOnError,
   }) {
-    controller ??= StreamController<T>(
+    _controller ??= StreamController<T>(
         sync: true,
-        onListen: maybeRepeatNext,
+        onListen: _maybeRepeatNext,
         onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription?.cancel());
+            _subscription.pause(resumeSignal),
+        onResume: () => _subscription.resume(),
+        onCancel: () => _subscription?.cancel());
 
-    return controller.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -43,26 +53,26 @@ class RepeatStream<T> extends Stream<T> {
     );
   }
 
-  void repeatNext() {
+  void _repeatNext() {
     void onDone() {
-      subscription?.cancel();
+      _subscription?.cancel();
 
-      maybeRepeatNext();
+      _maybeRepeatNext();
     }
 
     try {
-      subscription = streamFactory(repeatStep++).listen(controller.add,
-          onError: controller.addError, onDone: onDone, cancelOnError: false);
+      _subscription = streamFactory(_repeatStep++).listen(_controller.add,
+          onError: _controller.addError, onDone: onDone, cancelOnError: false);
     } catch (e, s) {
-      controller.addError(e, s);
+      _controller.addError(e, s);
     }
   }
 
-  void maybeRepeatNext() {
-    if (repeatStep == count) {
-      controller.close();
+  void _maybeRepeatNext() {
+    if (_repeatStep == count) {
+      _controller.close();
     } else {
-      repeatNext();
+      _repeatNext();
     }
   }
 }

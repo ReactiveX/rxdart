@@ -16,6 +16,10 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class WindowStreamTransformer<T>
     extends BackpressureStreamTransformer<T, Stream<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
+  /// emits this [Stream] whenever [window] fires an event.
+  ///
+  /// The [Stream] is recreated and starts empty upon every [window] event.
   WindowStreamTransformer(Stream window(T event))
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
@@ -48,6 +52,15 @@ class WindowStreamTransformer<T>
 ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
 class WindowCountStreamTransformer<T>
     extends BackpressureStreamTransformer<T, Stream<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
+  /// emits this [Stream] whenever its length is equal to [count].
+  ///
+  /// A new buffer is created for every n-th event emitted
+  /// by the [Stream] that is being transformed, as specified by
+  /// the [startBufferEvery] parameter.
+  ///
+  /// If [startBufferEvery] is omitted or equals 0, then a new buffer is started whenever
+  /// the previous one reaches a length of [count].
   WindowCountStreamTransformer(int count, [int startBufferEvery = 0])
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
@@ -75,6 +88,8 @@ class WindowCountStreamTransformer<T>
 ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
 class WindowTestStreamTransformer<T>
     extends BackpressureStreamTransformer<T, Stream<T>> {
+  /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
+  /// emits this [Stream] whenever the [test] Function yields true.
   WindowTestStreamTransformer(bool test(T value))
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),

@@ -10,12 +10,14 @@ import 'dart:async';
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
     extends StreamTransformerBase<T, Timestamped<T>> {
-  final StreamTransformer<T, Timestamped<T>> transformer;
+  final StreamTransformer<T, Timestamped<T>> _transformer;
 
-  TimestampStreamTransformer() : transformer = _buildTransformer();
+  /// Constructs a [StreamTransformer] which emits events from the
+  /// source [Stream] as snapshots in the form of [Timestamped].
+  TimestampStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<Timestamped<T>> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<Timestamped<T>> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, Timestamped<T>> _buildTransformer<T>() {
     return StreamTransformer<T, Timestamped<T>>(
@@ -43,10 +45,17 @@ class TimestampStreamTransformer<T>
   }
 }
 
+/// A class that represents a snapshot of the current value emitted by a
+/// [Stream], at a specified timestamp.
 class Timestamped<T> {
+  /// The value at the moment of the [timestamp]
   final T value;
+
+  /// The time at which this snapshot was taken
   final DateTime timestamp;
 
+  /// Constructs a snapshot of a [Stream], containing the [Stream]'s event
+  /// at the specified [timestamp] as [value].
   Timestamped(this.timestamp, this.value);
 
   @override

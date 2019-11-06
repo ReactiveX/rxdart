@@ -8,13 +8,15 @@ import 'dart:async';
 ///       .transform(new StartWithManyStreamTransformer([1, 2]))
 ///       .listen(print); // prints 1, 2, 3
 class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which prepends the source [Stream]
+  /// with all values from [startValues].
   StartWithManyStreamTransformer(Iterable<T> startValues)
-      : transformer = _buildTransformer(startValues);
+      : _transformer = _buildTransformer(startValues);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Iterable<T> startValues) {
     if (startValues == null) {

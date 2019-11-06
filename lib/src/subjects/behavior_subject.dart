@@ -48,6 +48,10 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
     this._wrapper,
   ) : super(controller, observable);
 
+  /// Constructs a [BehaviorSubject], optionally pass handlers for
+  /// [onListen], [onCancel] and a flag to handle events [sync].
+  ///
+  /// See also [StreamController.broadcast]
   factory BehaviorSubject({
     void onListen(),
     void onCancel(),
@@ -68,6 +72,12 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
         wrapper);
   }
 
+  /// Constructs a [BehaviorSubject], optionally pass handlers for
+  /// [onListen], [onCancel] and a flag to handle events [sync].
+  ///
+  /// [seedValue] becomes the current [value] and is emitted immediately.
+  ///
+  /// See also [StreamController.broadcast]
   factory BehaviorSubject.seeded(
     T seedValue, {
     void onListen(),

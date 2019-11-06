@@ -13,23 +13,25 @@ import 'package:rxdart/src/observables/observable.dart';
 /// extend from this class, or `BehaviorSubject` for a slightly more
 /// complex example.
 abstract class Subject<T> extends Observable<T> implements StreamController<T> {
-  final StreamController<T> controller;
+  final StreamController<T> _controller;
 
   bool _isAddingStreamItems = false;
 
+  /// Constructs a [Subject] which wraps the provided [controller].
+  /// This constructor is applicable only for classes that extend [Subject].
   Subject(StreamController<T> controller, Observable<T> observable)
-      : this.controller = controller,
+      : this._controller = controller,
         super(observable);
 
   @override
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
 
   @override
-  ControllerCallback get onListen => controller.onListen;
+  ControllerCallback get onListen => _controller.onListen;
 
   @override
   set onListen(void onListenHandler()) {
-    controller.onListen = onListenHandler;
+    _controller.onListen = onListenHandler;
   }
 
   @override
@@ -52,24 +54,24 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
       throw UnsupportedError("Subjects do not support resume callbacks");
 
   @override
-  ControllerCancelCallback get onCancel => controller.onCancel;
+  ControllerCancelCallback get onCancel => _controller.onCancel;
 
   @override
   set onCancel(void onCancelHandler()) {
-    controller.onCancel = onCancelHandler;
+    _controller.onCancel = onCancelHandler;
   }
 
   @override
-  bool get isClosed => controller.isClosed;
+  bool get isClosed => _controller.isClosed;
 
   @override
-  bool get isPaused => controller.isPaused;
+  bool get isPaused => _controller.isPaused;
 
   @override
-  bool get hasListener => controller.hasListener;
+  bool get hasListener => _controller.hasListener;
 
   @override
-  Future<dynamic> get done => controller.done;
+  Future<dynamic> get done => _controller.done;
 
   @override
   void addError(Object error, [StackTrace stackTrace]) {
@@ -84,7 +86,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   void _addError(Object error, [StackTrace stackTrace]) {
     onAddError(error, stackTrace);
 
-    controller.addError(error, stackTrace);
+    _controller.addError(error, stackTrace);
   }
 
   /// An extension point for sub-classes. Perform any side-effect / state
@@ -105,7 +107,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
     source.listen((T event) {
       _add(event);
     }, onError: (dynamic e, StackTrace s) {
-      controller.addError(e, s);
+      _controller.addError(e, s);
 
       if (cancelOnError) {
         _isAddingStreamItems = false;
@@ -132,7 +134,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   void _add(T event) {
     onAdd(event);
 
-    controller.add(event);
+    _controller.add(event);
   }
 
   /// An extension point for sub-classes. Perform any side-effect / state
@@ -147,7 +149,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
           "You cannot close the subject while items are being added from addStream");
     }
 
-    return controller.close();
+    return _controller.close();
   }
 }
 

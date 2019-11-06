@@ -22,6 +22,8 @@ import 'package:rxdart/src/futures/wrapped_future.dart';
 ///
 ///     print(max); // prints "loooooooong"
 class StreamMaxFuture<T> extends WrappedFuture<T> {
+  /// Constructs a [Future] which contains only the largest value emitted by a [Stream],
+  /// optionally using a [Comparator] to determine that value.
   StreamMaxFuture(Stream<T> stream, [Comparator<T> comparator])
       : super(stream
             .toList()

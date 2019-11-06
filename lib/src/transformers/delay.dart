@@ -14,13 +14,15 @@ import 'dart:async';
 ///       .delay(new Duration(seconds: 1))
 ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
 class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which will first pause for [duration] of time,
+  /// before submitting events from the source [Stream].
   DelayStreamTransformer(Duration duration)
-      : transformer = _buildTransformer(duration);
+      : _transformer = _buildTransformer(duration);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {

@@ -47,6 +47,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
   final Queue<T> _queue;
   final int _maxSize;
 
+  /// Constructs a [ReplaySubject], optionally pass handlers for
+  /// [onListen], [onCancel] and a flag to handle events [sync].
+  ///
+  /// See also [StreamController.broadcast]
   factory ReplaySubject({
     int maxSize,
     void onListen(),
@@ -89,7 +93,6 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
     _queue.add(event);
   }
 
-  /// Synchronously get the values stored in Subject. May be empty.
   @override
   List<T> get values => _queue.toList(growable: false);
 }

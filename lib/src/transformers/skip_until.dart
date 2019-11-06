@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Starts emitting items only after the given stream emits an item.
+/// Starts emitting events only after the given stream emits an event.
 ///
 /// ### Example
 ///
@@ -11,13 +11,15 @@ import 'dart:async';
 ///     .transform(skipUntilTransformer(new TimerStream(1, new Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> transformer;
+  final StreamTransformer<T, T> _transformer;
 
+  /// Constructs a [StreamTransformer] which starts emitting events
+  /// only after [otherStream] emits an event.
   SkipUntilStreamTransformer(Stream<S> otherStream)
-      : transformer = _buildTransformer(otherStream);
+      : _transformer = _buildTransformer(otherStream);
 
   @override
-  Stream<T> bind(Stream<T> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T, S>(
       Stream<S> otherStream) {

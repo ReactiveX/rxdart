@@ -13,15 +13,19 @@ import 'dart:async';
 ///       new TimerStream(3, new Duration(seconds: 3))
 ///     ]).listen(print); // prints 3
 class RaceStream<T> extends Stream<T> {
-  final StreamController<T> controller;
+  final StreamController<T> _controller;
 
+  /// Constructs a [Stream] which emits all events from a single [Stream]
+  /// inside [streams]. The selected [Stream] is the first one which emits
+  /// an event.
+  /// After this event, all other [Stream]s in [streams] are discarded.
   RaceStream(Iterable<Stream<T>> streams)
-      : controller = _buildController(streams);
+      : _controller = _buildController(streams);
 
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
+    return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 

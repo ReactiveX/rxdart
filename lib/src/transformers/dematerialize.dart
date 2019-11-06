@@ -24,12 +24,15 @@ import 'package:rxdart/src/utils/notification.dart';
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
 class DematerializeStreamTransformer<T>
     extends StreamTransformerBase<Notification<T>, T> {
-  final StreamTransformer<Notification<T>, T> transformer;
+  final StreamTransformer<Notification<T>, T> _transformer;
 
-  DematerializeStreamTransformer() : transformer = _buildTransformer();
+  /// Constructs a [StreamTransformer] which converts the onData, onDone, and
+  /// onError [Notification] objects from a materialized stream into normal
+  /// onData, onDone, and onError events.
+  DematerializeStreamTransformer() : _transformer = _buildTransformer();
 
   @override
-  Stream<T> bind(Stream<Notification<T>> stream) => transformer.bind(stream);
+  Stream<T> bind(Stream<Notification<T>> stream) => _transformer.bind(stream);
 
   static StreamTransformer<Notification<T>, T> _buildTransformer<T>() {
     return StreamTransformer<Notification<T>, T>(

@@ -9,18 +9,20 @@ import 'dart:async';
 ///
 ///     new RangeStream(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
 class RangeStream extends Stream<int> {
-  final Stream<int> stream;
+  final Stream<int> _stream;
 
+  /// Constructs a [Stream] which emits all integer values that exist
+  /// within the range between [startInclusive] and [endInclusive].
   RangeStream(int startInclusive, int endInclusive)
-      : stream = buildStream(startInclusive, endInclusive);
+      : _stream = _buildStream(startInclusive, endInclusive);
 
   @override
   StreamSubscription<int> listen(void onData(int event),
           {Function onError, void onDone(), bool cancelOnError}) =>
-      stream.listen(onData,
+      _stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  static Stream<int> buildStream(int startInclusive, int endInclusive) {
+  static Stream<int> _buildStream(int startInclusive, int endInclusive) {
     final length = (endInclusive - startInclusive).abs() + 1;
     final nextValue = (int index) => startInclusive > endInclusive
         ? startInclusive - index
