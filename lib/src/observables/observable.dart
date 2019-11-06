@@ -4,7 +4,6 @@ import 'package:rxdart/futures.dart';
 import 'package:rxdart/src/observables/connectable_observable.dart';
 import 'package:rxdart/src/observables/replay_observable.dart';
 import 'package:rxdart/src/observables/value_observable.dart';
-import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/transformers.dart';
 
@@ -2296,14 +2295,6 @@ class Observable<T> extends Stream<T> {
   ///     new Observable.just(2).startWith(1).listen(print); // prints 1, 2
   Observable<T> startWith(T startValue) =>
       transform(StartWithStreamTransformer<T>(startValue));
-
-  /// Prepends an error to the source Observable.
-  ///
-  /// ### Example
-  ///
-  ///     new Observable.just(2).startWithError('error').listen(null, onError: (e) => print(e)); // prints 'error'
-  Observable<T> startWithError(Object error) =>
-      transform(StartWithErrorStreamTransformer<T>(error));
 
   /// Prepends a sequence of values to the source Observable.
   ///
