@@ -22,8 +22,7 @@ class ConcatStream<T> extends Stream<T> {
   /// Constructs a [Stream] which emits all events from [streams].
   /// The [Iterable] is traversed upwards, meaning that the current first
   /// [Stream] in the [Iterable] needs to complete, before events from the
-  /// next [Stream] will be emitted.
-  /// Events from next Streams are buffered where needed.
+  /// next [Stream] will be subscribed to.
   ConcatStream(Iterable<Stream<T>> streams)
       : _controller = _buildController(streams);
 

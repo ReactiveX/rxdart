@@ -15,18 +15,19 @@ import 'package:rxdart/src/observables/observable.dart' show Observable;
 
 class GroupByStreamTransformer<T, S>
     extends StreamTransformerBase<T, GroupByObservable<T, S>> {
-  final S Function(T) _grouper;
+  final StreamTransformer<T, GroupByObservable<T, S>> _transformer;
 
   /// Constructs a [StreamTransformer] which groups events from the source
   /// [Stream] and emits them as [GroupByObservable].
-  GroupByStreamTransformer(this._grouper);
+  GroupByStreamTransformer(S grouper(T event))
+      : _transformer = _buildTransformer<T, S>(grouper);
 
   @override
   Stream<GroupByObservable<T, S>> bind(Stream<T> stream) =>
-      _buildTransformer<T, S>(_grouper).bind(stream);
+      _transformer.bind(stream);
 
   static StreamTransformer<T, GroupByObservable<T, S>> _buildTransformer<T, S>(
-      S Function(T) grouper) {
+      S grouper(T event)) {
     return StreamTransformer<T, GroupByObservable<T, S>>(
         (Stream<T> input, bool cancelOnError) {
       final mapper = <S, StreamController<T>>{};

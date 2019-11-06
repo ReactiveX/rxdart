@@ -22,8 +22,12 @@ import 'package:rxdart/src/streams/utils.dart';
 ///        }, 1)
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
-  final Stream<T> Function() _streamFactory;
-  int _count;
+  /// The factory method used at subscription time
+  final Stream<T> Function() streamFactory;
+
+  /// The amount of retry attempts that will be made
+  /// If null, then an indefinite amount of attempts will be made.
+  int count;
   int _retryStep = 0;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
@@ -33,7 +37,7 @@ class RetryStream<T> extends Stream<T> {
   /// [Stream] (created by the provided factory method) the specified number
   /// of times until the [Stream] terminates successfully.
   /// If [count] is not specified, it retries indefinitely.
-  RetryStream(this._streamFactory, [this._count]);
+  RetryStream(this.streamFactory, [this.count]);
 
   @override
   StreamSubscription<T> listen(
@@ -45,18 +49,18 @@ class RetryStream<T> extends Stream<T> {
     void Function([int]) retry;
 
     final combinedErrors = () => RetryError.withCount(
-          _count,
+          count,
           _errors,
         );
 
     retry = ([_]) {
-      _subscription = _streamFactory().listen(_controller.add,
+      _subscription = streamFactory().listen(_controller.add,
           onError: (dynamic e, StackTrace s) {
         _subscription.cancel();
 
         _errors.add(ErrorAndStacktrace(e, s));
 
-        if (_count == _retryStep) {
+        if (count == _retryStep) {
           _controller
             ..addError(combinedErrors())
             ..close();

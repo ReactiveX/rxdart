@@ -6,7 +6,7 @@ import 'package:rxdart/src/streams/utils.dart';
 /// Stream when the notifier emits a new value. If the source Stream
 /// emits an error or it completes, the Stream terminates.
 ///
-/// If the [_retryWhenFactory] emits an error a [RetryError] will be
+/// If the [retryWhenFactory] emits an error a [RetryError] will be
 /// thrown. The RetryError will contain all of the [Error]s and
 /// [StackTrace]s that caused the failure.
 ///
@@ -60,8 +60,11 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
 /// ```
 class RetryWhenStream<T> extends Stream<T> {
-  final Stream<T> Function() _streamFactory;
-  final RetryWhenStreamFactory _retryWhenFactory;
+  /// The factory method used at subscription time
+  final Stream<T> Function() streamFactory;
+
+  /// The factory method used to create the [Stream] which triggers a re-listen
+  final RetryWhenStreamFactory retryWhenFactory;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
   List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
@@ -70,7 +73,7 @@ class RetryWhenStream<T> extends Stream<T> {
   /// [Stream] (created by the provided factory method).
   /// The retry will trigger whenever the [Stream] created by the retryWhen
   /// factory emits and event.
-  RetryWhenStream(this._streamFactory, this._retryWhenFactory);
+  RetryWhenStream(this.streamFactory, this.retryWhenFactory);
 
   @override
   StreamSubscription<T> listen(
@@ -97,13 +100,13 @@ class RetryWhenStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    _subscription = _streamFactory().listen(
+    _subscription = streamFactory().listen(
       _controller.add,
       onError: (Object e, [StackTrace s]) {
         _subscription.cancel();
 
         StreamSubscription<void> sub;
-        sub = _retryWhenFactory(e, s).listen(
+        sub = retryWhenFactory(e, s).listen(
           (event) {
             sub.cancel();
             _errors.add(ErrorAndStacktrace(e, s));

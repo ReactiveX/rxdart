@@ -10,17 +10,17 @@ import 'dart:async';
 ///        .transform(new ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
 class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final _ScanStreamTransformerAccumulator<T, S> _accumulator;
-  final S _seed;
+  final StreamTransformer<T, S> _transformer;
 
   /// Constructs a [ScanStreamTransformer] which applies an accumulator Function
   /// over the source [Stream] and returns each intermediate result.
   /// The optional seed value is used as the initial accumulator value.
-  ScanStreamTransformer(this._accumulator, [this._seed]);
+  ScanStreamTransformer(S accumulator(S accumulated, T value, int index),
+      [S seed])
+      : _transformer = _buildTransformer<T, S>(accumulator, seed);
 
   @override
-  Stream<S> bind(Stream<T> stream) =>
-      _buildTransformer<T, S>(_accumulator, _seed).bind(stream);
+  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
       S accumulator(S accumulated, T value, int index),
@@ -56,6 +56,3 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     });
   }
 }
-
-typedef _ScanStreamTransformerAccumulator<T, S> = S Function(
-    S accumulated, T value, int index);

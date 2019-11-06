@@ -4,7 +4,7 @@ import 'dart:async';
 /// Stream the specified number of times until the [Stream] terminates
 /// successfully.
 ///
-/// If [_count] is not specified, it repeats indefinitely.
+/// If [count] is not specified, it repeats indefinitely.
 ///
 /// ### Example
 ///
@@ -12,8 +12,12 @@ import 'dart:async';
 ///       Observable.just('repeat index: $repeatCount'), 3)
 ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {
-  final Stream<T> Function(int) _streamFactory;
-  final int _count;
+  /// The factory method used at subscription time
+  final Stream<T> Function(int) streamFactory;
+
+  /// The amount of repeat attempts that will be made
+  /// If null or 0, then an indefinite amount of attempts will be made.
+  final int count;
   int _repeatStep = 0;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
@@ -24,7 +28,7 @@ class RepeatStream<T> extends Stream<T> {
   /// until this [Stream] terminates successfully.
   /// If the count parameter is not specified, then this [Stream] will repeat
   /// indefinitely.
-  RepeatStream(this._streamFactory, [this._count]);
+  RepeatStream(this.streamFactory, [this.count]);
 
   @override
   StreamSubscription<T> listen(
@@ -57,7 +61,7 @@ class RepeatStream<T> extends Stream<T> {
     }
 
     try {
-      _subscription = _streamFactory(_repeatStep++).listen(_controller.add,
+      _subscription = streamFactory(_repeatStep++).listen(_controller.add,
           onError: _controller.addError, onDone: onDone, cancelOnError: false);
     } catch (e, s) {
       _controller.addError(e, s);
@@ -65,7 +69,7 @@ class RepeatStream<T> extends Stream<T> {
   }
 
   void _maybeRepeatNext() {
-    if (_repeatStep == _count) {
+    if (_repeatStep == count) {
       _controller.close();
     } else {
       _repeatNext();
