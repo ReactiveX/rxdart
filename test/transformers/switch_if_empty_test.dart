@@ -60,7 +60,7 @@ void main() {
     final observableWithError = Observable(ErrorStream<int>(Exception()))
         .switchIfEmpty(Observable.just(1));
 
-    observableWithError.listen(null,
+    observableWithError.listen((data) => expect(true, false),
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
