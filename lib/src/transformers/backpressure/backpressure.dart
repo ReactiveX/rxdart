@@ -94,7 +94,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
           onListen: () {
             var skip = 0;
             // the Queue which is built while a Window frame is open
-            final queue = Queue<S>();
+            final queue = <S>[];
             // handles the start of a Window frame
             final resolveWindowStart = (S event) {
               if (onWindowStart != null) controller.add(onWindowStart(event));
@@ -153,7 +153,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
                   // event 3 is now added to the buffer
                   try {
                     final startWith = (startBufferEvery < queue.length)
-                        ? queue.toList().sublist(startBufferEvery)
+                        ? queue.sublist(startBufferEvery)
                         : <S>[];
 
                     skip = startBufferEvery > queue.length
@@ -242,7 +242,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             };
             final maybeCloseWindow = () {
               if (closeWindowWhen != null &&
-                  closeWindowWhen(List<S>.unmodifiable(queue))) {
+                  closeWindowWhen(UnmodifiableListView(queue))) {
                 resolveWindowEnd();
               }
             };
