@@ -68,7 +68,8 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
-
+/// Extends the Stream class with the ability to skip items that have previously
+/// been emitted.
 extension DistinctUniqueExtension<T> on Stream<T> {
   /// WARNING: More commonly known as distinct in other Rx implementations.
   /// Creates a Stream where data events are skipped if they have already

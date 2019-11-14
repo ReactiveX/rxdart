@@ -39,6 +39,8 @@ class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       });
 }
 
+/// Extends the Stream class with the ability to convert each item to the same
+/// value.
 extension MapToExtension<T> on Stream<T> {
   /// Emits the given constant value on the output Stream every time the source
   /// Stream emits a value.

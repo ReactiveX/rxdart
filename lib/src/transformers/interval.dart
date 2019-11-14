@@ -61,6 +61,8 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
       });
 }
 
+/// Extends the Stream class with the ability to emit each item after a given
+/// duration.
 extension IntervalExtension<T> on Stream<T> {
   /// Creates a Stream that emits each item in the Stream after a given
   /// duration.

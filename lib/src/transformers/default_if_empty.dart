@@ -54,6 +54,7 @@ class DefaultIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+///
 extension DefaultIfEmptyExtension<T> on Stream<T> {
   /// Emit items from the source Stream, or a single default item if the source
   /// Stream emits nothing.

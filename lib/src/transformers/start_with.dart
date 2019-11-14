@@ -47,6 +47,8 @@ class StartWithStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to emit the given value as the
+/// first item.
 extension StartWithExtension<T> on Stream<T> {
   /// Prepends a value to the source Stream.
   ///

@@ -122,8 +122,7 @@ void main() {
 
   test('rx.Observable.switchMap stream close after switch', () async {
     final controller = StreamController<int>();
-
-    Observable(controller.stream)
+    final list = controller.stream
         .switchMap((it) => Stream.fromIterable([it, it]))
         .toList();
 
@@ -132,5 +131,6 @@ void main() {
     controller.add(2);
 
     await controller.close();
+    expect(await list, [1, 1, 2, 2]);
   });
 }

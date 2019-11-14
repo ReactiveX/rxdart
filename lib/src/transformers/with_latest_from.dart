@@ -412,6 +412,8 @@ class WithLatestFromStreamTransformer<T, S, R>
   }
 }
 
+/// Extends the Stream class with the ability to merge the source Stream with
+/// the last emitted item from another Stream.
 extension WithLatestFromExtensions<T> on Stream<T> {
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the two streams using the provided function.

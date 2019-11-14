@@ -98,6 +98,7 @@ class WindowTestStreamTransformer<T>
   }
 }
 
+/// Extends the Stream class with the ability to window
 extension WindowExtensions<T> on Stream<T> {
   /// Creates a Stream where each item is a [Stream] containing the items from
   /// the source sequence.

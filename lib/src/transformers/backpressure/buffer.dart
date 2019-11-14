@@ -94,6 +94,8 @@ class BufferTestStreamTransformer<T>
   }
 }
 
+
+/// Extends the Stream class with the ability to buffer events in various ways
 extension BufferExtensions<T> on Stream<T> {
   /// Creates a Stream where each item is a [List] containing the items
   /// from the source sequence.

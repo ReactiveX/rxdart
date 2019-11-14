@@ -57,6 +57,7 @@ class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   }
 }
 
+/// Extends
 extension ScanExtension<T> on Stream<T> {
   /// Applies an accumulator function over a Stream sequence and returns each
   /// intermediate result. The optional seed value is used as the initial

@@ -370,6 +370,7 @@ class _Window<T> {
   }
 }
 
+/// Extends the Stream class with the ability to zip one Stream with another.
 extension ZipWithExtension<T> on Stream<T> {
   /// Returns a Stream that combines the current stream together with another
   /// stream using a given zipper function.

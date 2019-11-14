@@ -24,6 +24,7 @@ class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to sample events from the Stream
 extension SampleExtensions<T> on Stream<T> {
   /// Emits the most recently emitted item (if any)
   /// emitted by the source [Stream] since the previous emission from

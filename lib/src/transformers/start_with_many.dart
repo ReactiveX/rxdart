@@ -49,6 +49,8 @@ class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to emit the given values as the
+/// first items.
 extension StartWithManyExtension<T> on Stream<T> {
   /// Prepends a sequence of values to the source Stream.
   ///

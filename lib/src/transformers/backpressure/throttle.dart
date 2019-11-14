@@ -26,6 +26,7 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to throttle events in various ways
 extension ThrottleExtensions<T> on Stream<T> {
   /// Emits only the first item emitted by the source [Stream] while [window] is
   /// open.

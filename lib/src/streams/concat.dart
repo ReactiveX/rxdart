@@ -77,6 +77,8 @@ class ConcatStream<T> extends Stream<T> {
   }
 }
 
+/// Extends the Stream class with the ability to concatenate one stream with
+/// another.
 extension ConcatExtensions<T> on Stream<T> {
   /// Returns a Stream that emits all items from the current Stream,
   /// then emits all items from the given streams, one after the next.

@@ -83,6 +83,7 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to delay events being emitted
 extension DelayExtension<T> on Stream<T> {
   /// The Delay operator modifies its source Stream by pausing for a particular
   /// increment of time (that you specify) before emitting each of the source

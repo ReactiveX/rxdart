@@ -79,6 +79,7 @@ class Timestamped<T> {
   }
 }
 
+/// Extends the Stream class with the ability to
 extension TimeStampExtension<T> on Stream<T> {
   /// Wraps each item emitted by the source Stream in a [Timestamped] object
   /// that includes the emitted item and the time when the item was emitted.

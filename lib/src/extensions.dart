@@ -1,27 +1,7 @@
 import 'dart:async';
 
+/// An extei
 extension ObservableExtensions<T> on Stream<T> {
-  /// Maps each emitted item to a new [Stream] using the given mapper, then
-  /// subscribes to each new stream one after the next until all values are
-  /// emitted.
-  ///
-  /// ConcatMap is similar to flatMap, but ensures order by guaranteeing that
-  /// all items from the created stream will be emitted before moving to the
-  /// next created stream. This process continues until all created streams have
-  /// completed.
-  ///
-  /// This is a simple alias for Dart Stream's `asyncExpand`, but is included to
-  /// ensure a more consistent Rx API.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.range(4, 1)
-  ///       .concatMap((i) =>
-  ///         new Observable.timer(i, new Duration(minutes: i))
-  ///       .listen(print); // prints 4, 3, 2, 1
-  @Deprecated('Use the asyncExpand method included with the core Stream api')
-  Stream<S> concatMap<S>(Stream<S> mapper(T value)) => asyncExpand(mapper);
-
   /// Converts a Stream into a Future that completes with the largest item
   /// emitted by the Stream.
   ///

@@ -98,6 +98,9 @@ class TimeInterval<T> {
   }
 }
 
+/// Extends the Stream class with the ability to wrap each item emitted by the
+/// source Observable in a [Timestamped] object that includes the emitted item
+/// and the time when the item was emitted.
 extension TimeIntervalExtension<T> on Stream<T> {
   /// Records the time interval between consecutive values in a Stream sequence.
   ///

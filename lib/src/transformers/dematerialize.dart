@@ -76,7 +76,9 @@ class DematerializeStreamTransformer<T>
   }
 }
 
-extension DematerializeExtension<T> on Stream<T> {
+/// Converts the onData, onDone, and onError [Notification]s from a
+/// materialized stream into normal onData, onDone, and onError events.
+extension DematerializeExtension<T> on Stream<Notification<T>> {
   /// Converts the onData, onDone, and onError [Notification] objects from a
   /// materialized stream into normal onData, onDone, and onError events.
   ///
@@ -97,8 +99,7 @@ extension DematerializeExtension<T> on Stream<T> {
   ///         .fromIterable([Notification.onError(new Exception(), null)])
   ///         .dematerialize()
   ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
-  Stream<S> dematerialize<S>() {
-    return cast<Notification<S>>()
-        .transform(DematerializeStreamTransformer<S>());
+  Stream<T> dematerialize() {
+    return transform(DematerializeStreamTransformer<T>());
   }
 }

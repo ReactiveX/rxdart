@@ -43,6 +43,7 @@ class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to skip, or ignore, data events.
 extension IgnoreElementsExtension<T> on Stream<T> {
   /// Creates a Stream where all emitted items are ignored, only the error /
   /// completed notifications are passed

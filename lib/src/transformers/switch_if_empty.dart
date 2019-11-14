@@ -92,6 +92,8 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extend the Stream class with the ability to return an alternative Stream
+/// if the initial Stream completes with no items.
 extension SwitchIfEmptyExtension<T> on Stream<T> {
   /// When the original Stream emits no items, this operator subscribes to the
   /// given fallback stream and emits items from that Stream instead.

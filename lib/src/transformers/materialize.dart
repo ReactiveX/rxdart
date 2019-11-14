@@ -63,6 +63,9 @@ class MaterializeStreamTransformer<T>
   }
 }
 
+/// Extends the Stream class with the ability to convert the onData, on Done,
+/// and onError events into [Notification]s that are passed into the
+/// downstream onData listener.
 extension MaterializeExtension<T> on Stream<T> {
   /// Converts the onData, on Done, and onError events into [Notification]
   /// objects that are passed into the downstream onData listener.

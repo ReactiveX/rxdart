@@ -85,6 +85,8 @@ class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to recover from errors in various
+/// ways
 extension OnErrorExtensions<T> on Stream<T> {
   /// Intercepts error events and switches to the given recovery stream in
   /// that case

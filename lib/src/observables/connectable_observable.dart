@@ -274,6 +274,8 @@ class ConnectableObservableStreamSubscription<T> extends StreamSubscription<T> {
   void resume() => _source.resume();
 }
 
+/// Extends the Stream class with the ability to transform a single-subscription
+/// Stream into a ConnectableStream.
 extension ConnectableObservableExtensions<T> on Stream<T> {
   /// Convert the current Observable into a [ConnectableObservable]
   /// that can be listened to multiple times. It will not begin emitting items

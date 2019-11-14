@@ -57,6 +57,8 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       });
 }
 
+/// Extends the Stream class with the ability to filter down events to only
+/// those of a specific type.
 extension WhereTypeExtension<T> on Stream<T> {
   /// This transformer is a shorthand for [Stream.where] followed by
   /// [Stream.cast].

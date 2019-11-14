@@ -99,6 +99,8 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   }
 }
 
+/// Extends the Stream class with the ability to convert the source Stream into
+/// a new Stream each time the source emits an item.
 extension FlatMapExtension<T> on Stream<T> {
   /// Converts each emitted item into a Stream using the given mapper
   /// function. The newly created Stream will be be listened to and begin

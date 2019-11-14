@@ -219,6 +219,8 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to execute a callback function
+/// at different points in the Stream's lifecycle.
 extension DoExtensions<T> on Stream<T> {
   /// Invokes the given callback function when the stream subscription is
   /// cancelled. Often called doOnUnsubscribe or doOnDispose in other

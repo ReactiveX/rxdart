@@ -89,6 +89,9 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   }
 }
 
+/// Extends the Stream with the ability to convert one stream into a new Stream
+/// whenever the source emits an item. Every time a new Stream is created, the
+/// previous Stream is discarded.
 extension SwitchMapExtension<T> on Stream<T> {
   /// Converts each emitted item into a Stream using the given mapper function.
   /// The newly created Stream will be be listened to and begin emitting items,

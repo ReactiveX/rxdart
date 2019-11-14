@@ -37,6 +37,7 @@ class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability to debounce events in various ways
 extension DebounceExtensions<T> on Stream<T> {
   /// Transforms a [Stream] so that will only emit items from the source sequence
   /// if a [window] has completed, without the source sequence emitting

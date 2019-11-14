@@ -65,6 +65,8 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   }
 }
 
+/// Extends the Stream class with the ability receive events from the source
+/// Stream until another Stream produces a value.
 extension TakeUntilExtension<T> on Stream<T> {
   /// Returns the values from the source Stream sequence until the other Stream
   /// sequence produces a value.

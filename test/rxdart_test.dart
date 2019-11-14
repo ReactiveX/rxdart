@@ -56,7 +56,6 @@ import 'transformers/backpressure/window_count_test.dart' as window_count_test;
 import 'transformers/backpressure/window_test.dart' as window_test;
 import 'transformers/backpressure/window_test_test.dart' as window_test_test;
 import 'transformers/backpressure/window_time_test.dart' as window_time_test;
-import 'transformers/concat_map_test.dart' as concat_map_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/contains_test.dart' as contains_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
@@ -147,7 +146,6 @@ void main() {
   as_broadcast_stream.main();
   async_expand_test.main();
   async_map_test.main();
-  concat_map_test.main();
   concat_with_test.main();
   contains_test.main();
   default_if_empty_test.main();
