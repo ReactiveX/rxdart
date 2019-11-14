@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> _observable() =>
+Stream<int> _observable() =>
     Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1)
         .take(10);
 

@@ -10,7 +10,7 @@ void main() {
     const expectedValue = 1;
     final observable = Observable.just(1).materialize();
 
-    observable.dematerialize<int>().listen(expectAsync1((value) {
+    observable.dematerialize().listen(expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
       // Should call onDone

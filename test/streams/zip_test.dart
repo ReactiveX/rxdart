@@ -349,7 +349,6 @@ void main() {
             (index) => const [9, 10, 11, 12][index]);
 
     StreamSubscription<Iterable<num>> subscription;
-    // ignore: deprecated_member_use
     subscription =
         Observable.zip3(first, second, last, (num a, num b, num c) => [a, b, c])
             .listen(expectAsync1((value) {

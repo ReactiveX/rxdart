@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/transformers/exhaust_map.dart';
 import 'package:test/test.dart';
 
 void main() {

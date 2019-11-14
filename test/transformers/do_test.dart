@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/transformers/do.dart';
-import 'package:rxdart/src/utils/notification.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -23,3 +23,30 @@ class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
     assert(window != null, 'window stream factory cannot be null');
   }
 }
+
+/// Extends the Stream class with the ability to sample events from the Stream
+extension SampleExtensions<T> on Stream<T> {
+  /// Emits the most recently emitted item (if any)
+  /// emitted by the source [Stream] since the previous emission from
+  /// the [sampleStream].
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .sample(new TimerStream(1, Duration(seconds: 1)))
+  ///       .listen(print); // prints 3
+  Stream<T> sample(Stream<dynamic> sampleStream) =>
+      transform(SampleStreamTransformer<T>((_) => sampleStream));
+
+  /// Emits the most recently emitted item (if any) emitted by the source
+  /// [Stream] since the previous emission within the recurring time span,
+  /// defined by [duration]
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .sampleTime(Duration(seconds: 1))
+  ///       .listen(print); // prints 3
+  Stream<T> sampleTime(Duration duration) =>
+      sample(Stream<void>.periodic(duration));
+}

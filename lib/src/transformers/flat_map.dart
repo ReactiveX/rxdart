@@ -98,3 +98,41 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     });
   }
 }
+
+/// Extends the Stream class with the ability to convert the source Stream into
+/// a new Stream each time the source emits an item.
+extension FlatMapExtension<T> on Stream<T> {
+  /// Converts each emitted item into a Stream using the given mapper
+  /// function. The newly created Stream will be be listened to and begin
+  /// emitting items downstream.
+  ///
+  /// The items emitted by each of the Streams are emitted downstream in the
+  /// same order they arrive. In other words, the sequences are merged
+  /// together.
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(4, 1)
+  ///       .flatMap((i) =>
+  ///         TimerStream(i, Duration(minutes: i))
+  ///       .listen(print); // prints 1, 2, 3, 4
+  Stream<S> flatMap<S>(Stream<S> mapper(T value)) =>
+      transform(FlatMapStreamTransformer<T, S>(mapper));
+
+  /// Converts each item into a Stream. The Stream must return an
+  /// Iterable. Then, each item from the Iterable will be emitted one by one.
+  ///
+  /// Use case: you may have an API that returns a list of items, such as
+  /// a Stream<List<String>>. However, you might want to operate on the individual items
+  /// rather than the list itself. This is the job of `flatMapIterable`.
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(1, 4)
+  ///       .flatMapIterable((i) =>
+  ///         Stream.fromIterable([[]i])
+  ///       .listen(print); // prints 1, 2, 3, 4
+  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> mapper(T value)) =>
+      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper))
+          .expand((Iterable<S> iterable) => iterable);
+}

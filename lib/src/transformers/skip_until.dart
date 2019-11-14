@@ -72,3 +72,20 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+/// Extends the Stream class with the ability to skip events until another
+/// Stream emits an item.
+extension SkipUntilExtension<T> on Stream<T> {
+  /// Starts emitting items only after the given stream emits an item.
+  ///
+  /// ### Example
+  ///
+  ///     MergeStream([
+  ///         Stream.fromIterable([1]),
+  ///         TimerStream(2, Duration(minutes: 2))
+  ///       ])
+  ///       .skipUntil(TimerStream(true, Duration(minutes: 1)))
+  ///       .listen(print); // prints 2;
+  Stream<T> skipUntil<S>(Stream<S> otherStream) =>
+      transform(SkipUntilStreamTransformer<T, S>(otherStream));
+}

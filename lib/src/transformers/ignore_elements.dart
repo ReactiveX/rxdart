@@ -42,3 +42,18 @@ class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
+/// Extends the Stream class with the ability to skip, or ignore, data events.
+extension IgnoreElementsExtension<T> on Stream<T> {
+  /// Creates a Stream where all emitted items are ignored, only the error /
+  /// completed notifications are passed
+  ///
+  /// ### Example
+  ///
+  ///    MergeStream([
+  ///      Stream.fromIterable([1]),
+  ///      Stream.error(new Exception())
+  ///    ])
+  ///    .listen(print, onError: print); // prints Exception
+  Stream<T> ignoreElements() => transform(IgnoreElementsStreamTransformer<T>());
+}

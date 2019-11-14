@@ -60,3 +60,18 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
         return controller.stream.listen(null);
       });
 }
+
+/// Extends the Stream class with the ability to emit each item after a given
+/// duration.
+extension IntervalExtension<T> on Stream<T> {
+  /// Creates a Stream that emits each item in the Stream after a given
+  /// duration.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .interval(Duration(seconds: 1))
+  ///       .listen((i) => print("$i sec"); // prints 1 sec, 2 sec, 3 sec
+  Stream<T> interval(Duration duration) =>
+      transform(IntervalStreamTransformer<T>(duration));
+}

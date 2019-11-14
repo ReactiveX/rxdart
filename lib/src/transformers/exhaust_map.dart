@@ -82,3 +82,24 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     });
   }
 }
+
+/// Extends the Stream class with the ability to transform the Stream into
+/// a new Stream. The new Stream emits items and ignores events from the source
+/// Stream until the new Stream completes.
+extension ExhaustMapExtension<T> on Stream<T> {
+  /// Converts items from the source stream into a Stream using a given
+  /// mapper. It ignores all items from the source stream until the new stream
+  /// completes.
+  ///
+  /// Useful when you have a noisy source Stream and only want to respond once
+  /// the previous async operation is finished.
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(0, 2).interval(Duration(milliseconds: 50))
+  ///       .exhaustMap((i) =>
+  ///         TimerStream(i, Duration(milliseconds: 75)))
+  ///       .listen(print); // prints 0, 2
+  Stream<S> exhaustMap<S>(Stream<S> mapper(T value)) =>
+      transform(ExhaustMapStreamTransformer<T, S>(mapper));
+}

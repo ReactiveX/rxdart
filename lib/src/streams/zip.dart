@@ -369,3 +369,18 @@ class _Window<T> {
     return List.unmodifiable(_values);
   }
 }
+
+/// Extends the Stream class with the ability to zip one Stream with another.
+extension ZipWithExtension<T> on Stream<T> {
+  /// Returns a Stream that combines the current stream together with another
+  /// stream using a given zipper function.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///         .zipWith(Stream.fromIterable([2]), (one, two) => one + two)
+  ///         .listen(print); // prints 3
+  Stream<R> zipWith<S, R>(Stream<S> other, R zipper(T t, S s)) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => ZipStream.zip2(stream, other, zipper)));
+}
