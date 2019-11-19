@@ -312,16 +312,16 @@ void main() {
   /*test('rx.Observable.zip.error.shouldThrowB', () {
     expect(
         () => Observable.zip2(
-             new Observable.just(1), null, (int a, _) => null),
+             Observable.just(1), null, (int a, _) => null),
         throwsArgumentError);
   });
 
   test('rx.Observable.zip.error.shouldThrowC', () {
-    expect(() => new ZipStream<num>(null, () {}), throwsArgumentError);
+    expect(() => ZipStream<num>(null, () {}), throwsArgumentError);
   });
 
   test('rx.Observable.zip.error.shouldThrowD', () {
-    expect(() => new ZipStream<num>(<Stream<dynamic>>[], () {}),
+    expect(() => ZipStream<num>(<Stream<dynamic>>[], () {}),
         throwsArgumentError);
   });*/
 

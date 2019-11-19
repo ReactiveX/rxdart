@@ -8,7 +8,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new RepeatStream((int repeatCount) =>
+///     RepeatStream((int repeatCount) =>
 ///       Observable.just('repeat index: $repeatCount'), 3)
 ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {

@@ -13,6 +13,8 @@ export 'src/transformers/interval.dart';
 export 'src/transformers/map_to.dart';
 export 'src/transformers/materialize.dart';
 export 'src/transformers/on_error_resume.dart';
+export 'src/transformers/min.dart';
+export 'src/transformers/max.dart';
 export 'src/transformers/scan.dart';
 export 'src/transformers/skip_until.dart';
 export 'src/transformers/start_with.dart';

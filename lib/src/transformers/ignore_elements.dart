@@ -5,9 +5,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///       new Stream.fromIterable([1]),
-///       new ErrorStream(new Exception())
+///     MergeStream([
+///       Stream.fromIterable([1]),
+///       ErrorStream(Exception())
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
 class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
@@ -52,7 +52,7 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   ///
   ///    MergeStream([
   ///      Stream.fromIterable([1]),
-  ///      Stream.error(new Exception())
+  ///      Stream.error(Exception())
   ///    ])
   ///    .listen(print, onError: print); // prints Exception
   Stream<T> ignoreElements() => transform(IgnoreElementsStreamTransformer<T>());

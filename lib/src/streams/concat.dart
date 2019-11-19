@@ -10,10 +10,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new ConcatStream([
-///       new Stream.fromIterable([1]),
-///       new TimerStream(2, new Duration(days: 1)),
-///       new Stream.fromIterable([3])
+///     ConcatStream([
+///       Stream.fromIterable([1]),
+///       TimerStream(2, Duration(days: 1)),
+///       Stream.fromIterable([3])
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
 class ConcatStream<T> extends Stream<T> {

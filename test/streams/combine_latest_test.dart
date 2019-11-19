@@ -330,17 +330,17 @@ void main() {
 
   /*test('rx.Observable.combineLatest.error.shouldThrowC', () {
     expect(
-        () => Observable.combineLatest3(new Observable<num>.just(1),
-            new Observable<num>.just(1), new Observable<num>.just(1), null),
+        () => Observable.combineLatest3(Observable<num>.just(1),
+            Observable<num>.just(1), Observable<num>.just(1), null),
         throwsArgumentError);
   });
 
   test('rx.Observable.combineLatest.error.shouldThrowD', () {
-    expect(() => new CombineLatestStream<num>(null, null), throwsArgumentError);
+    expect(() => CombineLatestStream<num>(null, null), throwsArgumentError);
   });
 
   test('rx.Observable.combineLatest.error.shouldThrowE', () {
-    expect(() => new CombineLatestStream<num>(<Stream<num>>[], null),
+    expect(() => CombineLatestStream<num>(<Stream<num>>[], null),
         throwsArgumentError);
   });*/
 

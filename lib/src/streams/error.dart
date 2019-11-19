@@ -8,7 +8,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new ErrorStream(new ArgumentError());
+///     ErrorStream(ArgumentError());
 class ErrorStream<T> extends Stream<T> {
   /// Reference to the wrapped error
   final Object error;

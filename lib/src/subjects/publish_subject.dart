@@ -14,7 +14,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///
 /// ### Example
 ///
-///     final subject = new PublishSubject<int>();
+///     final subject = PublishSubject<int>();
 ///
 ///     // observer1 will receive all data and done events
 ///     subject.stream.listen(observer1);

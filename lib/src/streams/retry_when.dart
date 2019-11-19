@@ -12,20 +12,20 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Basic Example
 /// ```dart
-/// new RetryWhenStream<int>(
-///   () => new Stream<int>.fromIterable(<int>[1]),
+/// RetryWhenStream<int>(
+///   () => Stream<int>.fromIterable(<int>[1]),
 ///   (dynamic error, StackTrace s) => throw error,
 /// ).listen(print); // Prints 1
 /// ```
 ///
 /// ### Periodic Example
 /// ```dart
-/// new RetryWhenStream<int>(
-///   () => new Observable<int>
+/// RetryWhenStream<int>(
+///   () => Observable<int>
 ///       .periodic(const Duration(seconds: 1), (int i) => i)
 ///       .map((int i) => i == 2 ? throw 'exception' : i),
 ///   (dynamic e, StackTrace s) {
-///     return new Observable<String>
+///     return Observable<String>
 ///         .timer('random value', const Duration(milliseconds: 200));
 ///   },
 /// ).take(4).listen(print); // Prints 0, 1, 0, 1
@@ -34,8 +34,8 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ### Complex Example
 /// ```dart
 /// bool errorHappened = false;
-/// new RetryWhenStream(
-///   () => new Observable
+/// RetryWhenStream(
+///   () => Observable
 ///       .periodic(const Duration(seconds: 1), (i) => i)
 ///       .map((i) {
 ///         if (i == 3 && !errorHappened) {
@@ -49,9 +49,9 @@ import 'package:rxdart/src/streams/utils.dart';
 ///   (e, s) {
 ///     errorHappened = true;
 ///     if (e == 'We can take this. Please restart.') {
-///       return new Observable.just('Ok. Here you go!');
+///       return Observable.just('Ok. Here you go!');
 ///     } else {
-///       return new Observable.error(e);
+///       return Observable.error(e);
 ///     }
 ///   },
 /// ).listen(

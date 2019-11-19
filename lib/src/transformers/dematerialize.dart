@@ -11,15 +11,15 @@ import 'package:rxdart/src/utils/notification.dart';
 ///
 /// ### Example
 ///
-///     new Stream<Notification<int>>
-///         .fromIterable([new Notification.onData(1), new Notification.onDone()])
+///     Stream<Notification<int>>
+///         .fromIterable([Notification.onData(1), Notification.onDone()])
 ///         .transform(dematerializeTransformer())
 ///         .listen((i) => print(i)); // Prints 1
 ///
 /// ### Error example
 ///
-///     new Stream<Notification<int>>
-///         .fromIterable([new Notification.onError(new Exception(), null)])
+///     Stream<Notification<int>>
+///         .fromIterable([Notification.onError(Exception(), null)])
 ///         .transform(dematerializeTransformer())
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
 class DematerializeStreamTransformer<T>
@@ -96,7 +96,7 @@ extension DematerializeExtension<T> on Stream<Notification<T>> {
   /// ### Error example
   ///
   ///     Stream<Notification<int>>
-  ///         .fromIterable([Notification.onError(new Exception(), null)])
+  ///         .fromIterable([Notification.onError(Exception(), null)])
   ///         .dematerialize()
   ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
   Stream<T> dematerialize() {

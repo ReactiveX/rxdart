@@ -10,8 +10,8 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1, 2, 3])
-///       .transform(new ThrottleStreamTransformer((_) => TimerStream(true, const Duration(seconds: 1))))
+///     Stream.fromIterable([1, 2, 3])
+///       .transform(ThrottleStreamTransformer((_) => TimerStream(true, const Duration(seconds: 1))))
 ///       .listen(print); // prints 1
 class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// A [StreamTransformer] that emits only the first item emitted by the source

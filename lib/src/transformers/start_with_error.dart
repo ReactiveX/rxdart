@@ -4,8 +4,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([2])
-///       .transform(new StartWithErrorStreamTransformer('error'))
+///     Stream.fromIterable([2])
+///       .transform(StartWithErrorStreamTransformer('error'))
 ///       .listen(null, onError: (e) => print(e)); // prints 'error'
 class StartWithErrorStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;

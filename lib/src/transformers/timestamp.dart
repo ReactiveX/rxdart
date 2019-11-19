@@ -5,8 +5,8 @@ import 'dart:async';
 ///
 /// Example
 ///
-///     new Stream.fromIterable([1])
-///        .transform(new TimestampStreamTransformer())
+///     Stream.fromIterable([1])
+///        .transform(TimestampStreamTransformer())
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
     extends StreamTransformerBase<T, Timestamped<T>> {

@@ -5,9 +5,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1])
-///       .transform(new IntervalStreamTransformer(new Duration(seconds: 1)))
-///       .transform(new TimeIntervalStreamTransformer())
+///     Stream.fromIterable([1])
+///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
+///       .transform(TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T>
     extends StreamTransformerBase<T, TimeInterval<T>> {

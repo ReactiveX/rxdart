@@ -4,11 +4,11 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///       new Observable.just(1),
-///       new TimerStream(2, new Duration(minutes: 2))
+///     MergeStream([
+///       Observable.just(1),
+///       TimerStream(2, Duration(minutes: 2))
 ///     ])
-///     .transform(skipUntilTransformer(new TimerStream(1, new Duration(minutes: 1))))
+///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;

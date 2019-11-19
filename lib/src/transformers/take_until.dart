@@ -5,12 +5,12 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///         new Stream.fromIterable([1]),
-///         new TimerStream(2, new Duration(minutes: 1))
+///     MergeStream([
+///         Stream.fromIterable([1]),
+///         TimerStream(2, Duration(minutes: 1))
 ///       ])
-///       .transform(new TakeUntilStreamTransformer(
-///         new TimerStream(3, new Duration(seconds: 10))))
+///       .transform(TakeUntilStreamTransformer(
+///         TimerStream(3, Duration(seconds: 10))))
 ///       .listen(print); // prints 1
 class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;

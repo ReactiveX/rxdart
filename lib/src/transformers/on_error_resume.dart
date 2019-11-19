@@ -14,9 +14,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Observable<int>.error(new Exception())
+///     Observable<int>.error(Exception())
 ///       .onErrorResume((dynamic e) =>
-///           new Observable.just(e is StateError ? 1 : 0)
+///           Observable.just(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
@@ -100,7 +100,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///     ErrorStream(new Exception())
+  ///     ErrorStream(Exception())
   ///       .onErrorResumeNext(Stream.fromIterable([1, 2, 3]))
   ///       .listen(print); // prints 1, 2, 3
   Stream<T> onErrorResumeNext(Stream<T> recoveryStream) => transform(
@@ -123,7 +123,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///     ErrorStream(new Exception())
+  ///     ErrorStream(Exception())
   ///       .onErrorResume((dynamic e) =>
   ///           Stream.fromIterable([e is StateError ? 1 : 0])
   ///       .listen(print); // prints 0
@@ -142,7 +142,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///     ErrorStream(new Exception())
+  ///     ErrorStream(Exception())
   ///       .onErrorReturn(1)
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturn(T returnValue) =>
@@ -165,7 +165,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///     ErrorStream(new Exception())
+  ///     ErrorStream(Exception())
   ///       .onErrorReturnWith((e) => e is Exception ? 1 : 0)
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturnWith(T Function(dynamic error) returnFn) =>

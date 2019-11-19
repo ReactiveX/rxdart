@@ -7,9 +7,9 @@ import 'package:rxdart/streams.dart';
 ///
 /// ### Example
 ///
-///     new Observable(new Stream.fromIterable([1]))
-///       .interval(new Duration(seconds: 1))
-///       .flatMap((i) => new Observable.just(2))
+///     Observable(Stream.fromIterable([1]))
+///       .interval(Duration(seconds: 1))
+///       .flatMap((i) => Observable.just(2))
 ///       .take(1)
 ///       .listen(print); // prints 2
 ///
@@ -88,8 +88,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///    Observable.combineLatest([
-  ///      new Observable.just("a"),
-  ///      new Observable.fromIterable(["b", "c", "d"])
+  ///      Observable.just("a"),
+  ///      Observable.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join())
   ///    .listen(print); // prints "ab", "ac", "ad"
   static Observable<R> combineLatest<T, R>(
@@ -128,8 +128,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest2(
-  ///       new Observable.just(1),
-  ///       new Observable.fromIterable([0, 1, 2]),
+  ///       Observable.just(1),
+  ///       Observable.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 1, 2, 3
   static Observable<T> combineLatest2<A, B, T>(
@@ -148,9 +148,9 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest3(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.fromIterable(["c", "c"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.fromIterable(["c", "c"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc", "abc"
   static Observable<T> combineLatest3<A, B, C, T>(Stream<A> streamA,
@@ -170,10 +170,10 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest4(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.fromIterable(["d", "d"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.fromIterable(["d", "d"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd", "abcd"
   static Observable<T> combineLatest4<A, B, C, D, T>(
@@ -197,11 +197,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest5(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.fromIterable(["e", "e"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.fromIterable(["e", "e"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde", "abcde"
   static Observable<T> combineLatest5<A, B, C, D, E, T>(
@@ -226,12 +226,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest6(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.fromIterable(["f", "f"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.fromIterable(["f", "f"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef", "abcdef"
   static Observable<T> combineLatest6<A, B, C, D, E, F, T>(
@@ -257,13 +257,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest7(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.fromIterable(["g", "g"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.fromIterable(["g", "g"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg", "abcdefg"
   static Observable<T> combineLatest7<A, B, C, D, E, F, G, T>(
@@ -290,14 +290,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest8(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.fromIterable(["h", "h"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.fromIterable(["h", "h"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh", "abcdefgh"
   static Observable<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
@@ -336,15 +336,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest9(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.just("h"),
-  ///       new Observable.fromIterable(["i", "i"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.just("h"),
+  ///       Observable.fromIterable(["i", "i"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi", "abcdefghi"
   static Observable<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
@@ -383,10 +383,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.concat([
-  ///       new Observable.just(1),
-  ///       new Observable.timer(2, new Duration(days: 1)),
-  ///       new Observable.just(3)
+  ///     Observable.concat([
+  ///       Observable.just(1),
+  ///       Observable.timer(2, Duration(days: 1)),
+  ///       Observable.just(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
   factory Observable.concat(Iterable<Stream<T>> streams) =>
@@ -404,10 +404,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.concatEager([
-  ///       new Observable.just(1),
-  ///       new Observable.timer(2, new Duration(days: 1)),
-  ///       new Observable.just(3)
+  ///     Observable.concatEager([
+  ///       Observable.just(1),
+  ///       Observable.timer(2, Duration(days: 1)),
+  ///       Observable.just(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
   factory Observable.concatEager(Iterable<Stream<T>> streams) =>
@@ -425,7 +425,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.defer(() => new Observable.just(1))
+  ///     Observable.defer(() => Observable.just(1))
   ///       .listen(print); //prints 1
   factory Observable.defer(Stream<T> streamFactory(),
           {bool reusable = false}) =>
@@ -439,7 +439,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.error(new ArgumentError());
+  ///     Observable.error(ArgumentError());
   factory Observable.error(Object error) =>
       Observable<T>(ErrorStream<T>(error));
 
@@ -483,8 +483,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///    Observable.forkJoin([
-  ///      new Observable.just("a"),
-  ///      new Observable.fromIterable(["b", "c", "d"])
+  ///      Observable.just("a"),
+  ///      Observable.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join(', '))
   ///    .listen(print); // prints "a, d"
   static Observable<R> forkJoin<T, R>(
@@ -512,8 +512,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin2(
-  ///       new Observable.just(1),
-  ///       new Observable.fromIterable([0, 1, 2]),
+  ///       Observable.just(1),
+  ///       Observable.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 3
   static Observable<T> forkJoin2<A, B, T>(
@@ -527,9 +527,9 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin3(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.fromIterable(["c", "d"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.fromIterable(["c", "d"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abd"
   static Observable<T> forkJoin3<A, B, C, T>(Stream<A> streamA,
@@ -544,10 +544,10 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin4(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.fromIterable(["d", "e"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.fromIterable(["d", "e"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abce"
   static Observable<T> forkJoin4<A, B, C, D, T>(
@@ -566,11 +566,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin5(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.fromIterable(["e", "f"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.fromIterable(["e", "f"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcdf"
   static Observable<T> forkJoin5<A, B, C, D, E, T>(
@@ -590,12 +590,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin6(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.fromIterable(["f", "g"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.fromIterable(["f", "g"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdeg"
   static Observable<T> forkJoin6<A, B, C, D, E, F, T>(
@@ -616,13 +616,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin7(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.fromIterable(["g", "h"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.fromIterable(["g", "h"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefh"
   static Observable<T> forkJoin7<A, B, C, D, E, F, G, T>(
@@ -644,14 +644,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin8(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.fromIterable(["h", "i"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.fromIterable(["h", "i"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgi"
   static Observable<T> forkJoin8<A, B, C, D, E, F, G, H, T>(
@@ -685,15 +685,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin9(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.just("h"),
-  ///       new Observable.fromIterable(["i", "j"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.just("h"),
+  ///       Observable.fromIterable(["i", "j"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghj"
   static Observable<T> forkJoin9<A, B, C, D, E, F, G, H, I, T>(
@@ -729,7 +729,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.fromFuture(new Future.value("Hello"))
+  ///     Observable.fromFuture(Future.value("Hello"))
   ///       .listen(print); // prints "Hello"
   factory Observable.fromFuture(Future<T> future) =>
       Observable<T>((Stream<T>.fromFuture(future)));
@@ -746,7 +746,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.fromIterable([1, 2]).listen(print); // prints 1, 2
+  ///     Observable.fromIterable([1, 2]).listen(print); // prints 1, 2
   factory Observable.fromIterable(Iterable<T> data) =>
       Observable<T>((Stream<T>.fromIterable(data)));
 
@@ -756,7 +756,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///      new Observable.just(1).listen(print); // prints 1
+  ///      Observable.just(1).listen(print); // prints 1
   factory Observable.just(T data) =>
       Observable<T>((Stream<T>.fromIterable(<T>[data])));
 
@@ -766,7 +766,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.empty().listen(
+  ///     Observable.empty().listen(
   ///       (_) => print("data"), onDone: () => print("done")); // prints "done"
   factory Observable.empty() => Observable<T>((Stream<T>.empty()));
 
@@ -777,9 +777,9 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.merge([
-  ///       new Observable.timer(1, new Duration(days: 10)),
-  ///       new Observable.just(2)
+  ///     Observable.merge([
+  ///       Observable.timer(1, Duration(days: 10)),
+  ///       Observable.just(2)
   ///     ])
   ///     .listen(print); // prints 2, 1
   factory Observable.merge(Iterable<Stream<T>> streams) =>
@@ -795,7 +795,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.never().listen(print); // Neither prints nor terminates
+  ///     Observable.never().listen(print); // Neither prints nor terminates
   factory Observable.never() => Observable<T>(NeverStream<T>());
 
   /// Creates an Observable that repeatedly emits events at [period] intervals.
@@ -808,7 +808,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///      new Observable.periodic(new Duration(seconds: 1), (i) => i).take(3)
+  ///      Observable.periodic(Duration(seconds: 1), (i) => i).take(3)
   ///        .listen(print); // prints 0, 1, 2
   factory Observable.periodic(Duration period,
           [T computation(int computationCount)]) =>
@@ -821,10 +821,10 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.race([
-  ///       new Observable.timer(1, new Duration(days: 1)),
-  ///       new Observable.timer(2, new Duration(days: 2)),
-  ///       new Observable.timer(3, new Duration(seconds: 1))
+  ///     Observable.race([
+  ///       Observable.timer(1, Duration(days: 1)),
+  ///       Observable.timer(2, Duration(days: 2)),
+  ///       Observable.timer(3, Duration(seconds: 1))
   ///     ]).listen(print); // prints 3
   factory Observable.race(Iterable<Stream<T>> streams) =>
       Observable<T>(RaceStream<T>(streams));
@@ -848,7 +848,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new RepeatStream((int repeatCount) =>
+  ///     RepeatStream((int repeatCount) =>
   ///       Observable.just('repeat index: $repeatCount'), 3)
   ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
   factory Observable.repeat(Stream<T> streamFactory(int repeatIndex),
@@ -866,12 +866,12 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.retry(() { new Observable.just(1); })
+  ///     Observable.retry(() { Observable.just(1); })
   ///         .listen((i) => print(i)); // Prints 1
   ///
-  ///     new Observable
+  ///     Observable
   ///        .retry(() {
-  ///          new Observable.just(1).concatWith([new Observable.error(new Error())]);
+  ///          Observable.just(1).concatWith([Observable.error(Error())]);
   ///        }, 1)
   ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
   factory Observable.retry(Stream<T> streamFactory(), [int count]) {
@@ -888,20 +888,20 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Basic Example
   /// ```dart
-  /// new RetryWhenStream<int>(
-  ///   () => new Stream<int>.fromIterable(<int>[1]),
+  /// RetryWhenStream<int>(
+  ///   () => Stream<int>.fromIterable(<int>[1]),
   ///   (dynamic error, StackTrace s) => throw error,
   /// ).listen(print); // Prints 1
   /// ```
   ///
   /// ### Periodic Example
   /// ```dart
-  /// new RetryWhenStream<int>(
-  ///   () => new Observable<int>
+  /// RetryWhenStream<int>(
+  ///   () => Observable<int>
   ///       .periodic(const Duration(seconds: 1), (int i) => i)
   ///       .map((int i) => i == 2 ? throw 'exception' : i),
   ///   (dynamic e, StackTrace s) {
-  ///     return new Observable<String>
+  ///     return Observable<String>
   ///         .timer('random value', const Duration(milliseconds: 200));
   ///   },
   /// ).take(4).listen(print); // Prints 0, 1, 0, 1
@@ -910,8 +910,8 @@ class Observable<T> extends Stream<T> {
   /// ### Complex Example
   /// ```dart
   /// bool errorHappened = false;
-  /// new RetryWhenStream(
-  ///   () => new Observable
+  /// RetryWhenStream(
+  ///   () => Observable
   ///       .periodic(const Duration(seconds: 1), (i) => i)
   ///       .map((i) {
   ///         if (i == 3 && !errorHappened) {
@@ -925,9 +925,9 @@ class Observable<T> extends Stream<T> {
   ///   (e, s) {
   ///     errorHappened = true;
   ///     if (e == 'We can take this. Please restart.') {
-  ///       return new Observable.just('Ok. Here you go!');
+  ///       return Observable.just('Ok. Here you go!');
   ///     } else {
-  ///       return new Observable.error(e);
+  ///       return Observable.error(e);
   ///     }
   ///   },
   /// ).listen(
@@ -966,11 +966,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   /// ```dart
-  /// final switchLatestStream = new SwitchLatestStream<String>(
-  ///   new Stream.fromIterable(<Stream<String>>[
-  ///     new Observable.timer('A', new Duration(seconds: 2)),
-  ///     new Observable.timer('B', new Duration(seconds: 1)),
-  ///     new Observable.just('C'),
+  /// final switchLatestStream = SwitchLatestStream<String>(
+  ///   Stream.fromIterable(<Stream<String>>[
+  ///     Observable.timer('A', Duration(seconds: 2)),
+  ///     Observable.timer('B', Duration(seconds: 1)),
+  ///     Observable.just('C'),
   ///   ]),
   /// );
   ///
@@ -986,7 +986,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.timer("hi", new Duration(minutes: 1))
+  ///     Observable.timer("hi", Duration(minutes: 1))
   ///         .listen((i) => print(i)); // print "hi" after 1 minute
   factory Observable.timer(T value, Duration duration) =>
       Observable<T>((TimerStream<T>(value, duration)));
@@ -1009,8 +1009,8 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip2(
-  ///       new Observable.just("Hi "),
-  ///       new Observable.fromIterable(["Friend", "Dropped"]),
+  ///       Observable.just("Hi "),
+  ///       Observable.fromIterable(["Friend", "Dropped"]),
   ///       (a, b) => a + b)
   ///     .listen(print); // prints "Hi Friend"
   static Observable<T> zip2<A, B, T>(
@@ -1091,9 +1091,9 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip3(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.fromIterable(["c", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.fromIterable(["c", "dropped"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc"
   static Observable<T> zip3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
@@ -1118,10 +1118,10 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip4(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.fromIterable(["d", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.fromIterable(["d", "dropped"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd"
   static Observable<T> zip4<A, B, C, D, T>(Stream<A> streamA, Stream<B> streamB,
@@ -1146,11 +1146,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip5(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.fromIterable(["e", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.fromIterable(["e", "dropped"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde"
   static Observable<T> zip5<A, B, C, D, E, T>(
@@ -1181,12 +1181,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip6(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.fromIterable(["f", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.fromIterable(["f", "dropped"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef"
   static Observable<T> zip6<A, B, C, D, E, F, T>(
@@ -1225,13 +1225,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip7(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.fromIterable(["g", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.fromIterable(["g", "dropped"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg"
   static Observable<T> zip7<A, B, C, D, E, F, G, T>(
@@ -1272,14 +1272,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip8(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.fromIterable(["h", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.fromIterable(["h", "dropped"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh"
   static Observable<T> zip8<A, B, C, D, E, F, G, H, T>(
@@ -1322,15 +1322,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip9(
-  ///       new Observable.just("a"),
-  ///       new Observable.just("b"),
-  ///       new Observable.just("c"),
-  ///       new Observable.just("d"),
-  ///       new Observable.just("e"),
-  ///       new Observable.just("f"),
-  ///       new Observable.just("g"),
-  ///       new Observable.just("h"),
-  ///       new Observable.fromIterable(["i", "dropped"]),
+  ///       Observable.just("a"),
+  ///       Observable.just("b"),
+  ///       Observable.just("c"),
+  ///       Observable.just("d"),
+  ///       Observable.just("e"),
+  ///       Observable.just("f"),
+  ///       Observable.just("g"),
+  ///       Observable.just("h"),
+  ///       Observable.fromIterable(["i", "dropped"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi"
   static Observable<T> zip9<A, B, C, D, E, F, G, H, I, T>(
@@ -1398,7 +1398,7 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     new Observable.just(1).listen(print); // prints 1
+  ///     Observable.just(1).listen(print); // prints 1
   @override
   StreamSubscription<T> listen(void onData(T event),
       {Function onError, void onDone(), bool cancelOnError}) {

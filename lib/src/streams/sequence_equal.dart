@@ -13,7 +13,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///
 /// ### Example
 ///
-///     new SequenceEqualsStream([
+///     SequenceEqualsStream([
 ///       Stream.fromIterable([1, 2, 3, 4, 5]),
 ///       Stream.fromIterable([1, 2, 3, 4, 5])
 ///     ])

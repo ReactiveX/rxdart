@@ -9,8 +9,8 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1, 2, 3])
-///       .transform(new SampleStreamTransformer(new TimerStream(1, const Duration(seconds: 1)))
+///     Stream.fromIterable([1, 2, 3])
+///       .transform(SampleStreamTransformer(TimerStream(1, const Duration(seconds: 1)))
 ///       .listen(print); // prints 3
 class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// Constructs a [StreamTransformer] that, when the specified [window] emits
@@ -33,7 +33,7 @@ extension SampleExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     Stream.fromIterable([1, 2, 3])
-  ///       .sample(new TimerStream(1, Duration(seconds: 1)))
+  ///       .sample(TimerStream(1, Duration(seconds: 1)))
   ///       .listen(print); // prints 3
   Stream<T> sample(Stream<dynamic> sampleStream) =>
       transform(SampleStreamTransformer<T>((_) => sampleStream));

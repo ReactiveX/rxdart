@@ -13,12 +13,12 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Example
 ///
-///     new RetryStream(() { new Stream.fromIterable([1]); })
+///     RetryStream(() { Stream.fromIterable([1]); })
 ///         .listen((i) => print(i)); // Prints 1
 ///
-///     new RetryStream(() {
-///          new Stream.fromIterable([1])
-///             .concatWith([new ErrorStream(new Error())]);
+///     RetryStream(() {
+///          Stream.fromIterable([1])
+///             .concatWith([ErrorStream(Error())]);
 ///        }, 1)
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {

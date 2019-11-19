@@ -7,9 +7,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///       new TimerStream(1, new Duration(days: 10)),
-///       new Stream.fromIterable([2])
+///     MergeStream([
+///       TimerStream(1, Duration(days: 10)),
+///       Stream.fromIterable([2])
 ///     ])
 ///     .listen(print); // prints 2, 1
 class MergeStream<T> extends Stream<T> {

@@ -10,8 +10,8 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     new Observable.periodic(const Duration(milliseconds: 100), (i) => i)
-///       .buffer(new Stream.periodic(const Duration(milliseconds: 160), (i) => i))
+///     Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+///       .buffer(Stream.periodic(const Duration(milliseconds: 160), (i) => i))
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
 class BufferStreamTransformer<T>
     extends BackpressureStreamTransformer<T, List<T>> {
@@ -79,7 +79,7 @@ class BufferCountStreamTransformer<T>
 ///
 /// ### Example
 ///
-///     new Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
+///     Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .bufferTest((i) => i % 2 == 0)
 ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
 class BufferTestStreamTransformer<T>

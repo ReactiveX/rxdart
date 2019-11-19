@@ -1,11 +1,15 @@
 ## 0.23.0-dev.1
   * Feedback on this change appreciated as this is a dev release before 0.23.0 stable!
   * All transformation methods removed from Observable class
-  * Transformation methods are now Extensions of the Stream class
-  * Any Stream can make use of the transformation methods provided by RxDart
+    * Transformation methods are now Extensions of the Stream class
+    * Any Stream can make use of the transformation methods provided by RxDart
   * Observable class remains in place with factory methods to create different types of Streams
   * Removed deprecated `ofType` method, use `whereType` instead
   * Deprecated `concatMap`, use standard Stream `asyncExpand`.
+  * Removed `AsObservableFuture`, `MinFuture`, `MaxFuture`, and `WrappedFuture`
+    * This removes `asObservable` method in chains
+    * Use default `asStream` method from the base `Future` class instead.
+    * `min` and `max` now implemented directly on the Stream class
   
 ## 0.22.6
   * Bugfix: When listening multiple times to a`BehaviorSubject` that starts with an Error,

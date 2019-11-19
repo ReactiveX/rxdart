@@ -12,10 +12,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([4, 3, 2, 1])
-///       .transform(new SwitchMapStreamTransformer((i) =>
-///         new Stream.fromFuture(
-///           new Future.delayed(new Duration(minutes: i), () => i))
+///     Stream.fromIterable([4, 3, 2, 1])
+///       .transform(SwitchMapStreamTransformer((i) =>
+///         Stream.fromFuture(
+///           Future.delayed(Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
 class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;

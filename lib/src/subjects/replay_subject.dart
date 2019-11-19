@@ -23,7 +23,7 @@ import 'package:rxdart/src/transformers/start_with_many.dart';
 ///
 /// ### Example
 ///
-///     final subject = new ReplaySubject<int>();
+///     final subject = ReplaySubject<int>();
 ///
 ///     subject.add(1);
 ///     subject.add(2);
@@ -35,7 +35,7 @@ import 'package:rxdart/src/transformers/start_with_many.dart';
 ///
 /// ### Example with maxSize
 ///
-///     final subject = new ReplaySubject<int>(maxSize: 2);
+///     final subject = ReplaySubject<int>(maxSize: 2);
 ///
 ///     subject.add(1);
 ///     subject.add(2);

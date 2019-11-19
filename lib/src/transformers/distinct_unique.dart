@@ -9,7 +9,7 @@ import 'dart:collection';
 ///
 /// ###  Example
 ///
-///     new Stream.fromIterable([1, 2, 1, 2, 1, 2, 3, 2, 1])
+///     Stream.fromIterable([1, 2, 1, 2, 1, 2, 3, 2, 1])
 ///         .listen((event) => print(event));
 ///
 /// will emit:

@@ -11,7 +11,7 @@ import 'package:rxdart/src/utils/notification.dart';
 ///
 /// ### Example
 ///
-///     new Stream<int>.fromIterable([1])
+///     Stream<int>.fromIterable([1])
 ///         .transform(materializeTransformer())
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification
 class MaterializeStreamTransformer<T>
@@ -79,7 +79,7 @@ extension MaterializeExtension<T> on Stream<T> {
   ///         .materialize()
   ///         .listen((i) => print(i)); // Prints onData & onDone Notification
   ///
-  ///     Stream<int>.error(new Exception())
+  ///     Stream<int>.error(Exception())
   ///         .materialize()
   ///         .listen((i) => print(i)); // Prints onError Notification
   Stream<Notification<T>> materialize() =>

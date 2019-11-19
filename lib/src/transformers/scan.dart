@@ -6,8 +6,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1, 2, 3])
-///        .transform(new ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
+///     Stream.fromIterable([1, 2, 3])
+///        .transform(ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
 class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;

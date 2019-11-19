@@ -7,10 +7,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new RaceStream([
-///       new TimerStream(1, new Duration(days: 1)),
-///       new TimerStream(2, new Duration(days: 2)),
-///       new TimerStream(3, new Duration(seconds: 3))
+///     RaceStream([
+///       TimerStream(1, Duration(days: 1)),
+///       TimerStream(2, Duration(days: 2)),
+///       TimerStream(3, Duration(seconds: 3))
 ///     ]).listen(print); // prints 3
 class RaceStream<T> extends Stream<T> {
   final StreamController<T> _controller;

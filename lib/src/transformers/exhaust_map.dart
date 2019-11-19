@@ -9,10 +9,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///     // Emits 0, 1, 2
-///     new Stream.periodic(new Duration(milliseconds: 200), (i) => i).take(3)
-///       .transform(new ExhaustMapStreamTransformer(
+///     Stream.periodic(Duration(milliseconds: 200), (i) => i).take(3)
+///       .transform(ExhaustMapStreamTransformer(
 ///         // Emits the value it's given after 200ms
-///         (i) => new Observable.timer(i, new Duration(milliseconds: 200)),
+///         (i) => Observable.timer(i, Duration(milliseconds: 200)),
 ///       ))
 ///     .listen(print); // prints 0, 2
 class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {

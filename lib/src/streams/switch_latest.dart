@@ -10,11 +10,11 @@ import 'dart:async';
 /// ### Example
 ///
 /// ```dart
-/// final switchLatestStream = new SwitchLatestStream<String>(
-///   new Stream.fromIterable(<Stream<String>>[
-///     new Observable.timer('A', new Duration(seconds: 2)),
-///     new Observable.timer('B', new Duration(seconds: 1)),
-///     new Observable.just('C'),
+/// final switchLatestStream = SwitchLatestStream<String>(
+///   Stream.fromIterable(<Stream<String>>[
+///     Observable.timer('A', Duration(seconds: 2)),
+///     Observable.timer('B', Duration(seconds: 1)),
+///     Observable.just('C'),
 ///   ]),
 /// );
 ///

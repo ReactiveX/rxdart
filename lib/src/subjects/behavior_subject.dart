@@ -22,7 +22,7 @@ import 'package:rxdart/src/transformers/start_with_error.dart';
 ///
 /// ### Example
 ///
-///     final subject = new BehaviorSubject<int>();
+///     final subject = BehaviorSubject<int>();
 ///
 ///     subject.add(1);
 ///     subject.add(2);
@@ -34,7 +34,7 @@ import 'package:rxdart/src/transformers/start_with_error.dart';
 ///
 /// ### Example with seed value
 ///
-///     final subject = new BehaviorSubject<int>.seeded(1);
+///     final subject = BehaviorSubject<int>.seeded(1);
 ///
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1

@@ -12,7 +12,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new DeferStream(() => new Observable.just(1)).listen(print); //prints 1
+///     DeferStream(() => Observable.just(1)).listen(print); //prints 1
 class DeferStream<T> extends Stream<T> {
   final Stream<T> Function() _factory;
   final bool _isReusable;

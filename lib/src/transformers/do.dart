@@ -31,8 +31,8 @@ import 'package:rxdart/src/utils/notification.dart';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1])
-///         .transform(new DoStreamTransformer(
+///     Stream.fromIterable([1])
+///         .transform(DoStreamTransformer(
 ///           onData: print,
 ///           onError: (e, s) => print("Oh no!"),
 ///           onDone: () => print("Done")))
@@ -277,7 +277,7 @@ extension DoExtensions<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///     Stream.error(new Exception())
+  ///     Stream.error(Exception())
   ///       .doOnError((error, stacktrace) => print("oh no"))
   ///       .listen(null); // prints "Oh no"
   Stream<T> doOnError(Function onError) =>
