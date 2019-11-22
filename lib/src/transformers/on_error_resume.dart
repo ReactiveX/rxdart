@@ -171,4 +171,50 @@ extension OnErrorExtensions<T> on Stream<T> {
   Stream<T> onErrorReturnWith(T Function(dynamic error) returnFn) =>
       transform(OnErrorResumeStreamTransformer<T>(
           (dynamic e) => Stream<T>.fromIterable([returnFn(e)])));
+
+  /// Terminates the Stream if an error is emitted.
+  ///
+  /// By default, if any error is emitted, the Stream will be terminated. You
+  /// may provide an optional [shouldClose] predicate function to determine
+  /// whether or not the Stream should be terminated in response to a specific
+  /// error.
+  ///
+  /// ### Example
+  ///
+  ///     final stream = ConcatStream<int>([
+  ///        Stream.fromIterable([1]),
+  ///        Stream.error(Exception()),
+  ///        Stream.fromIterable([2]),
+  ///     ]);
+  ///
+  ///     stream.onErrorClose().listen(print); // prints 1
+  ///
+  /// ### Predicate Example
+  ///
+  ///     final stream = ConcatStream<int>([
+  ///        Stream.fromIterable([1]),
+  ///        Stream.error(Exception()),
+  ///        Stream.fromIterable([2]),
+  ///        Stream.error(StateError("Oh no")),
+  ///        Stream.fromIterable([3]),
+  ///     ]);
+  ///
+  ///     stream
+  ///       .onErrorClose((dynamic e) => e is StateError)
+  ///       .listen(print); // prints 1, 2
+  Stream<T> onErrorClose([
+    bool Function(dynamic error) shouldClose = _alwaysClose,
+  ]) {
+    return transform(StreamTransformer.fromHandlers(
+      handleError: (e, s, sink) {
+        if (shouldClose(e)) {
+          sink.close();
+        } else {
+          sink.addError(e, s);
+        }
+      },
+    ));
+  }
+
+  static bool _alwaysClose(dynamic error) => true;
 }
