@@ -8,7 +8,7 @@ void main() {
     test('emits all values from an emitted Stream', () {
       expect(
         Observable.switchLatest(
-          Observable.just(
+          Stream.value(
             Stream.fromIterable(const ['A', 'B', 'C']),
           ),
         ),
@@ -26,7 +26,7 @@ void main() {
     test('emits errors from the higher order Stream to the listener', () {
       expect(
         Observable.switchLatest(
-          Observable<Stream<void>>.error(Exception()),
+          Stream<Stream<void>>.error(Exception()),
         ),
         emitsError(isException),
       );
@@ -49,7 +49,7 @@ void main() {
     test('closes if the higher order stream is empty', () {
       expect(
         Observable.switchLatest(
-          Observable<Stream<void>>.empty(),
+          Stream<Stream<void>>.empty(),
         ),
         emitsThrough(emitsDone),
       );
@@ -75,14 +75,14 @@ void main() {
   });
 }
 
-Observable<Stream<String>> get testObservable => Observable.fromIterable([
+Stream<Stream<String>> get testObservable => Stream.fromIterable([
       Observable.timer('A', Duration(seconds: 2)),
       Observable.timer('B', Duration(seconds: 1)),
-      Observable.just('C'),
+      Stream.value('C'),
     ]);
 
-Observable<Stream<String>> get errorObservable => Observable.fromIterable([
+Stream<Stream<String>> get errorObservable => Stream.fromIterable([
       Observable.timer('A', Duration(seconds: 2)),
       Observable.timer('B', Duration(seconds: 1)),
-      Observable.error(Exception()),
+      Stream.error(Exception()),
     ]);

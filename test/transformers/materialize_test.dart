@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.materialize.happyPath', () async {
-    final observable = Observable.just(1);
+    final observable = Stream.value(1);
     final notifications = <Notification<int>>[];
 
     observable.materialize().listen(notifications.add, onDone: expectAsync0(() {
@@ -16,7 +16,7 @@ void main() {
 
   test('rx.Observable.materialize.reusable', () async {
     final transformer = MaterializeStreamTransformer<int>();
-    final observable = Observable.just(1).asBroadcastStream();
+    final observable = Stream.value(1).asBroadcastStream();
     final notificationsA = <Notification<int>>[],
         notificationsB = <Notification<int>>[];
 
@@ -46,7 +46,7 @@ void main() {
   });
 
   test('materializeTransformer.sadPath', () async {
-    final stream = ErrorStream<int>(Exception());
+    final stream = Stream<int>.error(Exception());
     final notifications = <Notification<int>>[];
 
     stream

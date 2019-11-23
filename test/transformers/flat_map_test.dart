@@ -24,9 +24,7 @@ void main() {
     const expectedOutput = [3, 2, 1];
     var count = 0;
 
-    Observable(_getStream())
-        .flatMap(_getOtherStream)
-        .listen(expectAsync1((result) {
+    _getStream().flatMap(_getOtherStream).listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
         }, count: expectedOutput.length));
   });
@@ -36,22 +34,17 @@ void main() {
     const expectedOutput = [3, 2, 1];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, expectedOutput[countB++]);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.flatMap.asBroadcastStream', () async {
-    final stream =
-        Observable(_getStream().asBroadcastStream()).flatMap(_getOtherStream);
+    final stream = _getStream().asBroadcastStream().flatMap(_getOtherStream);
 
     // listen twice on same stream
     stream.listen(null);
@@ -62,7 +55,7 @@ void main() {
 
   test('rx.Observable.flatMap.error.shouldThrowA', () async {
     final observableWithError =
-        Observable(ErrorStream<int>(Exception())).flatMap(_getOtherStream);
+        Stream<int>.error(Exception()).flatMap(_getOtherStream);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -71,8 +64,8 @@ void main() {
   });
 
   test('rx.Observable.flatMap.error.shouldThrowB', () async {
-    final observableWithError = Observable.just(1)
-        .flatMap((_) => ErrorStream<void>(Exception('Catch me if you can!')));
+    final observableWithError = Stream.value(1)
+        .flatMap((_) => Stream<void>.error(Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -82,7 +75,7 @@ void main() {
 
   test('rx.Observable.flatMap.error.shouldThrowC', () async {
     final observableWithError =
-        Observable.just(1).flatMap<void>((_) => throw Exception('oh noes!'));
+        Stream.value(1).flatMap<void>((_) => throw Exception('oh noes!'));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -92,7 +85,7 @@ void main() {
 
   test('rx.Observable.flatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.just(0).flatMap((_) => Observable.just(1));
+    final stream = Stream.value(0).flatMap((_) => Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
@@ -106,9 +99,9 @@ void main() {
 
   test('rx.Observable.flatMap.chains', () {
     expect(
-      Observable.just(1)
-          .flatMap((_) => Observable.just(2))
-          .flatMap((_) => Observable.just(3)),
+      Stream.value(1)
+          .flatMap((_) => Stream.value(2))
+          .flatMap((_) => Stream.value(3)),
       emitsInOrder(<dynamic>[3, emitsDone]),
     );
   });

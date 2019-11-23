@@ -21,7 +21,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .debounceTime(Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {

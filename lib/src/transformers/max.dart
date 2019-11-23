@@ -1,4 +1,3 @@
-
 /// Extends the Stream class with the ability to transform into a Future
 /// that completes with the largest item emitted by the Stream.
 extension MaxExtension<T> on Stream<T> {

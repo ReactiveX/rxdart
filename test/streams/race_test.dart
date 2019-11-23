@@ -53,16 +53,16 @@ void main() {
   });
 
   test('rx.Observable.race.shouldThrowA', () {
-    expect(() => Observable<Null>.race(null), throwsArgumentError);
+    expect(() => Observable.race<Null>(null), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowB', () {
-    expect(() => Observable<Null>.race(const []), throwsArgumentError);
+    expect(() => Observable.race<Null>(const []), throwsArgumentError);
   });
 
   test('rx.Observable.race.shouldThrowC', () async {
     final observable =
-        Observable.race([ErrorStream<Null>(Exception('oh noes!'))]);
+        Observable.race([Stream<Null>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
     observable.listen(null,

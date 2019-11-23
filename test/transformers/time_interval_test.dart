@@ -10,7 +10,7 @@ void main() {
     const expectedOutput = [0, 1, 2];
     var count = 0;
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((result) {
@@ -26,7 +26,7 @@ void main() {
     const expectedOutput = [0, 1, 2];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .transform(transformer)
         .listen(expectAsync1((result) {
@@ -36,7 +36,7 @@ void main() {
               result.interval.inMicroseconds >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .transform(transformer)
         .listen(expectAsync1((result) {
@@ -48,7 +48,8 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = _getStream()
+        .asBroadcastStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval();
 
@@ -60,7 +61,7 @@ void main() {
   });
 
   test('rx.Observable.timeInterval.error.shouldThrow', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+    final observableWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 1))
         .timeInterval();
 
@@ -75,7 +76,7 @@ void main() {
     const expectedOutput = [0, 1, 2];
     var count = 0;
 
-    subscription = Observable(_getStream())
+    subscription = _getStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((result) {

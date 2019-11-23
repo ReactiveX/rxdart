@@ -49,9 +49,9 @@ import 'package:rxdart/src/streams/utils.dart';
 ///   (e, s) {
 ///     errorHappened = true;
 ///     if (e == 'We can take this. Please restart.') {
-///       return Observable.just('Ok. Here you go!');
+///       return Stream.value('Ok. Here you go!');
 ///     } else {
-///       return Observable.error(e);
+///       return Stream.error(e);
 ///     }
 ///   },
 /// ).listen(

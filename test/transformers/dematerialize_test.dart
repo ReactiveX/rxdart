@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   test('rx.Observable.dematerialize.happyPath', () async {
     const expectedValue = 1;
-    final observable = Observable.just(1).materialize();
+    final observable = Stream.value(1).materialize();
 
     observable.dematerialize().listen(expectAsync1((value) {
       expect(value, expectedValue);
@@ -21,8 +21,8 @@ void main() {
   test('rx.Observable.dematerialize.reusable', () async {
     final transformer = DematerializeStreamTransformer<int>();
     const expectedValue = 1;
-    final observableA = Observable.just(1).materialize();
-    final observableB = Observable.just(1).materialize();
+    final observableA = Stream.value(1).materialize();
+    final observableB = Stream.value(1).materialize();
 
     observableA.transform(transformer).listen(expectAsync1((value) {
       expect(value, expectedValue);

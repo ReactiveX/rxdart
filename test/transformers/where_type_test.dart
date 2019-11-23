@@ -23,28 +23,25 @@ Stream<Object> _getStream() {
 
 void main() {
   test('rx.Observable.whereType', () async {
-    Observable(_getStream())
-        .whereType<Map<String, int>>()
-        .listen(expectAsync1((result) {
+    _getStream().whereType<Map<String, int>>().listen(expectAsync1((result) {
           expect(result, isMap);
         }, count: 1));
   });
 
   test('rx.Observable.whereType.polymorphism', () async {
-    Observable(_getStream()).whereType<num>().listen(expectAsync1((result) {
+    _getStream().whereType<num>().listen(expectAsync1((result) {
           expect(result is num, true);
         }, count: 2));
   });
 
   test('rx.Observable.whereType.null.values', () async {
     await expectLater(
-        Observable.fromIterable([null, 1, null, 'two', 3]).whereType<String>(),
+        Stream.fromIterable([null, 1, null, 'two', 3]).whereType<String>(),
         emitsInOrder(const <String>['two']));
   });
 
   test('rx.Observable.whereType.asBroadcastStream', () async {
-    final stream =
-        Observable(_getStream().asBroadcastStream()).whereType<int>();
+    final stream = _getStream().asBroadcastStream().whereType<int>();
 
     // listen twice on same stream
     stream.listen(null);
@@ -55,7 +52,7 @@ void main() {
 
   test('rx.Observable.whereType.error.shouldThrow', () async {
     final observableWithError =
-        Observable(ErrorStream<void>(Exception())).whereType<num>();
+        Stream<void>.error(Exception()).whereType<num>();
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -65,7 +62,7 @@ void main() {
 
   test('rx.Observable.whereType.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.just(1).whereType<int>();
+    final stream = Stream.value(1).whereType<int>();
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

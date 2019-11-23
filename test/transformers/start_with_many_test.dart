@@ -10,8 +10,7 @@ void main() {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 
-    Observable(_getStream())
-        .startWithMany(const [5, 6]).listen(expectAsync1((result) {
+    _getStream().startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);
     }, count: expectedOutput.length));
   });
@@ -21,22 +20,17 @@ void main() {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWithMany.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
-        .startWithMany(const [5, 6]);
+    final stream = _getStream().asBroadcastStream().startWithMany(const [5, 6]);
 
     // listen twice on same stream
     stream.listen(null);
@@ -47,7 +41,7 @@ void main() {
 
   test('rx.Observable.startWithMany.error.shouldThrowA', () async {
     final observableWithError =
-        Observable(ErrorStream<int>(Exception())).startWithMany(const [5, 6]);
+        Stream<int>.error(Exception()).startWithMany(const [5, 6]);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -56,7 +50,7 @@ void main() {
   });
 
   test('rx.Observable.startWithMany.error.shouldThrowA', () {
-    expect(() => Observable.just(1).startWithMany(null), throwsArgumentError);
+    expect(() => Stream.value(1).startWithMany(null), throwsArgumentError);
   });
 
   test('rx.Observable.startWithMany.pause.resume', () async {
@@ -64,8 +58,8 @@ void main() {
     var count = 0;
 
     StreamSubscription<int> subscription;
-    subscription = Observable(_getStream())
-        .startWithMany(const [5, 6]).listen(expectAsync1((result) {
+    subscription =
+        _getStream().startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);
 
       if (count == expectedOutput.length) {

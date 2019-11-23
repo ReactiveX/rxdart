@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:rxdart/streams.dart';
 
-/// A wrapper class that extends Stream. It combines all the Streams and
-/// StreamTransformers contained in this library into a fluent api.
+/// A utility class that provides static methods to create the various Streams
+/// provided by RxDart.
 ///
 /// ### Example
 ///
-///     Observable(Stream.fromIterable([1]))
-///       .interval(Duration(seconds: 1))
-///       .flatMap((i) => Observable.just(2))
-///       .take(1)
-///       .listen(print); // prints 2
+///      Observable.combineLatest([
+///        Stream.value("a"),
+///        Stream.fromIterable(["b", "c", "d"])
+///      ], (list) => list.join())
+///      .listen(print); // prints "ab", "ac", "ad"
 ///
 /// ### Learning RxDart
 ///
@@ -31,7 +31,7 @@ import 'package:rxdart/streams.dart';
 ///   - [Creating Streams in Dart](https://www.dartlang.org/articles/libraries/creating-streams)
 ///   - [Testing Streams: Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers)
 ///
-/// ### Dart Streams vs Observables
+/// ### Dart Streams vs Traditional Rx Observables
 ///
 /// In order to integrate fluently with the Dart ecosystem, the Observable class
 /// extends the Dart `Stream` class. This provides several advantages:
@@ -69,13 +69,7 @@ import 'package:rxdart/streams.dart';
 /// Finally, when using Dart Broadcast Streams (similar to Hot Observables),
 /// please know that `onListen` will only be called the first time the
 /// broadcast stream is listened to.
-class Observable<T> extends Stream<T> {
-  final Stream<T> _stream;
-
-  /// Constructs an [Observable], exposing rx methods which can be
-  /// invoked to transform the wrapped [Stream].
-  Observable(Stream<T> stream) : this._stream = stream;
-
+abstract class Observable {
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an item.
   /// This is helpful when you need to combine a dynamic number of Streams.
@@ -88,13 +82,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///    Observable.combineLatest([
-  ///      Observable.just("a"),
-  ///      Observable.fromIterable(["b", "c", "d"])
+  ///      Stream.value("a"),
+  ///      Stream.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join())
   ///    .listen(print); // prints "ab", "ac", "ad"
-  static Observable<R> combineLatest<T, R>(
+  static Stream<R> combineLatest<T, R>(
           Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
-      Observable<R>(CombineLatestStream<T, R>(streams, combiner));
+      CombineLatestStream<T, R>(streams, combiner);
 
   /// Merges the given Streams into one Observable that emits a List of the
   /// values emitted by the source Stream. This is helpful when you need to
@@ -108,13 +102,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatestList([
-  ///       Observable.just(1),
-  ///       Observable.fromIterable([0, 1, 2]),
+  ///       Stream.value(1),
+  ///       Stream.fromIterable([0, 1, 2]),
   ///     ])
   ///     .listen(print); // prints [1, 0], [1, 1], [1, 2]
-  static Observable<List<T>> combineLatestList<T>(
-          Iterable<Stream<T>> streams) =>
-      Observable<List<T>>(CombineLatestStream.list<T>(streams));
+  static Stream<List<T>> combineLatestList<T>(Iterable<Stream<T>> streams) =>
+      CombineLatestStream.list<T>(streams);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -128,13 +121,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest2(
-  ///       Observable.just(1),
-  ///       Observable.fromIterable([0, 1, 2]),
+  ///       Stream.value(1),
+  ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 1, 2, 3
-  static Observable<T> combineLatest2<A, B, T>(
+  static Stream<T> combineLatest2<A, B, T>(
           Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
-      Observable<T>(CombineLatestStream.combine2(streamA, streamB, combiner));
+      CombineLatestStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -148,15 +141,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest3(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.fromIterable(["c", "c"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.fromIterable(["c", "c"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc", "abc"
-  static Observable<T> combineLatest3<A, B, C, T>(Stream<A> streamA,
+  static Stream<T> combineLatest3<A, B, C, T>(Stream<A> streamA,
           Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
-      Observable<T>(
-          CombineLatestStream.combine3(streamA, streamB, streamC, combiner));
+      CombineLatestStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -170,20 +162,20 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest4(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.fromIterable(["d", "d"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.fromIterable(["d", "d"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd", "abcd"
-  static Observable<T> combineLatest4<A, B, C, D, T>(
+  static Stream<T> combineLatest4<A, B, C, D, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           T combiner(A a, B b, C c, D d)) =>
-      Observable<T>(CombineLatestStream.combine4(
-          streamA, streamB, streamC, streamD, combiner));
+      CombineLatestStream.combine4(
+          streamA, streamB, streamC, streamD, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -197,22 +189,22 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest5(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.fromIterable(["e", "e"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.fromIterable(["e", "e"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde", "abcde"
-  static Observable<T> combineLatest5<A, B, C, D, E, T>(
+  static Stream<T> combineLatest5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
           T combiner(A a, B b, C c, D d, E e)) =>
-      Observable<T>(CombineLatestStream.combine5(
-          streamA, streamB, streamC, streamD, streamE, combiner));
+      CombineLatestStream.combine5(
+          streamA, streamB, streamC, streamD, streamE, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -226,15 +218,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest6(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.fromIterable(["f", "f"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.fromIterable(["f", "f"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef", "abcdef"
-  static Observable<T> combineLatest6<A, B, C, D, E, F, T>(
+  static Stream<T> combineLatest6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -242,8 +234,8 @@ class Observable<T> extends Stream<T> {
           Stream<E> streamE,
           Stream<F> streamF,
           T combiner(A a, B b, C c, D d, E e, F f)) =>
-      Observable<T>(CombineLatestStream.combine6(
-          streamA, streamB, streamC, streamD, streamE, streamF, combiner));
+      CombineLatestStream.combine6(
+          streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -257,16 +249,16 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest7(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.fromIterable(["g", "g"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.fromIterable(["g", "g"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg", "abcdefg"
-  static Observable<T> combineLatest7<A, B, C, D, E, F, G, T>(
+  static Stream<T> combineLatest7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -275,8 +267,8 @@ class Observable<T> extends Stream<T> {
           Stream<F> streamF,
           Stream<G> streamG,
           T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
-      Observable<T>(CombineLatestStream.combine7(streamA, streamB, streamC,
-          streamD, streamE, streamF, streamG, combiner));
+      CombineLatestStream.combine7(streamA, streamB, streamC, streamD, streamE,
+          streamF, streamG, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
@@ -290,17 +282,17 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest8(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.fromIterable(["h", "h"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.fromIterable(["h", "h"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh", "abcdefgh"
-  static Observable<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
+  static Stream<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -310,18 +302,16 @@ class Observable<T> extends Stream<T> {
           Stream<G> streamG,
           Stream<H> streamH,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
-      Observable<T>(
-        CombineLatestStream.combine8(
-          streamA,
-          streamB,
-          streamC,
-          streamD,
-          streamE,
-          streamF,
-          streamG,
-          streamH,
-          combiner,
-        ),
+      CombineLatestStream.combine8(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        combiner,
       );
 
   /// Merges the given Streams into one Observable sequence by using the
@@ -336,18 +326,18 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.combineLatest9(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.just("h"),
-  ///       Observable.fromIterable(["i", "i"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.value("h"),
+  ///       Stream.fromIterable(["i", "i"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi", "abcdefghi"
-  static Observable<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
+  static Stream<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -358,19 +348,17 @@ class Observable<T> extends Stream<T> {
           Stream<H> streamH,
           Stream<I> streamI,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
-      Observable<T>(
-        CombineLatestStream.combine9(
-          streamA,
-          streamB,
-          streamC,
-          streamD,
-          streamE,
-          streamF,
-          streamG,
-          streamH,
-          streamI,
-          combiner,
-        ),
+      CombineLatestStream.combine9(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        streamI,
+        combiner,
       );
 
   /// Concatenates all of the specified stream sequences, as long as the
@@ -384,13 +372,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.concat([
-  ///       Observable.just(1),
+  ///       Stream.value(1),
   ///       Observable.timer(2, Duration(days: 1)),
-  ///       Observable.just(3)
+  ///       Stream.value(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
-  factory Observable.concat(Iterable<Stream<T>> streams) =>
-      Observable<T>(ConcatStream<T>(streams));
+  static Stream<T> concat<T>(Iterable<Stream<T>> streams) =>
+      ConcatStream<T>(streams);
 
   /// Concatenates all of the specified stream sequences, as long as the
   /// previous stream sequence terminated successfully.
@@ -405,13 +393,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.concatEager([
-  ///       Observable.just(1),
+  ///       Stream.value(1),
   ///       Observable.timer(2, Duration(days: 1)),
-  ///       Observable.just(3)
+  ///       Stream.value(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
-  factory Observable.concatEager(Iterable<Stream<T>> streams) =>
-      Observable<T>(ConcatEagerStream<T>(streams));
+  static Stream<T> concatEager<T>(Iterable<Stream<T>> streams) =>
+      ConcatEagerStream<T>(streams);
 
   /// The defer factory waits until an observer subscribes to it, and then it
   /// creates an Observable with the given factory function.
@@ -425,37 +413,11 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     Observable.defer(() => Observable.just(1))
+  ///     Observable.defer(() => Stream.value(1))
   ///       .listen(print); //prints 1
-  factory Observable.defer(Stream<T> streamFactory(),
+  static Stream<T> defer<T>(Stream<T> streamFactory(),
           {bool reusable = false}) =>
-      Observable<T>(DeferStream<T>(streamFactory, reusable: reusable));
-
-  /// Returns an observable sequence that emits an [error], then immediately
-  /// completes.
-  ///
-  /// The error operator is one with very specific and limited behavior. It is
-  /// mostly useful for testing purposes.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.error(ArgumentError());
-  factory Observable.error(Object error) =>
-      Observable<T>(ErrorStream<T>(error));
-
-  ///  Creates an Observable where all events of an existing stream are piped
-  ///  through a sink-transformation.
-  ///
-  ///  The given [mapSink] closure is invoked when the returned stream is
-  ///  listened to. All events from the [source] are added into the event sink
-  ///  that is returned from the invocation. The transformation puts all
-  ///  transformed events into the sink the [mapSink] closure received during
-  ///  its invocation. Conceptually the [mapSink] creates a transformation pipe
-  ///  with the input sink being the returned [EventSink] and the output sink
-  ///  being the sink it received.
-  factory Observable.eventTransformed(
-          Stream<T> source, EventSink<T> mapSink(EventSink<T> sink)) =>
-      Observable<T>((Stream<T>.eventTransformed(source, mapSink)));
+      DeferStream<T>(streamFactory, reusable: reusable);
 
   ///  Creates an [Observable] where all last events of existing stream(s) are piped
   ///  through a sink-transformation.
@@ -483,13 +445,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///    Observable.forkJoin([
-  ///      Observable.just("a"),
-  ///      Observable.fromIterable(["b", "c", "d"])
+  ///      Stream.value("a"),
+  ///      Stream.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join(', '))
   ///    .listen(print); // prints "a, d"
-  static Observable<R> forkJoin<T, R>(
+  static Stream<R> forkJoin<T, R>(
           Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
-      Observable<R>(ForkJoinStream<T, R>(streams, combiner));
+      ForkJoinStream<T, R>(streams, combiner);
 
   /// Merges the given Streams into one Observable that emits a List of the
   /// last values emitted by the source stream(s). This is helpful when you need to
@@ -498,12 +460,12 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoinList([
-  ///       Observable.just(1),
-  ///       Observable.fromIterable([0, 1, 2]),
+  ///       Stream.value(1),
+  ///       Stream.fromIterable([0, 1, 2]),
   ///     ])
   ///     .listen(print); // prints [1, 2]
-  static Observable<List<T>> forkJoinList<T>(Iterable<Stream<T>> streams) =>
-      Observable<List<T>>(ForkJoinStream.list<T>(streams));
+  static Stream<List<T>> forkJoinList<T>(Iterable<Stream<T>> streams) =>
+      ForkJoinStream.list<T>(streams);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -512,13 +474,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin2(
-  ///       Observable.just(1),
-  ///       Observable.fromIterable([0, 1, 2]),
+  ///       Stream.value(1),
+  ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 3
-  static Observable<T> forkJoin2<A, B, T>(
+  static Stream<T> forkJoin2<A, B, T>(
           Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
-      Observable<T>(ForkJoinStream.combine2(streamA, streamB, combiner));
+      ForkJoinStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -527,15 +489,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin3(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.fromIterable(["c", "d"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.fromIterable(["c", "d"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abd"
-  static Observable<T> forkJoin3<A, B, C, T>(Stream<A> streamA,
-          Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
-      Observable<T>(
-          ForkJoinStream.combine3(streamA, streamB, streamC, combiner));
+  static Stream<T> forkJoin3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
+          Stream<C> streamC, T combiner(A a, B b, C c)) =>
+      ForkJoinStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -544,20 +505,19 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin4(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.fromIterable(["d", "e"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.fromIterable(["d", "e"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abce"
-  static Observable<T> forkJoin4<A, B, C, D, T>(
+  static Stream<T> forkJoin4<A, B, C, D, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           T combiner(A a, B b, C c, D d)) =>
-      Observable<T>(ForkJoinStream.combine4(
-          streamA, streamB, streamC, streamD, combiner));
+      ForkJoinStream.combine4(streamA, streamB, streamC, streamD, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -566,22 +526,22 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin5(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.fromIterable(["e", "f"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.fromIterable(["e", "f"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcdf"
-  static Observable<T> forkJoin5<A, B, C, D, E, T>(
+  static Stream<T> forkJoin5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
           T combiner(A a, B b, C c, D d, E e)) =>
-      Observable<T>(ForkJoinStream.combine5(
-          streamA, streamB, streamC, streamD, streamE, combiner));
+      ForkJoinStream.combine5(
+          streamA, streamB, streamC, streamD, streamE, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -590,15 +550,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin6(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.fromIterable(["f", "g"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.fromIterable(["f", "g"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdeg"
-  static Observable<T> forkJoin6<A, B, C, D, E, F, T>(
+  static Stream<T> forkJoin6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -606,8 +566,8 @@ class Observable<T> extends Stream<T> {
           Stream<E> streamE,
           Stream<F> streamF,
           T combiner(A a, B b, C c, D d, E e, F f)) =>
-      Observable<T>(ForkJoinStream.combine6(
-          streamA, streamB, streamC, streamD, streamE, streamF, combiner));
+      ForkJoinStream.combine6(
+          streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -616,16 +576,16 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin7(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.fromIterable(["g", "h"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.fromIterable(["g", "h"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefh"
-  static Observable<T> forkJoin7<A, B, C, D, E, F, G, T>(
+  static Stream<T> forkJoin7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -634,8 +594,8 @@ class Observable<T> extends Stream<T> {
           Stream<F> streamF,
           Stream<G> streamG,
           T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
-      Observable<T>(ForkJoinStream.combine7(streamA, streamB, streamC, streamD,
-          streamE, streamF, streamG, combiner));
+      ForkJoinStream.combine7(streamA, streamB, streamC, streamD, streamE,
+          streamF, streamG, combiner);
 
   /// Merges the given Streams into one Observable sequence by using the
   /// [combiner] function when all of the observable sequences emits their
@@ -644,17 +604,17 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin8(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.fromIterable(["h", "i"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.fromIterable(["h", "i"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgi"
-  static Observable<T> forkJoin8<A, B, C, D, E, F, G, H, T>(
+  static Stream<T> forkJoin8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -664,18 +624,16 @@ class Observable<T> extends Stream<T> {
           Stream<G> streamG,
           Stream<H> streamH,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
-      Observable<T>(
-        ForkJoinStream.combine8(
-          streamA,
-          streamB,
-          streamC,
-          streamD,
-          streamE,
-          streamF,
-          streamG,
-          streamH,
-          combiner,
-        ),
+      ForkJoinStream.combine8(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        combiner,
       );
 
   /// Merges the given Streams into one Observable sequence by using the
@@ -685,18 +643,18 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.forkJoin9(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.just("h"),
-  ///       Observable.fromIterable(["i", "j"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.value("h"),
+  ///       Stream.fromIterable(["i", "j"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghj"
-  static Observable<T> forkJoin9<A, B, C, D, E, F, G, H, I, T>(
+  static Stream<T> forkJoin9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -707,68 +665,18 @@ class Observable<T> extends Stream<T> {
           Stream<H> streamH,
           Stream<I> streamI,
           T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
-      Observable<T>(
-        ForkJoinStream.combine9(
-          streamA,
-          streamB,
-          streamC,
-          streamD,
-          streamE,
-          streamF,
-          streamG,
-          streamH,
-          streamI,
-          combiner,
-        ),
+      ForkJoinStream.combine9(
+        streamA,
+        streamB,
+        streamC,
+        streamD,
+        streamE,
+        streamF,
+        streamG,
+        streamH,
+        streamI,
+        combiner,
       );
-
-  /// Creates an Observable from the future.
-  ///
-  /// When the future completes, the stream will fire one event, either
-  /// data or error, and then close with a done-event.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.fromFuture(Future.value("Hello"))
-  ///       .listen(print); // prints "Hello"
-  factory Observable.fromFuture(Future<T> future) =>
-      Observable<T>((Stream<T>.fromFuture(future)));
-
-  /// Creates an Observable that gets its data from [data].
-  ///
-  /// The iterable is iterated when the stream receives a listener, and stops
-  /// iterating if the listener cancels the subscription.
-  ///
-  /// If iterating [data] throws an error, the stream ends immediately with
-  /// that error. No done event will be sent (iteration is not complete), but no
-  /// further data events will be generated either, since iteration cannot
-  /// continue.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.fromIterable([1, 2]).listen(print); // prints 1, 2
-  factory Observable.fromIterable(Iterable<T> data) =>
-      Observable<T>((Stream<T>.fromIterable(data)));
-
-  /// Creates an Observable that contains a single value
-  ///
-  /// The value is emitted when the stream receives a listener.
-  ///
-  /// ### Example
-  ///
-  ///      Observable.just(1).listen(print); // prints 1
-  factory Observable.just(T data) =>
-      Observable<T>((Stream<T>.fromIterable(<T>[data])));
-
-  /// Creates an Observable that contains no values.
-  ///
-  /// No items are emitted from the stream, and done is called upon listening.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.empty().listen(
-  ///       (_) => print("data"), onDone: () => print("done")); // prints "done"
-  factory Observable.empty() => Observable<T>((Stream<T>.empty()));
 
   /// Flattens the items emitted by the given [streams] into a single Observable
   /// sequence.
@@ -779,11 +687,11 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.merge([
   ///       Observable.timer(1, Duration(days: 10)),
-  ///       Observable.just(2)
+  ///       Stream.value(2)
   ///     ])
   ///     .listen(print); // prints 2, 1
-  factory Observable.merge(Iterable<Stream<T>> streams) =>
-      Observable<T>(MergeStream<T>(streams));
+  static Stream<T> merge<T>(Iterable<Stream<T>> streams) =>
+      MergeStream<T>(streams);
 
   /// Returns a non-terminating observable sequence, which can be used to denote
   /// an infinite duration.
@@ -796,23 +704,7 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.never().listen(print); // Neither prints nor terminates
-  factory Observable.never() => Observable<T>(NeverStream<T>());
-
-  /// Creates an Observable that repeatedly emits events at [period] intervals.
-  ///
-  /// The event values are computed by invoking [computation]. The argument to
-  /// this callback is an integer that starts with 0 and is incremented for
-  /// every event.
-  ///
-  /// If [computation] is omitted the event values will all be `null`.
-  ///
-  /// ### Example
-  ///
-  ///      Observable.periodic(Duration(seconds: 1), (i) => i).take(3)
-  ///        .listen(print); // prints 0, 1, 2
-  factory Observable.periodic(Duration period,
-          [T computation(int computationCount)]) =>
-      Observable<T>((Stream<T>.periodic(period, computation)));
+  static Stream<T> never<T>() => NeverStream<T>();
 
   /// Given two or more source [streams], emit all of the items from only
   /// the first of these [streams] to emit an item or notification.
@@ -826,19 +718,19 @@ class Observable<T> extends Stream<T> {
   ///       Observable.timer(2, Duration(days: 2)),
   ///       Observable.timer(3, Duration(seconds: 1))
   ///     ]).listen(print); // prints 3
-  factory Observable.race(Iterable<Stream<T>> streams) =>
-      Observable<T>(RaceStream<T>(streams));
+  static Stream<T> race<T>(Iterable<Stream<T>> streams) =>
+      RaceStream<T>(streams);
 
   /// Returns an Observable that emits a sequence of Integers within a specified
   /// range.
   ///
   /// ### Example
   ///
-  ///     Observable.range(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
+  ///     Observable.range(1, 3).listen((i) => print(i); // Prints 1, 2, 3
   ///
-  ///     Observable.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
-  static Observable<int> range(int startInclusive, int endInclusive) =>
-      Observable<int>(RangeStream(startInclusive, endInclusive));
+  ///     Observable.range(3, 1).listen((i) => print(i); // Prints 3, 2, 1
+  static Stream<int> range(int startInclusive, int endInclusive) =>
+      RangeStream(startInclusive, endInclusive);
 
   /// Creates a [Stream] that will recreate and re-listen to the source
   /// Stream the specified number of times until the [Stream] terminates
@@ -849,11 +741,11 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     RepeatStream((int repeatCount) =>
-  ///       Observable.just('repeat index: $repeatCount'), 3)
-  ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
-  factory Observable.repeat(Stream<T> streamFactory(int repeatIndex),
+  ///       Stream.value('repeat index: $repeatCount'), 3)
+  ///         .listen((i) => print(i); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
+  static Stream<T> repeat<T>(Stream<T> streamFactory(int repeatIndex),
           [int count]) =>
-      Observable(RepeatStream<T>(streamFactory, count));
+      RepeatStream<T>(streamFactory, count);
 
   /// Creates an Observable that will recreate and re-listen to the source
   /// Stream the specified number of times until the Stream terminates
@@ -866,17 +758,16 @@ class Observable<T> extends Stream<T> {
   ///
   /// ### Example
   ///
-  ///     Observable.retry(() { Observable.just(1); })
-  ///         .listen((i) => print(i)); // Prints 1
+  ///     Observable.retry(() { Stream.value(1); })
+  ///         .listen((i) => print(i); // Prints 1
   ///
   ///     Observable
   ///        .retry(() {
-  ///          Observable.just(1).concatWith([Observable.error(Error())]);
+  ///          Stream.value(1).concatWith([Stream.error(Error())]);
   ///        }, 1)
-  ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
-  factory Observable.retry(Stream<T> streamFactory(), [int count]) {
-    return Observable<T>(RetryStream<T>(streamFactory, count));
-  }
+  ///        .listen(print, onError: (e, s) => print(e); // Prints 1, 1, RetryError
+  static Stream<T> retry<T>(Stream<T> streamFactory(), [int count]) =>
+      RetryStream<T>(streamFactory, count);
 
   /// Creates a Stream that will recreate and re-listen to the source
   /// Stream when the notifier emits a new value. If the source Stream
@@ -902,7 +793,7 @@ class Observable<T> extends Stream<T> {
   ///       .map((int i) => i == 2 ? throw 'exception' : i),
   ///   (dynamic e, StackTrace s) {
   ///     return Observable<String>
-  ///         .timer('random value', const Duration(milliseconds: 200));
+  ///         .timer('random value', const Duration(milliseconds: 200);
   ///   },
   /// ).take(4).listen(print); // Prints 0, 1, 0, 1
   /// ```
@@ -925,9 +816,9 @@ class Observable<T> extends Stream<T> {
   ///   (e, s) {
   ///     errorHappened = true;
   ///     if (e == 'We can take this. Please restart.') {
-  ///       return Observable.just('Ok. Here you go!');
+  ///       return Stream.value('Ok. Here you go!');
   ///     } else {
-  ///       return Observable.error(e);
+  ///       return Stream.error(e);
   ///     }
   ///   },
   /// ).listen(
@@ -935,9 +826,9 @@ class Observable<T> extends Stream<T> {
   ///   onError: (e, s) => print(e),
   /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
   /// ```
-  factory Observable.retryWhen(Stream<T> streamFactory(),
+  static Stream<T> retryWhen<T>(Stream<T> streamFactory(),
           Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) =>
-      Observable<T>(RetryWhenStream<T>(streamFactory, retryWhenFactory));
+      RetryWhenStream<T>(streamFactory, retryWhenFactory);
 
   /// Determine whether two Observables emit the same sequence of items.
   /// You can provide an optional [equals] handler to determine equality.
@@ -951,9 +842,9 @@ class Observable<T> extends Stream<T> {
   ///       Stream.fromIterable([1, 2, 3, 4, 5])
   ///     ])
   ///     .listen(print); // prints true
-  static Observable<bool> sequenceEqual<A, B>(Stream<A> stream, Stream<B> other,
+  static Stream<bool> sequenceEqual<A, B>(Stream<A> stream, Stream<B> other,
           {bool equals(A a, B b)}) =>
-      Observable(SequenceEqualStream<A, B>(stream, other, equals: equals));
+      SequenceEqualStream<A, B>(stream, other, equals: equals);
 
   /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
   /// single Observable that emits the items emitted by the
@@ -970,7 +861,7 @@ class Observable<T> extends Stream<T> {
   ///   Stream.fromIterable(<Stream<String>>[
   ///     Observable.timer('A', Duration(seconds: 2)),
   ///     Observable.timer('B', Duration(seconds: 1)),
-  ///     Observable.just('C'),
+  ///     Stream.value('C'),
   ///   ]),
   /// );
   ///
@@ -979,17 +870,17 @@ class Observable<T> extends Stream<T> {
   /// // Stream will be emitted to the listener.
   /// switchLatestStream.listen(print); // prints 'C'
   /// ```
-  factory Observable.switchLatest(Stream<Stream<T>> streams) =>
-      Observable<T>(SwitchLatestStream<T>(streams));
+  static Stream<T> switchLatest<T>(Stream<Stream<T>> streams) =>
+      SwitchLatestStream<T>(streams);
 
   /// Emits the given value after a specified amount of time.
   ///
   /// ### Example
   ///
   ///     Observable.timer("hi", Duration(minutes: 1))
-  ///         .listen((i) => print(i)); // print "hi" after 1 minute
-  factory Observable.timer(T value, Duration duration) =>
-      Observable<T>((TimerStream<T>(value, duration)));
+  ///         .listen((i) => print(i); // print "hi" after 1 minute
+  static Stream<T> timer<T>(T value, Duration duration) =>
+      (TimerStream<T>(value, duration));
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1009,13 +900,13 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip2(
-  ///       Observable.just("Hi "),
-  ///       Observable.fromIterable(["Friend", "Dropped"]),
+  ///       Stream.value("Hi "),
+  ///       Stream.fromIterable(["Friend", "Dropped"]),
   ///       (a, b) => a + b)
   ///     .listen(print); // prints "Hi Friend"
-  static Observable<T> zip2<A, B, T>(
+  static Stream<T> zip2<A, B, T>(
           Stream<A> streamA, Stream<B> streamB, T zipper(A a, B b)) =>
-      Observable<T>(ZipStream.zip2(streamA, streamB, zipper));
+      ZipStream.zip2(streamA, streamB, zipper);
 
   /// Merges the iterable streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1036,15 +927,15 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.zip(
   ///       [
-  ///         Observable.just("Hi "),
-  ///         Observable.fromIterable(["Friend", "Dropped"]),
+  ///         Stream.value("Hi "),
+  ///         Stream.fromIterable(["Friend", "Dropped"]),
   ///       ],
   ///       (values) => values.first + values.last
   ///     )
   ///     .listen(print); // prints "Hi Friend"
-  static Observable<R> zip<T, R>(
+  static Stream<R> zip<T, R>(
           Iterable<Stream<T>> streams, R zipper(List<T> values)) =>
-      Observable<R>(ZipStream(streams, zipper));
+      ZipStream(streams, zipper);
 
   /// Merges the iterable streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1065,13 +956,13 @@ class Observable<T> extends Stream<T> {
   ///
   ///     Observable.zipList(
   ///       [
-  ///         Observable.just("Hi "),
-  ///         Observable.fromIterable(["Friend", "Dropped"]),
+  ///         Stream.value("Hi "),
+  ///         Stream.fromIterable(["Friend", "Dropped"]),
   ///       ],
   ///     )
   ///     .listen(print); // prints ['Hi ', 'Friend']
-  static Observable<List<T>> zipList<T>(Iterable<Stream<T>> streams) =>
-      Observable<List<T>>(ZipStream.list(streams));
+  static Stream<List<T>> zipList<T>(Iterable<Stream<T>> streams) =>
+      ZipStream.list(streams);
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1091,14 +982,14 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip3(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.fromIterable(["c", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.fromIterable(["c", "dropped"]),
   ///       (a, b, c) => a + b + c)
   ///     .listen(print); //prints "abc"
-  static Observable<T> zip3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
+  static Stream<T> zip3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
           Stream<C> streamC, T zipper(A a, B b, C c)) =>
-      Observable<T>(ZipStream.zip3(streamA, streamB, streamC, zipper));
+      ZipStream.zip3(streamA, streamB, streamC, zipper);
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1118,15 +1009,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip4(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.fromIterable(["d", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.fromIterable(["d", "dropped"]),
   ///       (a, b, c, d) => a + b + c + d)
   ///     .listen(print); //prints "abcd"
-  static Observable<T> zip4<A, B, C, D, T>(Stream<A> streamA, Stream<B> streamB,
+  static Stream<T> zip4<A, B, C, D, T>(Stream<A> streamA, Stream<B> streamB,
           Stream<C> streamC, Stream<D> streamD, T zipper(A a, B b, C c, D d)) =>
-      Observable<T>(ZipStream.zip4(streamA, streamB, streamC, streamD, zipper));
+      ZipStream.zip4(streamA, streamB, streamC, streamD, zipper);
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1146,22 +1037,21 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip5(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.fromIterable(["e", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.fromIterable(["e", "dropped"]),
   ///       (a, b, c, d, e) => a + b + c + d + e)
   ///     .listen(print); //prints "abcde"
-  static Observable<T> zip5<A, B, C, D, E, T>(
+  static Stream<T> zip5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
           T zipper(A a, B b, C c, D d, E e)) =>
-      Observable<T>(
-          ZipStream.zip5(streamA, streamB, streamC, streamD, streamE, zipper));
+      ZipStream.zip5(streamA, streamB, streamC, streamD, streamE, zipper);
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1181,15 +1071,15 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip6(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.fromIterable(["f", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.fromIterable(["f", "dropped"]),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
   ///     .listen(print); //prints "abcdef"
-  static Observable<T> zip6<A, B, C, D, E, F, T>(
+  static Stream<T> zip6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -1197,7 +1087,7 @@ class Observable<T> extends Stream<T> {
           Stream<E> streamE,
           Stream<F> streamF,
           T zipper(A a, B b, C c, D d, E e, F f)) =>
-      Observable<T>(ZipStream.zip6(
+      ZipStream.zip6(
         streamA,
         streamB,
         streamC,
@@ -1205,7 +1095,7 @@ class Observable<T> extends Stream<T> {
         streamE,
         streamF,
         zipper,
-      ));
+      );
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1225,16 +1115,16 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip7(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.fromIterable(["g", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.fromIterable(["g", "dropped"]),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
   ///     .listen(print); //prints "abcdefg"
-  static Observable<T> zip7<A, B, C, D, E, F, G, T>(
+  static Stream<T> zip7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -1243,7 +1133,7 @@ class Observable<T> extends Stream<T> {
           Stream<F> streamF,
           Stream<G> streamG,
           T zipper(A a, B b, C c, D d, E e, F f, G g)) =>
-      Observable<T>(ZipStream.zip7(
+      ZipStream.zip7(
         streamA,
         streamB,
         streamC,
@@ -1252,7 +1142,7 @@ class Observable<T> extends Stream<T> {
         streamF,
         streamG,
         zipper,
-      ));
+      );
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1272,17 +1162,17 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip8(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.fromIterable(["h", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.fromIterable(["h", "dropped"]),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
   ///     .listen(print); //prints "abcdefgh"
-  static Observable<T> zip8<A, B, C, D, E, F, G, H, T>(
+  static Stream<T> zip8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -1292,7 +1182,7 @@ class Observable<T> extends Stream<T> {
           Stream<G> streamG,
           Stream<H> streamH,
           T zipper(A a, B b, C c, D d, E e, F f, G g, H h)) =>
-      Observable<T>(ZipStream.zip8(
+      ZipStream.zip8(
         streamA,
         streamB,
         streamC,
@@ -1302,7 +1192,7 @@ class Observable<T> extends Stream<T> {
         streamG,
         streamH,
         zipper,
-      ));
+      );
 
   /// Merges the specified streams into one observable sequence using the given
   /// zipper function whenever all of the observable sequences have produced
@@ -1322,18 +1212,18 @@ class Observable<T> extends Stream<T> {
   /// ### Example
   ///
   ///     Observable.zip9(
-  ///       Observable.just("a"),
-  ///       Observable.just("b"),
-  ///       Observable.just("c"),
-  ///       Observable.just("d"),
-  ///       Observable.just("e"),
-  ///       Observable.just("f"),
-  ///       Observable.just("g"),
-  ///       Observable.just("h"),
-  ///       Observable.fromIterable(["i", "dropped"]),
+  ///       Stream.value("a"),
+  ///       Stream.value("b"),
+  ///       Stream.value("c"),
+  ///       Stream.value("d"),
+  ///       Stream.value("e"),
+  ///       Stream.value("f"),
+  ///       Stream.value("g"),
+  ///       Stream.value("h"),
+  ///       Stream.fromIterable(["i", "dropped"]),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
   ///     .listen(print); //prints "abcdefghi"
-  static Observable<T> zip9<A, B, C, D, E, F, G, H, I, T>(
+  static Stream<T> zip9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
@@ -1344,7 +1234,7 @@ class Observable<T> extends Stream<T> {
           Stream<H> streamH,
           Stream<I> streamI,
           T zipper(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
-      Observable<T>(ZipStream.zip9(
+      ZipStream.zip9(
         streamA,
         streamB,
         streamC,
@@ -1355,54 +1245,5 @@ class Observable<T> extends Stream<T> {
         streamH,
         streamI,
         zipper,
-      ));
-
-  @override
-  bool get isBroadcast {
-    return (_stream != null) ? _stream.isBroadcast : false;
-  }
-
-  /// Adds a subscription to this stream. Returns a [StreamSubscription] which
-  /// handles events from the stream using the provided [onData], [onError] and
-  /// [onDone] handlers.
-  ///
-  /// The handlers can be changed on the subscription, but they start out
-  /// as the provided functions.
-  ///
-  /// On each data event from this stream, the subscriber's [onData] handler
-  /// is called. If [onData] is `null`, nothing happens.
-  ///
-  /// On errors from this stream, the [onError] handler is called with the
-  /// error object and possibly a stack trace.
-  ///
-  /// The [onError] callback must be of type `void onError(error)` or
-  /// `void onError(error, StackTrace stackTrace)`. If [onError] accepts
-  /// two arguments it is called with the error object and the stack trace
-  /// (which could be `null` if the stream itself received an error without
-  /// stack trace).
-  /// Otherwise it is called with just the error object.
-  /// If [onError] is omitted, any errors on the stream are considered unhandled,
-  /// and will be passed to the current [Zone]'s error handler.
-  /// By default unhandled async errors are treated
-  /// as if they were uncaught top-level errors.
-  ///
-  /// If this stream closes and sends a done event, the [onDone] handler is
-  /// called. If [onDone] is `null`, nothing happens.
-  ///
-  /// If [cancelOnError] is true, the subscription is automatically cancelled
-  /// when the first error event is delivered. The default is `false`.
-  ///
-  /// While a subscription is paused, or when it has been cancelled,
-  /// the subscription doesn't receive events and none of the
-  /// event handler functions are called.
-  ///
-  /// ### Example
-  ///
-  ///     Observable.just(1).listen(print); // prints 1
-  @override
-  StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
-    return _stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+      );
 }

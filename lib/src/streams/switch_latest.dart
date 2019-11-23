@@ -14,7 +14,7 @@ import 'dart:async';
 ///   Stream.fromIterable(<Stream<String>>[
 ///     Observable.timer('A', Duration(seconds: 2)),
 ///     Observable.timer('B', Duration(seconds: 1)),
-///     Observable.just('C'),
+///     Stream.value('C'),
 ///   ]),
 /// );
 ///

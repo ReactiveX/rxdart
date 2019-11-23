@@ -10,7 +10,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .delay(Duration(seconds: 1))
 ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
 class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {

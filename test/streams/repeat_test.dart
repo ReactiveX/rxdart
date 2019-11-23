@@ -94,7 +94,7 @@ Stream<String> Function(int) _getRepeatStream(String symbol) =>
 
 Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
     (int repeatIndex) {
-      return Observable.just('A0')
+      return Stream.value('A0')
           // Emit the error
-          .concatWith([ErrorStream<String>(Error())]);
+          .concatWith([Stream<String>.error(Error())]);
     };

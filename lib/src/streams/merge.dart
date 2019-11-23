@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Flattens the items emitted by the given streams into a single Observable
+/// Flattens the items emitted by the given streams into a single Stream
 /// sequence.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#merge)

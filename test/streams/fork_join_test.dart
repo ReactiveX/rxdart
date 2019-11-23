@@ -20,9 +20,9 @@ Stream<bool> get streamC {
 void main() {
   test('rx.Observable.forkJoinList', () async {
     final combined = Observable.forkJoinList<int>([
-      Observable.fromIterable([1, 2, 3]),
-      Observable.just(2),
-      Observable.just(3),
+      Stream.fromIterable([1, 2, 3]),
+      Stream.value(2),
+      Stream.value(3),
     ]);
 
     await expectLater(
@@ -36,7 +36,7 @@ void main() {
 
   test('rx.Observable.forkJoinList.singleStream', () async {
     final combined = Observable.forkJoinList<int>([
-      Observable.fromIterable([1, 2, 3])
+      Stream.fromIterable([1, 2, 3])
     ]);
 
     await expectLater(
@@ -51,9 +51,9 @@ void main() {
   test('rx.Observable.forkJoin', () async {
     final combined = Observable.forkJoin<int, int>(
       [
-        Observable.fromIterable([1, 2, 3]),
-        Observable.just(2),
-        Observable.just(3),
+        Stream.fromIterable([1, 2, 3]),
+        Stream.value(2),
+        Stream.value(3),
       ],
       (values) => values.fold(0, (acc, val) => acc + val),
     );
@@ -92,7 +92,7 @@ void main() {
   });
 
   test('rx.Observable.forkJoin2', () async {
-    var a = Observable.fromIterable(const [1, 2]), b = Observable.just(2);
+    var a = Stream.fromIterable(const [1, 2]), b = Stream.value(2);
 
     final observable =
         Observable.forkJoin2(a, b, (int first, int second) => [first, second]);
@@ -106,7 +106,7 @@ void main() {
   });
 
   test('rx.Observable.forkJoin2.throws', () async {
-    var a = Observable.just(1), b = Observable.just(2);
+    var a = Stream.value(1), b = Stream.value(2);
 
     final observable = Observable.forkJoin2(a, b, (int first, int second) {
       throw Exception();
@@ -118,9 +118,9 @@ void main() {
   });
 
   test('rx.Observable.forkJoin3', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<String>.just("2"),
-        c = Observable<double>.just(3.0);
+    var a = Stream<int>.value(1),
+        b = Stream<String>.value("2"),
+        c = Stream<double>.value(3.0);
 
     final observable = Observable.forkJoin3(a, b, c,
         (int first, String second, double third) => [first, second, third]);
@@ -134,10 +134,10 @@ void main() {
   });
 
   test('rx.Observable.forkJoin4', () async {
-    var a = Observable.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4);
+    var a = Stream.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4);
 
     final observable = Observable.forkJoin4(
         a,
@@ -156,11 +156,11 @@ void main() {
   });
 
   test('rx.Observable.forkJoin5', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5);
 
     final observable = Observable.forkJoin5(
         a,
@@ -180,12 +180,12 @@ void main() {
   });
 
   test('rx.Observable.forkJoin6', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6);
 
     Stream<List<int>> observable = Observable.combineLatest6(
         a,
@@ -206,13 +206,13 @@ void main() {
   });
 
   test('rx.Observable.forkJoin7', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7);
 
     final observable = Observable.forkJoin7(
         a,
@@ -235,14 +235,14 @@ void main() {
   });
 
   test('rx.Observable.forkJoin8', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7),
-        h = Observable<int>.just(8);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7),
+        h = Stream<int>.value(8);
 
     final observable = Observable.forkJoin8(
         a,
@@ -266,15 +266,15 @@ void main() {
   });
 
   test('rx.Observable.forkJoin9', () async {
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7),
-        h = Observable<int>.just(8),
-        i = Observable<int>.just(9);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7),
+        h = Stream<int>.value(8),
+        i = Stream<int>.value(9);
 
     final observable = Observable.forkJoin9(
         a,
@@ -325,10 +325,10 @@ void main() {
 
   test('rx.Observable.forkJoin.error.shouldThrowA', () async {
     final observableWithError = Observable.forkJoin4(
-        Observable.just(1),
-        Observable.just(1),
-        Observable.just(1),
-        ErrorStream<int>(Exception()),
+        Stream.value(1),
+        Stream.value(1),
+        Stream.value(1),
+        Stream<int>.error(Exception()),
         (int a_value, int b_value, int c_value, dynamic _) =>
             '$a_value $b_value $c_value $_');
 
@@ -339,9 +339,9 @@ void main() {
   });
 
   test('rx.Observable.forkJoin.error.shouldThrowB', () async {
-    final observableWithError = Observable.forkJoin3(
-        Observable.just(1), Observable.just(1), Observable.just(1),
-        (int a_value, int b_value, int c_value) {
+    final observableWithError =
+        Observable.forkJoin3(Stream.value(1), Stream.value(1), Stream.value(1),
+            (int a_value, int b_value, int c_value) {
       throw Exception('oh noes!');
     });
 

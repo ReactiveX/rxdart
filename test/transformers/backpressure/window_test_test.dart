@@ -20,7 +20,7 @@ void main() {
     final transformer = WindowTestStreamTransformer<int>((i) => i % 2 == 0);
 
     await expectLater(
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]))
+        Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -30,7 +30,7 @@ void main() {
         ]));
 
     await expectLater(
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]))
+        Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -41,10 +41,10 @@ void main() {
   });
 
   test('rx.Observable.windowTest.asBroadcastStream', () async {
-    final stream =
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
-            .windowTest((i) => i % 2 == 0)
-            .ignoreElements();
+    final stream = Stream.fromIterable(const [1, 2, 3, 4])
+        .asBroadcastStream()
+        .windowTest((i) => i % 2 == 0)
+        .ignoreElements();
 
     // listen twice on same stream
     await expectLater(stream, emitsDone);
@@ -53,12 +53,12 @@ void main() {
 
   test('rx.Observable.windowTest.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<int>(Exception())).windowTest((i) => i % 2 == 0),
+        Stream<int>.error(Exception()).windowTest((i) => i % 2 == 0),
         emitsError(isException));
   });
 
   test('rx.Observable.windowTest.skip.shouldThrowB', () {
-    expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowTest(null),
+    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTest(null),
         throwsArgumentError);
   });
 }

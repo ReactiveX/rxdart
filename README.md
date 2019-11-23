@@ -48,7 +48,7 @@ void main() {
 RxDart adds functionality to Dart Streams in two ways:
 
   * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams together.
-  * Extension Methods - transform a source Stream into a new Stream with different capabilities, such as throttling events. 
+  * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling events. 
 
 ### Stream Classes
 
@@ -58,15 +58,14 @@ You can construct the Streams provided by RxDart in two ways. The following exam
  
   - Instantiating the Stream class directly. 
     - Example: `final myStream = MergeStream([myFirstStream, mySecondStream]);`
-  - Using the `Observable` class' factory constructors, which are useful for discovering which types of Streams are provided by RxDart. 
+  - Using the `Observable` class' static factories, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories simply call the the corresponding Stream constructor. 
     - Example: `final myStream = Observable.merge([myFirstStream, mySecondStream]);`
 
-#### List of Classes / Helper Factories
+#### List of Classes / Static Factories
 
 - [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Observable.concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html)
 - [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Observable.concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concatEager.html)
 - [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html) / [Observable.defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html)
-- [Observable.just](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.just.html)
 - [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html) / [Observable.merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html)
 - [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html) / [Observable.never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html)
 - [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RaceStream-class.html) / [Observable.race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.race.html)
@@ -76,10 +75,10 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 - [SequenceEqualStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Observable.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Observable/sequenceEqual.html)
 - [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Observable.switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html)
 - [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html) / [Observable.timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html)
-- [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combineLatest2, combineLatest... combineLatest9) / [Observable.combineLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html) 
-- [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (forkJoin2, forkJoin... forkJoin9) / [Observable.forkJoin](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html) 
+- [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Observable.combineLatest2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html)...[Observable.combineLatest9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest9.html) 
+- [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Observable.forkJoin2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html)...[Observable.forkJoin9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin9.html)
 - [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html) / [Observable.range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html)
-- [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Observable.zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html)
+- [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Observable.zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html)...[Observable.zip9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip9.html)
 
 ### Extension Methods
 
@@ -93,57 +92,56 @@ final myStream = Stream.fromIterable([1, 2, 3]).debounceTime(Duration(seconds: 1
 
 #### List of Extension Methods
 
-- [buffer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/buffer.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html)
-- [bufferCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferCount.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/onCount.html)
-- [bufferTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTest.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/onTest.html)
-- [bufferTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTime.html) / [BufferStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/onTime.html)
-- [concatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatMap.html) (alias for `asyncExpand`)
+- [buffer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/buffer.html)
+- [bufferCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferCount.html)
+- [bufferTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTest.html)
+- [bufferTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/bufferTime.html)
 - [concatWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/concatWith.html)
-- [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DebounceStreamTransformer-class.html)
-- [debounceTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounceTime.html) / [DebounceStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DebounceStreamTransformer-class.html)
-- [delay](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/delay.html) / [DelayStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DelayStreamTransformer-class.html)
-- [dematerialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/dematerialize.html) / [DematerializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DematerializeStreamTransformer-class.html)
-- [distinctUnique](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/distinctUnique.html) / [DistinctUniqueStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DistinctUniqueStreamTransformer-class.html)
-- [doOnCancel](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnCancel.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnData](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnData.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnDone](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnDone.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnEach](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnEach.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnError](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnError.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnListen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnListen.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnPause](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnPause.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [doOnResume](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnResume.html) / [DoStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/DoStreamTransformer-class.html)
-- [exhaustMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/exhaustMap.html) / [ExhaustMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ExhaustMapStreamTransformer-class.html)
-- [flatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMap.html) / [FlatMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/FlatMapStreamTransformer-class.html)
+- [debounce](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounce.html)
+- [debounceTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/debounceTime.html)
+- [delay](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/delay.html)
+- [dematerialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/dematerialize.html)
+- [distinctUnique](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/distinctUnique.html)
+- [doOnCancel](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnCancel.html)
+- [doOnData](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnData.html)
+- [doOnDone](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnDone.html)
+- [doOnEach](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnEach.html)
+- [doOnError](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnError.html)
+- [doOnListen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnListen.html)
+- [doOnPause](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnPause.html)
+- [doOnResume](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/doOnResume.html)
+- [exhaustMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/exhaustMap.html)
+- [flatMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMap.html)
 - [flatMapIterable](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/flatMapIterable.html)
-- [groupBy](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/groupBy.html) / [GroupByStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/GroupByStreamTransformer-class.html)
-- [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html) / [IntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/IntervalStreamTransformer-class.html)
-- [mapTo](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mapTo.html) / [MapToStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/MapToStreamTransformer-class.html)
-- [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html) / [MaterializeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/MaterializeStreamTransformer-class.html)
+- [groupBy](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/groupBy.html)
+- [interval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/interval.html)
+- [mapTo](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mapTo.html)
+- [materialize](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/materialize.html)
 - [mergeWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/mergeWith.html)
-- [max](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/max.html) / [StreamMaxFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx/StreamMaxFuture-class.html)
-- [min](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/min.html) / [StreamMinFuture](https://www.dartdocs.org/documentation/rxdart/latest/rx/StreamMinFuture-class.html)
-- [onErrorResume](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorResume.html) / [OnErrorResumeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/OnErrorResumeStreamTransformer-class.html)
-- [onErrorResumeNext](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorResumeNext.html) / [OnErrorResumeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/OnErrorResumeStreamTransformer-class.html)
-- [onErrorReturn](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorReturn.html) / [OnErrorResumeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/OnErrorResumeStreamTransformer-class.html)
-- [onErrorReturnWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorReturnWith.html) / [OnErrorResumeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/OnErrorResumeStreamTransformer-class.html)
-- [sample](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sample.html) / [SampleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/SampleStreamTransformer-class.html)
-- [sampleTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sampleTime.html) / [SampleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/SampleStreamTransformer-class.html)
-- [scan](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/scan.html) / [ScanStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ScanStreamTransformer-class.html)
-- [skipUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/skipUntil.html) / [SkipUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/SkipUntilStreamTransformer-class.html)
-- [startWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWith.html) / [StartWithStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/StartWithStreamTransformer-class.html)
-- [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html) / [StartWithManyStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/StartWithManyStreamTransformer-class.html) 
-- [switchMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/switchMap.html) / [SwitchMapStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx_transformers/SwitchMapStreamTransformer-class.html)
-- [takeUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/takeUntil.html) / [TakeUntilStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/TakeUntilStreamTransformer-class.html)
-- [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html) / [TimeIntervalStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimeIntervalStreamTransformer-class.html)
-- [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html) / [TimestampStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimestampStreamTransformer-class.html)
-- [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html) / [ThrottleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ThrottleStreamTransformer-class.html)
-- [throttleTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttleTime.html) / [ThrottleStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/ThrottleStreamTransformer-class.html)
-- [whereType](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/whereType.html) / [WhereTypeStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/WhereTypeStreamTransformer-class.html)
-- [window](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/window.html) / [WindowStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/WindowStreamTransformer-class.html)
-- [windowCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowCount.html) / [WindowStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/onCount.html)
-- [windowTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTest.html) / [WindowStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/onTest.html)
-- [windowTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTime.html) / [WindowStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/BufferStreamTransformer-class.html) / [onTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/onTime.html)
-- [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html) / [WithLatestFromStreamTransformer](https://www.dartdocs.org/documentation/rxdart/latest/rx/WithLatestFromStreamTransformer-class.html)
+- [max](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/max.html)
+- [min](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/min.html)
+- [onErrorResume](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorResume.html)
+- [onErrorResumeNext](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorResumeNext.html)
+- [onErrorReturn](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorReturn.html)
+- [onErrorReturnWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/onErrorReturnWith.html)
+- [sample](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sample.html)
+- [sampleTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/sampleTime.html)
+- [scan](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/scan.html)
+- [skipUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/skipUntil.html)
+- [startWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWith.html)
+- [startWithMany](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/startWithMany.html) 
+- [switchMap](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/switchMap.html)
+- [takeUntil](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/takeUntil.html)
+- [timeInterval](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timeInterval.html)
+- [timestamp](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/timestamp.html)
+- [throttle](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttle.html)
+- [throttleTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/throttleTime.html)
+- [whereType](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/whereType.html)
+- [window](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/window.html)
+- [windowCount](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowCount.html)
+- [windowTest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTest.html)
+- [windowTime](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/windowTime.html)
+- [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html)
 - [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
 
 ## Rx Observables vs Dart Streams

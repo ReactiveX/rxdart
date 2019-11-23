@@ -11,7 +11,7 @@ void main() {
   test('rx.Observable.onErrorResumeNext', () async {
     var count = 0;
 
-    Observable(ErrorStream<int>(Exception()))
+    Stream<int>.error(Exception())
         .onErrorResumeNext(_getStream())
         .listen(expectAsync1((result) {
           expect(result, expected[count++]);
@@ -21,7 +21,7 @@ void main() {
   test('rx.Observable.onErrorResume', () async {
     var count = 0;
 
-    Observable(ErrorStream<int>(Exception()))
+    Stream<int>.error(Exception())
         .onErrorResume((dynamic e) => _getStream())
         .listen(expectAsync1((result) {
           expect(result, expected[count++]);
@@ -32,14 +32,14 @@ void main() {
     final exception = Exception();
 
     expect(
-      Observable(ErrorStream<Object>(exception))
-          .onErrorResume((Object e) => Observable.just(e)),
+      Stream<Object>.error(exception)
+          .onErrorResume((Object e) => Stream.value(e)),
       emits(exception),
     );
   });
 
   test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
-    final stream = Observable(ErrorStream<int>(Exception()))
+    final stream = Stream<int>.error(Exception())
         .onErrorResumeNext(_getStream())
         .asBroadcastStream();
     var countA = 0, countB = 0;
@@ -55,8 +55,8 @@ void main() {
   });
 
   test('rx.Observable.onErrorResumeNext.error.shouldThrow', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
-        .onErrorResumeNext(ErrorStream<void>(Exception()));
+    final observableWithError = Stream<void>.error(Exception())
+        .onErrorResumeNext(Stream<void>.error(Exception()));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -72,8 +72,8 @@ void main() {
     var count = 0;
 
     subscription = Observable.merge([
-      Observable.just(50),
-      ErrorStream<int>(Exception()),
+      Stream.value(50),
+      Stream<int>.error(Exception()),
     ]).transform(transformer).listen(expectAsync1((result) {
           expect(result, exp[count++]);
 
@@ -89,21 +89,19 @@ void main() {
   test('rx.Observable.onErrorResumeNext.close', () async {
     var count = 0;
 
-    Observable(ErrorStream<int>(Exception()))
-        .onErrorResumeNext(_getStream())
-        .listen(
-            expectAsync1((result) {
-              expect(result, expected[count++]);
-            }, count: expected.length),
-            onDone: expectAsync0(() {
-              // The code should reach this point
-              expect(true, true);
-            }, count: 1));
+    Stream<int>.error(Exception()).onErrorResumeNext(_getStream()).listen(
+        expectAsync1((result) {
+          expect(result, expected[count++]);
+        }, count: expected.length),
+        onDone: expectAsync0(() {
+          // The code should reach this point
+          expect(true, true);
+        }, count: 1));
   });
 
   test('rx.Observable.onErrorResumeNext.noErrors.close', () async {
     expect(
-      Observable<int>.empty().onErrorResumeNext(_getStream()),
+      Stream<int>.empty().onErrorResumeNext(_getStream()),
       emitsDone,
     );
   });
@@ -113,13 +111,13 @@ void main() {
         (Object _) => _getStream().asBroadcastStream());
     var countA = 0, countB = 0;
 
-    Observable(ErrorStream<int>(Exception()))
+    Stream<int>.error(Exception())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, expected[countA++]);
         }, count: expected.length));
 
-    Observable(ErrorStream<int>(Exception()))
+    Stream<int>.error(Exception())
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result, expected[countB++]);

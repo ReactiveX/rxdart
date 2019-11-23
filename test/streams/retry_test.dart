@@ -113,9 +113,9 @@ Stream<int> Function() _getRetryStream(int failCount) {
   return () {
     if (count < failCount) {
       count++;
-      return ErrorStream<int>(Error());
+      return Stream<int>.error(Error(), StackTrace.fromString('S'));
     } else {
-      return Observable.just(1);
+      return Stream.value(1);
     }
   };
 }
@@ -128,13 +128,13 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
       count++;
 
       // Emit first item
-      return Observable.just(1)
+      return Stream.value(1)
           // Emit the error
-          .concatWith([ErrorStream<int>(Error())])
+          .concatWith([Stream<int>.error(Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith([Observable.just(1)]);
+          .concatWith([Stream.value(1)]);
     } else {
-      return Observable.just(2);
+      return Stream.value(2);
     }
   };
 }

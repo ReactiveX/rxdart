@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => Observable<int>((int n) async* {
-      var k = 0;
+Stream<int> getStream(int n) async* {
+  var k = 0;
 
-      while (k < n) {
-        await Future<Null>.delayed(const Duration(milliseconds: 100));
+  while (k < n) {
+    await Future<Null>.delayed(const Duration(milliseconds: 100));
 
-        yield k++;
-      }
-    }(n));
+    yield k++;
+  }
+}
 
 void main() {
   test('rx.Observable.window', () async {
@@ -29,7 +29,7 @@ void main() {
 
   test('rx.Observable.window.sampleBeforeEvent.shouldEmit', () async {
     await expectLater(
-        Observable.fromFuture(
+        Stream.fromFuture(
                 Future<Null>.delayed(const Duration(milliseconds: 200))
                     .then((_) => 'end'))
             .startWith('start')
@@ -52,7 +52,7 @@ void main() {
     scheduleMicrotask(controller.close);
 
     await expectLater(
-        Observable(controller.stream)
+        controller.stream
             .window(Stream<Null>.periodic(const Duration(seconds: 3)))
             .asyncMap((stream) => stream.toList())
             .take(1),
@@ -104,13 +104,13 @@ void main() {
 
   test('rx.Observable.window.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<Null>(Exception()))
+        Stream<Null>.error(Exception())
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
 
   test('rx.Observable.window.error.shouldThrowB', () async {
-    await expectLater(Observable.fromIterable(const [1, 2, 3, 4]).window(null),
+    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
         emitsError(isArgumentError));
   });
 }

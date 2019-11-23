@@ -21,7 +21,7 @@ void main() {
   test('rx.Observable.ignoreElements', () async {
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).ignoreElements().listen((_) {
+    _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -33,14 +33,14 @@ void main() {
     final transformer = IgnoreElementsStreamTransformer<int>();
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).transform(transformer).listen((_) {
+    _getStream().transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
           expect(hasReceivedEvent, isFalse);
         }, count: 1));
 
-    Observable(_getStream()).transform(transformer).listen((_) {
+    _getStream().transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -49,8 +49,7 @@ void main() {
   });
 
   test('rx.Observable.ignoreElements.asBroadcastStream', () async {
-    final stream =
-        Observable(_getStream().asBroadcastStream()).ignoreElements();
+    final stream = _getStream().asBroadcastStream().ignoreElements();
 
     // listen twice on same stream
     stream.listen(null);
@@ -62,7 +61,7 @@ void main() {
   test('rx.Observable.ignoreElements.pause.resume', () async {
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).ignoreElements().listen((_) {
+    _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -74,7 +73,7 @@ void main() {
 
   test('rx.Observable.ignoreElements.error.shouldThrow', () async {
     final observableWithError =
-        Observable(ErrorStream<void>(Exception())).ignoreElements();
+        Stream<void>.error(Exception()).ignoreElements();
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

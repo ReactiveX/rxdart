@@ -80,16 +80,16 @@ void main() {
 
   test('rx.Observable.sequenceEqual.equals.errors', () async {
     final observable = Observable.sequenceEqual(
-        Observable<void>.error(ArgumentError('error A')),
-        Observable<void>.error(ArgumentError('error A')));
+        Stream<void>.error(ArgumentError('error A')),
+        Stream<void>.error(ArgumentError('error A')));
 
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
   test('rx.Observable.sequenceEqual.notEquals.errors', () async {
     final observable = Observable.sequenceEqual(
-        Observable<void>.error(ArgumentError('error A')),
-        Observable<void>.error(ArgumentError('error B')));
+        Stream<void>.error(ArgumentError('error A')),
+        Stream<void>.error(ArgumentError('error B')));
 
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });

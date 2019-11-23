@@ -8,7 +8,7 @@ Stream<int> _getStream() => Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 void main() {
   test('rx.Observable.delay', () async {
     var value = 1;
-    Observable(_getStream())
+    _getStream()
         .delay(const Duration(milliseconds: 200))
         .listen(expectAsync1((result) {
           expect(result, value++);
@@ -17,7 +17,7 @@ void main() {
 
   test('rx.Observable.delay.shouldBeDelayed', () async {
     var value = 1;
-    Observable(_getStream())
+    _getStream()
         .delay(const Duration(milliseconds: 500))
         .timeInterval()
         .listen(expectAsync1((result) {
@@ -38,21 +38,18 @@ void main() {
         DelayStreamTransformer<int>(const Duration(milliseconds: 200));
     var valueA = 1, valueB = 1;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, valueA++);
         }, count: 4));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, valueB++);
         }, count: 4));
   });
 
   test('rx.Observable.delay.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = _getStream()
+        .asBroadcastStream()
         .delay(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -63,7 +60,7 @@ void main() {
   });
 
   test('rx.Observable.delay.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+    final observableWithError = Stream<void>.error(Exception())
         .delay(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
@@ -76,7 +73,7 @@ void main() {
   test('rx.Observable.delay.error.shouldThrowB', () async {
     runZoned(() {
       final observableWithError =
-          Observable.just(1).delay(const Duration(milliseconds: 200));
+          Stream.value(1).delay(const Duration(milliseconds: 200));
 
       observableWithError.listen(null,
           onError: expectAsync2(
@@ -89,8 +86,8 @@ void main() {
 
   test('rx.Observable.delay.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.fromIterable(const [1, 2, 3])
-        .delay(Duration(milliseconds: 1));
+    final stream =
+        Stream.fromIterable(const [1, 2, 3]).delay(Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
@@ -106,7 +103,7 @@ void main() {
     'rx.Observable.delay.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      final stream = Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
+      final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).delay(Duration(seconds: 10));
 

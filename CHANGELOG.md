@@ -1,3 +1,17 @@
+## 0.23.0-dev.2
+  * Remove base Observable constructor. With extensions, you no longer need to wrap Streams in an Observable!
+  * Convert all factories to static constructors to aid in discoverability of Stream classes
+  * Remove `Observable.just`, use `Stream.value`
+  * Remove `Observable.error`, use `Stream.error`
+  * Remove all tests that check base Stream methods
+  * Subjects and *Observable classes extend Stream instead of base Observable
+  * Rename *Observable to *Stream to reflect the fact they're just Streams.
+    * `ValueObservable` -> `ValueStream`
+    * `ReplayObservable` -> `ReplayStream`
+    * `ConnectableObservable` -> `ConnectableStream`
+    * `ValueConnectableObservable` -> `ValueConnectableStream`
+    * `ReplayConnectableObservable` -> `ReplayConnectableStream`
+
 ## 0.23.0-dev.1
   * Feedback on this change appreciated as this is a dev release before 0.23.0 stable!
   * All transformation methods removed from Observable class

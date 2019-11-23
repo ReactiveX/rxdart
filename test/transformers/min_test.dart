@@ -5,12 +5,12 @@ import 'package:test/test.dart';
 
 void main() {
   test('rx.Observable.min', () async {
-    await expectLater(Observable<int>(_getStream()).min(), completion(0));
+    await expectLater(_getStream().min(), completion(0));
   });
 
   test('rx.Observable.min.with.comparator', () async {
     await expectLater(
-        Observable<String>.fromIterable(<String>["one", "two", "three"])
+        Stream<String>.fromIterable(<String>["one", "two", "three"])
             .min((String a, String b) => a.length - b.length),
         completion("one"));
   });

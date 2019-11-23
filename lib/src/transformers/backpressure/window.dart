@@ -10,7 +10,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+///     Stream.periodic(const Duration(milliseconds: 100), (i) => i)
 ///       .window(Stream.periodic(const Duration(milliseconds: 160), (i) => i))
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
@@ -82,7 +82,7 @@ class WindowCountStreamTransformer<T>
 ///
 /// ### Example
 ///
-///     Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
+///     Stream.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .windowTest((i) => i % 2 == 0)
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...

@@ -8,7 +8,7 @@ String _toEventOdd(int value) => value == 0 ? 'even' : 'odd';
 void main() {
   test('rx.Observable.groupBy', () async {
     await expectLater(
-        Observable.fromIterable([1, 2, 3, 4]).groupBy((value) => value),
+        Stream.fromIterable([1, 2, 3, 4]).groupBy((value) => value),
         emitsInOrder(<Matcher>[
           TypeMatcher<GroupByObservable<int, int>>()
               .having((observable) => observable.key, 'key', 1),
@@ -24,7 +24,7 @@ void main() {
 
   test('rx.Observable.groupBy.correctlyEmitsGroupEvents', () async {
     await expectLater(
-        Observable.fromIterable([1, 2, 3, 4])
+        Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
             .flatMap((observable) =>
                 observable.map((event) => {observable.key: event})),
@@ -39,7 +39,7 @@ void main() {
 
   test('rx.Observable.groupBy.correctlyEmitsGroupEvents.alternate', () async {
     await expectLater(
-        Observable.fromIterable([1, 2, 3, 4])
+        Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
             // fold is called when onDone triggers on the Observable
             .map((observable) async => await observable.fold(
@@ -59,7 +59,7 @@ void main() {
 
   test('rx.Observable.groupBy.emittedObservablesCallOnDone', () async {
     await expectLater(
-        Observable.fromIterable([1, 2, 3, 4])
+        Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => value)
             // drain will emit 'done' onDone
             .map((observable) async => await observable.drain('done')),
@@ -67,9 +67,9 @@ void main() {
   });
 
   test('rx.Observable.groupBy.asBroadcastStream', () async {
-    final stream =
-        Observable(Stream.fromIterable([1, 2, 3, 4]).asBroadcastStream())
-            .groupBy((value) => value);
+    final stream = Stream.fromIterable([1, 2, 3, 4])
+        .asBroadcastStream()
+        .groupBy((value) => value);
 
     // listen twice on same stream
     stream.listen(null);
@@ -82,7 +82,7 @@ void main() {
     var count = 0;
     StreamSubscription subscription;
 
-    subscription = Observable(Stream.fromIterable([1, 2, 3, 4]))
+    subscription = Stream.fromIterable([1, 2, 3, 4])
         .groupBy((value) => value)
         .listen(expectAsync1((result) {
           count++;
@@ -97,7 +97,7 @@ void main() {
 
   test('rx.Observable.groupBy.error.shouldThrow.onError', () async {
     final observableWithError =
-        Observable(ErrorStream<void>(Exception())).groupBy((value) => value);
+        Stream<void>.error(Exception()).groupBy((value) => value);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -107,7 +107,7 @@ void main() {
 
   test('rx.Observable.groupBy.error.shouldThrow.onGrouper', () async {
     final observableWithError =
-        Observable(Stream.fromIterable([1, 2, 3, 4])).groupBy((value) {
+        Stream.fromIterable([1, 2, 3, 4]).groupBy((value) {
       throw Exception();
     });
 

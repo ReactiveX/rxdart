@@ -10,7 +10,7 @@ void main() {
     const expectedOutput = [5, 1, 2, 3, 4];
     var count = 0;
 
-    Observable(_getStream()).startWith(5).listen(expectAsync1((result) {
+    _getStream().startWith(5).listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
@@ -20,21 +20,17 @@ void main() {
     const expectedOutput = [5, 1, 2, 3, 4];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.startWith.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream()).startWith(5);
+    final stream = _getStream().asBroadcastStream().startWith(5);
 
     // listen twice on same stream
     stream.listen(null);
@@ -44,8 +40,7 @@ void main() {
   });
 
   test('rx.Observable.startWith.error.shouldThrow', () async {
-    final observableWithError =
-        Observable(ErrorStream<int>(Exception())).startWith(5);
+    final observableWithError = Stream<int>.error(Exception()).startWith(5);
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -58,14 +53,13 @@ void main() {
     var count = 0;
 
     StreamSubscription<int> subscription;
-    subscription =
-        Observable(_getStream()).startWith(5).listen(expectAsync1((result) {
-              expect(expectedOutput[count++], result);
+    subscription = _getStream().startWith(5).listen(expectAsync1((result) {
+          expect(expectedOutput[count++], result);
 
-              if (count == expectedOutput.length) {
-                subscription.cancel();
-              }
-            }, count: expectedOutput.length));
+          if (count == expectedOutput.length) {
+            subscription.cancel();
+          }
+        }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

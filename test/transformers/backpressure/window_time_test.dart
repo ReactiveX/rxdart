@@ -4,16 +4,16 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 /// yield immediately, then every 100ms
-Observable<int> getStream(int n) => Observable<int>((int n) async* {
-      var k = 1;
+Stream<int> getStream(int n) async* {
+  var k = 1;
 
-      yield 0;
+  yield 0;
 
-      while (k < n) {
-        yield await Future<Null>.delayed(const Duration(milliseconds: 100))
-            .then((_) => k++);
-      }
-    }(n));
+  while (k < n) {
+    yield await Future<Null>.delayed(const Duration(milliseconds: 100))
+        .then((_) => k++);
+  }
+}
 
 void main() {
   test('rx.Observable.windowTime', () async {
@@ -34,7 +34,7 @@ void main() {
     scheduleMicrotask(controller.close);
 
     await expectLater(
-        Observable(controller.stream)
+        controller.stream
             .windowTime(const Duration(seconds: 3))
             .asyncMap((stream) => stream.toList())
             .take(1),
@@ -80,13 +80,13 @@ void main() {
 
   test('rx.Observable.windowTime.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<void>(Exception()))
+        Stream<void>.error(Exception())
             .windowTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
 
   test('rx.Observable.windowTime.error.shouldThrowB', () {
-    expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowTime(null),
+    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTime(null),
         throwsArgumentError);
   });
 }

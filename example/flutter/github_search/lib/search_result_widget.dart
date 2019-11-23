@@ -4,8 +4,7 @@ import 'package:github_search/github_api.dart';
 class SearchResultWidget extends StatelessWidget {
   final List<SearchResultItem> items;
 
-  SearchResultWidget({Key key, @required this.items})
-      : super(key: key);
+  SearchResultWidget({Key key, @required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

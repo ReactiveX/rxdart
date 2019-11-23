@@ -1,7 +1,7 @@
 import 'dart:async';
 
-/// The defer factory waits until an observer subscribes to it, and then it
-/// creates an Observable with the given factory function.
+/// The defer factory waits until a listener subscribes to it, and then it
+/// creates a Stream with the given factory function.
 ///
 /// In some circumstances, waiting until the last minute (that is, until
 /// subscription time) to generate the Observable can ensure that this
@@ -12,7 +12,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     DeferStream(() => Observable.just(1)).listen(print); //prints 1
+///     DeferStream(() => Stream.value(1)).listen(print); //prints 1
 class DeferStream<T> extends Stream<T> {
   final Stream<T> Function() _factory;
   final bool _isReusable;

@@ -13,7 +13,7 @@ List<Stream<int>> _getStreams() {
 List<Stream<int>> _getStreamsIncludingEmpty() {
   var a = Stream.fromIterable(const [0, 1, 2]),
       b = Stream.fromIterable(const [3, 4, 5]),
-      c = Observable<int>.empty();
+      c = Stream<int>.empty();
 
   return [c, a, b];
 }
@@ -95,7 +95,7 @@ void main() {
 
   test('rx.Observable.concatEager.error.shouldThrowA', () async {
     final observableWithError = Observable.concatEager(
-        _getStreams()..add(ErrorStream<int>(Exception())));
+        _getStreams()..add(Stream<int>.error(Exception())));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -104,15 +104,15 @@ void main() {
   });
 
   test('rx.Observable.concatEager.error.shouldThrowB', () {
-    expect(() => Observable<int>.concatEager(null), throwsArgumentError);
+    expect(() => Observable.concatEager<int>(null), throwsArgumentError);
   });
 
   test('rx.Observable.concatEager.error.shouldThrowC', () {
-    expect(() => Observable<int>.concatEager(const []), throwsArgumentError);
+    expect(() => Observable.concatEager<int>(const []), throwsArgumentError);
   });
 
   test('rx.Observable.concatEager.error.shouldThrowD', () {
-    expect(() => Observable.concatEager([Observable.just(1), null]),
+    expect(() => Observable.concatEager([Stream.value(1), null]),
         throwsArgumentError);
   });
 

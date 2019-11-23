@@ -14,9 +14,9 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     Observable<int>.error(Exception())
+///     Stream<int>.error(Exception())
 ///       .onErrorResume((dynamic e) =>
-///           Observable.just(e is StateError ? 1 : 0)
+///           Stream.value(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;

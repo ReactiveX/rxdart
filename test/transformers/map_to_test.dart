@@ -12,7 +12,7 @@ void main() {
   test('rx.Observable.mapTo.shouldThrow', () async {
     await expectLater(
         Observable.range(1, 4)
-            .concatWith([ErrorStream<int>(Error())]).mapTo(true),
+            .concatWith([Stream<int>.error(Error())]).mapTo(true),
         emitsInOrder(<dynamic>[
           true,
           true,
@@ -35,7 +35,7 @@ void main() {
 
   test('rx.Observable.mapTo.pause.resume', () async {
     StreamSubscription<bool> subscription;
-    final stream = Observable.just(1).mapTo(true);
+    final stream = Stream.value(1).mapTo(true);
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, isTrue);

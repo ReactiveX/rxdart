@@ -42,7 +42,7 @@ void main() {
   test('rx.Observable.never', () async {
     var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    final observable = Observable<Null>.never();
+    final observable = Observable.never<Null>();
 
     final subscription = observable.listen(
         expectAsync1((_) {

@@ -38,7 +38,7 @@ void main() {
 
   test('rx.Observable.merge.error.shouldThrowA', () async {
     final observableWithError =
-        Observable.merge(_getStreams()..add(ErrorStream<int>(Exception())));
+        Observable.merge(_getStreams()..add(Stream<int>.error(Exception())));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -47,16 +47,16 @@ void main() {
   });
 
   test('rx.Observable.merge.error.shouldThrowB', () {
-    expect(() => Observable<int>.merge(null), throwsArgumentError);
+    expect(() => Observable.merge<int>(null), throwsArgumentError);
   });
 
   test('rx.Observable.merge.error.shouldThrowC', () {
-    expect(() => Observable<int>.merge(const []), throwsArgumentError);
+    expect(() => Observable.merge<int>(const []), throwsArgumentError);
   });
 
   test('rx.Observable.merge.error.shouldThrowD', () {
-    expect(() => Observable.merge([Observable.just(1), null]),
-        throwsArgumentError);
+    expect(
+        () => Observable.merge([Stream.value(1), null]), throwsArgumentError);
   });
 
   test('rx.Observable.merge.pause.resume', () async {

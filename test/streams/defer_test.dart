@@ -33,7 +33,7 @@ void main() {
 
     streamFactory() {
       ++count;
-      return Observable.just(1);
+      return Stream.value(1);
     }
 
     var deferStream = DeferStream(
@@ -99,10 +99,10 @@ void main() {
   });
 }
 
-Stream<int> _getDeferStream() => Observable.defer(() => Observable.just(1));
+Stream<int> _getDeferStream() => Observable.defer(() => Stream.value(1));
 
 Stream<int> _getBroadcastDeferStream() =>
-    Observable.defer(() => Observable.just(1)).asBroadcastStream();
+    Observable.defer(() => Stream.value(1)).asBroadcastStream();
 
 Stream<int> _getErroneousStream() {
   final controller = StreamController<int>();

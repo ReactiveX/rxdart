@@ -4,7 +4,6 @@ export 'src/streams/combine_latest.dart';
 export 'src/streams/concat.dart';
 export 'src/streams/concat_eager.dart';
 export 'src/streams/defer.dart';
-export 'src/streams/error.dart';
 export 'src/streams/fork_join.dart';
 export 'src/streams/merge.dart';
 export 'src/streams/never.dart';

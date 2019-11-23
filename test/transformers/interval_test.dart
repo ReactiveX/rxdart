@@ -11,7 +11,7 @@ void main() {
     var count = 0, lastInterval = -1;
     final stopwatch = Stopwatch()..start();
 
-    Observable(_getStream()).interval(const Duration(milliseconds: 1)).listen(
+    _getStream().interval(const Duration(milliseconds: 1)).listen(
         expectAsync1((result) {
           expect(expectedOutput[count++], result);
 
@@ -31,13 +31,13 @@ void main() {
     var countA = 0, countB = 0;
     final stopwatch = Stopwatch()..start();
 
-    Observable(_getStream()).transform(transformer).listen(
+    _getStream().transform(transformer).listen(
         expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length),
         onDone: stopwatch.stop);
 
-    Observable(_getStream()).transform(transformer).listen(
+    _getStream().transform(transformer).listen(
         expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length),
@@ -45,7 +45,8 @@ void main() {
   });
 
   test('rx.Observable.interval.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = _getStream()
+        .asBroadcastStream()
         .interval(const Duration(milliseconds: 20));
 
     // listen twice on same stream
@@ -56,7 +57,7 @@ void main() {
   });
 
   test('rx.Observable.interval.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+    final observableWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 20));
 
     observableWithError.listen(null,
@@ -68,7 +69,7 @@ void main() {
   test('rx.Observable.interval.error.shouldThrowB', () async {
     runZoned(() {
       final observableWithError =
-          Observable.just(1).interval(const Duration(milliseconds: 20));
+          Stream.value(1).interval(const Duration(milliseconds: 20));
 
       observableWithError.listen(null,
           onError: expectAsync2(

@@ -33,15 +33,13 @@ void main() {
     const expectedOutput = [3, 4];
     var count = 0;
 
-    Observable(_getStream())
-        .skipUntil(_getOtherStream())
-        .listen(expectAsync1((result) {
+    _getStream().skipUntil(_getOtherStream()).listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.skipUntil.shouldClose', () async {
-    Observable(_getStream())
+    _getStream()
         .skipUntil(Stream<void>.empty())
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
   });
@@ -52,21 +50,18 @@ void main() {
     const expectedOutput = [3, 4];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countA++], result);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(expectedOutput[countB++], result);
         }, count: expectedOutput.length));
   });
 
   test('rx.Observable.skipUntil.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = _getStream()
+        .asBroadcastStream()
         .skipUntil(_getOtherStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -78,7 +73,7 @@ void main() {
 
   test('rx.Observable.skipUntil.error.shouldThrowA', () async {
     final observableWithError =
-        Observable(ErrorStream<int>(Exception())).skipUntil(_getOtherStream());
+        Stream<int>.error(Exception()).skipUntil(_getOtherStream());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -88,7 +83,7 @@ void main() {
 
   test('rx.Observable.skipUntil.error.shouldThrowB', () async {
     final observableWithError =
-        Observable.just(1).skipUntil(ErrorStream<void>(Exception('Oh noes!')));
+        Stream.value(1).skipUntil(Stream<void>.error(Exception('Oh noes!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -97,7 +92,7 @@ void main() {
   });
 
   test('rx.Observable.skipUntil.error.shouldThrowC', () {
-    expect(() => Observable.just(1).skipUntil<void>(null), throwsArgumentError);
+    expect(() => Stream.value(1).skipUntil<void>(null), throwsArgumentError);
   });
 
   test('rx.Observable.skipUntil.pause.resume', () async {
@@ -105,15 +100,14 @@ void main() {
     const expectedOutput = [3, 4];
     var count = 0;
 
-    subscription = Observable(_getStream())
-        .skipUntil(_getOtherStream())
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[count++]);
+    subscription =
+        _getStream().skipUntil(_getOtherStream()).listen(expectAsync1((result) {
+              expect(result, expectedOutput[count++]);
 
-          if (count == expectedOutput.length) {
-            subscription.cancel();
-          }
-        }, count: expectedOutput.length));
+              if (count == expectedOutput.length) {
+                subscription.cancel();
+              }
+            }, count: expectedOutput.length));
 
     subscription.pause();
     subscription.resume();

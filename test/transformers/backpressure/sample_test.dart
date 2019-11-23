@@ -13,7 +13,7 @@ Stream<int> _getSampleStream() =>
 
 void main() {
   test('rx.Observable.sample', () async {
-    final observable = Observable(_getStream()).sample(_getSampleStream());
+    final observable = _getStream().sample(_getSampleStream());
 
     await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
@@ -21,16 +21,15 @@ void main() {
   test('rx.Observable.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
-    final observableA = Observable(_getStream()).transform(transformer);
-    final observableB = Observable(_getStream()).transform(transformer);
+    final observableA = _getStream().transform(transformer);
+    final observableB = _getStream().transform(transformer);
 
     await expectLater(observableA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
     await expectLater(observableB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
   test('rx.Observable.sample.onDone', () async {
-    final observable =
-        Observable(Observable.just(1)).sample(Observable<void>.empty());
+    final observable = Stream.value(1).sample(Stream<void>.empty());
 
     await expectLater(observable, emits(1));
   });
@@ -38,7 +37,7 @@ void main() {
   test('rx.Observable.sample.shouldClose', () async {
     final controller = StreamController<int>();
 
-    Observable(controller.stream)
+    controller.stream
         .sample(Stream<void>.empty()) // should trigger onDone
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
 
@@ -51,7 +50,8 @@ void main() {
   });
 
   test('rx.Observable.sample.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+    final stream = _getStream()
+        .asBroadcastStream()
         .sample(_getSampleStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -63,7 +63,7 @@ void main() {
 
   test('rx.Observable.sample.error.shouldThrowA', () async {
     final observableWithError =
-        Observable(ErrorStream<void>(Exception())).sample(_getSampleStream());
+        Stream<void>.error(Exception()).sample(_getSampleStream());
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -72,8 +72,8 @@ void main() {
   });
 
   test('rx.Observable.sample.error.shouldThrowB', () async {
-    final observableWithError = Observable.just(1)
-        .sample(ErrorStream<void>(Exception('Catch me if you can!')));
+    final observableWithError = Stream.value(1)
+        .sample(Stream<void>.error(Exception('Catch me if you can!')));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -85,7 +85,7 @@ void main() {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 
-    subscription = Observable(_getStream())
+    subscription = _getStream()
         .sample(_getSampleStream())
         .listen(controller.add, onDone: () {
       controller.close();

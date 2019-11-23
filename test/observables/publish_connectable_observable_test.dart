@@ -10,7 +10,7 @@ void main() {
   group('PublishConnectableObservable', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
-      final observable = PublishConnectableObservable(stream);
+      final observable = PublishConnectableStream(stream);
 
       when(stream.listen(any, onError: anyNamed('onError')))
           .thenReturn(Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
@@ -23,9 +23,8 @@ void main() {
     });
 
     test('should begin emitting items after connection', () {
-      final ConnectableObservable<int> observable =
-          PublishConnectableObservable<int>(
-              Stream<int>.fromIterable(<int>[1, 2, 3]));
+      final ConnectableStream<int> observable = PublishConnectableStream<int>(
+          Stream<int>.fromIterable(<int>[1, 2, 3]));
 
       observable.connect();
 
@@ -33,8 +32,8 @@ void main() {
     });
 
     test('stops emitting after the connection is cancelled', () async {
-      final ConnectableObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).publishValue();
+      final ConnectableStream<int> observable =
+          Stream<int>.fromIterable(<int>[1, 2, 3]).publishValue();
 
       observable.connect()..cancel(); // ignore: unawaited_futures
 
@@ -42,7 +41,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final observable = PublishConnectableObservable(
+      final observable = PublishConnectableStream(
         Stream.fromIterable(const [1, 2, 3]),
       ).autoConnect();
 
@@ -52,7 +51,7 @@ void main() {
     });
 
     test('can multicast observables', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3]).publish();
+      final observable = Stream.fromIterable(const [1, 2, 3]).publish();
 
       observable.connect();
 
@@ -62,7 +61,7 @@ void main() {
     });
 
     test('refcount automatically connects', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3]).share();
+      final observable = Stream.fromIterable(const [1, 2, 3]).share();
 
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
@@ -70,7 +69,7 @@ void main() {
     });
 
     test('provide a function to autoconnect that stops listening', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3])
+      final observable = Stream.fromIterable(const [1, 2, 3])
           .publish()
           .autoConnect(connection: (subscription) => subscription.cancel());
 

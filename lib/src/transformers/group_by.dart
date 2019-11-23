@@ -79,7 +79,7 @@ class GroupByStreamTransformer<T, S>
 
 /// The [Observable] used by [GroupByStreamTransformer], it contains events
 /// that are grouped by a key value.
-class GroupByObservable<T, S> extends Observable<T> {
+class GroupByObservable<T, S> extends StreamView<T> {
   /// The key is the category to which all events in this group belong to.
   final S key;
 

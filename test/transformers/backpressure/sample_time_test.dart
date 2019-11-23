@@ -10,7 +10,7 @@ Stream<int> _getStream() =>
 void main() {
   test('rx.Observable.sampleTime', () async {
     final observable =
-        Observable(_getStream()).sampleTime(const Duration(milliseconds: 35));
+        _getStream().sampleTime(const Duration(milliseconds: 35));
 
     await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
@@ -21,16 +21,15 @@ void main() {
             .asBroadcastStream());
 
     await expectLater(
-        Observable(_getStream()).transform(transformer).ignoreElements(),
-        emitsDone);
+        _getStream().transform(transformer).ignoreElements(), emitsDone);
     await expectLater(
-        Observable(_getStream()).transform(transformer).ignoreElements(),
-        emitsDone);
+      _getStream().transform(transformer).ignoreElements(),
+      emitsDone,
+    );
   });
 
   test('rx.Observable.sampleTime.onDone', () async {
-    final observable =
-        Observable(Observable.just(1)).sampleTime(const Duration(seconds: 1));
+    final observable = Stream.value(1).sampleTime(const Duration(seconds: 1));
 
     await expectLater(observable, emits(1));
   });
@@ -38,7 +37,7 @@ void main() {
   test('rx.Observable.sampleTime.shouldClose', () async {
     final controller = StreamController<int>();
 
-    Observable(controller.stream)
+    controller.stream
         .sampleTime(const Duration(seconds: 1)) // should trigger onDone
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
 
@@ -51,7 +50,7 @@ void main() {
   });
 
   test('rx.Observable.sampleTime.asBroadcastStream', () async {
-    final stream = Observable(_getStream())
+    final stream = _getStream()
         .sampleTime(const Duration(milliseconds: 35))
         .asBroadcastStream();
 
@@ -63,7 +62,7 @@ void main() {
   });
 
   test('rx.Observable.sampleTime.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+    final observableWithError = Stream<void>.error(Exception())
         .sampleTime(const Duration(milliseconds: 35));
 
     observableWithError.listen(null,
@@ -76,7 +75,7 @@ void main() {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 
-    subscription = Observable(_getStream())
+    subscription = _getStream()
         .sampleTime(const Duration(milliseconds: 35))
         .listen(controller.add, onDone: () {
       controller.close();

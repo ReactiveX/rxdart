@@ -4,7 +4,7 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .mapTo(true)
 ///       .listen(print); // prints true, true, true, true
 class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {

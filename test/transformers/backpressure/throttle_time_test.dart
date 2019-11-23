@@ -4,8 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> _observable() =>
-    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1)
-        .take(10);
+    Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
   test('rx.Observable.throttleTime', () async {
@@ -45,7 +44,7 @@ void main() {
   });
 
   test('rx.Observable.throttleTime.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+    final observableWithError = Stream<void>.error(Exception())
         .throttleTime(const Duration(milliseconds: 200));
 
     observableWithError.listen(null,
@@ -55,7 +54,7 @@ void main() {
   });
 
   test('rx.Observable.throttleTime.error.shouldThrowB', () {
-    expect(() => Observable.just(1).throttleTime(null),
+    expect(() => Stream.value(1).throttleTime(null),
         throwsA(const TypeMatcher<AssertionError>()));
   }, skip: true);
 

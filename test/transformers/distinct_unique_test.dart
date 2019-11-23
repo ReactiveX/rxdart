@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group("DistinctUniqueStreamTransformer", () {
     test("works with the equals and hascode of the class", () async {
-      final observable = Observable.fromIterable(const [
+      final observable = Stream.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -30,7 +30,7 @@ void main() {
     });
 
     test("works with a provided equals and hashcode", () async {
-      final observable = Observable.fromIterable(const [
+      final observable = Stream.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -57,7 +57,7 @@ void main() {
     test(
         "sends an error to the subscription if an error occurs in the equals or hashmap methods",
         () async {
-      final observable = Observable.fromIterable(
+      final observable = Stream.fromIterable(
               const [_TestObject("a"), _TestObject("b"), _TestObject("c")])
           .distinctUnique(
               equals: (a, b) => a.key == b.key,

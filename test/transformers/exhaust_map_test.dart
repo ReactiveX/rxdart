@@ -18,7 +18,7 @@ void main() {
 
     test('starts emitting again after previous Stream is complete', () async {
       final observable =
-          Observable.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+          Stream.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
               .interval(Duration(milliseconds: 30))
               .exhaustMap((i) async* {
         yield await Future.delayed(Duration(milliseconds: 70), () => i);
@@ -55,21 +55,21 @@ void main() {
     });
 
     test('should emit errors from source', () async {
-      final observableWithError = Observable(ErrorStream<int>(Exception()))
+      final observableWithError = Stream<int>.error(Exception())
           .exhaustMap((i) => Observable.timer(i, Duration(milliseconds: 100)));
 
       await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors from mapped stream', () async {
-      final observableWithError = Observable.just(1).exhaustMap(
-          (_) => ErrorStream<void>(Exception('Catch me if you can!')));
+      final observableWithError = Stream.value(1).exhaustMap(
+          (_) => Stream<void>.error(Exception('Catch me if you can!')));
 
       await expectLater(observableWithError, emitsError(isException));
     });
 
     test('should emit errors thrown in the mapper', () async {
-      final observableWithError = Observable.just(1).exhaustMap<void>((_) {
+      final observableWithError = Stream.value(1).exhaustMap<void>((_) {
         throw Exception('oh noes!');
       });
 

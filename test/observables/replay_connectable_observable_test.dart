@@ -10,7 +10,7 @@ void main() {
   group('ReplayConnectableObservable', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
-      final observable = ReplayConnectableObservable(stream);
+      final observable = ReplayConnectableStream(stream);
 
       when(stream.listen(any, onError: anyNamed('onError')))
           .thenReturn(Stream.fromIterable(const [1, 2, 3]).listen(null));
@@ -24,8 +24,7 @@ void main() {
 
     test('should begin emitting items after connection', () {
       const items = [1, 2, 3];
-      final observable =
-          ReplayConnectableObservable(Stream.fromIterable(items));
+      final observable = ReplayConnectableStream(Stream.fromIterable(items));
 
       observable.connect();
 
@@ -36,8 +35,8 @@ void main() {
     });
 
     test('stops emitting after the connection is cancelled', () async {
-      final ConnectableObservable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).publishReplay();
+      final ConnectableStream<int> observable =
+          Stream<int>.fromIterable(<int>[1, 2, 3]).publishReplay();
 
       observable.connect()..cancel(); // ignore: unawaited_futures
 
@@ -45,8 +44,8 @@ void main() {
     });
 
     test('stops emitting after the last subscriber unsubscribes', () async {
-      final Observable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
+      final Stream<int> observable =
+          Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
       observable.listen(null)..cancel(); // ignore: unawaited_futures
 
@@ -54,8 +53,8 @@ void main() {
     });
 
     test('keeps emitting with an active subscription', () async {
-      final Observable<int> observable =
-          Observable<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
+      final Stream<int> observable =
+          Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
       observable.listen(null);
       observable.listen(null)..cancel(); // ignore: unawaited_futures
@@ -64,7 +63,7 @@ void main() {
     });
 
     test('multicasts a single-subscription stream', () async {
-      final Observable<int> observable = ReplayConnectableObservable<int>(
+      final Stream<int> observable = ReplayConnectableStream<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
       ).autoConnect();
 
@@ -74,7 +73,7 @@ void main() {
     });
 
     test('replays the max number of items', () async {
-      final Observable<int> observable = ReplayConnectableObservable<int>(
+      final Stream<int> observable = ReplayConnectableStream<int>(
         Stream<int>.fromIterable(<int>[1, 2, 3]),
         maxSize: 2,
       ).autoConnect();
@@ -89,7 +88,7 @@ void main() {
     });
 
     test('can multicast observables', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
+      final observable = Stream.fromIterable(const [1, 2, 3]).shareReplay();
 
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
@@ -97,7 +96,7 @@ void main() {
     });
 
     test('only holds a certain number of values', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
+      final observable = Stream.fromIterable(const [1, 2, 3]).shareReplay();
 
       expect(observable.values, const <int>[]);
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
@@ -106,7 +105,7 @@ void main() {
     test('provides access to all items', () async {
       const items = [1, 2, 3];
       var count = 0;
-      final observable = Observable.fromIterable(const [1, 2, 3]).shareReplay();
+      final observable = Stream.fromIterable(const [1, 2, 3]).shareReplay();
 
       observable.listen(expectAsync1((int data) {
         expect(data, items[count]);
@@ -121,7 +120,7 @@ void main() {
       const items = [1, 2, 3];
       var count = 0;
       final observable =
-          Observable.fromIterable(const [1, 2, 3]).shareReplay(maxSize: 2);
+          Stream.fromIterable(const [1, 2, 3]).shareReplay(maxSize: 2);
 
       observable.listen(expectAsync1((data) {
         expect(data, items[count]);
@@ -133,7 +132,7 @@ void main() {
     });
 
     test('provide a function to autoconnect that stops listening', () async {
-      final observable = Observable.fromIterable(const [1, 2, 3])
+      final observable = Stream.fromIterable(const [1, 2, 3])
           .publishReplay()
           .autoConnect(connection: (subscription) => subscription.cancel());
 

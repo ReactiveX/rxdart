@@ -14,19 +14,12 @@ If you'd like to add a feature or fix a bug, we're more than happy to accept pul
   - Format your code with `dartfmt`
   - Write tests for all new code paths, consider using the [Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers) available from the test package.
   - Write helpful documentation
-  - If you would like to make a bigger / fundamental change to the codebase, please file a lightweight example PR / issue, or contact us in [Gitter](https://gitter.im/ReactiveX/rxdart) so we can discuss the issue.
-
-## Advice when adding a new factory
-
-  - Extend from `Stream` so it can be constructed outside the scope of the Observable class
-  - Add the new `Stream` to the exported `rx_streams` library
-  - Ensure the stream properly enforces the single-subscription contract
-  - Ensure the stream closses properly
-  - Add new tests to `tests/rxdart_test.dart`
+  - If you would like to make a bigger / fundamental change t
 
 ## Advice when adding a new operator
 
   - Extend from the `StreamTransformer` class so it can be used independently
+  - Use the `StreamTransformer` in an `extension` method
   - Add the new `StreamTransformer` to the exported `rx_transformers` library
   - Ensure the `StreamTransformer` can be re-used
   - Add new tests to `tests/rxdart_test.dart`

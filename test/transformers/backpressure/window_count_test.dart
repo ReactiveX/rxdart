@@ -77,7 +77,7 @@ void main() {
     final transformer = WindowCountStreamTransformer<int>(2);
 
     await expectLater(
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]))
+        Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -87,7 +87,7 @@ void main() {
         ]));
 
     await expectLater(
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]))
+        Stream.fromIterable(const [1, 2, 3, 4])
             .transform(transformer)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -98,10 +98,10 @@ void main() {
   });
 
   test('rx.Observable.windowCount.asBroadcastStream', () async {
-    final stream =
-        Observable(Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream())
-            .windowCount(2)
-            .ignoreElements();
+    final stream = Stream.fromIterable(const [1, 2, 3, 4])
+        .asBroadcastStream()
+        .windowCount(2)
+        .ignoreElements();
 
     // listen twice on same stream
     await expectLater(stream, emitsDone);
@@ -109,27 +109,29 @@ void main() {
   });
 
   test('rx.Observable.windowCount.error.shouldThrowA', () async {
-    await expectLater(Observable(ErrorStream<void>(Exception())).windowCount(2),
-        emitsError(isException));
+    await expectLater(
+      Stream<void>.error(Exception()).windowCount(2),
+      emitsError(isException),
+    );
   });
 
   test(
     'rx.Observable.windowCount.shouldThrow.invalidCount.negative',
     () {
-      expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowCount(-1),
+      expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(-1),
           throwsArgumentError);
     },
   );
 
   test('rx.Observable.windowCount.shouldThrow.invalidCount.isNull', () {
-    expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowCount(null),
+    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(null),
         throwsArgumentError);
   });
 
   test(
       'rx.Observable.windowCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
       () {
-    expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowCount(2, -1),
+    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(2, -1),
         throwsArgumentError);
   });
 }

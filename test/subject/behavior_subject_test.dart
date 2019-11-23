@@ -301,7 +301,7 @@ void main() {
       final subject = BehaviorSubject<void>();
 
       await expectLater(
-          subject.addStream(ErrorStream<void>(Exception()),
+          subject.addStream(Stream<void>.error(Exception()),
               cancelOnError: true),
           throwsException);
 

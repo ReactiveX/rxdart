@@ -20,9 +20,9 @@ Stream<bool> get streamC {
 void main() {
   test('rx.Observable.combineLatestList', () async {
     final combined = Observable.combineLatestList<int>([
-      Observable.fromIterable([1, 2, 3]),
-      Observable.just(2),
-      Observable.just(3),
+      Stream.fromIterable([1, 2, 3]),
+      Stream.value(2),
+      Stream.value(3),
     ]);
 
     expect(
@@ -38,9 +38,9 @@ void main() {
   test('rx.Observable.combineLatest', () async {
     final combined = Observable.combineLatest<int, int>(
       [
-        Observable.fromIterable([1, 2, 3]),
-        Observable.just(2),
-        Observable.just(3),
+        Stream.fromIterable([1, 2, 3]),
+        Stream.value(2),
+        Stream.value(3),
       ],
       (values) => values.fold(0, (acc, val) => acc + val),
     );
@@ -83,7 +83,7 @@ void main() {
     ];
     var count = 0;
 
-    var a = Observable.fromIterable(const [1, 2]), b = Observable.just(2);
+    var a = Stream.fromIterable(const [1, 2]), b = Stream.value(2);
 
     final observable = Observable.combineLatest2(
         a, b, (int first, int second) => [first, second]);
@@ -94,7 +94,7 @@ void main() {
   });
 
   test('rx.Observable.combineLatest2.throws', () async {
-    var a = Observable.just(1), b = Observable.just(2);
+    var a = Stream.value(1), b = Stream.value(2);
 
     final observable = Observable.combineLatest2(a, b, (int first, int second) {
       throw Exception();
@@ -108,9 +108,9 @@ void main() {
   test('rx.Observable.combineLatest3', () async {
     const expected = [1, "2", 3.0];
 
-    var a = Observable<int>.just(1),
-        b = Observable<String>.just("2"),
-        c = Observable<double>.just(3.0);
+    var a = Stream<int>.value(1),
+        b = Stream<String>.value("2"),
+        c = Stream<double>.value(3.0);
 
     final observable = Observable.combineLatest3(a, b, c,
         (int first, String second, double third) => [first, second, third]);
@@ -123,10 +123,10 @@ void main() {
   test('rx.Observable.combineLatest4', () async {
     const expected = [1, 2, 3, 4];
 
-    var a = Observable.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4);
+    var a = Stream.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4);
 
     final observable = Observable.combineLatest4(
         a,
@@ -144,11 +144,11 @@ void main() {
   test('rx.Observable.combineLatest5', () async {
     const expected = [1, 2, 3, 4, 5];
 
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5);
 
     final observable = Observable.combineLatest5(
         a,
@@ -167,12 +167,12 @@ void main() {
   test('rx.Observable.combineLatest6', () async {
     const expected = [1, 2, 3, 4, 5, 6];
 
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6);
 
     Stream<List<int>> observable = Observable.combineLatest6(
         a,
@@ -192,13 +192,13 @@ void main() {
   test('rx.Observable.combineLatest7', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7];
 
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7);
 
     final observable = Observable.combineLatest7(
         a,
@@ -220,14 +220,14 @@ void main() {
   test('rx.Observable.combineLatest8', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7),
-        h = Observable<int>.just(8);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7),
+        h = Stream<int>.value(8);
 
     final observable = Observable.combineLatest8(
         a,
@@ -250,15 +250,15 @@ void main() {
   test('rx.Observable.combineLatest9', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    var a = Observable<int>.just(1),
-        b = Observable<int>.just(2),
-        c = Observable<int>.just(3),
-        d = Observable<int>.just(4),
-        e = Observable<int>.just(5),
-        f = Observable<int>.just(6),
-        g = Observable<int>.just(7),
-        h = Observable<int>.just(8),
-        i = Observable<int>.just(9);
+    var a = Stream<int>.value(1),
+        b = Stream<int>.value(2),
+        c = Stream<int>.value(3),
+        d = Stream<int>.value(4),
+        e = Stream<int>.value(5),
+        f = Stream<int>.value(6),
+        g = Stream<int>.value(7),
+        h = Stream<int>.value(8),
+        i = Stream<int>.value(9);
 
     final observable = Observable.combineLatest9(
         a,
@@ -303,8 +303,8 @@ void main() {
   });
 
   test('rx.Observable.combineLatest.error.shouldThrowA', () async {
-    final observableWithError = Observable.combineLatest4(Observable.just(1),
-        Observable.just(1), Observable.just(1), ErrorStream<int>(Exception()),
+    final observableWithError = Observable.combineLatest4(Stream.value(1),
+        Stream.value(1), Stream.value(1), Stream<int>.error(Exception()),
         (int a_value, int b_value, int c_value, dynamic _) {
       return '$a_value $b_value $c_value $_';
     });
@@ -317,7 +317,7 @@ void main() {
 
   test('rx.Observable.combineLatest.error.shouldThrowB', () async {
     final observableWithError = Observable.combineLatest3(
-        Observable.just(1), Observable.just(1), Observable.just(1),
+        Stream.value(1), Stream.value(1), Stream.value(1),
         (int a_value, int b_value, int c_value) {
       throw Exception('oh noes!');
     });
@@ -330,8 +330,8 @@ void main() {
 
   /*test('rx.Observable.combineLatest.error.shouldThrowC', () {
     expect(
-        () => Observable.combineLatest3(Observable<num>.just(1),
-            Observable<num>.just(1), Observable<num>.just(1), null),
+        () => Observable.combineLatest3(Stream<num>.value(1),
+            Stream<num>.just(1), Observable<num>.value(1), null),
         throwsArgumentError);
   });
 

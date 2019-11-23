@@ -13,7 +13,7 @@ List<Stream<int>> _getStreams() {
 List<Stream<int>> _getStreamsIncludingEmpty() {
   var a = Stream.fromIterable(const [0, 1, 2]),
       b = Stream.fromIterable(const [3, 4, 5]),
-      c = Observable<int>.empty();
+      c = Stream<int>.empty();
 
   return [c, a, b];
 }
@@ -94,7 +94,7 @@ void main() {
 
   test('rx.Observable.concat.error.shouldThrowA', () async {
     final observableWithError =
-        Observable.concat(_getStreams()..add(ErrorStream<int>(Exception())));
+        Observable.concat(_getStreams()..add(Stream<int>.error(Exception())));
 
     observableWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -103,17 +103,17 @@ void main() {
   });
 
   test('rx.Observable.concat.error.shouldThrowB', () {
-    expect(() => Observable<int>.concat(null), throwsArgumentError);
+    expect(() => Observable.concat<int>(null), throwsArgumentError);
   });
 
   test('rx.Observable.concat.error.shouldThrowC', () {
-    expect(() => Observable<int>.concat(const []), throwsArgumentError);
+    expect(() => Observable.concat<int>(const []), throwsArgumentError);
   });
 
   test('rx.Observable.concat.error.shouldThrowD', () {
     expect(
         () => [
-              Observable.concat([Observable.just(1), null]),
+              Observable.concat([Stream.value(1), null]),
               null
             ],
         throwsArgumentError);
