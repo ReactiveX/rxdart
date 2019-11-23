@@ -24,10 +24,10 @@ void main() {
 
   test('Rx.mapTo.reusable', () async {
     final transformer = MapToStreamTransformer<int, bool>(true);
-    final observable = Rx.range(1, 4).asBroadcastStream();
+    final stream = Rx.range(1, 4).asBroadcastStream();
 
-    observable.transform(transformer).listen(null);
-    observable.transform(transformer).listen(null);
+    stream.transform(transformer).listen(null);
+    stream.transform(transformer).listen(null);
 
     await expectLater(true, true);
   });

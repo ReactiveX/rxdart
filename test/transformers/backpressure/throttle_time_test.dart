@@ -3,19 +3,19 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _observable() =>
+Stream<int> _stream() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
   test('Rx.throttleTime', () async {
     await expectLater(
-        _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
+        _stream().throttleTime(const Duration(milliseconds: 250)).take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
   test('Rx.throttleTime.trailing', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttleTime(const Duration(milliseconds: 250), trailing: true)
             .take(3),
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
@@ -25,15 +25,15 @@ void main() {
     final transformer = ThrottleStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
   test('Rx.throttleTime.asBroadcastStream', () async {
-    final stream = _observable()
+    final stream = _stream()
         .asBroadcastStream()
         .throttleTime(const Duration(milliseconds: 250))
         .ignoreElements();
@@ -44,10 +44,10 @@ void main() {
   });
 
   test('Rx.throttleTime.error.shouldThrowA', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .throttleTime(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
@@ -63,7 +63,7 @@ void main() {
 
     final controller = StreamController<int>();
 
-    subscription = _observable()
+    subscription = _stream()
         .throttleTime(const Duration(milliseconds: 250))
         .take(2)
         .listen(controller.add, onDone: () {

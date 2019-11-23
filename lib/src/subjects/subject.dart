@@ -17,9 +17,9 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
   /// Constructs a [Subject] which wraps the provided [controller].
   /// This constructor is applicable only for classes that extend [Subject].
-  Subject(StreamController<T> controller, Stream<T> observable)
+  Subject(StreamController<T> controller, Stream<T> stream)
       : this._controller = controller,
-        super(observable);
+        super(stream);
 
   @override
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);

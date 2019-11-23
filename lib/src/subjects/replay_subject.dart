@@ -80,10 +80,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
   ReplaySubject._(
     StreamController<T> controller,
-    Stream<T> observable,
+    Stream<T> stream,
     this._queue,
     this._maxSize,
-  ) : super(controller, observable);
+  ) : super(controller, stream);
 
   @override
   void onAdd(T event) {

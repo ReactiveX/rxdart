@@ -1,7 +1,7 @@
 import 'dart:async';
 
-/// When the original observable emits no items, this operator subscribes to
-/// the given fallback stream and emits items from that observable instead.
+/// When the original stream emits no items, this operator subscribes to
+/// the given fallback stream and emits items from that stream instead.
 ///
 /// This can be particularly useful when consuming data from multiple sources.
 /// For example, when using the Repository Pattern. Assuming you have some

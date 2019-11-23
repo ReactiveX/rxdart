@@ -54,30 +54,30 @@ void main() {
   });
 
   test('Rx.flatMap.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<int>.error(Exception()).flatMap(_getOtherStream);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.flatMap.error.shouldThrowB', () async {
-    final observableWithError = Stream.value(1)
+    final streamWithError = Stream.value(1)
         .flatMap((_) => Stream<void>.error(Exception('Catch me if you can!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.flatMap.error.shouldThrowC', () async {
-    final observableWithError =
+    final streamWithError =
         Stream.value(1).flatMap<void>((_) => throw Exception('oh noes!'));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

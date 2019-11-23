@@ -419,10 +419,10 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream
-  /// final observable = Stream.fromIterable([1, 2, 3]).share();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).share();
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// final subscription = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // PublishSubject
@@ -445,17 +445,17 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Stream.fromIterable([1, 2, 3]).shareValue();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValue();
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the latest value
-  /// print(observable.value);
+  /// print(stream.value);
   ///
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -480,17 +480,17 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Stream.fromIterable([1, 2, 3]).shareValueSeeded(0);
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValueSeeded(0);
   ///
   /// // Start listening to the source Stream. Will start printing 0, 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the latest value
-  /// print(observable.value);
+  /// print(stream.value);
   ///
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -515,18 +515,18 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Stream.fromIterable([1, 2, 3]).shareReplay();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareReplay();
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the emitted values up to a given maxSize
   /// // Prints [1, 2, 3]
-  /// print(observable.values);
+  /// print(stream.values);
   ///
   /// // Subscribe again later. This will print 1, 2, 3 because it receives the
   /// // last emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // ReplaySubject by cancelling all subscriptions.

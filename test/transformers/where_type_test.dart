@@ -51,10 +51,9 @@ void main() {
   });
 
   test('Rx.whereType.error.shouldThrow', () async {
-    final observableWithError =
-        Stream<void>.error(Exception()).whereType<num>();
+    final streamWithError = Stream<void>.error(Exception()).whereType<num>();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

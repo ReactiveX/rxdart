@@ -13,25 +13,25 @@ Stream<int> _getSampleStream() =>
 
 void main() {
   test('Rx.sample', () async {
-    final observable = _getStream().sample(_getSampleStream());
+    final stream = _getStream().sample(_getSampleStream());
 
-    await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
-    final observableA = _getStream().transform(transformer);
-    final observableB = _getStream().transform(transformer);
+    final streamA = _getStream().transform(transformer);
+    final streamB = _getStream().transform(transformer);
 
-    await expectLater(observableA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-    await expectLater(observableB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(streamA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(streamB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sample.onDone', () async {
-    final observable = Stream.value(1).sample(Stream<void>.empty());
+    final stream = Stream.value(1).sample(Stream<void>.empty());
 
-    await expectLater(observable, emits(1));
+    await expectLater(stream, emits(1));
   });
 
   test('Rx.sample.shouldClose', () async {
@@ -62,20 +62,20 @@ void main() {
   });
 
   test('Rx.sample.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<void>.error(Exception()).sample(_getSampleStream());
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.sample.error.shouldThrowB', () async {
-    final observableWithError = Stream.value(1)
+    final streamWithError = Stream.value(1)
         .sample(Stream<void>.error(Exception('Catch me if you can!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

@@ -60,10 +60,10 @@ void main() {
   });
 
   test('Rx.delay.error.shouldThrowA', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .delay(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
@@ -72,10 +72,10 @@ void main() {
   /// Should also throw if the current [Zone] is unable to install a [Timer]
   test('Rx.delay.error.shouldThrowB', () async {
     runZoned(() {
-      final observableWithError =
+      final streamWithError =
           Stream.value(1).delay(const Duration(milliseconds: 200));
 
-      observableWithError.listen(null,
+      streamWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },

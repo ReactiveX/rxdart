@@ -64,21 +64,19 @@ void main() {
   });
 
   test('RetryWhenStream.error.shouldThrow', () {
-    final observableWithError =
-        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+    final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
-        observableWithError,
+        streamWithError,
         emitsInOrder(
             <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
-    final observableWithError =
-        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+    final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<dynamic>[
           emitsError(
             predicate<RetryError>((a) {

@@ -4,10 +4,9 @@ void main() {
   test('Rx.distinct', () async {
     const expected = 1;
 
-    final observable =
-        Stream.fromIterable(const [expected, expected]).distinct();
+    final stream = Stream.fromIterable(const [expected, expected]).distinct();
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, expected);
     }));
   });

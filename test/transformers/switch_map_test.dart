@@ -69,31 +69,31 @@ void main() {
   });
 
   test('Rx.switchMap.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<int>.error(Exception()).switchMap(_getOtherStream);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.switchMap.error.shouldThrowB', () async {
-    final observableWithError = Stream.value(1).switchMap(
+    final streamWithError = Stream.value(1).switchMap(
         (_) => Stream<void>.error(Exception('Catch me if you can!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.switchMap.error.shouldThrowC', () async {
-    final observableWithError = Stream.value(1).switchMap<void>((_) {
+    final streamWithError = Stream.value(1).switchMap<void>((_) {
       throw Exception('oh noes!');
     });
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Records the time interval between consecutive values in an observable
+/// Records the time interval between consecutive values in an stream
 /// sequence.
 ///
 /// ### Example

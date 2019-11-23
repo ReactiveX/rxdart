@@ -57,10 +57,10 @@ void main() {
   });
 
   test('Rx.interval.error.shouldThrowA', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 20));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
@@ -68,10 +68,10 @@ void main() {
 
   test('Rx.interval.error.shouldThrowB', () async {
     runZoned(() {
-      final observableWithError =
+      final streamWithError =
           Stream.value(1).interval(const Duration(milliseconds: 20));
 
-      observableWithError.listen(null,
+      streamWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },

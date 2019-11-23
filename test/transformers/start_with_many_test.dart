@@ -40,10 +40,10 @@ void main() {
   });
 
   test('Rx.startWithMany.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<int>.error(Exception()).startWithMany(const [5, 6]);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

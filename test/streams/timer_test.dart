@@ -36,11 +36,11 @@ void main() {
   });
 
   test('TimerStream.single.subscription', () async {
-    final observable = TimerStream(null, Duration(milliseconds: 1));
+    final stream = TimerStream(null, Duration(milliseconds: 1));
 
     try {
-      observable.listen(null);
-      observable.listen(null);
+      stream.listen(null);
+      stream.listen(null);
     } catch (e) {
       await expectLater(e, isStateError);
     }
@@ -69,9 +69,9 @@ void main() {
   test('Rx.timer', () async {
     const value = 1;
 
-    final observable = Rx.timer(value, Duration(milliseconds: 5));
+    final stream = Rx.timer(value, Duration(milliseconds: 5));
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, value);
     }), onDone: expectAsync0(() {
       expect(true, isTrue);

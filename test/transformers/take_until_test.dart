@@ -72,10 +72,10 @@ void main() {
   });
 
   test('Rx.takeUntil.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<void>.error(Exception()).takeUntil(_getOtherStream());
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

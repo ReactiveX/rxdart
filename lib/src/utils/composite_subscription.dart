@@ -6,9 +6,9 @@ import 'dart:async';
 /// Can be cleared or disposed. When disposed, cannot be used again.
 /// ### Example
 /// // init your subscriptions
-/// composite.add(observable1.listen(listener1))
-/// ..add(observable2.listen(listener1))
-/// ..add(observable3.listen(listener1));
+/// composite.add(stream1.listen(listener1))
+/// ..add(stream2.listen(listener1))
+/// ..add(stream3.listen(listener1));
 ///
 /// // clear them all at once
 /// composite.clear();

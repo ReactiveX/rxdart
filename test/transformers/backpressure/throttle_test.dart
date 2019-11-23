@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _observable() =>
+Stream<int> _stream() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
   test('Rx.throttle', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttle(
                 (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
             .take(3),
@@ -18,7 +18,7 @@ void main() {
 
   test('Rx.throttle.trailing', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttle(
                 (_) => Stream<void>.periodic(const Duration(milliseconds: 250)),
                 trailing: true)
@@ -28,7 +28,7 @@ void main() {
 
   test('Rx.throttle.dynamic.window', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttle((value) => value == 1
                 ? Stream<void>.periodic(const Duration(milliseconds: 10))
                 : Stream<void>.periodic(const Duration(milliseconds: 250)))
@@ -38,7 +38,7 @@ void main() {
 
   test('Rx.throttle.dynamic.window.trailing', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttle(
                 (value) => value == 1
                     ? Stream<void>.periodic(const Duration(milliseconds: 10))
@@ -52,15 +52,15 @@ void main() {
     final transformer = ThrottleStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
   test('Rx.throttle.asBroadcastStream', () async {
-    final stream = _observable()
+    final stream = _stream()
         .asBroadcastStream()
         .throttle(
             (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
@@ -72,10 +72,10 @@ void main() {
   });
 
   test('Rx.throttle.error.shouldThrowA', () async {
-    final observableWithError = Stream<void>.error(Exception()).throttle(
+    final streamWithError = Stream<void>.error(Exception()).throttle(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
@@ -91,7 +91,7 @@ void main() {
 
     final controller = StreamController<int>();
 
-    subscription = _observable()
+    subscription = _stream()
         .throttle(
             (_) => Stream<void>.periodic(const Duration(milliseconds: 250)))
         .take(2)

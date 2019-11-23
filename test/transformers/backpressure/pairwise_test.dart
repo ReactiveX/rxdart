@@ -37,9 +37,9 @@ void main() {
   });
 
   test('Rx.pairwise.error.shouldThrow.onError', () async {
-    final observableWithError = Stream<void>.error(Exception()).pairwise();
+    final streamWithError = Stream<void>.error(Exception()).pairwise();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

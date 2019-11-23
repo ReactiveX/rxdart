@@ -11,13 +11,13 @@ void main() {
         Stream.fromIterable([1, 2, 3, 4]).groupBy((value) => value),
         emitsInOrder(<Matcher>[
           TypeMatcher<GroupByStream<int, int>>()
-              .having((observable) => observable.key, 'key', 1),
+              .having((stream) => stream.key, 'key', 1),
           TypeMatcher<GroupByStream<int, int>>()
-              .having((observable) => observable.key, 'key', 2),
+              .having((stream) => stream.key, 'key', 2),
           TypeMatcher<GroupByStream<int, int>>()
-              .having((observable) => observable.key, 'key', 3),
+              .having((stream) => stream.key, 'key', 3),
           TypeMatcher<GroupByStream<int, int>>()
-              .having((observable) => observable.key, 'key', 4),
+              .having((stream) => stream.key, 'key', 4),
           emitsDone
         ]));
   });
@@ -26,8 +26,7 @@ void main() {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
-            .flatMap((observable) =>
-                observable.map((event) => {observable.key: event})),
+            .flatMap((stream) => stream.map((event) => {stream.key: event})),
         emitsInOrder(<dynamic>[
           {'odd': 1},
           {'even': 2},
@@ -42,10 +41,10 @@ void main() {
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
             // fold is called when onDone triggers on the Stream
-            .map((observable) async => await observable.fold(
-                {observable.key: <int>[]},
+            .map((stream) async => await stream.fold(
+                {stream.key: <int>[]},
                 (Map<String, List<int>> previous, element) =>
-                    previous..[observable.key].add(element))),
+                    previous..[stream.key].add(element))),
         emitsInOrder(<dynamic>[
           {
             'odd': [1, 3]
@@ -62,7 +61,7 @@ void main() {
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => value)
             // drain will emit 'done' onDone
-            .map((observable) async => await observable.drain('done')),
+            .map((stream) async => await stream.drain('done')),
         emitsInOrder(<dynamic>['done', 'done', 'done', 'done', emitsDone]));
   });
 
@@ -96,22 +95,21 @@ void main() {
   });
 
   test('Rx.groupBy.error.shouldThrow.onError', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<void>.error(Exception()).groupBy((value) => value);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.groupBy.error.shouldThrow.onGrouper', () async {
-    final observableWithError =
-        Stream.fromIterable([1, 2, 3, 4]).groupBy((value) {
+    final streamWithError = Stream.fromIterable([1, 2, 3, 4]).groupBy((value) {
       throw Exception();
     });
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
           expect(e, isException);
         }, count: 4));

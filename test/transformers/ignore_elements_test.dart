@@ -72,10 +72,9 @@ void main() {
   });
 
   test('Rx.ignoreElements.error.shouldThrow', () async {
-    final observableWithError =
-        Stream<void>.error(Exception()).ignoreElements();
+    final streamWithError = Stream<void>.error(Exception()).ignoreElements();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
           expect(e, isException);
         }, count: 1));

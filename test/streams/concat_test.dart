@@ -23,28 +23,28 @@ void main() {
     const expectedOutput = [0, 1, 2, 3, 4, 5];
     var count = 0;
 
-    final observable = Rx.concat(_getStreams());
+    final stream = Rx.concat(_getStreams());
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
   });
 
   test('Rx.concatEager.single.subscription', () async {
-    final observable = Rx.concat(_getStreams());
+    final stream = Rx.concat(_getStreams());
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('Rx.concat.withEmptyStream', () async {
     const expectedOutput = [0, 1, 2, 3, 4, 5];
     var count = 0;
 
-    final observable = Rx.concat(_getStreamsIncludingEmpty());
+    final stream = Rx.concat(_getStreamsIncludingEmpty());
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
@@ -73,29 +73,29 @@ void main() {
       }
     });
 
-    final observable = Rx.concat([ctrlA.stream, ctrlB.stream, ctrlC.stream]);
+    final stream = Rx.concat([ctrlA.stream, ctrlB.stream, ctrlC.stream]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
   });
 
   test('Rx.concat.asBroadcastStream', () async {
-    final observable = Rx.concat(_getStreams()).asBroadcastStream();
+    final stream = Rx.concat(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('Rx.concat.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Rx.concat(_getStreams()..add(Stream<int>.error(Exception())));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

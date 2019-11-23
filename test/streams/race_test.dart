@@ -31,10 +31,10 @@ void main() {
   test('Rx.race.single.subscription', () async {
     final first = getDelayedStream(50, 1);
 
-    final observable = Rx.race([first]);
+    final stream = Rx.race([first]);
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('Rx.race.asBroadcastStream', () async {
@@ -42,13 +42,13 @@ void main() {
         second = getDelayedStream(60, 2),
         last = getDelayedStream(70, 3);
 
-    final observable = Rx.race([first, second, last]).asBroadcastStream();
+    final stream = Rx.race([first, second, last]).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('Rx.race.shouldThrowA', () {
@@ -60,10 +60,10 @@ void main() {
   });
 
   test('Rx.race.shouldThrowC', () async {
-    final observable = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
+    final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
-    observable.listen(null,
+    stream.listen(null,
         onError: expectAsync2(
             (Exception e, StackTrace s) => expect(e, isException)));
   });

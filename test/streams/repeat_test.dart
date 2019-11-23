@@ -57,10 +57,10 @@ void main() {
   });
 
   test('RepeatStream.error.shouldThrow', () async {
-    final observableWithError = RepeatStream(_getErroneusRepeatStream('A'), 2);
+    final streamWithError = RepeatStream(_getErroneusRepeatStream('A'), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<dynamic>[
           'A0',
           emitsError(TypeMatcher<Error>()),

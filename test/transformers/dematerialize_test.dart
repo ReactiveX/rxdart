@@ -8,9 +8,9 @@ import 'package:test/test.dart';
 void main() {
   test('Rx.dematerialize.happyPath', () async {
     const expectedValue = 1;
-    final observable = Stream.value(1).materialize();
+    final stream = Stream.value(1).materialize();
 
-    observable.dematerialize().listen(expectAsync1((value) {
+    stream.dematerialize().listen(expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
       // Should call onDone
@@ -21,17 +21,17 @@ void main() {
   test('Rx.dematerialize.reusable', () async {
     final transformer = DematerializeStreamTransformer<int>();
     const expectedValue = 1;
-    final observableA = Stream.value(1).materialize();
-    final observableB = Stream.value(1).materialize();
+    final streamA = Stream.value(1).materialize();
+    final streamB = Stream.value(1).materialize();
 
-    observableA.transform(transformer).listen(expectAsync1((value) {
+    streamA.transform(transformer).listen(expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
       // Should call onDone
       expect(true, isTrue);
     }));
 
-    observableB.transform(transformer).listen(expectAsync1((value) {
+    streamB.transform(transformer).listen(expectAsync1((value) {
       expect(value, expectedValue);
     }), onDone: expectAsync0(() {
       // Should call onDone

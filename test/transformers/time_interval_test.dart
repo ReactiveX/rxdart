@@ -61,11 +61,11 @@ void main() {
   });
 
   test('Rx.timeInterval.error.shouldThrow', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 1))
         .timeInterval();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

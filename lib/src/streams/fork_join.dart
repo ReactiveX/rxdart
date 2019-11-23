@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// This operator is best used when you have a group of observables
+/// This operator is best used when you have a group of streams
 /// and only care about the final emitted value of each.
 /// One common use case for this is if you wish to issue multiple
 /// requests on page load (or some other event)
@@ -8,13 +8,13 @@ import 'dart:async';
 ///
 /// In this way it is similar to how you might use [Future].wait.
 ///
-/// Be aware that if any of the inner observables supplied to forkJoin error
-/// you will lose the value of any other observables that would or have already
-/// completed if you do not catch the error correctly on the inner observable.
+/// Be aware that if any of the inner streams supplied to forkJoin error
+/// you will lose the value of any other streams that would or have already
+/// completed if you do not catch the error correctly on the inner stream.
 ///
-/// If you are only concerned with all inner observables completing
+/// If you are only concerned with all inner streams completing
 /// successfully you can catch the error on the outside.
-/// It's also worth noting that if you have an observable
+/// It's also worth noting that if you have an stream
 /// that emits more than one item, and you are concerned with the previous
 /// emissions forkJoin is not the correct choice.
 ///

@@ -9,10 +9,9 @@ Stream<int> _getStream() =>
 
 void main() {
   test('Rx.sampleTime', () async {
-    final observable =
-        _getStream().sampleTime(const Duration(milliseconds: 35));
+    final stream = _getStream().sampleTime(const Duration(milliseconds: 35));
 
-    await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
   test('Rx.sampleTime.reusable', () async {
@@ -29,9 +28,9 @@ void main() {
   });
 
   test('Rx.sampleTime.onDone', () async {
-    final observable = Stream.value(1).sampleTime(const Duration(seconds: 1));
+    final stream = Stream.value(1).sampleTime(const Duration(seconds: 1));
 
-    await expectLater(observable, emits(1));
+    await expectLater(stream, emits(1));
   });
 
   test('Rx.sampleTime.shouldClose', () async {
@@ -62,10 +61,10 @@ void main() {
   });
 
   test('Rx.sampleTime.error.shouldThrowA', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .sampleTime(const Duration(milliseconds: 35));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group("DistinctUniqueStreamTransformer", () {
     test("works with the equals and hascode of the class", () async {
-      final observable = Stream.fromIterable(const [
+      final stream = Stream.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -20,7 +20,7 @@ void main() {
       ]).distinctUnique();
 
       await expectLater(
-          observable,
+          stream,
           emitsInOrder(<dynamic>[
             const _TestObject("a"),
             const _TestObject("b"),
@@ -30,7 +30,7 @@ void main() {
     });
 
     test("works with a provided equals and hashcode", () async {
-      final observable = Stream.fromIterable(const [
+      final stream = Stream.fromIterable(const [
         _TestObject("a"),
         _TestObject("a"),
         _TestObject("b"),
@@ -45,7 +45,7 @@ void main() {
           equals: (a, b) => a.key == b.key, hashCode: (o) => o.key.hashCode);
 
       await expectLater(
-          observable,
+          stream,
           emitsInOrder(<dynamic>[
             const _TestObject("a"),
             const _TestObject("b"),
@@ -57,13 +57,13 @@ void main() {
     test(
         "sends an error to the subscription if an error occurs in the equals or hashmap methods",
         () async {
-      final observable = Stream.fromIterable(
+      final stream = Stream.fromIterable(
               const [_TestObject("a"), _TestObject("b"), _TestObject("c")])
           .distinctUnique(
               equals: (a, b) => a.key == b.key,
               hashCode: (o) => throw Exception('Catch me if you can!'));
 
-      observable.listen(
+      stream.listen(
         null,
         onError: expectAsync2(
           (Exception e, StackTrace s) => expect(e, isException),

@@ -72,20 +72,20 @@ void main() {
   });
 
   test('Rx.skipUntil.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<int>.error(Exception()).skipUntil(_getOtherStream());
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   test('Rx.skipUntil.error.shouldThrowB', () async {
-    final observableWithError =
+    final streamWithError =
         Stream.value(1).skipUntil(Stream<void>.error(Exception('Oh noes!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

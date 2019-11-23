@@ -46,14 +46,14 @@ void main() {
       ..add(true)
       ..close(); // ignore: unawaited_futures
 
-    final observable = Rx.zip3(
+    final stream = Rx.zip3(
         Stream.periodic(const Duration(milliseconds: 1), (count) => count)
             .take(4),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6, 7, 8, 9]),
         testStream.stream,
         (int a, int b, bool c) => [a, b, c]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       for (var i = 0, len = result.length; i < len; i++) {
         expect(result[i], expectedOutput[count][i]);
@@ -69,13 +69,12 @@ void main() {
     // A purposely emits 2 items, b only 1
     final a = Stream.fromIterable(const [1, 2]), b = Stream.value(2);
 
-    final observable =
-        Rx.zip2(a, b, (int first, int second) => [first, second]);
+    final stream = Rx.zip2(a, b, (int first, int second) => [first, second]);
 
     // Explicitly adding count: 1. It's important here, and tests the difference
     // between zip and combineLatest. If this was combineLatest, the count would
     // be two, and a second List<int> would be emitted.
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }, count: 1));
   });
@@ -86,10 +85,10 @@ void main() {
 
     final a = Stream.value(1), b = Stream.value("2"), c = Stream.value(3.0);
 
-    final observable = Rx.zip3(a, b, c,
+    final stream = Rx.zip3(a, b, c,
         (int first, String second, double third) => [first, second, third]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -102,7 +101,7 @@ void main() {
         c = Stream.value(3),
         d = Stream.value(4);
 
-    final observable = Rx.zip4(
+    final stream = Rx.zip4(
         a,
         b,
         c,
@@ -110,7 +109,7 @@ void main() {
         (int first, int second, int third, int fourth) =>
             [first, second, third, fourth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -124,7 +123,7 @@ void main() {
         d = Stream.value(4),
         e = Stream.value(5);
 
-    final observable = Rx.zip5(
+    final stream = Rx.zip5(
         a,
         b,
         c,
@@ -133,7 +132,7 @@ void main() {
         (int first, int second, int third, int fourth, int fifth) =>
             [first, second, third, fourth, fifth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -148,7 +147,7 @@ void main() {
         e = Stream.value(5),
         f = Stream.value(6);
 
-    final observable = Rx.zip6(
+    final stream = Rx.zip6(
         a,
         b,
         c,
@@ -158,7 +157,7 @@ void main() {
         (int first, int second, int third, int fourth, int fifth, int sixth) =>
             [first, second, third, fourth, fifth, sixth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -174,7 +173,7 @@ void main() {
         f = Stream.value(6),
         g = Stream.value(7);
 
-    final observable = Rx.zip7(
+    final stream = Rx.zip7(
         a,
         b,
         c,
@@ -186,7 +185,7 @@ void main() {
                 int seventh) =>
             [first, second, third, fourth, fifth, sixth, seventh]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -203,7 +202,7 @@ void main() {
         g = Stream.value(7),
         h = Stream.value(8);
 
-    Stream<List<int>> observable = Rx.zip8(
+    Stream<List<int>> stream = Rx.zip8(
         a,
         b,
         c,
@@ -216,7 +215,7 @@ void main() {
                 int seventh, int eighth) =>
             [first, second, third, fourth, fifth, sixth, seventh, eighth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
@@ -234,7 +233,7 @@ void main() {
         h = Stream.value(8),
         i = Stream.value(9);
 
-    Stream<List<int>> observable = Rx.zip9(
+    Stream<List<int>> stream = Rx.zip9(
         a,
         b,
         c,
@@ -258,17 +257,17 @@ void main() {
               ninth
             ]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
   test('Rx.zip.single.subscription', () async {
-    final observable =
+    final stream =
         Rx.zip2(Stream.value(1), Stream.value(1), (int a, int b) => a + b);
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('Rx.zip.asBroadcastStream', () async {
@@ -280,7 +279,7 @@ void main() {
       ..add(true)
       ..close(); // ignore: unawaited_futures
 
-    final observable = Rx.zip3(
+    final stream = Rx.zip3(
         Stream.periodic(const Duration(milliseconds: 1), (count) => count)
             .take(4),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -288,20 +287,20 @@ void main() {
         (int a, int b, bool c) => [a, b, c]).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('Rx.zip.error.shouldThrowA', () async {
-    final observableWithError = Rx.zip2(
+    final streamWithError = Rx.zip2(
       Stream.value(1),
       Stream.value(2),
       (int a, int b) => throw Exception(),
     );
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

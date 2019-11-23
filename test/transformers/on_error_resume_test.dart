@@ -55,10 +55,10 @@ void main() {
   });
 
   test('Rx.onErrorResumeNext.error.shouldThrow', () async {
-    final observableWithError = Stream<void>.error(Exception())
+    final streamWithError = Stream<void>.error(Exception())
         .onErrorResumeNext(Stream<void>.error(Exception()));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

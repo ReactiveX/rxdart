@@ -47,12 +47,12 @@ void main() {
   });
 
   test('Rx.scan.error.shouldThrow', () async {
-    final observableWithError = Stream.fromIterable(const [1, 2, 3, 4])
+    final streamWithError = Stream.fromIterable(const [1, 2, 3, 4])
         .scan((num acc, num value, int index) {
       throw StateError("oh noes!");
     });
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((StateError e, StackTrace s) {
           expect(e, isStateError);
         }, count: 4));

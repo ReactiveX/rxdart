@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Returns a non-terminating observable sequence, which can be used to denote
+/// Returns a non-terminating stream sequence, which can be used to denote
 /// an infinite duration.
 ///
 /// The never operator is one with very specific and limited behavior. These

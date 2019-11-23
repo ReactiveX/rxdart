@@ -66,19 +66,19 @@ void main() {
   });
 
   test('RetryStream.error.shouldThrow', () async {
-    final observableWithError = RetryStream(_getRetryStream(3), 2);
+    final streamWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(
             <Matcher>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryStream.error.capturesErrors', () async {
-    final observableWithError = RetryStream(_getRetryStream(3), 2);
+    final streamWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<Matcher>[
           emitsError(
             predicate<RetryError>((a) {

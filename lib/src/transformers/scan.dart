@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Applies an accumulator function over an observable sequence and returns
+/// Applies an accumulator function over an stream sequence and returns
 /// each intermediate result. The optional seed value is used as the initial
 /// accumulator value.
 ///

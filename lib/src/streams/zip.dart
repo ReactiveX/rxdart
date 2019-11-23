@@ -1,7 +1,7 @@
 import 'dart:async';
 
-/// Merges the specified streams into one observable sequence using the given
-/// zipper Function whenever all of the observable sequences have produced
+/// Merges the specified streams into one stream sequence using the given
+/// zipper Function whenever all of the stream sequences have produced
 /// an element at a corresponding index.
 ///
 /// It applies this function in strict sequence, so the first item emitted by

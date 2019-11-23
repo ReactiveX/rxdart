@@ -13,34 +13,33 @@ List<Stream<int>> _getStreams() {
 
 void main() {
   test('Rx.merge', () async {
-    final observable = Rx.merge(_getStreams());
+    final stream = Rx.merge(_getStreams());
 
-    await expectLater(
-        observable, emitsInOrder(const <int>[1, 2, 3, 4, 0, 1, 2]));
+    await expectLater(stream, emitsInOrder(const <int>[1, 2, 3, 4, 0, 1, 2]));
   });
 
   test('Rx.merge.single.subscription', () async {
-    final observable = Rx.merge(_getStreams());
+    final stream = Rx.merge(_getStreams());
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
   test('Rx.merge.asBroadcastStream', () async {
-    final observable = Rx.merge(_getStreams()).asBroadcastStream();
+    final stream = Rx.merge(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
   test('Rx.merge.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Rx.merge(_getStreams()..add(Stream<int>.error(Exception())));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

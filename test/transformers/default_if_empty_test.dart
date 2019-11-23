@@ -46,10 +46,9 @@ void main() {
   });
 
   test('Rx.defaultIfEmpty.error.shouldThrow', () async {
-    final observableWithError =
-        Stream<int>.error(Exception()).defaultIfEmpty(-1);
+    final streamWithError = Stream<int>.error(Exception()).defaultIfEmpty(-1);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

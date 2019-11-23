@@ -6,11 +6,11 @@ void main() {
   test('Rx.timeout', () async {
     StreamSubscription<int> subscription;
 
-    Stream<int> observable = Stream<int>.fromFuture(
+    Stream<int> stream = Stream<int>.fromFuture(
             Future<int>.delayed(Duration(milliseconds: 30), () => 1))
         .timeout(Duration(milliseconds: 1));
 
-    subscription = observable.listen((_) {},
+    subscription = stream.listen((_) {},
         onError: expectAsync2((TimeoutException e, StackTrace s) {
           expect(e is TimeoutException, isTrue);
           subscription.cancel();

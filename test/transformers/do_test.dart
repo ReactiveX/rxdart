@@ -7,19 +7,18 @@ void main() {
   group('DoStreamTranformer', () {
     test('calls onDone when the stream is finished', () async {
       var onDoneCalled = false;
-      final observable =
-          Stream<void>.empty().doOnDone(() => onDoneCalled = true);
+      final stream = Stream<void>.empty().doOnDone(() => onDoneCalled = true);
 
-      await expectLater(observable, emitsDone);
+      await expectLater(stream, emitsDone);
       await expectLater(onDoneCalled, isTrue);
     });
 
     test('calls onError when an error is emitted', () async {
       var onErrorCalled = false;
-      final observable = Stream<void>.error(Exception())
+      final stream = Stream<void>.error(Exception())
           .doOnError((dynamic e, dynamic s) => onErrorCalled = true);
 
-      await expectLater(observable, emitsError(isException));
+      await expectLater(stream, emitsError(isException));
       await expectLater(onErrorCalled, isTrue);
     });
 
@@ -44,9 +43,9 @@ void main() {
 
     test('calls onCancel when the subscription is cancelled', () async {
       var onCancelCalled = false;
-      final observable = Stream.value(1);
+      final stream = Stream.value(1);
 
-      await observable
+      await stream
           .doOnCancel(() => onCancelCalled = true)
           .listen(null)
           .cancel();
@@ -56,9 +55,9 @@ void main() {
 
     test('awaits onCancel when the subscription is cancelled', () async {
       var onCancelCompleted = 10, onCancelHandled = 10, eventSequenceCount = 0;
-      final observable = Stream.value(1);
+      final stream = Stream.value(1);
 
-      await observable
+      await stream
           .doOnCancel(() =>
               Future<void>.delayed(const Duration(milliseconds: 100))
                   .whenComplete(() => onCancelHandled = ++eventSequenceCount))
@@ -74,20 +73,20 @@ void main() {
         () async {
       var count = 0;
       final subject = BehaviorSubject<int>(sync: true);
-      final observable = subject.doOnCancel(() => count++);
+      final stream = subject.doOnCancel(() => count++);
 
-      observable.listen(null);
-      await observable.listen(null).cancel();
+      stream.listen(null);
+      await stream.listen(null).cancel();
 
       await expectLater(count, 1);
       await subject.close();
     });
 
-    test('calls onData when the observable emits an item', () async {
+    test('calls onData when the stream emits an item', () async {
       var onDataCalled = false;
-      final observable = Stream.value(1).doOnData((_) => onDataCalled = true);
+      final stream = Stream.value(1).doOnData((_) => onDataCalled = true);
 
-      await expectLater(observable, emits(1));
+      await expectLater(stream, emits(1));
       await expectLater(onDataCalled, isTrue);
     });
 
@@ -95,11 +94,11 @@ void main() {
         () async {
       final actual = <int>[];
       final controller = StreamController<int>.broadcast(sync: true);
-      final observable =
+      final stream =
           controller.stream.transform(DoStreamTransformer(onData: actual.add));
 
-      observable.listen(null);
-      observable.listen(null);
+      stream.listen(null);
+      stream.listen(null);
 
       controller.add(1);
       controller.add(2);
@@ -112,7 +111,7 @@ void main() {
       StackTrace stacktrace;
       final actual = <Notification<int>>[];
       final exception = Exception();
-      final observable = Stream.value(1)
+      final stream = Stream.value(1)
           .concatWith([Stream<int>.error(exception)]).doOnEach((notification) {
         actual.add(notification);
 
@@ -121,7 +120,7 @@ void main() {
         }
       });
 
-      await expectLater(observable,
+      await expectLater(stream,
           emitsInOrder(<dynamic>[1, emitsError(isException), emitsDone]));
 
       await expectLater(actual, [
@@ -135,13 +134,13 @@ void main() {
         () async {
       var count = 0;
       final controller = StreamController<int>.broadcast(sync: true);
-      final observable =
+      final stream =
           controller.stream.transform(DoStreamTransformer(onEach: (_) {
         count++;
       }));
 
-      observable.listen(null);
-      observable.listen(null);
+      stream.listen(null);
+      stream.listen(null);
 
       controller.add(1);
       controller.add(2);
@@ -152,11 +151,11 @@ void main() {
 
     test('calls onListen when a consumer listens', () async {
       var onListenCalled = false;
-      final observable = Stream<void>.empty().doOnListen(() {
+      final stream = Stream<void>.empty().doOnListen(() {
         onListenCalled = true;
       });
 
-      await expectLater(observable, emitsDone);
+      await expectLater(stream, emitsDone);
       await expectLater(onListenCalled, isTrue);
     });
 
@@ -165,10 +164,10 @@ void main() {
       var onListenCallCount = 0;
       final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
 
-      final observable = sc.stream.doOnListen(() => onListenCallCount++);
+      final stream = sc.stream.doOnListen(() => onListenCallCount++);
 
-      observable.listen(null);
-      observable.listen(null);
+      stream.listen(null);
+      stream.listen(null);
 
       await expectLater(onListenCallCount, 2);
       await sc.close();
@@ -176,13 +175,13 @@ void main() {
 
     test('calls onPause and onResume when the subscription is', () async {
       var onPauseCalled = false, onResumeCalled = false;
-      final observable = Stream.value(1).doOnPause((_) {
+      final stream = Stream.value(1).doOnPause((_) {
         onPauseCalled = true;
       }).doOnResume(() {
         onResumeCalled = true;
       });
 
-      observable.listen(null, onDone: expectAsync0(() {
+      stream.listen(null, onDone: expectAsync0(() {
         expect(onPauseCalled, isTrue);
         expect(onResumeCalled, isTrue);
       }))
@@ -196,14 +195,14 @@ void main() {
         callCount++;
       });
 
-      final observableA = Stream.value(1).transform(transformer),
-          observableB = Stream.value(1).transform(transformer);
+      final streamA = Stream.value(1).transform(transformer),
+          streamB = Stream.value(1).transform(transformer);
 
-      observableA.listen(null, onDone: expectAsync0(() {
+      streamA.listen(null, onDone: expectAsync0(() {
         expect(callCount, 2);
       }));
 
-      observableB.listen(null, onDone: expectAsync0(() {
+      streamB.listen(null, onDone: expectAsync0(() {
         expect(callCount, 2);
       }));
     });

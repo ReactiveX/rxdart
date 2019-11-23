@@ -40,9 +40,9 @@ void main() {
   });
 
   test('Rx.startWith.error.shouldThrow', () async {
-    final observableWithError = Stream<int>.error(Exception()).startWith(5);
+    final streamWithError = Stream<int>.error(Exception()).startWith(5);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

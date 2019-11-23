@@ -77,7 +77,7 @@ import 'package:rxdart/streams.dart';
 /// broadcast stream is listened to.
 abstract class Rx {
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an item.
+  /// [combiner] function whenever any of the stream sequences emits an item.
   /// This is helpful when you need to combine a dynamic number of Streams.
   ///
   /// The Stream will not emit any lists of values until all of the source
@@ -116,7 +116,7 @@ abstract class Rx {
       CombineLatestStream.list<T>(streams);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -136,7 +136,7 @@ abstract class Rx {
       CombineLatestStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -157,7 +157,7 @@ abstract class Rx {
       CombineLatestStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -184,7 +184,7 @@ abstract class Rx {
           streamA, streamB, streamC, streamD, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -213,7 +213,7 @@ abstract class Rx {
           streamA, streamB, streamC, streamD, streamE, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -244,7 +244,7 @@ abstract class Rx {
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -277,7 +277,7 @@ abstract class Rx {
           streamF, streamG, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -321,7 +321,7 @@ abstract class Rx {
       );
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function whenever any of the observable sequences emits an
+  /// [combiner] function whenever any of the stream sequences emits an
   /// item.
   ///
   /// The Stream will not emit until all streams have emitted at least one
@@ -428,7 +428,7 @@ abstract class Rx {
   ///  Creates a [Stream] where all last events of existing stream(s) are piped
   ///  through a sink-transformation.
   ///
-  /// This operator is best used when you have a group of observables
+  /// This operator is best used when you have a group of streams
   /// and only care about the final emitted value of each.
   /// One common use case for this is if you wish to issue multiple
   /// requests on page load (or some other event)
@@ -436,13 +436,13 @@ abstract class Rx {
   ///
   /// In this way it is similar to how you might use [Future].wait.
   ///
-  /// Be aware that if any of the inner observables supplied to forkJoin error
-  /// you will lose the value of any other observables that would or have already
-  /// completed if you do not catch the error correctly on the inner observable.
+  /// Be aware that if any of the inner streams supplied to forkJoin error
+  /// you will lose the value of any other streams that would or have already
+  /// completed if you do not catch the error correctly on the inner stream.
   ///
-  /// If you are only concerned with all inner observables completing
+  /// If you are only concerned with all inner streams completing
   /// successfully you can catch the error on the outside.
-  /// It's also worth noting that if you have an observable
+  /// It's also worth noting that if you have an stream
   /// that emits more than one item, and you are concerned with the previous
   /// emissions forkJoin is not the correct choice.
   ///
@@ -474,7 +474,7 @@ abstract class Rx {
       ForkJoinStream.list<T>(streams);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -489,7 +489,7 @@ abstract class Rx {
       ForkJoinStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -505,7 +505,7 @@ abstract class Rx {
       ForkJoinStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -526,7 +526,7 @@ abstract class Rx {
       ForkJoinStream.combine4(streamA, streamB, streamC, streamD, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -550,7 +550,7 @@ abstract class Rx {
           streamA, streamB, streamC, streamD, streamE, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -576,7 +576,7 @@ abstract class Rx {
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -604,7 +604,7 @@ abstract class Rx {
           streamF, streamG, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -643,7 +643,7 @@ abstract class Rx {
       );
 
   /// Merges the given Streams into a single Stream sequence by using the
-  /// [combiner] function when all of the observable sequences emits their
+  /// [combiner] function when all of the stream sequences emits their
   /// last item.
   ///
   /// ### Example
@@ -699,7 +699,7 @@ abstract class Rx {
   static Stream<T> merge<T>(Iterable<Stream<T>> streams) =>
       MergeStream<T>(streams);
 
-  /// Returns a non-terminating observable sequence, which can be used to denote
+  /// Returns a non-terminating stream sequence, which can be used to denote
   /// an infinite duration.
   ///
   /// The never operator is one with very specific and limited behavior. These
@@ -887,8 +887,8 @@ abstract class Rx {
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -913,8 +913,8 @@ abstract class Rx {
           Stream<A> streamA, Stream<B> streamB, T zipper(A a, B b)) =>
       ZipStream.zip2(streamA, streamB, zipper);
 
-  /// Merges the iterable streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the iterable streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -942,8 +942,8 @@ abstract class Rx {
           Iterable<Stream<T>> streams, R zipper(List<T> values)) =>
       ZipStream(streams, zipper);
 
-  /// Merges the iterable streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the iterable streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -969,8 +969,8 @@ abstract class Rx {
   static Stream<List<T>> zipList<T>(Iterable<Stream<T>> streams) =>
       ZipStream.list(streams);
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -996,8 +996,8 @@ abstract class Rx {
           Stream<C> streamC, T zipper(A a, B b, C c)) =>
       ZipStream.zip3(streamA, streamB, streamC, zipper);
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -1024,8 +1024,8 @@ abstract class Rx {
           Stream<C> streamC, Stream<D> streamD, T zipper(A a, B b, C c, D d)) =>
       ZipStream.zip4(streamA, streamB, streamC, streamD, zipper);
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -1058,8 +1058,8 @@ abstract class Rx {
           T zipper(A a, B b, C c, D d, E e)) =>
       ZipStream.zip5(streamA, streamB, streamC, streamD, streamE, zipper);
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -1102,8 +1102,8 @@ abstract class Rx {
         zipper,
       );
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -1149,8 +1149,8 @@ abstract class Rx {
         zipper,
       );
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
@@ -1199,8 +1199,8 @@ abstract class Rx {
         zipper,
       );
 
-  /// Merges the specified streams into one observable sequence using the given
-  /// zipper function whenever all of the observable sequences have produced
+  /// Merges the specified streams into one stream sequence using the given
+  /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by

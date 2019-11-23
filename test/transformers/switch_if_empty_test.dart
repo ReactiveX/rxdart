@@ -52,10 +52,10 @@ void main() {
   });
 
   test('Rx.switchIfEmpty.error.shouldThrowA', () async {
-    final observableWithError =
+    final streamWithError =
         Stream<int>.error(Exception()).switchIfEmpty(Stream.value(1));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));

@@ -43,9 +43,9 @@ void main() {
     final expected = const [1, 2, 3];
     var count = 0;
 
-    final observable = Rx.range(1, 3);
+    final stream = Rx.range(1, 3);
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, expected[count++]);
     }, count: expected.length));
   });
