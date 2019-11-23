@@ -1,6 +1,7 @@
 ## 0.23.0-dev.2
-  * Remove base Observable constructor. With extensions, you no longer need to wrap Streams in an Observable!
+  * Remove the Observable class. With extensions, you no longer need to wrap Streams in a [Stream]!
   * Convert all factories to static constructors to aid in discoverability of Stream classes
+  * Move all factories to an `Rx` class.
   * Remove `Observable.just`, use `Stream.value`
   * Remove `Observable.error`, use `Stream.error`
   * Remove all tests that check base Stream methods
