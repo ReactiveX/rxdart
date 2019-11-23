@@ -18,7 +18,7 @@ Stream<int> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.ignoreElements', () async {
+  test('Rx.ignoreElements', () async {
     var hasReceivedEvent = false;
 
     _getStream().ignoreElements().listen((_) {
@@ -29,7 +29,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.ignoreElements.reusable', () async {
+  test('Rx.ignoreElements.reusable', () async {
     final transformer = IgnoreElementsStreamTransformer<int>();
     var hasReceivedEvent = false;
 
@@ -48,7 +48,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.ignoreElements.asBroadcastStream', () async {
+  test('Rx.ignoreElements.asBroadcastStream', () async {
     final stream = _getStream().asBroadcastStream().ignoreElements();
 
     // listen twice on same stream
@@ -58,7 +58,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.ignoreElements.pause.resume', () async {
+  test('Rx.ignoreElements.pause.resume', () async {
     var hasReceivedEvent = false;
 
     _getStream().ignoreElements().listen((_) {
@@ -71,7 +71,7 @@ void main() {
       ..resume();
   });
 
-  test('rx.Observable.ignoreElements.error.shouldThrow', () async {
+  test('Rx.ignoreElements.error.shouldThrow', () async {
     final observableWithError =
         Stream<void>.error(Exception()).ignoreElements();
 

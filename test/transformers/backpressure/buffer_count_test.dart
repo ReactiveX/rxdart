@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.bufferCount.noStartBufferEvery', () async {
+  test('Rx.bufferCount.noStartBufferEvery', () async {
     await expectLater(
-        Observable.range(1, 4).bufferCount(2),
+        Rx.range(1, 4).bufferCount(2),
         emitsInOrder(<dynamic>[
           const [1, 2],
           const [3, 4],
@@ -14,10 +14,9 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.noStartBufferEvery.includesEventOnClose',
-      () async {
+  test('Rx.bufferCount.noStartBufferEvery.includesEventOnClose', () async {
     await expectLater(
-        Observable.range(1, 5).bufferCount(2),
+        Rx.range(1, 5).bufferCount(2),
         emitsInOrder(<dynamic>[
           const [1, 2],
           const [3, 4],
@@ -26,10 +25,9 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.startBufferEvery.count2startBufferEvery1',
-      () async {
+  test('Rx.bufferCount.startBufferEvery.count2startBufferEvery1', () async {
     await expectLater(
-        Observable.range(1, 4).bufferCount(2, 1),
+        Rx.range(1, 4).bufferCount(2, 1),
         emitsInOrder(<dynamic>[
           const [1, 2],
           const [2, 3],
@@ -39,10 +37,9 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.startBufferEvery.count3startBufferEvery2',
-      () async {
+  test('Rx.bufferCount.startBufferEvery.count3startBufferEvery2', () async {
     await expectLater(
-        Observable.range(1, 8).bufferCount(3, 2),
+        Rx.range(1, 8).bufferCount(3, 2),
         emitsInOrder(<dynamic>[
           const [1, 2, 3],
           const [3, 4, 5],
@@ -52,10 +49,9 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.startBufferEvery.count3startBufferEvery4',
-      () async {
+  test('Rx.bufferCount.startBufferEvery.count3startBufferEvery4', () async {
     await expectLater(
-        Observable.range(1, 8).bufferCount(3, 4),
+        Rx.range(1, 8).bufferCount(3, 4),
         emitsInOrder(<dynamic>[
           const [1, 2, 3],
           const [5, 6, 7],
@@ -63,7 +59,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.reusable', () async {
+  test('Rx.bufferCount.reusable', () async {
     final transformer = BufferCountStreamTransformer<int>(2);
 
     await expectLater(
@@ -83,7 +79,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferCount.asBroadcastStream', () async {
+  test('Rx.bufferCount.asBroadcastStream', () async {
     final stream = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
         .bufferCount(2);
@@ -100,26 +96,25 @@ void main() {
     await expectLater(stream, emitsInOrder(<dynamic>[emitsDone]));
   });
 
-  test('rx.Observable.bufferCount.error.shouldThrowA', () async {
+  test('Rx.bufferCount.error.shouldThrowA', () async {
     await expectLater(Stream<void>.error(Exception()).bufferCount(2),
         emitsError(isException));
   });
 
   test(
-    'rx.Observable.bufferCount.shouldThrow.invalidCount.negative',
+    'Rx.bufferCount.shouldThrow.invalidCount.negative',
     () {
       expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(-1),
           throwsArgumentError);
     },
   );
 
-  test('rx.Observable.bufferCount.shouldThrow.invalidCount.isNull', () {
+  test('Rx.bufferCount.shouldThrow.invalidCount.isNull', () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(null),
         throwsArgumentError);
   });
 
-  test(
-      'rx.Observable.bufferCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
+  test('Rx.bufferCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
       () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(2, -1),
         throwsArgumentError);

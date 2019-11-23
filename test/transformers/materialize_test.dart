@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.materialize.happyPath', () async {
+  test('Rx.materialize.happyPath', () async {
     final observable = Stream.value(1);
     final notifications = <Notification<int>>[];
 
@@ -14,7 +14,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.materialize.reusable', () async {
+  test('Rx.materialize.reusable', () async {
     final transformer = MaterializeStreamTransformer<int>();
     final observable = Stream.value(1).asBroadcastStream();
     final notificationsA = <Notification<int>>[],

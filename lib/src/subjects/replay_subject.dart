@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/observables/observable.dart';
+import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with_many.dart';
@@ -44,7 +44,7 @@ import 'package:rxdart/src/transformers/start_with_many.dart';
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
-class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
+class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   final Queue<T> _queue;
   final int _maxSize;
 
@@ -69,7 +69,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
 
     return ReplaySubject<T>._(
       controller,
-      Observable.defer<T>(
+      Rx.defer<T>(
         () => controller.stream.startWithMany(queue.toList(growable: false)),
         reusable: true,
       ),

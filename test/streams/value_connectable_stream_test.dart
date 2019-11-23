@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 class MockStream<T> extends Mock implements Stream<T> {}
 
 void main() {
-  group('BehaviorConnectableObservable', () {
+  group('BehaviorConnectableStream', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
       final observable = ValueConnectableStream(stream);
@@ -121,7 +121,7 @@ void main() {
       expect(observable, emitsInOrder(const <int>[1, 2, 3]));
     });
 
-    test('transform Observables with initial value', () async {
+    test('transform Stream with initial value', () async {
       final observable =
           Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
 

@@ -7,7 +7,7 @@ void main() {
   group('SwitchLatest', () {
     test('emits all values from an emitted Stream', () {
       expect(
-        Observable.switchLatest(
+        Rx.switchLatest(
           Stream.value(
             Stream.fromIterable(const ['A', 'B', 'C']),
           ),
@@ -18,14 +18,14 @@ void main() {
 
     test('only emits values from the latest emitted stream', () {
       expect(
-        Observable.switchLatest(testObservable),
+        Rx.switchLatest(testStream),
         emits('C'),
       );
     });
 
     test('emits errors from the higher order Stream to the listener', () {
       expect(
-        Observable.switchLatest(
+        Rx.switchLatest(
           Stream<Stream<void>>.error(Exception()),
         ),
         emitsError(isException),
@@ -34,21 +34,21 @@ void main() {
 
     test('emits errors from the emitted Stream to the listener', () {
       expect(
-        Observable.switchLatest(errorObservable),
+        Rx.switchLatest(errorStream),
         emitsError(isException),
       );
     });
 
     test('closes after the last event from the last emitted Stream', () {
       expect(
-        Observable.switchLatest(testObservable),
+        Rx.switchLatest(testStream),
         emitsThrough(emitsDone),
       );
     });
 
     test('closes if the higher order stream is empty', () {
       expect(
-        Observable.switchLatest(
+        Rx.switchLatest(
           Stream<Stream<void>>.empty(),
         ),
         emitsThrough(emitsDone),
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('is single subscription', () {
-      final stream = SwitchLatestStream(testObservable);
+      final stream = SwitchLatestStream(testStream);
 
       expect(stream, emits('C'));
       expect(() => stream.listen(null), throwsStateError);
@@ -65,7 +65,7 @@ void main() {
     test('can be paused and resumed', () {
       // ignore: cancel_subscriptions
       final subscription =
-          Observable.switchLatest(testObservable).listen(expectAsync1((result) {
+          Rx.switchLatest(testStream).listen(expectAsync1((result) {
         expect(result, 'C');
       }));
 
@@ -75,14 +75,14 @@ void main() {
   });
 }
 
-Stream<Stream<String>> get testObservable => Stream.fromIterable([
-      Observable.timer('A', Duration(seconds: 2)),
-      Observable.timer('B', Duration(seconds: 1)),
+Stream<Stream<String>> get testStream => Stream.fromIterable([
+      Rx.timer('A', Duration(seconds: 2)),
+      Rx.timer('B', Duration(seconds: 1)),
       Stream.value('C'),
     ]);
 
-Stream<Stream<String>> get errorObservable => Stream.fromIterable([
-      Observable.timer('A', Duration(seconds: 2)),
-      Observable.timer('B', Duration(seconds: 1)),
+Stream<Stream<String>> get errorStream => Stream.fromIterable([
+      Rx.timer('A', Duration(seconds: 2)),
+      Rx.timer('B', Duration(seconds: 1)),
       Stream.error(Exception()),
     ]);

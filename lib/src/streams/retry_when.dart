@@ -21,11 +21,11 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ### Periodic Example
 /// ```dart
 /// RetryWhenStream<int>(
-///   () => Observable<int>
+///   () => Stream<int>
 ///       .periodic(const Duration(seconds: 1), (int i) => i)
 ///       .map((int i) => i == 2 ? throw 'exception' : i),
 ///   (dynamic e, StackTrace s) {
-///     return Observable<String>
+///     return Rx<String>
 ///         .timer('random value', const Duration(milliseconds: 200));
 ///   },
 /// ).take(4).listen(print); // Prints 0, 1, 0, 1
@@ -35,7 +35,7 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ```dart
 /// bool errorHappened = false;
 /// RetryWhenStream(
-///   () => Observable
+///   () => Stream
 ///       .periodic(const Duration(seconds: 1), (i) => i)
 ///       .map((i) {
 ///         if (i == 3 && !errorHappened) {

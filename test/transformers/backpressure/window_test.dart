@@ -14,7 +14,7 @@ Stream<int> getStream(int n) async* {
 }
 
 void main() {
-  test('rx.Observable.window', () async {
+  test('Rx.window', () async {
     await expectLater(
         getStream(4)
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
@@ -27,7 +27,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.sampleBeforeEvent.shouldEmit', () async {
+  test('Rx.window.sampleBeforeEvent.shouldEmit', () async {
     await expectLater(
         Stream.fromFuture(
                 Future<Null>.delayed(const Duration(milliseconds: 200))
@@ -46,7 +46,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.shouldClose', () async {
+  test('Rx.window.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
@@ -62,7 +62,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.reusable', () async {
+  test('Rx.window.reusable', () async {
     final transformer = WindowStreamTransformer<int>((_) =>
         Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(3)
@@ -89,7 +89,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.asBroadcastStream', () async {
+  test('Rx.window.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
         .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
@@ -102,14 +102,14 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.window.error.shouldThrowA', () async {
+  test('Rx.window.error.shouldThrowA', () async {
     await expectLater(
         Stream<Null>.error(Exception())
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
 
-  test('rx.Observable.window.error.shouldThrowB', () async {
+  test('Rx.window.error.shouldThrowB', () async {
     await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
         emitsError(isArgumentError));
   });

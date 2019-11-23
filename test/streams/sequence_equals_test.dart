@@ -4,16 +4,16 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.sequenceEqual.equals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.equals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
 
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.diffTime.equals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.diffTime.equals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1)
             .take(5),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
@@ -21,8 +21,8 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.equals.customCompare.equals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.equals.customCompare.equals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
         Stream.fromIterable(const [2, 2, 2, 2, 2]),
         equals: (int a, int b) => true);
@@ -30,8 +30,8 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.diffTime.notEquals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.diffTime.notEquals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1)
             .take(5),
         Stream.fromIterable(const [1, 1, 1, 1, 1]));
@@ -39,16 +39,16 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.notEquals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.notEquals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 5, 4]));
 
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.equals.customCompare.notEquals', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.equals.customCompare.notEquals', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
         equals: (int a, int b) => false);
@@ -56,18 +56,17 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.notEquals.differentLength', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.notEquals.differentLength', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6]));
 
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test(
-      'rx.Observable.sequenceEqual.notEquals.differentLength.customCompare.notEquals',
+  test('Rx.sequenceEqual.notEquals.differentLength.customCompare.notEquals',
       () async {
-    final observable = Observable.sequenceEqual(
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6]),
         equals: (int a, int b) => true);
@@ -78,24 +77,24 @@ void main() {
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.equals.errors', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.equals.errors', () async {
+    final observable = Rx.sequenceEqual(
         Stream<void>.error(ArgumentError('error A')),
         Stream<void>.error(ArgumentError('error A')));
 
     await expectLater(observable, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.notEquals.errors', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.notEquals.errors', () async {
+    final observable = Rx.sequenceEqual(
         Stream<void>.error(ArgumentError('error A')),
         Stream<void>.error(ArgumentError('error B')));
 
     await expectLater(observable, emitsInOrder(<dynamic>[false, emitsDone]));
   });
 
-  test('rx.Observable.sequenceEqual.single.subscription', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.single.subscription', () async {
+    final observable = Rx.sequenceEqual(
         Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5]));
 
@@ -103,8 +102,8 @@ void main() {
     await expectLater(() => observable.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.sequenceEqual.asBroadcastStream', () async {
-    final observable = Observable.sequenceEqual(
+  test('Rx.sequenceEqual.asBroadcastStream', () async {
+    final observable = Rx.sequenceEqual(
             Stream.fromIterable(const [1, 2, 3, 4, 5]),
             Stream.fromIterable(const [1, 2, 3, 4, 5]))
         .asBroadcastStream()
@@ -115,16 +114,16 @@ void main() {
     await expectLater(observable, emitsDone);
   });
 
-  test('rx.Observable.sequenceEqual.error.shouldThrowA', () {
+  test('Rx.sequenceEqual.error.shouldThrowA', () {
     expect(
-        () => Observable.sequenceEqual<int, void>(
+        () => Rx.sequenceEqual<int, void>(
             Stream.fromIterable(const [1, 2, 3, 4, 5]), null),
         throwsArgumentError);
   });
 
-  test('rx.Observable.sequenceEqual.error.shouldThrowB', () {
+  test('Rx.sequenceEqual.error.shouldThrowB', () {
     expect(
-        () => Observable.sequenceEqual<void, int>(
+        () => Rx.sequenceEqual<void, int>(
             null, Stream.fromIterable(const [1, 2, 3, 4, 5])),
         throwsArgumentError);
   });

@@ -7,7 +7,7 @@ Stream<int> _observable() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
-  test('rx.Observable.throttle', () async {
+  test('Rx.throttle', () async {
     await expectLater(
         _observable()
             .throttle(
@@ -16,7 +16,7 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
-  test('rx.Observable.throttle.trailing', () async {
+  test('Rx.throttle.trailing', () async {
     await expectLater(
         _observable()
             .throttle(
@@ -26,7 +26,7 @@ void main() {
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
 
-  test('rx.Observable.throttle.dynamic.window', () async {
+  test('Rx.throttle.dynamic.window', () async {
     await expectLater(
         _observable()
             .throttle((value) => value == 1
@@ -36,7 +36,7 @@ void main() {
         emitsInOrder(<dynamic>[1, 2, 5, emitsDone]));
   });
 
-  test('rx.Observable.throttle.dynamic.window.trailing', () async {
+  test('Rx.throttle.dynamic.window.trailing', () async {
     await expectLater(
         _observable()
             .throttle(
@@ -48,7 +48,7 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
-  test('rx.Observable.throttle.reusable', () async {
+  test('Rx.throttle.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
@@ -59,7 +59,7 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
-  test('rx.Observable.throttle.asBroadcastStream', () async {
+  test('Rx.throttle.asBroadcastStream', () async {
     final stream = _observable()
         .asBroadcastStream()
         .throttle(
@@ -71,7 +71,7 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.throttle.error.shouldThrowA', () async {
+  test('Rx.throttle.error.shouldThrowA', () async {
     final observableWithError = Stream<void>.error(Exception()).throttle(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
@@ -81,12 +81,12 @@ void main() {
     }));
   });
 
-  test('rx.Observable.throttle.error.shouldThrowB', () {
+  test('Rx.throttle.error.shouldThrowB', () {
     expect(() => Stream.value(1).throttle(null),
         throwsA(const TypeMatcher<AssertionError>()));
   }, skip: true);
 
-  test('rx.Observable.throttle.pause.resume', () async {
+  test('Rx.throttle.pause.resume', () async {
     StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();

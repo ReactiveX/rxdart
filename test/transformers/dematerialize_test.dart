@@ -6,7 +6,7 @@ import 'package:stack_trace/stack_trace.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.dematerialize.happyPath', () async {
+  test('Rx.dematerialize.happyPath', () async {
     const expectedValue = 1;
     final observable = Stream.value(1).materialize();
 
@@ -18,7 +18,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.dematerialize.reusable', () async {
+  test('Rx.dematerialize.reusable', () async {
     final transformer = DematerializeStreamTransformer<int>();
     const expectedValue = 1;
     final observableA = Stream.value(1).materialize();

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// Exactly like a normal broadcast StreamController with one exception:
-/// `stream` returns an `Observable` instead of a `Stream`.
+/// `stream` returns a [Stream] instead of a [Stream].
 ///
 /// This Subject allows sending data, error and done events to the listener.
 ///

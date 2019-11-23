@@ -4,9 +4,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.windowTest', () async {
+  test('Rx.windowTest', () async {
     await expectLater(
-        Observable.range(1, 4)
+        Rx.range(1, 4)
             .windowTest((i) => i % 2 == 0)
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -16,7 +16,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTest.reusable', () async {
+  test('Rx.windowTest.reusable', () async {
     final transformer = WindowTestStreamTransformer<int>((i) => i % 2 == 0);
 
     await expectLater(
@@ -40,7 +40,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTest.asBroadcastStream', () async {
+  test('Rx.windowTest.asBroadcastStream', () async {
     final stream = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
         .windowTest((i) => i % 2 == 0)
@@ -51,13 +51,13 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.windowTest.error.shouldThrowA', () async {
+  test('Rx.windowTest.error.shouldThrowA', () async {
     await expectLater(
         Stream<int>.error(Exception()).windowTest((i) => i % 2 == 0),
         emitsError(isException));
   });
 
-  test('rx.Observable.windowTest.skip.shouldThrowB', () {
+  test('Rx.windowTest.skip.shouldThrowB', () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTest(null),
         throwsArgumentError);
   });

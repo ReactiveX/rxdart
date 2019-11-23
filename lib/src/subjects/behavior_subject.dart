@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/observable.dart';
+import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
@@ -68,7 +68,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return BehaviorSubject<T>._(
         controller,
-        Observable.defer<T>(_deferStream(wrapper, controller), reusable: true),
+        Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
         wrapper);
   }
 
@@ -95,7 +95,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return BehaviorSubject<T>._(
       controller,
-      Observable.defer<T>(_deferStream(wrapper, controller), reusable: true),
+      Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
       wrapper,
     );
   }

@@ -4,21 +4,21 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.switchIfEmpty.whenEmpty', () async {
+  test('Rx.switchIfEmpty.whenEmpty', () async {
     expect(
       Stream<int>.empty().switchIfEmpty(Stream.value(1)),
       emitsInOrder(<dynamic>[1, emitsDone]),
     );
   });
 
-  test('rx.Observable.initial.completes', () async {
+  test('Rx.initial.completes', () async {
     expect(
       Stream.value(99).switchIfEmpty(Stream.value(1)),
       emitsInOrder(<dynamic>[99, emitsDone]),
     );
   });
 
-  test('rx.Observable.switchIfEmpty.reusable', () async {
+  test('Rx.switchIfEmpty.reusable', () async {
     final transformer = SwitchIfEmptyStreamTransformer<bool>(
         Stream.value(true).asBroadcastStream());
 
@@ -31,7 +31,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.switchIfEmpty.whenNotEmpty', () async {
+  test('Rx.switchIfEmpty.whenNotEmpty', () async {
     Stream.value(false)
         .switchIfEmpty(Stream.value(true))
         .listen(expectAsync1((result) {
@@ -39,7 +39,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.switchIfEmpty.asBroadcastStream', () async {
+  test('Rx.switchIfEmpty.asBroadcastStream', () async {
     final stream =
         Stream<int>.empty().switchIfEmpty(Stream.value(1)).asBroadcastStream();
 
@@ -51,7 +51,7 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrowA', () async {
+  test('Rx.switchIfEmpty.error.shouldThrowA', () async {
     final observableWithError =
         Stream<int>.error(Exception()).switchIfEmpty(Stream.value(1));
 
@@ -61,11 +61,11 @@ void main() {
     }));
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrowB', () {
+  test('Rx.switchIfEmpty.error.shouldThrowB', () {
     expect(() => Stream<void>.empty().switchIfEmpty(null), throwsArgumentError);
   });
 
-  test('rx.Observable.switchIfEmpty.pause.resume', () async {
+  test('Rx.switchIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = Stream<int>.empty().switchIfEmpty(Stream.value(1));
 

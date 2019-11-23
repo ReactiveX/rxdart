@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   const num expected = 0;
 
-  test('rx.Observable.onErrorReturn', () async {
+  test('Rx.onErrorReturn', () async {
     Stream<num>.error(Exception())
         .onErrorReturn(0)
         .listen(expectAsync1((num result) {
@@ -14,7 +14,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.onErrorReturn.asBroadcastStream', () async {
+  test('Rx.onErrorReturn.asBroadcastStream', () async {
     Stream<num> stream =
         Stream<num>.error(Exception()).onErrorReturn(0).asBroadcastStream();
 
@@ -29,7 +29,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.onErrorReturn.pause.resume', () async {
+  test('Rx.onErrorReturn.pause.resume', () async {
     StreamSubscription<num> subscription;
 
     subscription = Stream<num>.error(Exception())

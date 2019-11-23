@@ -7,9 +7,9 @@ void main() {
   group('ExhaustMap', () {
     test('does not create a new Stream while emitting', () async {
       var calls = 0;
-      final observable = Observable.range(0, 9).exhaustMap((i) {
+      final observable = Rx.range(0, 9).exhaustMap((i) {
         calls++;
-        return Observable.timer(i, Duration(milliseconds: 100));
+        return Rx.timer(i, Duration(milliseconds: 100));
       });
 
       await expectLater(observable, emitsInOrder(<dynamic>[0, emitsDone]));
@@ -30,23 +30,23 @@ void main() {
 
     test('is reusable', () async {
       final transformer = ExhaustMapStreamTransformer(
-          (int i) => Observable.timer(i, Duration(milliseconds: 100)));
+          (int i) => Rx.timer(i, Duration(milliseconds: 100)));
 
       await expectLater(
-        Observable.range(0, 9).transform(transformer),
+        Rx.range(0, 9).transform(transformer),
         emitsInOrder(<dynamic>[0, emitsDone]),
       );
 
       await expectLater(
-        Observable.range(0, 9).transform(transformer),
+        Rx.range(0, 9).transform(transformer),
         emitsInOrder(<dynamic>[0, emitsDone]),
       );
     });
 
     test('works as a broadcast stream', () async {
-      final stream = Observable.range(0, 9)
+      final stream = Rx.range(0, 9)
           .asBroadcastStream()
-          .exhaustMap((i) => Observable.timer(i, Duration(milliseconds: 100)));
+          .exhaustMap((i) => Rx.timer(i, Duration(milliseconds: 100)));
 
       await expectLater(() {
         stream.listen(null);
@@ -56,7 +56,7 @@ void main() {
 
     test('should emit errors from source', () async {
       final observableWithError = Stream<int>.error(Exception())
-          .exhaustMap((i) => Observable.timer(i, Duration(milliseconds: 100)));
+          .exhaustMap((i) => Rx.timer(i, Duration(milliseconds: 100)));
 
       await expectLater(observableWithError, emitsError(isException));
     });
@@ -78,8 +78,8 @@ void main() {
 
     test('can be paused and resumed', () async {
       StreamSubscription<int> subscription;
-      final stream = Observable.range(0, 9)
-          .exhaustMap((i) => Observable.timer(i, Duration(milliseconds: 20)));
+      final stream = Rx.range(0, 9)
+          .exhaustMap((i) => Rx.timer(i, Duration(milliseconds: 20)));
 
       subscription = stream.listen(expectAsync1((value) {
         expect(value, 0);

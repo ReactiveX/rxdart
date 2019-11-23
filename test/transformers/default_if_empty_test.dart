@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.defaultIfEmpty.whenEmpty', () async {
+  test('Rx.defaultIfEmpty.whenEmpty', () async {
     Stream<bool>.empty()
         .defaultIfEmpty(true)
         .listen(expectAsync1((bool result) {
@@ -12,7 +12,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.defaultIfEmpty.reusable', () async {
+  test('Rx.defaultIfEmpty.reusable', () async {
     final transformer = DefaultIfEmptyStreamTransformer<bool>(true);
 
     Stream<bool>.empty().transform(transformer).listen(expectAsync1((result) {
@@ -24,7 +24,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.defaultIfEmpty.whenNotEmpty', () async {
+  test('Rx.defaultIfEmpty.whenNotEmpty', () async {
     Stream.fromIterable(const [false, false, false])
         .defaultIfEmpty(true)
         .listen(expectAsync1((result) {
@@ -32,7 +32,7 @@ void main() {
         }, count: 3));
   });
 
-  test('rx.Observable.defaultIfEmpty.asBroadcastStream', () async {
+  test('Rx.defaultIfEmpty.asBroadcastStream', () async {
     final stream = Stream.fromIterable(const <int>[])
         .defaultIfEmpty(-1)
         .asBroadcastStream();
@@ -45,7 +45,7 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.defaultIfEmpty.error.shouldThrow', () async {
+  test('Rx.defaultIfEmpty.error.shouldThrow', () async {
     final observableWithError =
         Stream<int>.error(Exception()).defaultIfEmpty(-1);
 
@@ -55,7 +55,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.defaultIfEmpty.pause.resume', () async {
+  test('Rx.defaultIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = Stream.fromIterable(const <int>[]).defaultIfEmpty(1);
 

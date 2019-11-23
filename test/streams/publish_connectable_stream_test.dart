@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 class MockStream<T> extends Mock implements Stream<T> {}
 
 void main() {
-  group('PublishConnectableObservable', () {
+  group('PublishConnectableStream', () {
     test('should not emit before connecting', () {
       final stream = MockStream<int>();
       final observable = PublishConnectableStream(stream);

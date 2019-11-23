@@ -35,7 +35,7 @@ Stream<int> range() =>
     Stream.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 void main() {
-  test('rx.Observable.switchMap', () async {
+  test('Rx.switchMap', () async {
     const expectedOutput = [5, 6, 7, 8];
     var count = 0;
 
@@ -44,7 +44,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.switchMap.reusable', () async {
+  test('Rx.switchMap.reusable', () async {
     final transformer = SwitchMapStreamTransformer<int, int>(_getOtherStream);
     const expectedOutput = [5, 6, 7, 8];
     var countA = 0, countB = 0;
@@ -58,7 +58,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.switchMap.asBroadcastStream', () async {
+  test('Rx.switchMap.asBroadcastStream', () async {
     final stream = _getStream().asBroadcastStream().switchMap(_getOtherStream);
 
     // listen twice on same stream
@@ -68,7 +68,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowA', () async {
+  test('Rx.switchMap.error.shouldThrowA', () async {
     final observableWithError =
         Stream<int>.error(Exception()).switchMap(_getOtherStream);
 
@@ -78,7 +78,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowB', () async {
+  test('Rx.switchMap.error.shouldThrowB', () async {
     final observableWithError = Stream.value(1).switchMap(
         (_) => Stream<void>.error(Exception('Catch me if you can!')));
 
@@ -88,7 +88,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowC', () async {
+  test('Rx.switchMap.error.shouldThrowC', () async {
     final observableWithError = Stream.value(1).switchMap<void>((_) {
       throw Exception('oh noes!');
     });
@@ -99,7 +99,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.switchMap.pause.resume', () async {
+  test('Rx.switchMap.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = Stream.value(0).switchMap((_) => Stream.value(1));
 
@@ -113,7 +113,7 @@ void main() {
     subscription.resume();
   });
 
-  test('rx.Observable.switchMap stream close after switch', () async {
+  test('Rx.switchMap stream close after switch', () async {
     final controller = StreamController<int>();
     final list = controller.stream
         .switchMap((it) => Stream.fromIterable([it, it]))

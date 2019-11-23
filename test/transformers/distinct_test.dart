@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.distinct', () async {
+  test('Rx.distinct', () async {
     const expected = 1;
 
     final observable =

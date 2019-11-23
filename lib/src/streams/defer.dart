@@ -4,8 +4,8 @@ import 'dart:async';
 /// creates a Stream with the given factory function.
 ///
 /// In some circumstances, waiting until the last minute (that is, until
-/// subscription time) to generate the Observable can ensure that this
-/// Observable contains the freshest data.
+/// subscription time) to generate the Stream can ensure that listeners
+/// receive the freshest data.
 ///
 /// By default, DeferStreams are single-subscription. However, it's possible
 /// to make them reusable.

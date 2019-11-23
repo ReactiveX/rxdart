@@ -6,10 +6,10 @@ import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.retry', () async {
+  test('Rx.retry', () async {
     const retries = 3;
 
-    await expectLater(Observable.retry(_getRetryStream(retries), retries),
+    await expectLater(Rx.retry(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 

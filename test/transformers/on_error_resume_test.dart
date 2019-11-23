@@ -8,7 +8,7 @@ Stream<int> _getStream() => Stream.fromIterable(const [0, 1, 2, 3]);
 const List<int> expected = [0, 1, 2, 3];
 
 void main() {
-  test('rx.Observable.onErrorResumeNext', () async {
+  test('Rx.onErrorResumeNext', () async {
     var count = 0;
 
     Stream<int>.error(Exception())
@@ -18,7 +18,7 @@ void main() {
         }, count: expected.length));
   });
 
-  test('rx.Observable.onErrorResume', () async {
+  test('Rx.onErrorResume', () async {
     var count = 0;
 
     Stream<int>.error(Exception())
@@ -28,7 +28,7 @@ void main() {
         }, count: expected.length));
   });
 
-  test('rx.Observable.onErrorResume.correctError', () async {
+  test('Rx.onErrorResume.correctError', () async {
     final exception = Exception();
 
     expect(
@@ -38,7 +38,7 @@ void main() {
     );
   });
 
-  test('rx.Observable.onErrorResumeNext.asBroadcastStream', () async {
+  test('Rx.onErrorResumeNext.asBroadcastStream', () async {
     final stream = Stream<int>.error(Exception())
         .onErrorResumeNext(_getStream())
         .asBroadcastStream();
@@ -54,7 +54,7 @@ void main() {
     }, count: expected.length));
   });
 
-  test('rx.Observable.onErrorResumeNext.error.shouldThrow', () async {
+  test('Rx.onErrorResumeNext.error.shouldThrow', () async {
     final observableWithError = Stream<void>.error(Exception())
         .onErrorResumeNext(Stream<void>.error(Exception()));
 
@@ -64,14 +64,14 @@ void main() {
     }));
   });
 
-  test('rx.Observable.onErrorResumeNext.pause.resume', () async {
+  test('Rx.onErrorResumeNext.pause.resume', () async {
     final transformer =
         OnErrorResumeStreamTransformer<int>((Object _) => _getStream());
     final exp = const [50] + expected;
     StreamSubscription<num> subscription;
     var count = 0;
 
-    subscription = Observable.merge([
+    subscription = Rx.merge([
       Stream.value(50),
       Stream<int>.error(Exception()),
     ]).transform(transformer).listen(expectAsync1((result) {
@@ -86,7 +86,7 @@ void main() {
     subscription.resume();
   });
 
-  test('rx.Observable.onErrorResumeNext.close', () async {
+  test('Rx.onErrorResumeNext.close', () async {
     var count = 0;
 
     Stream<int>.error(Exception()).onErrorResumeNext(_getStream()).listen(
@@ -99,7 +99,7 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.onErrorResumeNext.noErrors.close', () async {
+  test('Rx.onErrorResumeNext.noErrors.close', () async {
     expect(
       Stream<int>.empty().onErrorResumeNext(_getStream()),
       emitsDone,

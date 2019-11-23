@@ -8,14 +8,14 @@ Stream<int> _getStream() =>
         .take(5);
 
 void main() {
-  test('rx.Observable.sampleTime', () async {
+  test('Rx.sampleTime', () async {
     final observable =
         _getStream().sampleTime(const Duration(milliseconds: 35));
 
     await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
-  test('rx.Observable.sampleTime.reusable', () async {
+  test('Rx.sampleTime.reusable', () async {
     final transformer = SampleStreamTransformer<int>((_) =>
         TimerStream<bool>(true, const Duration(milliseconds: 35))
             .asBroadcastStream());
@@ -28,13 +28,13 @@ void main() {
     );
   });
 
-  test('rx.Observable.sampleTime.onDone', () async {
+  test('Rx.sampleTime.onDone', () async {
     final observable = Stream.value(1).sampleTime(const Duration(seconds: 1));
 
     await expectLater(observable, emits(1));
   });
 
-  test('rx.Observable.sampleTime.shouldClose', () async {
+  test('Rx.sampleTime.shouldClose', () async {
     final controller = StreamController<int>();
 
     controller.stream
@@ -49,7 +49,7 @@ void main() {
     scheduleMicrotask(controller.close);
   });
 
-  test('rx.Observable.sampleTime.asBroadcastStream', () async {
+  test('Rx.sampleTime.asBroadcastStream', () async {
     final stream = _getStream()
         .sampleTime(const Duration(milliseconds: 35))
         .asBroadcastStream();
@@ -61,7 +61,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.sampleTime.error.shouldThrowA', () async {
+  test('Rx.sampleTime.error.shouldThrowA', () async {
     final observableWithError = Stream<void>.error(Exception())
         .sampleTime(const Duration(milliseconds: 35));
 
@@ -71,7 +71,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.sampleTime.pause.resume', () async {
+  test('Rx.sampleTime.pause.resume', () async {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 

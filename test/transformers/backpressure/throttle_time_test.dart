@@ -7,13 +7,13 @@ Stream<int> _observable() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
-  test('rx.Observable.throttleTime', () async {
+  test('Rx.throttleTime', () async {
     await expectLater(
         _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.trailing', () async {
+  test('Rx.throttleTime.trailing', () async {
     await expectLater(
         _observable()
             .throttleTime(const Duration(milliseconds: 250), trailing: true)
@@ -21,7 +21,7 @@ void main() {
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.reusable', () async {
+  test('Rx.throttleTime.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
@@ -32,7 +32,7 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.asBroadcastStream', () async {
+  test('Rx.throttleTime.asBroadcastStream', () async {
     final stream = _observable()
         .asBroadcastStream()
         .throttleTime(const Duration(milliseconds: 250))
@@ -43,7 +43,7 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.throttleTime.error.shouldThrowA', () async {
+  test('Rx.throttleTime.error.shouldThrowA', () async {
     final observableWithError = Stream<void>.error(Exception())
         .throttleTime(const Duration(milliseconds: 200));
 
@@ -53,12 +53,12 @@ void main() {
     }));
   });
 
-  test('rx.Observable.throttleTime.error.shouldThrowB', () {
+  test('Rx.throttleTime.error.shouldThrowB', () {
     expect(() => Stream.value(1).throttleTime(null),
         throwsA(const TypeMatcher<AssertionError>()));
   }, skip: true);
 
-  test('rx.Observable.throttleTime.pause.resume', () async {
+  test('Rx.throttleTime.pause.resume', () async {
     StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();

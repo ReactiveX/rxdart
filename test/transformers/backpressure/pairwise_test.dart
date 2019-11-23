@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.pairwise', () async {
+  test('Rx.pairwise', () async {
     const expectedOutput = [
       [1, 2],
       [2, 3],
@@ -12,7 +12,7 @@ void main() {
     ];
     var count = 0;
 
-    final stream = Observable.range(1, 4).pairwise();
+    final stream = Rx.range(1, 4).pairwise();
 
     stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
@@ -25,7 +25,7 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.pairwise.asBroadcastStream', () async {
+  test('Rx.pairwise.asBroadcastStream', () async {
     final stream =
         Stream.fromIterable(const [1, 2, 3, 4]).asBroadcastStream().pairwise();
 
@@ -36,7 +36,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.pairwise.error.shouldThrow.onError', () async {
+  test('Rx.pairwise.error.shouldThrow.onError', () async {
     final observableWithError = Stream<void>.error(Exception()).pairwise();
 
     observableWithError.listen(null,

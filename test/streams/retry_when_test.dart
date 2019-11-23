@@ -5,9 +5,9 @@ import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.retryWhen', () {
+  test('Rx.retryWhen', () {
     expect(
-      Observable.retryWhen(_sourceStream(3), _alwaysThrow),
+      Rx.retryWhen(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });

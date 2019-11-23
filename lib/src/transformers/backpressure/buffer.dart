@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 
-/// Creates an Observable where each item is a [List] containing the items
+/// Creates a [Stream] where each item is a [List] containing the items
 /// from the source sequence.
 ///
 /// This [List] is emitted every time the window [Stream]
@@ -26,7 +26,7 @@ class BufferStreamTransformer<T>
   }
 }
 
-/// Buffers a number of values from the source Observable by count then
+/// Buffers a number of values from the source Stream by count then
 /// emits the buffer and clears it, and starts a new buffer each
 /// startBufferEvery values. If startBufferEvery is not provided,
 /// then new buffers are started immediately at the start of the source
@@ -35,7 +35,7 @@ class BufferStreamTransformer<T>
 /// ### Example
 /// count is the maximum size of the buffer emitted
 ///
-///     Observable.range(1, 4)
+///     Rx.range(1, 4)
 ///       .bufferCount(2)
 ///       .listen(print); // prints [1, 2], [3, 4] done!
 ///
@@ -44,7 +44,7 @@ class BufferStreamTransformer<T>
 /// on every other value from the source. A new buffer is started at the
 /// beginning of the source by default.
 ///
-///     Observable.range(1, 5)
+///     Rx.range(1, 5)
 ///       .bufferCount(3, 2)
 ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
 class BufferCountStreamTransformer<T>
@@ -74,7 +74,7 @@ class BufferCountStreamTransformer<T>
   }
 }
 
-/// Creates an Observable where each item is a [List] containing the items
+/// Creates a [Stream] where each item is a [List] containing the items
 /// from the source sequence, batched whenever test passes.
 ///
 /// ### Example

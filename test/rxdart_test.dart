@@ -1,28 +1,28 @@
 library test.rx;
 
-import 'observables/composite_subscription_test.dart'
-    as composite_subscription_test;
-import 'observables/publish_connectable_observable_test.dart'
-    as publish_connectable_observable_test;
-import 'observables/replay_connectable_observable_test.dart'
-    as replay_connectable_observable_test;
-import 'observables/value_connectable_observable_test.dart'
-    as value_connectable_observable_test;
 import 'streams/combine_latest_test.dart' as combine_latest_test;
+import 'streams/composite_subscription_test.dart'
+    as composite_subscription_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
 import 'streams/defer_test.dart' as defer_test;
 import 'streams/fork_join_test.dart' as fork_join_test;
 import 'streams/merge_test.dart' as merge_test;
 import 'streams/never_test.dart' as never_test;
+import 'streams/publish_connectable_stream_test.dart'
+    as publish_connectable_stream_test;
 import 'streams/race_test.dart' as race_test;
 import 'streams/range_test.dart' as range_test;
 import 'streams/repeat_test.dart' as repeat_test;
+import 'streams/replay_connectable_stream_test.dart'
+    as replay_connectable_stream_test;
 import 'streams/retry_test.dart' as retry_test;
 import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
+import 'streams/value_connectable_stream_test.dart'
+    as value_connectable_stream_test;
 import 'streams/zip_test.dart' as zip_test;
 import 'subject/behavior_subject_test.dart' as behaviour_subject_test;
 import 'subject/publish_subject_test.dart' as publish_subject_test;
@@ -155,9 +155,11 @@ void main() {
   publish_subject_test.main();
   replay_subject_test.main();
 
-  // Observables
-  value_connectable_observable_test.main();
-  replay_connectable_observable_test.main();
-  publish_connectable_observable_test.main();
+  // Connectable Streams
+  value_connectable_stream_test.main();
+  replay_connectable_stream_test.main();
+  publish_connectable_stream_test.main();
+
+  // Utilities
   composite_subscription_test.main();
 }

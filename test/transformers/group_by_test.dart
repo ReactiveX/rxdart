@@ -6,23 +6,23 @@ import 'package:test/test.dart';
 String _toEventOdd(int value) => value == 0 ? 'even' : 'odd';
 
 void main() {
-  test('rx.Observable.groupBy', () async {
+  test('Rx.groupBy', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4]).groupBy((value) => value),
         emitsInOrder(<Matcher>[
-          TypeMatcher<GroupByObservable<int, int>>()
+          TypeMatcher<GroupByStream<int, int>>()
               .having((observable) => observable.key, 'key', 1),
-          TypeMatcher<GroupByObservable<int, int>>()
+          TypeMatcher<GroupByStream<int, int>>()
               .having((observable) => observable.key, 'key', 2),
-          TypeMatcher<GroupByObservable<int, int>>()
+          TypeMatcher<GroupByStream<int, int>>()
               .having((observable) => observable.key, 'key', 3),
-          TypeMatcher<GroupByObservable<int, int>>()
+          TypeMatcher<GroupByStream<int, int>>()
               .having((observable) => observable.key, 'key', 4),
           emitsDone
         ]));
   });
 
-  test('rx.Observable.groupBy.correctlyEmitsGroupEvents', () async {
+  test('Rx.groupBy.correctlyEmitsGroupEvents', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
@@ -37,11 +37,11 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.groupBy.correctlyEmitsGroupEvents.alternate', () async {
+  test('Rx.groupBy.correctlyEmitsGroupEvents.alternate', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => _toEventOdd(value % 2))
-            // fold is called when onDone triggers on the Observable
+            // fold is called when onDone triggers on the Stream
             .map((observable) async => await observable.fold(
                 {observable.key: <int>[]},
                 (Map<String, List<int>> previous, element) =>
@@ -57,7 +57,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.groupBy.emittedObservablesCallOnDone', () async {
+  test('Rx.groupBy.emittedStreamCallOnDone', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
             .groupBy((value) => value)
@@ -66,7 +66,7 @@ void main() {
         emitsInOrder(<dynamic>['done', 'done', 'done', 'done', emitsDone]));
   });
 
-  test('rx.Observable.groupBy.asBroadcastStream', () async {
+  test('Rx.groupBy.asBroadcastStream', () async {
     final stream = Stream.fromIterable([1, 2, 3, 4])
         .asBroadcastStream()
         .groupBy((value) => value);
@@ -78,7 +78,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.groupBy.pause.resume', () async {
+  test('Rx.groupBy.pause.resume', () async {
     var count = 0;
     StreamSubscription subscription;
 
@@ -95,7 +95,7 @@ void main() {
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 100)));
   });
 
-  test('rx.Observable.groupBy.error.shouldThrow.onError', () async {
+  test('Rx.groupBy.error.shouldThrow.onError', () async {
     final observableWithError =
         Stream<void>.error(Exception()).groupBy((value) => value);
 
@@ -105,7 +105,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.groupBy.error.shouldThrow.onGrouper', () async {
+  test('Rx.groupBy.error.shouldThrow.onGrouper', () async {
     final observableWithError =
         Stream.fromIterable([1, 2, 3, 4]).groupBy((value) {
       throw Exception();

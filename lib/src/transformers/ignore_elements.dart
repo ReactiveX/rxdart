@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Creates an Observable where all emitted items are ignored, only the
+/// Creates a [Stream] where all emitted items are ignored, only the
 /// error / completed notifications are passed
 ///
 /// ### Example

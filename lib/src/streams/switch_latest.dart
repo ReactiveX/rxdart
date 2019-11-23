@@ -12,8 +12,8 @@ import 'dart:async';
 /// ```dart
 /// final switchLatestStream = SwitchLatestStream<String>(
 ///   Stream.fromIterable(<Stream<String>>[
-///     Observable.timer('A', Duration(seconds: 2)),
-///     Observable.timer('B', Duration(seconds: 1)),
+///     Rx.timer('A', Duration(seconds: 2)),
+///     Rx.timer('B', Duration(seconds: 1)),
 ///     Stream.value('C'),
 ///   ]),
 /// );

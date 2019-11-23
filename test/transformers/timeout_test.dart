@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.timeout', () async {
+  test('Rx.timeout', () async {
     StreamSubscription<int> subscription;
 
     Stream<int> observable = Stream<int>.fromFuture(

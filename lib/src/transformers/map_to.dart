@@ -1,6 +1,7 @@
 import 'dart:async';
 
-/// Emits the given constant value on the output Observable every time the source Observable emits a value.
+/// Emits the given constant value on the output Stream every time the source
+/// Stream emits a value.
 ///
 /// ### Example
 ///

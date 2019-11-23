@@ -39,11 +39,11 @@ void main() {
     }, count: expected.length));
   });
 
-  test('rx.Observable.range', () async {
+  test('Rx.range', () async {
     final expected = const [1, 2, 3];
     var count = 0;
 
-    final observable = Observable.range(1, 3);
+    final observable = Rx.range(1, 3);
 
     observable.listen(expectAsync1((actual) {
       expect(actual, expected[count++]);

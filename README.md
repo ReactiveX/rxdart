@@ -48,7 +48,7 @@ void main() {
 RxDart adds functionality to Dart Streams in two ways:
 
   * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams together.
-  * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling events. 
+  * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling or buffering events. 
 
 ### Stream Classes
 
@@ -57,28 +57,28 @@ The Stream class provides different ways to create a Stream: `Stream.fromIterabl
 You can construct the Streams provided by RxDart in two ways. The following examples are equivalent in terms of functionality:
  
   - Instantiating the Stream class directly. 
-    - Example: `final myStream = MergeStream([myFirstStream, mySecondStream]);`
-  - Using the `Observable` class' static factories, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories simply call the the corresponding Stream constructor. 
-    - Example: `final myStream = Observable.merge([myFirstStream, mySecondStream]);`
+    - Example: `final mergedStream = MergeStream([myFirstStream, mySecondStream]);`
+  - Using static factories from the `Rx` class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories simply call the the corresponding Stream constructor. 
+    - Example: `final mergedStream = Rx.merge([myFirstStream, mySecondStream]);`
 
 #### List of Classes / Static Factories
 
-- [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Observable.concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concat.html)
-- [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Observable.concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.concatEager.html)
-- [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html) / [Observable.defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.defer.html)
-- [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html) / [Observable.merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.merge.html)
-- [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html) / [Observable.never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.never.html)
-- [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RaceStream-class.html) / [Observable.race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.race.html)
-- [RepeatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RepeatStream-class.html) / [Observable.repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.repeat.html)
-- [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html) / [Observable.retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retry.html)
-- [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html) / [Observable.retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.retryWhen.html)
-- [SequenceEqualStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Observable.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Observable/sequenceEqual.html)
-- [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Observable.switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.switchLatest.html)
-- [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html) / [Observable.timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Observable.timer.html)
-- [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Observable.combineLatest2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html)...[Observable.combineLatest9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest9.html) 
-- [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Observable.forkJoin2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html)...[Observable.forkJoin9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin9.html)
-- [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html) / [Observable.range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html)
-- [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Observable.zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html)...[Observable.zip9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip9.html)
+- [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Rx.concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.concat.html)
+- [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Rx.concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.concatEager.html)
+- [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html) / [Rx.defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.defer.html)
+- [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html) / [Rx.merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.merge.html)
+- [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html) / [Rx.never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.never.html)
+- [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RaceStream-class.html) / [Rx.race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.race.html)
+- [RepeatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RepeatStream-class.html) / [Rx.repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.repeat.html)
+- [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html) / [Rx.retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.retry.html)
+- [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html) / [Rx.retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.retryWhen.html)
+- [SequenceEqualStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Rx.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Observable/sequenceEqual.html)
+- [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Rx.switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.switchLatest.html)
+- [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/Rx.timer.html)
+- [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Rx.combineLatest2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest2.html)...[Rx.combineLatest9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/combineLatest9.html) 
+- [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin2.html)...[Rx.forkJoin9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/forkJoin9.html)
+- [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/range.html)
+- [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip2.html)...[Rx.zip9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zip9.html)
 
 ### Extension Methods
 
@@ -87,7 +87,9 @@ The extension methods provided by RxDart can be used on any `Stream`. They conve
 #### Example
 
 ```dart
-final myStream = Stream.fromIterable([1, 2, 3]).debounceTime(Duration(seconds: 1));
+Stream.fromIterable([1, 2, 3])
+  .throttleTime(Duration(seconds: 1))
+  .listen(print); // prints 3
 ``` 
 
 #### List of Extension Methods

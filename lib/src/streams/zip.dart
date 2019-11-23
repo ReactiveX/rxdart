@@ -5,12 +5,12 @@ import 'dart:async';
 /// an element at a corresponding index.
 ///
 /// It applies this function in strict sequence, so the first item emitted by
-/// the new Observable will be the result of the function applied to the first
-/// item emitted by Observable #1 and the first item emitted by Observable #2;
-/// the second item emitted by the new zip-Observable will be the result of
-/// the function applied to the second item emitted by Observable #1 and the
-/// second item emitted by Observable #2; and so forth. It will only emit as
-/// many items as the number of items emitted by the source Observable that
+/// the new Stream will be the result of the function applied to the first
+/// item emitted by Stream #1 and the first item emitted by Stream #2;
+/// the second item emitted by the new ZipStream will be the result of
+/// the function applied to the second item emitted by Stream #1 and the
+/// second item emitted by Stream #2; and so forth. It will only emit as
+/// many items as the number of items emitted by the source Stream that
 /// emits the fewest items.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#zip)

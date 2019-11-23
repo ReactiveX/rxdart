@@ -7,7 +7,7 @@ import 'package:rxdart/streams.dart';
 ///
 /// ### Example
 ///
-///      Observable.combineLatest([
+///      Rx.combineLatest([
 ///        Stream.value("a"),
 ///        Stream.fromIterable(["b", "c", "d"])
 ///      ], (list) => list.join())
@@ -32,29 +32,35 @@ import 'package:rxdart/streams.dart';
 ///   - [Testing Streams: Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers)
 ///
 /// ### Dart Streams vs Traditional Rx Observables
+/// In ReactiveX, the Observable class is the heart of the ecosystem.
+/// Observables represent data sources that emit "items" or "events" over time.
+/// Dart already includes such a data source: Streams.
 ///
-/// In order to integrate fluently with the Dart ecosystem, the Observable class
-/// extends the Dart `Stream` class. This provides several advantages:
+/// In order to integrate fluently with the Dart ecosystem, Rx Dart does not
+/// provide a [Stream] class, but rather adds functionality to Dart Streams.
+/// This provides several advantages:
 ///
-///    - Observables work with any API that expects a Dart Stream as an input.
-///    - Inherit the many methods and properties from the core Stream API.
+///    - RxDart works with any API that expects a Dart Stream as an input.
+///    - No need to implement or replace the many methods and properties from the core Stream API.
 ///    - Ability to create Streams with language-level syntax.
 ///
-/// Overall, we attempt to follow the Observable spec as closely as we can, but
+/// Overall, we attempt to follow the ReactiveX spec as closely as we can, but
 /// prioritize fitting in with the Dart ecosystem when a trade-off must be made.
 /// Therefore, there are some important differences to note between Dart's
-/// `Stream` class and standard Rx `Observable`.
+/// [Stream] class and standard Rx `Observable`.
 ///
-/// First, Cold Observables in Dart are single-subscription. In other words,
-/// you can only listen to Observables once, unless it is a hot (aka broadcast)
-/// Stream. If you attempt to listen to a cold stream twice, a StateError will
-/// be thrown. If you need to listen to a stream multiple times, you can simply
-/// create a factory function that returns a new instance of the stream.
+/// First, Cold Observables exist in Dart as normal Streams, but they are
+/// single-subscription only. In other words, you can only listen a Stream
+/// once, unless it is a hot (aka broadcast) Stream. If you attempt to listen to
+/// a cold Stream twice, a StateError will be thrown. If you need to listen to a
+/// stream multiple times, you can simply create a factory function that returns
+/// a new instance of the stream.
 ///
 /// Second, many methods contained within, such as `first` and `last` do not
 /// return a `Single` nor an `Observable`, but rather must return a Dart Future.
-/// Luckily, Dart Futures are easy to work with, and easily convert back to a
-/// Stream using the `myFuture.asStream()` method if needed.
+/// Luckily, Dart's `Future` class is  conceptually similar to `Single`, and can
+/// be easily converted back to a Stream using the `myFuture.asStream()` method
+/// if needed.
 ///
 /// Third, Streams in Dart do not close by default when an error occurs. In Rx,
 /// an Error causes the Observable to terminate unless it is intercepted by
@@ -69,19 +75,19 @@ import 'package:rxdart/streams.dart';
 /// Finally, when using Dart Broadcast Streams (similar to Hot Observables),
 /// please know that `onListen` will only be called the first time the
 /// broadcast stream is listened to.
-abstract class Observable {
-  /// Merges the given Streams into one Observable sequence by using the
+abstract class Rx {
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an item.
   /// This is helpful when you need to combine a dynamic number of Streams.
   ///
-  /// The Observable will not emit any lists of values until all of the source
+  /// The Stream will not emit any lists of values until all of the source
   /// streams have emitted at least one value.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///    Observable.combineLatest([
+  ///    Rx.combineLatest([
   ///      Stream.value("a"),
   ///      Stream.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join())
@@ -90,18 +96,18 @@ abstract class Observable {
           Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
       CombineLatestStream<T, R>(streams, combiner);
 
-  /// Merges the given Streams into one Observable that emits a List of the
+  /// Merges the given Streams into a single Stream that emits a List of the
   /// values emitted by the source Stream. This is helpful when you need to
   /// combine a dynamic number of Streams.
   ///
-  /// The Observable will not emit any lists of values until all of the source
+  /// The Stream will not emit any lists of values until all of the source
   /// streams have emitted at least one value.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatestList([
+  ///     Rx.combineLatestList([
   ///       Stream.value(1),
   ///       Stream.fromIterable([0, 1, 2]),
   ///     ])
@@ -109,18 +115,18 @@ abstract class Observable {
   static Stream<List<T>> combineLatestList<T>(Iterable<Stream<T>> streams) =>
       CombineLatestStream.list<T>(streams);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest2(
+  ///     Rx.combineLatest2(
   ///       Stream.value(1),
   ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
@@ -129,18 +135,18 @@ abstract class Observable {
           Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
       CombineLatestStream.combine2(streamA, streamB, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest3(
+  ///     Rx.combineLatest3(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.fromIterable(["c", "c"]),
@@ -150,18 +156,18 @@ abstract class Observable {
           Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
       CombineLatestStream.combine3(streamA, streamB, streamC, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest4(
+  ///     Rx.combineLatest4(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -177,18 +183,18 @@ abstract class Observable {
       CombineLatestStream.combine4(
           streamA, streamB, streamC, streamD, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest5(
+  ///     Rx.combineLatest5(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -206,18 +212,18 @@ abstract class Observable {
       CombineLatestStream.combine5(
           streamA, streamB, streamC, streamD, streamE, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest6(
+  ///     Rx.combineLatest6(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -237,18 +243,18 @@ abstract class Observable {
       CombineLatestStream.combine6(
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest7(
+  ///     Rx.combineLatest7(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -270,18 +276,18 @@ abstract class Observable {
       CombineLatestStream.combine7(streamA, streamB, streamC, streamD, streamE,
           streamF, streamG, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest8(
+  ///     Rx.combineLatest8(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -314,18 +320,18 @@ abstract class Observable {
         combiner,
       );
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function whenever any of the observable sequences emits an
   /// item.
   ///
-  /// The Observable will not emit until all streams have emitted at least one
+  /// The Stream will not emit until all streams have emitted at least one
   /// item.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
   /// ### Example
   ///
-  ///     Observable.combineLatest9(
+  ///     Rx.combineLatest9(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -371,9 +377,9 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///     Observable.concat([
+  ///     Rx.concat([
   ///       Stream.value(1),
-  ///       Observable.timer(2, Duration(days: 1)),
+  ///       Rx.timer(2, Duration(days: 1)),
   ///       Stream.value(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
@@ -392,9 +398,9 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///     Observable.concatEager([
+  ///     Rx.concatEager([
   ///       Stream.value(1),
-  ///       Observable.timer(2, Duration(days: 1)),
+  ///       Rx.timer(2, Duration(days: 1)),
   ///       Stream.value(3)
   ///     ])
   ///     .listen(print); // prints 1, 2, 3
@@ -402,24 +408,24 @@ abstract class Observable {
       ConcatEagerStream<T>(streams);
 
   /// The defer factory waits until an observer subscribes to it, and then it
-  /// creates an Observable with the given factory function.
+  /// creates a [Stream] with the given factory function.
   ///
   /// In some circumstances, waiting until the last minute (that is, until
-  /// subscription time) to generate the Observable can ensure that this
-  /// Observable contains the freshest data.
+  /// subscription time) to generate the Stream can ensure that this
+  /// Stream contains the freshest data.
   ///
   /// By default, DeferStreams are single-subscription. However, it's possible
   /// to make them reusable.
   ///
   /// ### Example
   ///
-  ///     Observable.defer(() => Stream.value(1))
+  ///     Rx.defer(() => Stream.value(1))
   ///       .listen(print); //prints 1
   static Stream<T> defer<T>(Stream<T> streamFactory(),
           {bool reusable = false}) =>
       DeferStream<T>(streamFactory, reusable: reusable);
 
-  ///  Creates an [Observable] where all last events of existing stream(s) are piped
+  ///  Creates a [Stream] where all last events of existing stream(s) are piped
   ///  through a sink-transformation.
   ///
   /// This operator is best used when you have a group of observables
@@ -444,7 +450,7 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///    Observable.forkJoin([
+  ///    Rx.forkJoin([
   ///      Stream.value("a"),
   ///      Stream.fromIterable(["b", "c", "d"])
   ///    ], (list) => list.join(', '))
@@ -453,13 +459,13 @@ abstract class Observable {
           Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
       ForkJoinStream<T, R>(streams, combiner);
 
-  /// Merges the given Streams into one Observable that emits a List of the
+  /// Merges the given Streams into a single Stream that emits a List of the
   /// last values emitted by the source stream(s). This is helpful when you need to
   /// forkJoin a dynamic number of Streams.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoinList([
+  ///     Rx.forkJoinList([
   ///       Stream.value(1),
   ///       Stream.fromIterable([0, 1, 2]),
   ///     ])
@@ -467,13 +473,13 @@ abstract class Observable {
   static Stream<List<T>> forkJoinList<T>(Iterable<Stream<T>> streams) =>
       ForkJoinStream.list<T>(streams);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin2(
+  ///     Rx.forkJoin2(
   ///       Stream.value(1),
   ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
@@ -482,13 +488,13 @@ abstract class Observable {
           Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
       ForkJoinStream.combine2(streamA, streamB, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin3(
+  ///     Rx.forkJoin3(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.fromIterable(["c", "d"]),
@@ -498,13 +504,13 @@ abstract class Observable {
           Stream<C> streamC, T combiner(A a, B b, C c)) =>
       ForkJoinStream.combine3(streamA, streamB, streamC, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin4(
+  ///     Rx.forkJoin4(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -519,13 +525,13 @@ abstract class Observable {
           T combiner(A a, B b, C c, D d)) =>
       ForkJoinStream.combine4(streamA, streamB, streamC, streamD, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin5(
+  ///     Rx.forkJoin5(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -543,13 +549,13 @@ abstract class Observable {
       ForkJoinStream.combine5(
           streamA, streamB, streamC, streamD, streamE, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin6(
+  ///     Rx.forkJoin6(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -569,13 +575,13 @@ abstract class Observable {
       ForkJoinStream.combine6(
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin7(
+  ///     Rx.forkJoin7(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -597,13 +603,13 @@ abstract class Observable {
       ForkJoinStream.combine7(streamA, streamB, streamC, streamD, streamE,
           streamF, streamG, combiner);
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin8(
+  ///     Rx.forkJoin8(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -636,13 +642,13 @@ abstract class Observable {
         combiner,
       );
 
-  /// Merges the given Streams into one Observable sequence by using the
+  /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the observable sequences emits their
   /// last item.
   ///
   /// ### Example
   ///
-  ///     Observable.forkJoin9(
+  ///     Rx.forkJoin9(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -678,15 +684,15 @@ abstract class Observable {
         combiner,
       );
 
-  /// Flattens the items emitted by the given [streams] into a single Observable
+  /// Flattens the items emitted by the given [streams] into a single Stream
   /// sequence.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#merge)
   ///
   /// ### Example
   ///
-  ///     Observable.merge([
-  ///       Observable.timer(1, Duration(days: 10)),
+  ///     Rx.merge([
+  ///       Rx.timer(1, Duration(days: 10)),
   ///       Stream.value(2)
   ///     ])
   ///     .listen(print); // prints 2, 1
@@ -698,12 +704,12 @@ abstract class Observable {
   ///
   /// The never operator is one with very specific and limited behavior. These
   /// are useful for testing purposes, and sometimes also for combining with
-  /// other Observables or as parameters to operators that expect other
-  /// Observables as parameters.
+  /// other Streams or as parameters to operators that expect other
+  /// Streams as parameters.
   ///
   /// ### Example
   ///
-  ///     Observable.never().listen(print); // Neither prints nor terminates
+  ///     Rx.never().listen(print); // Neither prints nor terminates
   static Stream<T> never<T>() => NeverStream<T>();
 
   /// Given two or more source [streams], emit all of the items from only
@@ -713,22 +719,22 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///     Observable.race([
-  ///       Observable.timer(1, Duration(days: 1)),
-  ///       Observable.timer(2, Duration(days: 2)),
-  ///       Observable.timer(3, Duration(seconds: 1))
+  ///     Rx.race([
+  ///       Rx.timer(1, Duration(days: 1)),
+  ///       Rx.timer(2, Duration(days: 2)),
+  ///       Rx.timer(3, Duration(seconds: 1))
   ///     ]).listen(print); // prints 3
   static Stream<T> race<T>(Iterable<Stream<T>> streams) =>
       RaceStream<T>(streams);
 
-  /// Returns an Observable that emits a sequence of Integers within a specified
+  /// Returns a [Stream] that emits a sequence of Integers within a specified
   /// range.
   ///
   /// ### Example
   ///
-  ///     Observable.range(1, 3).listen((i) => print(i); // Prints 1, 2, 3
+  ///     Rx.range(1, 3).listen((i) => print(i); // Prints 1, 2, 3
   ///
-  ///     Observable.range(3, 1).listen((i) => print(i); // Prints 3, 2, 1
+  ///     Rx.range(3, 1).listen((i) => print(i); // Prints 3, 2, 1
   static Stream<int> range(int startInclusive, int endInclusive) =>
       RangeStream(startInclusive, endInclusive);
 
@@ -747,7 +753,7 @@ abstract class Observable {
           [int count]) =>
       RepeatStream<T>(streamFactory, count);
 
-  /// Creates an Observable that will recreate and re-listen to the source
+  /// Creates a [Stream] that will recreate and re-listen to the source
   /// Stream the specified number of times until the Stream terminates
   /// successfully.
   ///
@@ -758,10 +764,10 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///     Observable.retry(() { Stream.value(1); })
+  ///     Rx.retry(() { Stream.value(1); })
   ///         .listen((i) => print(i); // Prints 1
   ///
-  ///     Observable
+  ///     Rx
   ///        .retry(() {
   ///          Stream.value(1).concatWith([Stream.error(Error())]);
   ///        }, 1)
@@ -788,12 +794,11 @@ abstract class Observable {
   /// ### Periodic Example
   /// ```dart
   /// RetryWhenStream<int>(
-  ///   () => Observable<int>
+  ///   () => Stream<int>
   ///       .periodic(const Duration(seconds: 1), (int i) => i)
   ///       .map((int i) => i == 2 ? throw 'exception' : i),
   ///   (dynamic e, StackTrace s) {
-  ///     return Observable<String>
-  ///         .timer('random value', const Duration(milliseconds: 200);
+  ///     return Rx.timer('random value', const Duration(milliseconds: 200);
   ///   },
   /// ).take(4).listen(print); // Prints 0, 1, 0, 1
   /// ```
@@ -802,7 +807,7 @@ abstract class Observable {
   /// ```dart
   /// bool errorHappened = false;
   /// RetryWhenStream(
-  ///   () => Observable
+  ///   () => Stream
   ///       .periodic(const Duration(seconds: 1), (i) => i)
   ///       .map((i) {
   ///         if (i == 3 && !errorHappened) {
@@ -830,14 +835,14 @@ abstract class Observable {
           Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 
-  /// Determine whether two Observables emit the same sequence of items.
+  /// Determine whether two Streams emit the same sequence of items.
   /// You can provide an optional [equals] handler to determine equality.
   ///
   /// [Interactive marble diagram](https://rxmarbles.com/#sequenceEqual)
   ///
   /// ### Example
   ///
-  ///     Observable.sequenceEqual([
+  ///     Rx.sequenceEqual([
   ///       Stream.fromIterable([1, 2, 3, 4, 5]),
   ///       Stream.fromIterable([1, 2, 3, 4, 5])
   ///     ])
@@ -847,10 +852,10 @@ abstract class Observable {
       SequenceEqualStream<A, B>(stream, other, equals: equals);
 
   /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
-  /// single Observable that emits the items emitted by the
-  /// most-recently-emitted of those Streams.
+  /// single Stream that emits the items emitted by the most-recently-emitted of
+  /// those Streams.
   ///
-  /// This Observable will unsubscribe from the previously-emitted Stream when
+  /// This Stream will unsubscribe from the previously-emitted Stream when
   /// a new Stream is emitted from the source Stream and subscribe to the new
   /// Stream.
   ///
@@ -859,8 +864,8 @@ abstract class Observable {
   /// ```dart
   /// final switchLatestStream = SwitchLatestStream<String>(
   ///   Stream.fromIterable(<Stream<String>>[
-  ///     Observable.timer('A', Duration(seconds: 2)),
-  ///     Observable.timer('B', Duration(seconds: 1)),
+  ///     Rx.timer('A', Duration(seconds: 2)),
+  ///     Rx.timer('B', Duration(seconds: 1)),
   ///     Stream.value('C'),
   ///   ]),
   /// );
@@ -877,7 +882,7 @@ abstract class Observable {
   ///
   /// ### Example
   ///
-  ///     Observable.timer("hi", Duration(minutes: 1))
+  ///     Rx.timer("hi", Duration(minutes: 1))
   ///         .listen((i) => print(i); // print "hi" after 1 minute
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
@@ -887,19 +892,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip2(
+  ///     Rx.zip2(
   ///       Stream.value("Hi "),
   ///       Stream.fromIterable(["Friend", "Dropped"]),
   ///       (a, b) => a + b)
@@ -913,19 +918,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip(
+  ///     Rx.zip(
   ///       [
   ///         Stream.value("Hi "),
   ///         Stream.fromIterable(["Friend", "Dropped"]),
@@ -942,19 +947,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zipList(
+  ///     Rx.zipList(
   ///       [
   ///         Stream.value("Hi "),
   ///         Stream.fromIterable(["Friend", "Dropped"]),
@@ -969,19 +974,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip3(
+  ///     Rx.zip3(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.fromIterable(["c", "dropped"]),
@@ -996,19 +1001,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip4(
+  ///     Rx.zip4(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -1024,19 +1029,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip5(
+  ///     Rx.zip5(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -1058,19 +1063,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip6(
+  ///     Rx.zip6(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -1102,19 +1107,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip7(
+  ///     Rx.zip7(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -1149,19 +1154,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip8(
+  ///     Rx.zip8(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),
@@ -1199,19 +1204,19 @@ abstract class Observable {
   /// an element at a corresponding index.
   ///
   /// It applies this function in strict sequence, so the first item emitted by
-  /// the new Observable will be the result of the function applied to the first
-  /// item emitted by Observable #1 and the first item emitted by Observable #2;
-  /// the second item emitted by the new zip-Observable will be the result of
-  /// the function applied to the second item emitted by Observable #1 and the
-  /// second item emitted by Observable #2; and so forth. It will only emit as
-  /// many items as the number of items emitted by the source Observable that
+  /// the new Stream will be the result of the function applied to the first
+  /// item emitted by Stream #1 and the first item emitted by Stream #2;
+  /// the second item emitted by the new ZipStream will be the result of
+  /// the function applied to the second item emitted by Stream #1 and the
+  /// second item emitted by Stream #2; and so forth. It will only emit as
+  /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
   ///
-  ///     Observable.zip9(
+  ///     Rx.zip9(
   ///       Stream.value("a"),
   ///       Stream.value("b"),
   ///       Stream.value("c"),

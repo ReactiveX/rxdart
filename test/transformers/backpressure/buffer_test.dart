@@ -14,7 +14,7 @@ Stream<int> getStream(int n) async* {
 }
 
 void main() {
-  test('rx.Observable.buffer', () async {
+  test('Rx.buffer', () async {
     await expectLater(
         getStream(4).buffer(
             Stream<Null>.periodic(const Duration(milliseconds: 160)).take(3)),
@@ -25,7 +25,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.buffer.sampleBeforeEvent.shouldEmit', () async {
+  test('Rx.buffer.sampleBeforeEvent.shouldEmit', () async {
     await expectLater(
         Stream.fromFuture(
             Future<Null>.delayed(const Duration(milliseconds: 200))
@@ -41,7 +41,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.buffer.shouldClose', () async {
+  test('Rx.buffer.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
@@ -56,7 +56,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.buffer.reusable', () async {
+  test('Rx.buffer.reusable', () async {
     final transformer = BufferStreamTransformer<int>((_) =>
         Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(3)
@@ -79,7 +79,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.buffer.asBroadcastStream', () async {
+  test('Rx.buffer.asBroadcastStream', () async {
     final stream = getStream(4).asBroadcastStream().buffer(
         Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(10)
@@ -98,14 +98,14 @@ void main() {
         stream, emitsInOrder(<dynamic>[const <int>[], emitsDone]));
   });
 
-  test('rx.Observable.buffer.error.shouldThrowA', () async {
+  test('Rx.buffer.error.shouldThrowA', () async {
     await expectLater(
         Stream<Null>.error(Exception())
             .buffer(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
 
-  test('rx.Observable.buffer.error.shouldThrowB', () async {
+  test('Rx.buffer.error.shouldThrowB', () async {
     await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).buffer(null),
         emitsError(isArgumentError));
   });

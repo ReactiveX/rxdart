@@ -5,7 +5,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     Observable.range(1, 4)
+///     Rx.range(1, 4)
 ///       .pairwise()
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
 class PairwiseStreamTransformer<T>

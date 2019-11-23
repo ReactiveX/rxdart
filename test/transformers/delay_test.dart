@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
 void main() {
-  test('rx.Observable.delay', () async {
+  test('Rx.delay', () async {
     var value = 1;
     _getStream()
         .delay(const Duration(milliseconds: 200))
@@ -15,7 +15,7 @@ void main() {
         }, count: 4));
   });
 
-  test('rx.Observable.delay.shouldBeDelayed', () async {
+  test('Rx.delay.shouldBeDelayed', () async {
     var value = 1;
     _getStream()
         .delay(const Duration(milliseconds: 500))
@@ -33,7 +33,7 @@ void main() {
         }, count: 4));
   });
 
-  test('rx.Observable.delay.reusable', () async {
+  test('Rx.delay.reusable', () async {
     final transformer =
         DelayStreamTransformer<int>(const Duration(milliseconds: 200));
     var valueA = 1, valueB = 1;
@@ -47,7 +47,7 @@ void main() {
         }, count: 4));
   });
 
-  test('rx.Observable.delay.asBroadcastStream', () async {
+  test('Rx.delay.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .delay(const Duration(milliseconds: 200));
@@ -59,7 +59,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.delay.error.shouldThrowA', () async {
+  test('Rx.delay.error.shouldThrowA', () async {
     final observableWithError = Stream<void>.error(Exception())
         .delay(const Duration(milliseconds: 200));
 
@@ -70,7 +70,7 @@ void main() {
   });
 
   /// Should also throw if the current [Zone] is unable to install a [Timer]
-  test('rx.Observable.delay.error.shouldThrowB', () async {
+  test('Rx.delay.error.shouldThrowB', () async {
     runZoned(() {
       final observableWithError =
           Stream.value(1).delay(const Duration(milliseconds: 200));
@@ -84,7 +84,7 @@ void main() {
                 throw Exception('Zone createTimer error')));
   });
 
-  test('rx.Observable.delay.pause.resume', () async {
+  test('Rx.delay.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream =
         Stream.fromIterable(const [1, 2, 3]).delay(Duration(milliseconds: 1));
@@ -100,7 +100,7 @@ void main() {
   });
 
   test(
-    'rx.Observable.delay.cancel.emits.nothing',
+    'Rx.delay.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
       final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 
-/// Create an `Observable` which implements a [HashSet] under the hood, using
+/// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
 ///
-/// The `Observable` will only emit an event, if that event is not yet found
+/// The [Stream] will only emit an event, if that event is not yet found
 /// within the underlying [HashSet].
 ///
 /// ###  Example

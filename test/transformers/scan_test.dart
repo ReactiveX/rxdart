@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.scan', () async {
+  test('Rx.scan', () async {
     const expectedOutput = [1, 3, 6, 10];
     var count = 0;
 
@@ -15,7 +15,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.scan.reusable', () async {
+  test('Rx.scan.reusable', () async {
     final transformer = ScanStreamTransformer<int, int>(
         (int acc, int value, int index) => (acc ?? 0) + value);
     const expectedOutput = [1, 3, 6, 10];
@@ -34,7 +34,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.scan.asBroadcastStream', () async {
+  test('Rx.scan.asBroadcastStream', () async {
     final stream = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
         .scan((int acc, int value, int index) => (acc ?? 0) + value, 0);
@@ -46,7 +46,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.scan.error.shouldThrow', () async {
+  test('Rx.scan.error.shouldThrow', () async {
     final observableWithError = Stream.fromIterable(const [1, 2, 3, 4])
         .scan((num acc, num value, int index) {
       throw StateError("oh noes!");

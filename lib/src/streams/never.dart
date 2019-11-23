@@ -5,8 +5,8 @@ import 'dart:async';
 ///
 /// The never operator is one with very specific and limited behavior. These
 /// are useful for testing purposes, and sometimes also for combining with
-/// other Observables or as parameters to operators that expect other
-/// Observables as parameters.
+/// other Streams or as parameters to operators that expect other
+/// Streams as parameters.
 ///
 /// ### Example
 ///

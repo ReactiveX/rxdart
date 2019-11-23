@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3, 4]);
 
 void main() {
-  test('rx.Observable.startWithMany', () async {
+  test('Rx.startWithMany', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 
@@ -15,7 +15,7 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.startWithMany.reusable', () async {
+  test('Rx.startWithMany.reusable', () async {
     final transformer = StartWithManyStreamTransformer<int>(const [5, 6]);
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var countA = 0, countB = 0;
@@ -29,7 +29,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.startWithMany.asBroadcastStream', () async {
+  test('Rx.startWithMany.asBroadcastStream', () async {
     final stream = _getStream().asBroadcastStream().startWithMany(const [5, 6]);
 
     // listen twice on same stream
@@ -39,7 +39,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.startWithMany.error.shouldThrowA', () async {
+  test('Rx.startWithMany.error.shouldThrowA', () async {
     final observableWithError =
         Stream<int>.error(Exception()).startWithMany(const [5, 6]);
 
@@ -49,11 +49,11 @@ void main() {
     }));
   });
 
-  test('rx.Observable.startWithMany.error.shouldThrowA', () {
+  test('Rx.startWithMany.error.shouldThrowA', () {
     expect(() => Stream.value(1).startWithMany(null), throwsArgumentError);
   });
 
-  test('rx.Observable.startWithMany.pause.resume', () async {
+  test('Rx.startWithMany.pause.resume', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 

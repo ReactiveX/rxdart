@@ -6,9 +6,9 @@ import 'package:rxdart/rxdart.dart';
 
 void main() {
   final dragTarget = querySelector('#dragTarget');
-  final mouseUp = Observable<MouseEvent>(document.onMouseUp);
-  final mouseMove = Observable<MouseEvent>(document.onMouseMove);
-  final mouseDown = Observable<MouseEvent>(document.onMouseDown);
+  final mouseUp = document.onMouseUp;
+  final mouseMove = document.onMouseMove;
+  final mouseDown = document.onMouseDown;
 
   mouseDown
       // Use map() to calculate the left and top properties on mouseDown

@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream.fromIterable(const [0, 1, 2, 3, 4]);
 
 void main() {
-  test('rx.Observable.interval', () async {
+  test('Rx.interval', () async {
     const expectedOutput = [0, 1, 2, 3, 4];
     var count = 0, lastInterval = -1;
     final stopwatch = Stopwatch()..start();
@@ -24,7 +24,7 @@ void main() {
         onDone: stopwatch.stop);
   });
 
-  test('rx.Observable.interval.reusable', () async {
+  test('Rx.interval.reusable', () async {
     final transformer =
         IntervalStreamTransformer<int>(const Duration(milliseconds: 1));
     const expectedOutput = [0, 1, 2, 3, 4];
@@ -44,7 +44,7 @@ void main() {
         onDone: stopwatch.stop);
   });
 
-  test('rx.Observable.interval.asBroadcastStream', () async {
+  test('Rx.interval.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .interval(const Duration(milliseconds: 20));
@@ -56,7 +56,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.interval.error.shouldThrowA', () async {
+  test('Rx.interval.error.shouldThrowA', () async {
     final observableWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 20));
 
@@ -66,7 +66,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.interval.error.shouldThrowB', () async {
+  test('Rx.interval.error.shouldThrowB', () async {
     runZoned(() {
       final observableWithError =
           Stream.value(1).interval(const Duration(milliseconds: 20));

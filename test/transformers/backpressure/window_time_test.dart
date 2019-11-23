@@ -16,7 +16,7 @@ Stream<int> getStream(int n) async* {
 }
 
 void main() {
-  test('rx.Observable.windowTime', () async {
+  test('Rx.windowTime', () async {
     await expectLater(
         getStream(4)
             .windowTime(const Duration(milliseconds: 160))
@@ -28,7 +28,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.shouldClose', () async {
+  test('Rx.windowTime.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
@@ -44,7 +44,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.reusable', () async {
+  test('Rx.windowTime.reusable', () async {
     final transformer = WindowStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 160)));
 
@@ -67,7 +67,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.asBroadcastStream', () async {
+  test('Rx.windowTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
         .windowTime(const Duration(milliseconds: 160))
@@ -78,14 +78,14 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.windowTime.error.shouldThrowA', () async {
+  test('Rx.windowTime.error.shouldThrowA', () async {
     await expectLater(
         Stream<void>.error(Exception())
             .windowTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
 
-  test('rx.Observable.windowTime.error.shouldThrowB', () {
+  test('Rx.windowTime.error.shouldThrowB', () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTime(null),
         throwsArgumentError);
   });

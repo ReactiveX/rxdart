@@ -18,14 +18,14 @@ Stream<int> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.debounce', () async {
+  test('Rx.debounce', () async {
     await expectLater(
         _getStream().debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.dynamicWindow', () async {
+  test('Rx.debounce.dynamicWindow', () async {
     // Given the input [1, 2, 3, 4]
     // debounce 200ms on [1, 2, 4]
     // debounce 0ms on [3]
@@ -38,7 +38,7 @@ void main() {
         emitsInOrder(<dynamic>[3, 4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.reusable', () async {
+  test('Rx.debounce.reusable', () async {
     final transformer = DebounceStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 200)));
 
@@ -49,7 +49,7 @@ void main() {
         emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.asBroadcastStream', () async {
+  test('Rx.debounce.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .debounce((_) => Stream<void>.fromFuture(
@@ -60,14 +60,14 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.debounce.error.shouldThrowA', () async {
+  test('Rx.debounce.error.shouldThrowA', () async {
     await expectLater(
         Stream<void>.error(Exception()).debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsError(isException));
   });
 
-  test('rx.Observable.debounce.pause.resume', () async {
+  test('Rx.debounce.pause.resume', () async {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 
@@ -84,7 +84,7 @@ void main() {
     await expectLater(controller.stream, emitsInOrder(<dynamic>[3, emitsDone]));
   });
 
-  test('rx.Observable.debounce.emits.last.item.immediately', () async {
+  test('Rx.debounce.emits.last.item.immediately', () async {
     final emissions = <int>[];
     final stopwatch = Stopwatch();
     final stream = Stream.fromIterable(const [1, 2, 3]).debounce((_) =>
@@ -112,7 +112,7 @@ void main() {
   }, timeout: Timeout(Duration(seconds: 3)));
 
   test(
-    'rx.Observable.debounce.cancel.emits.nothing',
+    'Rx.debounce.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
       final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
@@ -127,7 +127,7 @@ void main() {
     timeout: Timeout(Duration(seconds: 3)),
   );
 
-  test('rx.Observable.debounce.last.event.can.be.null', () async {
+  test('Rx.debounce.last.event.can.be.null', () async {
     await expectLater(
         Stream.fromIterable([1, 2, 3, null]).debounce((_) =>
             Stream<void>.fromFuture(

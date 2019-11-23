@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3, 4]);
 
 void main() {
-  test('rx.Observable.startWith', () async {
+  test('Rx.startWith', () async {
     const expectedOutput = [5, 1, 2, 3, 4];
     var count = 0;
 
@@ -15,7 +15,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.startWith.reusable', () async {
+  test('Rx.startWith.reusable', () async {
     final transformer = StartWithStreamTransformer<int>(5);
     const expectedOutput = [5, 1, 2, 3, 4];
     var countA = 0, countB = 0;
@@ -29,7 +29,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.startWith.asBroadcastStream', () async {
+  test('Rx.startWith.asBroadcastStream', () async {
     final stream = _getStream().asBroadcastStream().startWith(5);
 
     // listen twice on same stream
@@ -39,7 +39,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.startWith.error.shouldThrow', () async {
+  test('Rx.startWith.error.shouldThrow', () async {
     final observableWithError = Stream<int>.error(Exception()).startWith(5);
 
     observableWithError.listen(null,
@@ -48,7 +48,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.startWith.pause.resume', () async {
+  test('Rx.startWith.pause.resume', () async {
     const expectedOutput = [5, 1, 2, 3, 4];
     var count = 0;
 

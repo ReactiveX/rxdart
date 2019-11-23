@@ -29,7 +29,7 @@ Stream<int> _getOtherStream() {
 }
 
 void main() {
-  test('rx.Observable.takeUntil', () async {
+  test('Rx.takeUntil', () async {
     const expectedOutput = [1, 2];
     var count = 0;
 
@@ -38,13 +38,13 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.takeUntil.shouldClose', () async {
+  test('Rx.takeUntil.shouldClose', () async {
     _getStream()
         .takeUntil(Stream<void>.empty())
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
   });
 
-  test('rx.Observable.takeUntil.reusable', () async {
+  test('Rx.takeUntil.reusable', () async {
     final transformer = TakeUntilStreamTransformer<int, int>(
         _getOtherStream().asBroadcastStream());
     const expectedOutput = [1, 2];
@@ -59,7 +59,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.takeUntil.asBroadcastStream', () async {
+  test('Rx.takeUntil.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .takeUntil(_getOtherStream().asBroadcastStream());
@@ -71,7 +71,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.takeUntil.error.shouldThrowA', () async {
+  test('Rx.takeUntil.error.shouldThrowA', () async {
     final observableWithError =
         Stream<void>.error(Exception()).takeUntil(_getOtherStream());
 
@@ -81,11 +81,11 @@ void main() {
     }));
   });
 
-  test('rx.Observable.takeUntil.error.shouldThrowB', () {
+  test('Rx.takeUntil.error.shouldThrowB', () {
     expect(() => Stream.value(1).takeUntil<void>(null), throwsArgumentError);
   });
 
-  test('rx.Observable.takeUntil.pause.resume', () async {
+  test('Rx.takeUntil.pause.resume', () async {
     StreamSubscription<int> subscription;
     const expectedOutput = [1, 2];
     var count = 0;

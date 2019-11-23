@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Rx.Observable.timestamp', () async {
+  test('Rx.Rx.timestamp', () async {
     const expected = [1, 2, 3];
     var count = 0;
 
@@ -15,7 +15,7 @@ void main() {
         }, count: expected.length));
   });
 
-  test('Rx.Observable.timestamp.reusable', () async {
+  test('Rx.Rx.timestamp.reusable', () async {
     final transformer = TimestampStreamTransformer<int>();
     const expected = [1, 2, 3];
     var countA = 0, countB = 0;

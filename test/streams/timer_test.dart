@@ -66,10 +66,10 @@ void main() {
     await subscription.cancel();
   });
 
-  test('rx.Observable.timer', () async {
+  test('Rx.timer', () async {
     const value = 1;
 
-    final observable = Observable.timer(value, Duration(milliseconds: 5));
+    final observable = Rx.timer(value, Duration(milliseconds: 5));
 
     observable.listen(expectAsync1((actual) {
       expect(actual, value);

@@ -1,6 +1,6 @@
 library rx;
 
-export 'src/observables/observable.dart';
+export 'src/rx.dart';
 export 'src/streams/connectable_stream.dart';
 export 'src/utils/composite_subscription.dart';
 export 'streams.dart';

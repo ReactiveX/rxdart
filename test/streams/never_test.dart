@@ -39,10 +39,10 @@ void main() {
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.never', () async {
+  test('Rx.never', () async {
     var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    final observable = Observable.never<Null>();
+    final observable = Rx.never<Null>();
 
     final subscription = observable.listen(
         expectAsync1((_) {

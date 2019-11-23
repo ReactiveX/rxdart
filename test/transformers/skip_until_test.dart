@@ -29,7 +29,7 @@ Stream<int> _getOtherStream() {
 }
 
 void main() {
-  test('rx.Observable.skipUntil', () async {
+  test('Rx.skipUntil', () async {
     const expectedOutput = [3, 4];
     var count = 0;
 
@@ -38,13 +38,13 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.skipUntil.shouldClose', () async {
+  test('Rx.skipUntil.shouldClose', () async {
     _getStream()
         .skipUntil(Stream<void>.empty())
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
   });
 
-  test('rx.Observable.skipUntil.reusable', () async {
+  test('Rx.skipUntil.reusable', () async {
     final transformer = SkipUntilStreamTransformer<int, int>(
         _getOtherStream().asBroadcastStream());
     const expectedOutput = [3, 4];
@@ -59,7 +59,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.skipUntil.asBroadcastStream', () async {
+  test('Rx.skipUntil.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .skipUntil(_getOtherStream().asBroadcastStream());
@@ -71,7 +71,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.skipUntil.error.shouldThrowA', () async {
+  test('Rx.skipUntil.error.shouldThrowA', () async {
     final observableWithError =
         Stream<int>.error(Exception()).skipUntil(_getOtherStream());
 
@@ -81,7 +81,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.skipUntil.error.shouldThrowB', () async {
+  test('Rx.skipUntil.error.shouldThrowB', () async {
     final observableWithError =
         Stream.value(1).skipUntil(Stream<void>.error(Exception('Oh noes!')));
 
@@ -91,11 +91,11 @@ void main() {
     }));
   });
 
-  test('rx.Observable.skipUntil.error.shouldThrowC', () {
+  test('Rx.skipUntil.error.shouldThrowC', () {
     expect(() => Stream.value(1).skipUntil<void>(null), throwsArgumentError);
   });
 
-  test('rx.Observable.skipUntil.pause.resume', () async {
+  test('Rx.skipUntil.pause.resume', () async {
     StreamSubscription<int> subscription;
     const expectedOutput = [3, 4];
     var count = 0;

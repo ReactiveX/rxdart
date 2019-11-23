@@ -12,13 +12,13 @@ Stream<int> _getSampleStream() =>
         .take(10);
 
 void main() {
-  test('rx.Observable.sample', () async {
+  test('Rx.sample', () async {
     final observable = _getStream().sample(_getSampleStream());
 
     await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
-  test('rx.Observable.sample.reusable', () async {
+  test('Rx.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
     final observableA = _getStream().transform(transformer);
@@ -28,13 +28,13 @@ void main() {
     await expectLater(observableB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
-  test('rx.Observable.sample.onDone', () async {
+  test('Rx.sample.onDone', () async {
     final observable = Stream.value(1).sample(Stream<void>.empty());
 
     await expectLater(observable, emits(1));
   });
 
-  test('rx.Observable.sample.shouldClose', () async {
+  test('Rx.sample.shouldClose', () async {
     final controller = StreamController<int>();
 
     controller.stream
@@ -49,7 +49,7 @@ void main() {
     scheduleMicrotask(controller.close);
   });
 
-  test('rx.Observable.sample.asBroadcastStream', () async {
+  test('Rx.sample.asBroadcastStream', () async {
     final stream = _getStream()
         .asBroadcastStream()
         .sample(_getSampleStream().asBroadcastStream());
@@ -61,7 +61,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.sample.error.shouldThrowA', () async {
+  test('Rx.sample.error.shouldThrowA', () async {
     final observableWithError =
         Stream<void>.error(Exception()).sample(_getSampleStream());
 
@@ -71,7 +71,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.sample.error.shouldThrowB', () async {
+  test('Rx.sample.error.shouldThrowB', () async {
     final observableWithError = Stream.value(1)
         .sample(Stream<void>.error(Exception('Catch me if you can!')));
 
@@ -81,7 +81,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.sample.pause.resume', () async {
+  test('Rx.sample.pause.resume', () async {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 

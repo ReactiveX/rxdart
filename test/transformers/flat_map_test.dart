@@ -20,7 +20,7 @@ Stream<int> _getOtherStream(int value) {
 }
 
 void main() {
-  test('rx.Observable.flatMap', () async {
+  test('Rx.flatMap', () async {
     const expectedOutput = [3, 2, 1];
     var count = 0;
 
@@ -29,7 +29,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.flatMap.reusable', () async {
+  test('Rx.flatMap.reusable', () async {
     final transformer = FlatMapStreamTransformer<int, int>(_getOtherStream);
     const expectedOutput = [3, 2, 1];
     var countA = 0, countB = 0;
@@ -43,7 +43,7 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.flatMap.asBroadcastStream', () async {
+  test('Rx.flatMap.asBroadcastStream', () async {
     final stream = _getStream().asBroadcastStream().flatMap(_getOtherStream);
 
     // listen twice on same stream
@@ -53,7 +53,7 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.flatMap.error.shouldThrowA', () async {
+  test('Rx.flatMap.error.shouldThrowA', () async {
     final observableWithError =
         Stream<int>.error(Exception()).flatMap(_getOtherStream);
 
@@ -63,7 +63,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.flatMap.error.shouldThrowB', () async {
+  test('Rx.flatMap.error.shouldThrowB', () async {
     final observableWithError = Stream.value(1)
         .flatMap((_) => Stream<void>.error(Exception('Catch me if you can!')));
 
@@ -73,7 +73,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.flatMap.error.shouldThrowC', () async {
+  test('Rx.flatMap.error.shouldThrowC', () async {
     final observableWithError =
         Stream.value(1).flatMap<void>((_) => throw Exception('oh noes!'));
 
@@ -83,7 +83,7 @@ void main() {
     }));
   });
 
-  test('rx.Observable.flatMap.pause.resume', () async {
+  test('Rx.flatMap.pause.resume', () async {
     StreamSubscription<int> subscription;
     final stream = Stream.value(0).flatMap((_) => Stream.value(1));
 
@@ -97,7 +97,7 @@ void main() {
     subscription.resume();
   });
 
-  test('rx.Observable.flatMap.chains', () {
+  test('Rx.flatMap.chains', () {
     expect(
       Stream.value(1)
           .flatMap((_) => Stream.value(2))

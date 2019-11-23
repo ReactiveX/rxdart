@@ -16,7 +16,7 @@ Stream<int> getStream(int n) async* {
 }
 
 void main() {
-  test('rx.Observable.bufferTime', () async {
+  test('Rx.bufferTime', () async {
     await expectLater(
         getStream(4).bufferTime(const Duration(milliseconds: 160)),
         emitsInOrder(<dynamic>[
@@ -26,7 +26,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferTime.shouldClose', () async {
+  test('Rx.bufferTime.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
@@ -39,7 +39,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferTime.reusable', () async {
+  test('Rx.bufferTime.reusable', () async {
     final transformer = BufferStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 160)));
 
@@ -58,7 +58,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.bufferTime.asBroadcastStream', () async {
+  test('Rx.bufferTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
         .bufferTime(const Duration(milliseconds: 160));
@@ -76,14 +76,14 @@ void main() {
         stream, emitsInOrder(<dynamic>[const <int>[], emitsDone]));
   });
 
-  test('rx.Observable.bufferTime.error.shouldThrowA', () async {
+  test('Rx.bufferTime.error.shouldThrowA', () async {
     await expectLater(
         Stream<void>.error(Exception())
             .bufferTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
 
-  test('rx.Observable.bufferTime.error.shouldThrowB', () {
+  test('Rx.bufferTime.error.shouldThrowB', () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferTime(null),
         throwsArgumentError);
   });

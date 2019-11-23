@@ -5,10 +5,10 @@ import 'package:rxdart/src/streams/repeat.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.repeat', () async {
+  test('Rx.repeat', () async {
     const retries = 3;
 
-    await expectLater(Observable.repeat(_getRepeatStream('A'), retries),
+    await expectLater(Rx.repeat(_getRepeatStream('A'), retries),
         emitsInOrder(<dynamic>['A0', 'A1', 'A2', emitsDone]));
   });
 

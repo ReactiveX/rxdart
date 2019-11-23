@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.defer', () async {
+  test('Rx.defer', () async {
     const value = 1;
 
     final observable = _getDeferStream();
@@ -14,7 +14,7 @@ void main() {
     }, count: 1));
   });
 
-  test('rx.Observable.defer.multiple.listeners', () async {
+  test('Rx.defer.multiple.listeners', () async {
     const value = 1;
 
     final observable = _getBroadcastDeferStream();
@@ -28,7 +28,7 @@ void main() {
     }, count: 1));
   });
 
-  test('rx.Observable.defer.streamFactory.called', () async {
+  test('Rx.defer.streamFactory.called', () async {
     var count = 0;
 
     streamFactory() {
@@ -50,10 +50,10 @@ void main() {
     );
   });
 
-  test('rx.Observable.defer.reusable', () async {
+  test('Rx.defer.reusable', () async {
     const value = 1;
 
-    final observable = Observable.defer(
+    final observable = Rx.defer(
       () => Stream.fromFuture(
         Future.delayed(
           Duration(seconds: 1),
@@ -77,7 +77,7 @@ void main() {
     );
   });
 
-  test('rx.Observable.defer.single.subscription', () async {
+  test('Rx.defer.single.subscription', () async {
     final observable = _getDeferStream();
 
     try {
@@ -89,8 +89,8 @@ void main() {
     }
   });
 
-  test('rx.Observable.defer.error.shouldThrow', () async {
-    final observableWithError = Observable.defer(() => _getErroneousStream());
+  test('Rx.defer.error.shouldThrow', () async {
+    final observableWithError = Rx.defer(() => _getErroneousStream());
 
     observableWithError.listen(null,
         onError: expectAsync1((Exception e) {
@@ -99,10 +99,10 @@ void main() {
   });
 }
 
-Stream<int> _getDeferStream() => Observable.defer(() => Stream.value(1));
+Stream<int> _getDeferStream() => Rx.defer(() => Stream.value(1));
 
 Stream<int> _getBroadcastDeferStream() =>
-    Observable.defer(() => Stream.value(1)).asBroadcastStream();
+    Rx.defer(() => Stream.value(1)).asBroadcastStream();
 
 Stream<int> _getErroneousStream() {
   final controller = StreamController<int>();
