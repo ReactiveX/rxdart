@@ -14,7 +14,15 @@ If you'd like to add a feature or fix a bug, we're more than happy to accept pul
   - Format your code with `dartfmt`
   - Write tests for all new code paths, consider using the [Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers) available from the test package.
   - Write helpful documentation
-  - If you would like to make a bigger / fundamental change t
+  - If you would like to make a bigger / fundamental change to the codebase, please file a lightweight example PR / issue, or contact us in [Gitter](https://gitter.im/ReactiveX/rxdart) so we can discuss the issue.
+
+## Advice when adding a new Stream
+
+  - Extend from `Stream`
+  - Add the new `Stream` to the exported `rx_streams` library
+  - If the Stream is not a broadcast stream, ensure it properly enforces the single-subscription contract
+  - Ensure the stream closes properly
+  - Add new tests to `tests/rxdart_test.dart`
 
 ## Advice when adding a new operator
 
