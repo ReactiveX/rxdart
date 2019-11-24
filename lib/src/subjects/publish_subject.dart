@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// Exactly like a normal broadcast StreamController with one exception:
-/// `stream` returns a [Stream] instead of a [Stream].
+/// this class is both a Stream and Sink.
 ///
 /// This Subject allows sending data, error and done events to the listener.
 ///

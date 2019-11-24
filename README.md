@@ -7,9 +7,11 @@
 
 ## About
 
-RxDart is a library for working with Streams of data.
+RxDart adds additional capabilities to Dart [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) and [StreamControllers](https://api.dart.dev/stable/dart-async/StreamController-class.html).
 
 Dart comes with a very decent [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) API out-of-the-box; rather than attempting to provide an alternative to this API, RxDart adds functionality from the reactive extensions specification on top of it. 
+
+RxDart does not provide its own Observable class as a replacement for Dart Streams. Rather, it provides a number of additional Stream classes, operators (extension methods on the Stream class), and Subjects. 
 
 If you are familiar with Observables from other languages, please see [the Rx Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams) for notable distinctions between the two.
 
@@ -45,10 +47,11 @@ void main() {
 
 ## API Overview
 
-RxDart adds functionality to Dart Streams in two ways:
+RxDart adds functionality to Dart Streams in three ways:
 
   * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams together.
-  * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling or buffering events. 
+  * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling or buffering events.
+  * [Subjects](#subjects) - StreamControllers with additional powers 
 
 ### Stream Classes
 
@@ -146,11 +149,18 @@ Stream.fromIterable([1, 2, 3])
 - [withLatestFrom](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/withLatestFrom.html)
 - [zipWith](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable/zipWith.html)
 
+### Subjects
+
+Dart provides the [StreamController](https://api.dart.dev/stable/dart-async/StreamController-class.html) class to create and manage a Stream. RxDart offers two additional StreamControllers with additional capabilities, known as Subjects:
+ 
+- [BehaviorSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx/BehaviorSubject-class.html) - A broadcast StreamController that caches the latest added value or error. When a new listener subscribes to the Stream, the latest value or error will be emitted to the listener. Furthermore, you can synchronously read the last emitted value. 
+- [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx/ReplaySubject-class.html) - A broadcast StreamController that caches the added values. When a new listener subscribes to the Stream, the cached values will be emitted to the listener.
+
 ## Rx Observables vs Dart Streams
 
 In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream api may surprise you. We've included a table below to help folks understand the differences. 
 
-Additional information about the following situations can be found by reading the [Observable class documentation](https://www.dartdocs.org/documentation/rxdart/latest/rx/Observable-class.html).
+Additional information about the following situations can be found by reading the [Rx class documentation](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx-class.html).
 
 | Situation | Rx Observables  | Dart Streams |
 | ------------- |------------- | ------------- |
