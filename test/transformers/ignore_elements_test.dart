@@ -18,10 +18,10 @@ Stream<int> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.ignoreElements', () async {
+  test('Rx.ignoreElements', () async {
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).ignoreElements().listen((_) {
+    _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -29,18 +29,18 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.ignoreElements.reusable', () async {
+  test('Rx.ignoreElements.reusable', () async {
     final transformer = IgnoreElementsStreamTransformer<int>();
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).transform(transformer).listen((_) {
+    _getStream().transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
           expect(hasReceivedEvent, isFalse);
         }, count: 1));
 
-    Observable(_getStream()).transform(transformer).listen((_) {
+    _getStream().transform(transformer).listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -48,9 +48,8 @@ void main() {
         }, count: 1));
   });
 
-  test('rx.Observable.ignoreElements.asBroadcastStream', () async {
-    final stream =
-        Observable(_getStream().asBroadcastStream()).ignoreElements();
+  test('Rx.ignoreElements.asBroadcastStream', () async {
+    final stream = _getStream().asBroadcastStream().ignoreElements();
 
     // listen twice on same stream
     stream.listen(null);
@@ -59,10 +58,10 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.ignoreElements.pause.resume', () async {
+  test('Rx.ignoreElements.pause.resume', () async {
     var hasReceivedEvent = false;
 
-    Observable(_getStream()).ignoreElements().listen((_) {
+    _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
         onDone: expectAsync0(() {
@@ -72,11 +71,10 @@ void main() {
       ..resume();
   });
 
-  test('rx.Observable.ignoreElements.error.shouldThrow', () async {
-    final observableWithError =
-        Observable(ErrorStream<void>(Exception())).ignoreElements();
+  test('Rx.ignoreElements.error.shouldThrow', () async {
+    final streamWithError = Stream<void>.error(Exception()).ignoreElements();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
           expect(e, isException);
         }, count: 1));

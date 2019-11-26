@@ -107,7 +107,8 @@ void main() {
       final subject = ReplaySubject<int>();
 
       await expectLater(
-          subject.addStream(ErrorStream<int>(Exception()), cancelOnError: true),
+          subject.addStream(Stream<int>.error(Exception()),
+              cancelOnError: true),
           throwsException);
 
       subject.add(1);

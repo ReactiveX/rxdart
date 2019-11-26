@@ -35,38 +35,31 @@ Stream<int> range() =>
     Stream.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 void main() {
-  test('rx.Observable.switchMap', () async {
+  test('Rx.switchMap', () async {
     const expectedOutput = [5, 6, 7, 8];
     var count = 0;
 
-    Observable(_getStream())
-        .switchMap(_getOtherStream)
-        .listen(expectAsync1((result) {
+    _getStream().switchMap(_getOtherStream).listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.switchMap.reusable', () async {
+  test('Rx.switchMap.reusable', () async {
     final transformer = SwitchMapStreamTransformer<int, int>(_getOtherStream);
     const expectedOutput = [5, 6, 7, 8];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, expectedOutput[countB++]);
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.switchMap.asBroadcastStream', () async {
-    final stream =
-        Observable(_getStream().asBroadcastStream()).switchMap(_getOtherStream);
+  test('Rx.switchMap.asBroadcastStream', () async {
+    final stream = _getStream().asBroadcastStream().switchMap(_getOtherStream);
 
     // listen twice on same stream
     stream.listen(null);
@@ -75,40 +68,40 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowA', () async {
-    final observableWithError =
-        Observable(ErrorStream<int>(Exception())).switchMap(_getOtherStream);
+  test('Rx.switchMap.error.shouldThrowA', () async {
+    final streamWithError =
+        Stream<int>.error(Exception()).switchMap(_getOtherStream);
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowB', () async {
-    final observableWithError = Observable.just(1)
-        .switchMap((_) => ErrorStream<void>(Exception('Catch me if you can!')));
+  test('Rx.switchMap.error.shouldThrowB', () async {
+    final streamWithError = Stream.value(1).switchMap(
+        (_) => Stream<void>.error(Exception('Catch me if you can!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.switchMap.error.shouldThrowC', () async {
-    final observableWithError = Observable.just(1).switchMap<void>((_) {
+  test('Rx.switchMap.error.shouldThrowC', () async {
+    final streamWithError = Stream.value(1).switchMap<void>((_) {
       throw Exception('oh noes!');
     });
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.switchMap.pause.resume', () async {
+  test('Rx.switchMap.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.just(0).switchMap((_) => Observable.just(1));
+    final stream = Stream.value(0).switchMap((_) => Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
@@ -120,7 +113,7 @@ void main() {
     subscription.resume();
   });
 
-  test('rx.Observable.switchMap stream close after switch', () async {
+  test('Rx.switchMap stream close after switch', () async {
     final controller = StreamController<int>();
     final list = controller.stream
         .switchMap((it) => Stream.fromIterable([it, it]))

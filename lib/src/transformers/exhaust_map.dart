@@ -12,7 +12,7 @@ import 'dart:async';
 ///     Stream.periodic(Duration(milliseconds: 200), (i) => i).take(3)
 ///       .transform(ExhaustMapStreamTransformer(
 ///         // Emits the value it's given after 200ms
-///         (i) => Observable.timer(i, Duration(milliseconds: 200)),
+///         (i) => Rx.timer(i, Duration(milliseconds: 200)),
 ///       ))
 ///     .listen(print); // prints 0, 2
 class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {

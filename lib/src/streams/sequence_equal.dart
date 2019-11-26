@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:rxdart/src/streams/zip.dart';
-
 import 'package:rxdart/src/transformers/materialize.dart';
-
 import 'package:rxdart/src/utils/notification.dart';
 
-/// Determine whether two Observables emit the same sequence of items.
+/// Determine whether two Streams emit the same sequence of items.
 /// You can provide an optional equals handler to determine equality.
 ///
 /// [Interactive marble diagram](https://rxmarbles.com/#sequenceEqual)

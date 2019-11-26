@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Returns the values from the source observable sequence until the other
+/// Returns the values from the source stream sequence until the other
 /// stream sequence produces a value.
 ///
 /// ### Example

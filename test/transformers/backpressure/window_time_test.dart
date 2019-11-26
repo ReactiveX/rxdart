@@ -4,19 +4,19 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 /// yield immediately, then every 100ms
-Observable<int> getStream(int n) => Observable<int>((int n) async* {
-      var k = 1;
+Stream<int> getStream(int n) async* {
+  var k = 1;
 
-      yield 0;
+  yield 0;
 
-      while (k < n) {
-        yield await Future<Null>.delayed(const Duration(milliseconds: 100))
-            .then((_) => k++);
-      }
-    }(n));
+  while (k < n) {
+    yield await Future<Null>.delayed(const Duration(milliseconds: 100))
+        .then((_) => k++);
+  }
+}
 
 void main() {
-  test('rx.Observable.windowTime', () async {
+  test('Rx.windowTime', () async {
     await expectLater(
         getStream(4)
             .windowTime(const Duration(milliseconds: 160))
@@ -28,13 +28,13 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.shouldClose', () async {
+  test('Rx.windowTime.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
 
     await expectLater(
-        Observable(controller.stream)
+        controller.stream
             .windowTime(const Duration(seconds: 3))
             .asyncMap((stream) => stream.toList())
             .take(1),
@@ -44,7 +44,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.reusable', () async {
+  test('Rx.windowTime.reusable', () async {
     final transformer = WindowStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 160)));
 
@@ -67,7 +67,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.windowTime.asBroadcastStream', () async {
+  test('Rx.windowTime.asBroadcastStream', () async {
     final stream = getStream(4)
         .asBroadcastStream()
         .windowTime(const Duration(milliseconds: 160))
@@ -78,15 +78,15 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.windowTime.error.shouldThrowA', () async {
+  test('Rx.windowTime.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<void>(Exception()))
+        Stream<void>.error(Exception())
             .windowTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
 
-  test('rx.Observable.windowTime.error.shouldThrowB', () {
-    expect(() => Observable.fromIterable(const [1, 2, 3, 4]).windowTime(null),
+  test('Rx.windowTime.error.shouldThrowB', () {
+    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTime(null),
         throwsArgumentError);
   });
 }

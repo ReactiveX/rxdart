@@ -5,7 +5,7 @@ import 'dart:async';
 /// ### Example
 ///
 ///     MergeStream([
-///       Observable.just(1),
+///       Stream.value(1),
 ///       TimerStream(2, Duration(minutes: 2))
 ///     ])
 ///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))

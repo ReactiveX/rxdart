@@ -18,39 +18,40 @@ Stream<int> _getStream() {
 }
 
 void main() {
-  test('rx.Observable.debounce', () async {
+  test('Rx.debounce', () async {
     await expectLater(
-        Observable(_getStream()).debounce((_) => Stream<void>.fromFuture(
+        _getStream().debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.dynamicWindow', () async {
+  test('Rx.debounce.dynamicWindow', () async {
     // Given the input [1, 2, 3, 4]
     // debounce 200ms on [1, 2, 4]
     // debounce 0ms on [3]
     // yields [3, 4, done]
     await expectLater(
-        Observable(_getStream()).debounce((value) => value == 3
-            ? Observable<bool>.just(true)
+        _getStream().debounce((value) => value == 3
+            ? Stream<bool>.value(true)
             : Stream<void>.fromFuture(
                 Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsInOrder(<dynamic>[3, 4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.reusable', () async {
+  test('Rx.debounce.reusable', () async {
     final transformer = DebounceStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 200)));
 
-    await expectLater(Observable(_getStream()).transform(transformer),
+    await expectLater(_getStream().transform(transformer),
         emitsInOrder(<dynamic>[4, emitsDone]));
 
-    await expectLater(Observable(_getStream()).transform(transformer),
+    await expectLater(_getStream().transform(transformer),
         emitsInOrder(<dynamic>[4, emitsDone]));
   });
 
-  test('rx.Observable.debounce.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+  test('Rx.debounce.asBroadcastStream', () async {
+    final stream = _getStream()
+        .asBroadcastStream()
         .debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200))))
         .ignoreElements();
@@ -59,19 +60,18 @@ void main() {
     await expectLater(stream, emitsDone);
   });
 
-  test('rx.Observable.debounce.error.shouldThrowA', () async {
+  test('Rx.debounce.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<void>(Exception())).debounce((_) =>
-            Stream<void>.fromFuture(
-                Future<void>.delayed(const Duration(milliseconds: 200)))),
+        Stream<void>.error(Exception()).debounce((_) => Stream<void>.fromFuture(
+            Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsError(isException));
   });
 
-  test('rx.Observable.debounce.pause.resume', () async {
+  test('Rx.debounce.pause.resume', () async {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 
-    subscription = Observable.fromIterable([1, 2, 3])
+    subscription = Stream.fromIterable([1, 2, 3])
         .debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200))))
         .listen(controller.add, onDone: () {
@@ -84,10 +84,10 @@ void main() {
     await expectLater(controller.stream, emitsInOrder(<dynamic>[3, emitsDone]));
   });
 
-  test('rx.Observable.debounce.emits.last.item.immediately', () async {
+  test('Rx.debounce.emits.last.item.immediately', () async {
     final emissions = <int>[];
     final stopwatch = Stopwatch();
-    final stream = Observable.fromIterable(const [1, 2, 3]).debounce((_) =>
+    final stream = Stream.fromIterable(const [1, 2, 3]).debounce((_) =>
         Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200))));
     StreamSubscription<int> subscription;
@@ -112,10 +112,10 @@ void main() {
   }, timeout: Timeout(Duration(seconds: 3)));
 
   test(
-    'rx.Observable.debounce.cancel.emits.nothing',
+    'Rx.debounce.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      final stream = Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
+      final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).debounce((_) => Stream<void>.fromFuture(
           Future<void>.delayed(const Duration(milliseconds: 200))));
@@ -127,9 +127,9 @@ void main() {
     timeout: Timeout(Duration(seconds: 3)),
   );
 
-  test('rx.Observable.debounce.last.event.can.be.null', () async {
+  test('Rx.debounce.last.event.can.be.null', () async {
     await expectLater(
-        Observable(Stream.fromIterable([1, 2, 3, null])).debounce((_) =>
+        Stream.fromIterable([1, 2, 3, null]).debounce((_) =>
             Stream<void>.fromFuture(
                 Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsInOrder(<dynamic>[null, emitsDone]));

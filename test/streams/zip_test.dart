@@ -4,22 +4,22 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.zip', () async {
+  test('Rx.zip', () async {
     expect(
-      Observable.zip<String, String>([
-        Observable.fromIterable(["A1", "B1"]),
-        Observable.fromIterable(["A2", "B2", "C2"]),
+      Rx.zip<String, String>([
+        Stream.fromIterable(["A1", "B1"]),
+        Stream.fromIterable(["A2", "B2", "C2"]),
       ], (values) => values.first + values.last),
       emitsInOrder(<dynamic>["A1A2", "B1B2", emitsDone]),
     );
   });
 
-  test('rx.Observable.zipList', () async {
+  test('Rx.zipList', () async {
     expect(
-      Observable.zipList([
-        Observable.fromIterable(["A1", "B1"]),
-        Observable.fromIterable(["A2", "B2", "C2"]),
-        Observable.fromIterable(["A3", "B3", "C3"]),
+      Rx.zipList([
+        Stream.fromIterable(["A1", "B1"]),
+        Stream.fromIterable(["A2", "B2", "C2"]),
+        Stream.fromIterable(["A3", "B3", "C3"]),
       ]),
       emitsInOrder(<dynamic>[
         ['A1', 'A2', 'A3'],
@@ -29,7 +29,7 @@ void main() {
     );
   });
 
-  test('rx.Observable.zipBasics', () async {
+  test('Rx.zipBasics', () async {
     const expectedOutput = [
       [0, 1, true],
       [1, 2, false],
@@ -46,14 +46,14 @@ void main() {
       ..add(true)
       ..close(); // ignore: unawaited_futures
 
-    final observable = Observable.zip3(
+    final stream = Rx.zip3(
         Stream.periodic(const Duration(milliseconds: 1), (count) => count)
             .take(4),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6, 7, 8, 9]),
         testStream.stream,
         (int a, int b, bool c) => [a, b, c]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       for (var i = 0, len = result.length; i < len; i++) {
         expect(result[i], expectedOutput[count][i]);
@@ -63,48 +63,45 @@ void main() {
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.zipTwo', () async {
+  test('Rx.zipTwo', () async {
     const expected = [1, 2];
 
     // A purposely emits 2 items, b only 1
-    final a = Observable.fromIterable(const [1, 2]), b = Observable.just(2);
+    final a = Stream.fromIterable(const [1, 2]), b = Stream.value(2);
 
-    final observable =
-        Observable.zip2(a, b, (int first, int second) => [first, second]);
+    final stream = Rx.zip2(a, b, (int first, int second) => [first, second]);
 
     // Explicitly adding count: 1. It's important here, and tests the difference
     // between zip and combineLatest. If this was combineLatest, the count would
     // be two, and a second List<int> would be emitted.
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }, count: 1));
   });
 
-  test('rx.Observable.zip3', () async {
+  test('Rx.zip3', () async {
     // Verify the ability to pass through various types with safety
     const expected = [1, "2", 3.0];
 
-    final a = Observable.just(1),
-        b = Observable.just("2"),
-        c = Observable.just(3.0);
+    final a = Stream.value(1), b = Stream.value("2"), c = Stream.value(3.0);
 
-    final observable = Observable.zip3(a, b, c,
+    final stream = Rx.zip3(a, b, c,
         (int first, String second, double third) => [first, second, third]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip4', () async {
+  test('Rx.zip4', () async {
     const expected = [1, 2, 3, 4];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4);
 
-    final observable = Observable.zip4(
+    final stream = Rx.zip4(
         a,
         b,
         c,
@@ -112,21 +109,21 @@ void main() {
         (int first, int second, int third, int fourth) =>
             [first, second, third, fourth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip5', () async {
+  test('Rx.zip5', () async {
     const expected = [1, 2, 3, 4, 5];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4),
-        e = Observable.just(5);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4),
+        e = Stream.value(5);
 
-    final observable = Observable.zip5(
+    final stream = Rx.zip5(
         a,
         b,
         c,
@@ -135,22 +132,22 @@ void main() {
         (int first, int second, int third, int fourth, int fifth) =>
             [first, second, third, fourth, fifth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip6', () async {
+  test('Rx.zip6', () async {
     const expected = [1, 2, 3, 4, 5, 6];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4),
-        e = Observable.just(5),
-        f = Observable.just(6);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4),
+        e = Stream.value(5),
+        f = Stream.value(6);
 
-    final observable = Observable.zip6(
+    final stream = Rx.zip6(
         a,
         b,
         c,
@@ -160,23 +157,23 @@ void main() {
         (int first, int second, int third, int fourth, int fifth, int sixth) =>
             [first, second, third, fourth, fifth, sixth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip7', () async {
+  test('Rx.zip7', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4),
-        e = Observable.just(5),
-        f = Observable.just(6),
-        g = Observable.just(7);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4),
+        e = Stream.value(5),
+        f = Stream.value(6),
+        g = Stream.value(7);
 
-    final observable = Observable.zip7(
+    final stream = Rx.zip7(
         a,
         b,
         c,
@@ -188,24 +185,24 @@ void main() {
                 int seventh) =>
             [first, second, third, fourth, fifth, sixth, seventh]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip8', () async {
+  test('Rx.zip8', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4),
-        e = Observable.just(5),
-        f = Observable.just(6),
-        g = Observable.just(7),
-        h = Observable.just(8);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4),
+        e = Stream.value(5),
+        f = Stream.value(6),
+        g = Stream.value(7),
+        h = Stream.value(8);
 
-    Stream<List<int>> observable = Observable.zip8(
+    Stream<List<int>> stream = Rx.zip8(
         a,
         b,
         c,
@@ -218,25 +215,25 @@ void main() {
                 int seventh, int eighth) =>
             [first, second, third, fourth, fifth, sixth, seventh, eighth]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip9', () async {
+  test('Rx.zip9', () async {
     const expected = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-    final a = Observable.just(1),
-        b = Observable.just(2),
-        c = Observable.just(3),
-        d = Observable.just(4),
-        e = Observable.just(5),
-        f = Observable.just(6),
-        g = Observable.just(7),
-        h = Observable.just(8),
-        i = Observable.just(9);
+    final a = Stream.value(1),
+        b = Stream.value(2),
+        c = Stream.value(3),
+        d = Stream.value(4),
+        e = Stream.value(5),
+        f = Stream.value(6),
+        g = Stream.value(7),
+        h = Stream.value(8),
+        i = Stream.value(9);
 
-    Stream<List<int>> observable = Observable.zip9(
+    Stream<List<int>> stream = Rx.zip9(
         a,
         b,
         c,
@@ -260,20 +257,20 @@ void main() {
               ninth
             ]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.zip.single.subscription', () async {
-    final observable = Observable.zip2(
-        Observable.just(1), Observable.just(1), (int a, int b) => a + b);
+  test('Rx.zip.single.subscription', () async {
+    final stream =
+        Rx.zip2(Stream.value(1), Stream.value(1), (int a, int b) => a + b);
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.zip.asBroadcastStream', () async {
+  test('Rx.zip.asBroadcastStream', () async {
     final testStream = StreamController<bool>()
       ..add(true)
       ..add(false)
@@ -282,7 +279,7 @@ void main() {
       ..add(true)
       ..close(); // ignore: unawaited_futures
 
-    final observable = Observable.zip3(
+    final stream = Rx.zip3(
         Stream.periodic(const Duration(milliseconds: 1), (count) => count)
             .take(4),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6, 7, 8, 9]),
@@ -290,45 +287,45 @@ void main() {
         (int a, int b, bool c) => [a, b, c]).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.zip.error.shouldThrowA', () async {
-    final observableWithError = Observable.zip2(
-      Observable.just(1),
-      Observable.just(2),
+  test('Rx.zip.error.shouldThrowA', () async {
+    final streamWithError = Rx.zip2(
+      Stream.value(1),
+      Stream.value(2),
       (int a, int b) => throw Exception(),
     );
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  /*test('rx.Observable.zip.error.shouldThrowB', () {
+  /*test('Rx.zip.error.shouldThrowB', () {
     expect(
-        () => Observable.zip2(
-             Observable.just(1), null, (int a, _) => null),
+        () => Rx.zip2(
+             Stream.value(1), null, (int a, _) => null),
         throwsArgumentError);
   });
 
-  test('rx.Observable.zip.error.shouldThrowC', () {
+  test('Rx.zip.error.shouldThrowC', () {
     expect(() => ZipStream<num>(null, () {}), throwsArgumentError);
   });
 
-  test('rx.Observable.zip.error.shouldThrowD', () {
+  test('Rx.zip.error.shouldThrowD', () {
     expect(() => ZipStream<num>(<Stream<dynamic>>[], () {}),
         throwsArgumentError);
   });*/
 
-  test('rx.Observable.zip.pause.resume.A', () async {
+  test('Rx.zip.pause.resume.A', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.zip2(
-        Observable.just(1), Observable.just(2), (int a, int b) => a + b);
+    final stream =
+        Rx.zip2(Stream.value(1), Stream.value(2), (int a, int b) => a + b);
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 3);
@@ -340,7 +337,7 @@ void main() {
     subscription.resume();
   });
 
-  test('rx.Observable.zip.pause.resume.B', () async {
+  test('Rx.zip.pause.resume.B', () async {
     final first = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [1, 2, 3, 4][index]),
         second = Stream.periodic(const Duration(milliseconds: 10),
@@ -350,7 +347,7 @@ void main() {
 
     StreamSubscription<Iterable<num>> subscription;
     subscription =
-        Observable.zip3(first, second, last, (num a, num b, num c) => [a, b, c])
+        Rx.zip3(first, second, last, (num a, num b, num c) => [a, b, c])
             .listen(expectAsync1((value) {
       expect(value.elementAt(0), 1);
       expect(value.elementAt(1), 5);

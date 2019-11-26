@@ -12,33 +12,32 @@ Stream<int> _getSampleStream() =>
         .take(10);
 
 void main() {
-  test('rx.Observable.sample', () async {
-    final observable = Observable(_getStream()).sample(_getSampleStream());
+  test('Rx.sample', () async {
+    final stream = _getStream().sample(_getSampleStream());
 
-    await expectLater(observable, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
-  test('rx.Observable.sample.reusable', () async {
+  test('Rx.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
-    final observableA = Observable(_getStream()).transform(transformer);
-    final observableB = Observable(_getStream()).transform(transformer);
+    final streamA = _getStream().transform(transformer);
+    final streamB = _getStream().transform(transformer);
 
-    await expectLater(observableA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-    await expectLater(observableB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(streamA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+    await expectLater(streamB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
   });
 
-  test('rx.Observable.sample.onDone', () async {
-    final observable =
-        Observable(Observable.just(1)).sample(Observable<void>.empty());
+  test('Rx.sample.onDone', () async {
+    final stream = Stream.value(1).sample(Stream<void>.empty());
 
-    await expectLater(observable, emits(1));
+    await expectLater(stream, emits(1));
   });
 
-  test('rx.Observable.sample.shouldClose', () async {
+  test('Rx.sample.shouldClose', () async {
     final controller = StreamController<int>();
 
-    Observable(controller.stream)
+    controller.stream
         .sample(Stream<void>.empty()) // should trigger onDone
         .listen(null, onDone: expectAsync0(() => expect(true, isTrue)));
 
@@ -50,8 +49,9 @@ void main() {
     scheduleMicrotask(controller.close);
   });
 
-  test('rx.Observable.sample.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+  test('Rx.sample.asBroadcastStream', () async {
+    final stream = _getStream()
+        .asBroadcastStream()
         .sample(_getSampleStream().asBroadcastStream());
 
     // listen twice on same stream
@@ -61,31 +61,31 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.sample.error.shouldThrowA', () async {
-    final observableWithError =
-        Observable(ErrorStream<void>(Exception())).sample(_getSampleStream());
+  test('Rx.sample.error.shouldThrowA', () async {
+    final streamWithError =
+        Stream<void>.error(Exception()).sample(_getSampleStream());
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.sample.error.shouldThrowB', () async {
-    final observableWithError = Observable.just(1)
-        .sample(ErrorStream<void>(Exception('Catch me if you can!')));
+  test('Rx.sample.error.shouldThrowB', () async {
+    final streamWithError = Stream.value(1)
+        .sample(Stream<void>.error(Exception('Catch me if you can!')));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.sample.pause.resume', () async {
+  test('Rx.sample.pause.resume', () async {
     final controller = StreamController<int>();
     StreamSubscription<int> subscription;
 
-    subscription = Observable(_getStream())
+    subscription = _getStream()
         .sample(_getSampleStream())
         .listen(controller.add, onDone: () {
       controller.close();

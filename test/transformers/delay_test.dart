@@ -6,18 +6,18 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
 void main() {
-  test('rx.Observable.delay', () async {
+  test('Rx.delay', () async {
     var value = 1;
-    Observable(_getStream())
+    _getStream()
         .delay(const Duration(milliseconds: 200))
         .listen(expectAsync1((result) {
           expect(result, value++);
         }, count: 4));
   });
 
-  test('rx.Observable.delay.shouldBeDelayed', () async {
+  test('Rx.delay.shouldBeDelayed', () async {
     var value = 1;
-    Observable(_getStream())
+    _getStream()
         .delay(const Duration(milliseconds: 500))
         .timeInterval()
         .listen(expectAsync1((result) {
@@ -33,26 +33,23 @@ void main() {
         }, count: 4));
   });
 
-  test('rx.Observable.delay.reusable', () async {
+  test('Rx.delay.reusable', () async {
     final transformer =
         DelayStreamTransformer<int>(const Duration(milliseconds: 200));
     var valueA = 1, valueB = 1;
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, valueA++);
         }, count: 4));
 
-    Observable(_getStream())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    _getStream().transform(transformer).listen(expectAsync1((result) {
           expect(result, valueB++);
         }, count: 4));
   });
 
-  test('rx.Observable.delay.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+  test('Rx.delay.asBroadcastStream', () async {
+    final stream = _getStream()
+        .asBroadcastStream()
         .delay(const Duration(milliseconds: 200));
 
     // listen twice on same stream
@@ -62,23 +59,23 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.delay.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+  test('Rx.delay.error.shouldThrowA', () async {
+    final streamWithError = Stream<void>.error(Exception())
         .delay(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
   /// Should also throw if the current [Zone] is unable to install a [Timer]
-  test('rx.Observable.delay.error.shouldThrowB', () async {
+  test('Rx.delay.error.shouldThrowB', () async {
     runZoned(() {
-      final observableWithError =
-          Observable.just(1).delay(const Duration(milliseconds: 200));
+      final streamWithError =
+          Stream.value(1).delay(const Duration(milliseconds: 200));
 
-      observableWithError.listen(null,
+      streamWithError.listen(null,
           onError: expectAsync2(
               (Exception e, StackTrace s) => expect(e, isException)));
     },
@@ -87,10 +84,10 @@ void main() {
                 throw Exception('Zone createTimer error')));
   });
 
-  test('rx.Observable.delay.pause.resume', () async {
+  test('Rx.delay.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream = Observable.fromIterable(const [1, 2, 3])
-        .delay(Duration(milliseconds: 1));
+    final stream =
+        Stream.fromIterable(const [1, 2, 3]).delay(Duration(milliseconds: 1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);
@@ -103,10 +100,10 @@ void main() {
   });
 
   test(
-    'rx.Observable.delay.cancel.emits.nothing',
+    'Rx.delay.cancel.emits.nothing',
     () async {
       StreamSubscription<int> subscription;
-      final stream = Observable.fromIterable(const [1, 2, 3]).doOnDone(() {
+      final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).delay(Duration(seconds: 10));
 

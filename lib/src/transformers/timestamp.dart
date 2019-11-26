@@ -1,6 +1,6 @@
 import 'dart:async';
 
-/// Wraps each item emitted by the source Observable in a [Timestamped] object
+/// Wraps each item emitted by the source Stream in a [Timestamped] object
 /// that includes the emitted item and the time when the item was emitted.
 ///
 /// Example

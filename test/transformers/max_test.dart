@@ -4,13 +4,13 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.max', () async {
-    await expectLater(Observable<int>(_getStream()).max(), completion(9));
+  test('Rx.max', () async {
+    await expectLater(_getStream().max(), completion(9));
   });
 
-  test('rx.Observable.max.with.comparator', () async {
+  test('Rx.max.with.comparator', () async {
     await expectLater(
-        Observable<String>.fromIterable(<String>["one", "two", "three"])
+        Stream<String>.fromIterable(<String>["one", "two", "three"])
             .max((String a, String b) => a.length - b.length),
         completion("three"));
   });

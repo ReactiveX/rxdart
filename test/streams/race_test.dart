@@ -16,69 +16,66 @@ Stream<int> getDelayedStream(int delay, int value) async* {
 }
 
 void main() {
-  test('rx.Observable.race', () async {
+  test('Rx.race', () async {
     final first = getDelayedStream(50, 1),
         second = getDelayedStream(60, 2),
         last = getDelayedStream(70, 3);
     var expected = 1;
 
-    Observable.race([first, second, last]).listen(expectAsync1((result) {
+    Rx.race([first, second, last]).listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
   });
 
-  test('rx.Observable.race.single.subscription', () async {
+  test('Rx.race.single.subscription', () async {
     final first = getDelayedStream(50, 1);
 
-    final observable = Observable.race([first]);
+    final stream = Rx.race([first]);
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.race.asBroadcastStream', () async {
+  test('Rx.race.asBroadcastStream', () async {
     final first = getDelayedStream(50, 1),
         second = getDelayedStream(60, 2),
         last = getDelayedStream(70, 3);
 
-    final observable =
-        Observable.race([first, second, last]).asBroadcastStream();
+    final stream = Rx.race([first, second, last]).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.race.shouldThrowA', () {
-    expect(() => Observable<Null>.race(null), throwsArgumentError);
+  test('Rx.race.shouldThrowA', () {
+    expect(() => Rx.race<Null>(null), throwsArgumentError);
   });
 
-  test('rx.Observable.race.shouldThrowB', () {
-    expect(() => Observable<Null>.race(const []), throwsArgumentError);
+  test('Rx.race.shouldThrowB', () {
+    expect(() => Rx.race<Null>(const []), throwsArgumentError);
   });
 
-  test('rx.Observable.race.shouldThrowC', () async {
-    final observable =
-        Observable.race([ErrorStream<Null>(Exception('oh noes!'))]);
+  test('Rx.race.shouldThrowC', () async {
+    final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
-    observable.listen(null,
+    stream.listen(null,
         onError: expectAsync2(
             (Exception e, StackTrace s) => expect(e, isException)));
   });
 
-  test('rx.Observable.race.pause.resume', () async {
+  test('Rx.race.pause.resume', () async {
     final first = getDelayedStream(50, 1),
         second = getDelayedStream(60, 2),
         last = getDelayedStream(70, 3);
 
     StreamSubscription<int> subscription;
     // ignore: deprecated_member_use
-    subscription =
-        Observable.race([first, second, last]).listen(expectAsync1((value) {
+    subscription = Rx.race([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

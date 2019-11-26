@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 
-/// Creates an Observable where each item is a [Stream] containing the items
+/// Creates a [Stream] where each item is a [Stream] containing the items
 /// from the source sequence.
 ///
 /// This [List] is emitted every time the window [Stream]
@@ -10,7 +10,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     Observable.periodic(const Duration(milliseconds: 100), (i) => i)
+///     Stream.periodic(const Duration(milliseconds: 100), (i) => i)
 ///       .window(Stream.periodic(const Duration(milliseconds: 160), (i) => i))
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
@@ -28,16 +28,16 @@ class WindowStreamTransformer<T>
   }
 }
 
-/// Buffers a number of values from the source Observable by count then
-/// emits the buffer as a [Stream] and clears it, and starts a new buffer each
-/// startBufferEvery values. If startBufferEvery is not provided,
-/// then new buffers are started immediately at the start of the source
-/// and when each buffer closes and is emitted.
+/// Buffers a number of values from the source Stream by count then emits the
+/// buffer as a [Stream] and clears it, and starts a new buffer each
+/// startBufferEvery values. If startBufferEvery is not provided, then new
+/// buffers are started immediately at the start of the source and when each
+/// buffer closes and is emitted.
 ///
 /// ### Example
 /// count is the maximum size of the buffer emitted
 ///
-///     Observable.range(1, 4)
+///     Rx.range(1, 4)
 ///       .windowCount(2)
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [1, 2], [3, 4] done!
@@ -47,7 +47,7 @@ class WindowStreamTransformer<T>
 /// on every other value from the source. A new buffer is started at the
 /// beginning of the source by default.
 ///
-///     Observable.range(1, 5)
+///     Rx.range(1, 5)
 ///       .bufferCount(3, 2)
 ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
 class WindowCountStreamTransformer<T>
@@ -77,12 +77,12 @@ class WindowCountStreamTransformer<T>
   }
 }
 
-/// Creates an Observable where each item is a [Stream] containing the items
+/// Creates a [Stream] where each item is a [Stream] containing the items
 /// from the source sequence, batched whenever test passes.
 ///
 /// ### Example
 ///
-///     Observable.periodic(const Duration(milliseconds: 100), (int i) => i)
+///     Stream.periodic(const Duration(milliseconds: 100), (int i) => i)
 ///       .windowTest((i) => i % 2 == 0)
 ///       .asyncMap((stream) => stream.toList())
 ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...

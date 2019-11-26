@@ -12,54 +12,52 @@ List<Stream<int>> _getStreams() {
 }
 
 void main() {
-  test('rx.Observable.merge', () async {
-    final observable = Observable.merge(_getStreams());
+  test('Rx.merge', () async {
+    final stream = Rx.merge(_getStreams());
 
-    await expectLater(
-        observable, emitsInOrder(const <int>[1, 2, 3, 4, 0, 1, 2]));
+    await expectLater(stream, emitsInOrder(const <int>[1, 2, 3, 4, 0, 1, 2]));
   });
 
-  test('rx.Observable.merge.single.subscription', () async {
-    final observable = Observable.merge(_getStreams());
+  test('Rx.merge.single.subscription', () async {
+    final stream = Rx.merge(_getStreams());
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.merge.asBroadcastStream', () async {
-    final observable = Observable.merge(_getStreams()).asBroadcastStream();
+  test('Rx.merge.asBroadcastStream', () async {
+    final stream = Rx.merge(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.merge.error.shouldThrowA', () async {
-    final observableWithError =
-        Observable.merge(_getStreams()..add(ErrorStream<int>(Exception())));
+  test('Rx.merge.error.shouldThrowA', () async {
+    final streamWithError =
+        Rx.merge(_getStreams()..add(Stream<int>.error(Exception())));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.merge.error.shouldThrowB', () {
-    expect(() => Observable<int>.merge(null), throwsArgumentError);
+  test('Rx.merge.error.shouldThrowB', () {
+    expect(() => Rx.merge<int>(null), throwsArgumentError);
   });
 
-  test('rx.Observable.merge.error.shouldThrowC', () {
-    expect(() => Observable<int>.merge(const []), throwsArgumentError);
+  test('Rx.merge.error.shouldThrowC', () {
+    expect(() => Rx.merge<int>(const []), throwsArgumentError);
   });
 
-  test('rx.Observable.merge.error.shouldThrowD', () {
-    expect(() => Observable.merge([Observable.just(1), null]),
-        throwsArgumentError);
+  test('Rx.merge.error.shouldThrowD', () {
+    expect(() => Rx.merge([Stream.value(1), null]), throwsArgumentError);
   });
 
-  test('rx.Observable.merge.pause.resume', () async {
+  test('Rx.merge.pause.resume', () async {
     final first = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [1, 2, 3, 4][index]),
         second = Stream.periodic(const Duration(milliseconds: 10),
@@ -69,8 +67,7 @@ void main() {
 
     StreamSubscription<num> subscription;
     // ignore: deprecated_member_use
-    subscription =
-        Observable.merge([first, second, last]).listen(expectAsync1((value) {
+    subscription = Rx.merge([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);
 
       subscription.cancel();

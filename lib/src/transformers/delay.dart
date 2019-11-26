@@ -1,16 +1,16 @@
 import 'dart:async';
 
-/// The Delay operator modifies its source Observable by pausing for
+/// The Delay operator modifies its source Stream by pausing for
 /// a particular increment of time (that you specify) before emitting
-/// each of the source Observable’s items.
+/// each of the source Stream’s items.
 /// This has the effect of shifting the entire sequence of items emitted
-/// by the Observable forward in time by that specified increment.
+/// by the Stream forward in time by that specified increment.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#delay)
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .delay(Duration(seconds: 1))
 ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
 class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {

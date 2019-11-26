@@ -1,57 +1,58 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/observables/replay_observable.dart';
+import 'package:rxdart/src/streams/replay_stream.dart';
+import 'package:rxdart/src/streams/value_stream.dart';
 
-/// A ConnectableObservable resembles an ordinary Observable, except that it
+/// A ConnectableStream resembles an ordinary Stream, except that it
 /// can be listened to multiple times and does not begin emitting items when
 /// it is listened to, but only when its [connect] method is called.
 ///
 /// This class can be used to broadcast a single-subscription Stream, and
 /// can be used to wait for all intended Observers to [listen] to the
-/// Observable before it begins emitting items.
-abstract class ConnectableObservable<T> extends Observable<T> {
-  /// Constructs an [Observable] which only begins emitting events when
+/// Stream before it begins emitting items.
+abstract class ConnectableStream<T> extends StreamView<T> {
+  /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called.
-  ConnectableObservable(Stream<T> stream) : super(stream);
+  ConnectableStream(Stream<T> stream) : super(stream);
 
-  /// Returns an Observable that automatically connects (at most once) to this
-  /// ConnectableObservable when the first Observer subscribes.
+  /// Returns a [Stream] that automatically connects (at most once) to this
+  /// ConnectableStream when the first Observer subscribes.
   ///
   /// To disconnect from the source Stream, provide a [connection] callback and
   /// cancel the `subscription` at the appropriate time.
-  Observable<T> autoConnect({
+  Stream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   });
 
-  /// Instructs the [ConnectableObservable] to begin emitting items from the
+  /// Instructs the [ConnectableStream] to begin emitting items from the
   /// source Stream. To disconnect from the source stream, cancel the
   /// subscription.
   StreamSubscription<T> connect();
 
-  /// Returns an Observable that stays connected to this ConnectableObservable
+  /// Returns a [Stream] that stays connected to this ConnectableStream
   /// as long as there is at least one subscription to this
-  /// ConnectableObservable.
-  Observable<T> refCount();
+  /// ConnectableStream.
+  Stream<T> refCount();
 }
 
-/// A [ConnectableObservable] that converts a single-subscription Stream into
+/// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast [Stream].
-class PublishConnectableObservable<T> extends ConnectableObservable<T> {
+class PublishConnectableStream<T> extends ConnectableStream<T> {
   final Stream<T> _source;
   final PublishSubject<T> _subject;
 
-  /// Constructs an [Observable] which only begins emitting events when
-  /// the [connect] method is called, this [Observable] acts like a
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
   /// [PublishSubject].
-  factory PublishConnectableObservable(Stream<T> source) {
-    return PublishConnectableObservable<T>._(source, PublishSubject<T>());
+  factory PublishConnectableStream(Stream<T> source) {
+    return PublishConnectableStream<T>._(source, PublishSubject<T>());
   }
 
-  PublishConnectableObservable._(this._source, this._subject) : super(_subject);
+  PublishConnectableStream._(this._source, this._subject) : super(_subject);
 
   @override
-  Observable<T> autoConnect({
+  Stream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
@@ -67,18 +68,18 @@ class PublishConnectableObservable<T> extends ConnectableObservable<T> {
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableObservableStreamSubscription<T>(
+    return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
     );
   }
 
   @override
-  Observable<T> refCount() {
-    ConnectableObservableStreamSubscription<T> subscription;
+  Stream<T> refCount() {
+    ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
-      subscription = ConnectableObservableStreamSubscription<T>(
+      subscription = ConnectableStreamSubscription<T>(
         _source.listen(_subject.add, onError: _subject.addError),
         _subject,
       );
@@ -92,39 +93,39 @@ class PublishConnectableObservable<T> extends ConnectableObservable<T> {
   }
 }
 
-/// A [ConnectableObservable] that converts a single-subscription Stream into
+/// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast Stream that replays the latest value to any new listener, and
 /// provides synchronous access to the latest emitted value.
-class ValueConnectableObservable<T> extends ConnectableObservable<T>
-    implements ValueObservable<T> {
+class ValueConnectableStream<T> extends ConnectableStream<T>
+    implements ValueStream<T> {
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  ValueConnectableObservable._(this._source, this._subject) : super(_subject);
+  ValueConnectableStream._(this._source, this._subject) : super(_subject);
 
-  /// Constructs an [Observable] which only begins emitting events when
-  /// the [connect] method is called, this [Observable] acts like a
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject].
-  factory ValueConnectableObservable(Stream<T> source) =>
-      ValueConnectableObservable<T>._(
+  factory ValueConnectableStream(Stream<T> source) =>
+      ValueConnectableStream<T>._(
         source,
         BehaviorSubject<T>(),
       );
 
-  /// Constructs an [Observable] which only begins emitting events when
-  /// the [connect] method is called, this [Observable] acts like a
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
-  factory ValueConnectableObservable.seeded(
+  factory ValueConnectableStream.seeded(
     Stream<T> source,
     T seedValue,
   ) =>
-      ValueConnectableObservable<T>._(
+      ValueConnectableStream<T>._(
         source,
         BehaviorSubject<T>.seeded(seedValue),
       );
 
   @override
-  ValueObservable<T> autoConnect({
+  ValueStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
@@ -140,18 +141,18 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableObservableStreamSubscription<T>(
+    return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
     );
   }
 
   @override
-  ValueObservable<T> refCount() {
-    ConnectableObservableStreamSubscription<T> subscription;
+  ValueStream<T> refCount() {
+    ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
-      subscription = ConnectableObservableStreamSubscription<T>(
+      subscription = ConnectableStreamSubscription<T>(
         _source.listen(_subject.add, onError: _subject.addError),
         _subject,
       );
@@ -171,28 +172,28 @@ class ValueConnectableObservable<T> extends ConnectableObservable<T>
   bool get hasValue => _subject.hasValue;
 }
 
-/// A [ConnectableObservable] that converts a single-subscription Stream into
+/// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast Stream that replays emitted items to any new listener, and
 /// provides synchronous access to the list of emitted values.
-class ReplayConnectableObservable<T> extends ConnectableObservable<T>
-    implements ReplayObservable<T> {
+class ReplayConnectableStream<T> extends ConnectableStream<T>
+    implements ReplayStream<T> {
   final Stream<T> _source;
   final ReplaySubject<T> _subject;
 
-  /// Constructs an [Observable] which only begins emitting events when
-  /// the [connect] method is called, this [Observable] acts like a
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
-  factory ReplayConnectableObservable(Stream<T> stream, {int maxSize}) {
-    return ReplayConnectableObservable<T>._(
+  factory ReplayConnectableStream(Stream<T> stream, {int maxSize}) {
+    return ReplayConnectableStream<T>._(
       stream,
       ReplaySubject<T>(maxSize: maxSize),
     );
   }
 
-  ReplayConnectableObservable._(this._source, this._subject) : super(_subject);
+  ReplayConnectableStream._(this._source, this._subject) : super(_subject);
 
   @override
-  ReplayObservable<T> autoConnect({
+  ReplayStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
@@ -208,18 +209,18 @@ class ReplayConnectableObservable<T> extends ConnectableObservable<T>
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableObservableStreamSubscription<T>(
+    return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
     );
   }
 
   @override
-  ReplayObservable<T> refCount() {
-    ConnectableObservableStreamSubscription<T> subscription;
+  ReplayStream<T> refCount() {
+    ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
-      subscription = ConnectableObservableStreamSubscription<T>(
+      subscription = ConnectableStreamSubscription<T>(
         _source.listen(_subject.add, onError: _subject.addError),
         _subject,
       );
@@ -238,13 +239,13 @@ class ReplayConnectableObservable<T> extends ConnectableObservable<T>
 
 /// A special [StreamSubscription] that not only cancels the connection to
 /// the source [Stream], but also closes down a subject that drives the Stream.
-class ConnectableObservableStreamSubscription<T> extends StreamSubscription<T> {
+class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   final StreamSubscription<T> _source;
   final Subject<T> _subject;
 
   /// Constructs a special [StreamSubscription], which will close the provided subject
   /// when [cancel] is called.
-  ConnectableObservableStreamSubscription(this._source, this._subject);
+  ConnectableStreamSubscription(this._source, this._subject);
 
   @override
   Future<dynamic> cancel() {
@@ -276,10 +277,10 @@ class ConnectableObservableStreamSubscription<T> extends StreamSubscription<T> {
 
 /// Extends the Stream class with the ability to transform a single-subscription
 /// Stream into a ConnectableStream.
-extension ConnectableObservableExtensions<T> on Stream<T> {
-  /// Convert the current Observable into a [ConnectableObservable]
-  /// that can be listened to multiple times. It will not begin emitting items
-  /// from the original Observable until the `connect` method is invoked.
+extension ConnectableStreamExtensions<T> on Stream<T> {
+  /// Convert the current Stream into a [ConnectableStream] that can be listened
+  /// to multiple times. It will not begin emitting items from the original
+  /// Stream until the `connect` method is invoked.
   ///
   /// This is useful for converting a single-subscription stream into a
   /// broadcast Stream.
@@ -287,13 +288,13 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ### Example
   ///
   /// ```
-  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final source = Stream.fromIterable([1, 2, 3]);
   /// final connectable = source.publish();
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
   ///
-  /// // Start listening to the source Observable. Will cause the previous
+  /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 1, 2, 3
   /// final subscription = connectable.connect();
   ///
@@ -301,11 +302,11 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// // Subject
   /// subscription.cancel();
   /// ```
-  ConnectableObservable<T> publish() => PublishConnectableObservable<T>(this);
+  ConnectableStream<T> publish() => PublishConnectableStream<T>(this);
 
-  /// Convert the current Observable into a [ValueConnectableObservable]
+  /// Convert the current Stream into a [ValueConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
-  /// from the original Observable until the `connect` method is invoked.
+  /// from the original Stream until the `connect` method is invoked.
   ///
   /// This is useful for converting a single-subscription stream into a
   /// broadcast Stream that replays the latest emitted value to any new
@@ -314,13 +315,13 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ### Example
   ///
   /// ```
-  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final source = Stream.fromIterable([1, 2, 3]);
   /// final connectable = source.publishValue();
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
   ///
-  /// // Start listening to the source Observable. Will cause the previous
+  /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 1, 2, 3
   /// final subscription = connectable.connect();
   ///
@@ -334,12 +335,11 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableObservable<T> publishValue() =>
-      ValueConnectableObservable<T>(this);
+  ValueConnectableStream<T> publishValue() => ValueConnectableStream<T>(this);
 
-  /// Convert the current Observable into a [ValueConnectableObservable]
+  /// Convert the current Stream into a [ValueConnectableStream]
   /// that can be listened to multiple times, providing an initial seeded value.
-  /// It will not begin emitting items from the original Observable
+  /// It will not begin emitting items from the original Stream
   /// until the `connect` method is invoked.
   ///
   /// This is useful for converting a single-subscription stream into a
@@ -349,13 +349,13 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ### Example
   ///
   /// ```
-  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final source = Stream.fromIterable([1, 2, 3]);
   /// final connectable = source.publishValueSeeded(0);
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
   ///
-  /// // Start listening to the source Observable. Will cause the previous
+  /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 0, 1, 2, 3
   /// final subscription = connectable.connect();
   ///
@@ -369,12 +369,12 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableObservable<T> publishValueSeeded(T seedValue) =>
-      ValueConnectableObservable<T>.seeded(this, seedValue);
+  ValueConnectableStream<T> publishValueSeeded(T seedValue) =>
+      ValueConnectableStream<T>.seeded(this, seedValue);
 
-  /// Convert the current Observable into a [ReplayConnectableObservable]
+  /// Convert the current Stream into a [ReplayConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
-  /// from the original Observable until the `connect` method is invoked.
+  /// from the original Stream until the `connect` method is invoked.
   ///
   /// This is useful for converting a single-subscription stream into a
   /// broadcast Stream that replays a given number of items to any new
@@ -383,13 +383,13 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ### Example
   ///
   /// ```
-  /// final source = Observable.fromIterable([1, 2, 3]);
+  /// final source = Stream.fromIterable([1, 2, 3]);
   /// final connectable = source.publishReplay();
   ///
   /// // Does not print anything at first
   /// connectable.listen(print);
   ///
-  /// // Start listening to the source Observable. Will cause the previous
+  /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 1, 2, 3
   /// final subscription = connectable.connect();
   ///
@@ -404,10 +404,10 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// // ReplaySubject
   /// subscription.cancel();
   /// ```
-  ReplayConnectableObservable<T> publishReplay({int maxSize}) =>
-      ReplayConnectableObservable<T>(this, maxSize: maxSize);
+  ReplayConnectableStream<T> publishReplay({int maxSize}) =>
+      ReplayConnectableStream<T>(this, maxSize: maxSize);
 
-  /// Convert the current Observable into a new Observable that can be listened
+  /// Convert the current Stream into a new Stream that can be listened
   /// to multiple times. It will automatically begin emitting items when first
   /// listened to, and shut down when no listeners remain.
   ///
@@ -419,10 +419,10 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream
-  /// final observable = Observable.fromIterable([1, 2, 3]).share();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).share();
   ///
-  /// // Start listening to the source Observable. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// // Start listening to the source Stream. Will start printing 1, 2, 3
+  /// final subscription = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // PublishSubject
@@ -430,7 +430,7 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ```
   Stream<T> share() => publish().refCount();
 
-  /// Convert the current Observable into a new [ValueObservable] that can
+  /// Convert the current Stream into a new [ValueStream] that can
   /// be listened to multiple times. It will automatically begin emitting items
   /// when first listened to, and shut down when no listeners remain.
   ///
@@ -445,26 +445,26 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Observable.fromIterable([1, 2, 3]).shareValue();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValue();
   ///
-  /// // Start listening to the source Observable. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// // Start listening to the source Stream. Will start printing 1, 2, 3
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the latest value
-  /// print(observable.value);
+  /// print(stream.value);
   ///
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ValueObservable<T> shareValue() => publishValue().refCount();
+  ValueStream<T> shareValue() => publishValue().refCount();
 
-  /// Convert the current Observable into a new [ValueObservable] that can
+  /// Convert the current Stream into a new [ValueStream] that can
   /// be listened to multiple times, providing an initial value.
   /// It will automatically begin emitting items when first listened to,
   /// and shut down when no listeners remain.
@@ -480,27 +480,27 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Observable.fromIterable([1, 2, 3]).shareValueSeeded(0);
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareValueSeeded(0);
   ///
-  /// // Start listening to the source Observable. Will start printing 0, 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// // Start listening to the source Stream. Will start printing 0, 1, 2, 3
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the latest value
-  /// print(observable.value);
+  /// print(stream.value);
   ///
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ValueObservable<T> shareValueSeeded(T seedValue) =>
+  ValueStream<T> shareValueSeeded(T seedValue) =>
       publishValueSeeded(seedValue).refCount();
 
-  /// Convert the current Observable into a new [ReplayObservable] that can
+  /// Convert the current Stream into a new [ReplayStream] that can
   /// be listened to multiple times. It will automatically begin emitting items
   /// when first listened to, and shut down when no listeners remain.
   ///
@@ -515,24 +515,24 @@ extension ConnectableObservableExtensions<T> on Stream<T> {
   /// ```
   /// // Convert a single-subscription fromIterable stream into a broadcast
   /// // stream that will emit the latest value to any new listeners
-  /// final observable = Observable.fromIterable([1, 2, 3]).shareReplay();
+  /// final stream =  Stream.fromIterable([1, 2, 3]).shareReplay();
   ///
-  /// // Start listening to the source Observable. Will start printing 1, 2, 3
-  /// final subscription = observable.listen(print);
+  /// // Start listening to the source Stream. Will start printing 1, 2, 3
+  /// final subscription = stream.listen(print);
   ///
   /// // Synchronously print the emitted values up to a given maxSize
   /// // Prints [1, 2, 3]
-  /// print(observable.values);
+  /// print(stream.values);
   ///
   /// // Subscribe again later. This will print 1, 2, 3 because it receives the
   /// // last emitted value.
-  /// final subscription2 = observable.listen(print);
+  /// final subscription2 = stream.listen(print);
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // ReplaySubject by cancelling all subscriptions.
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ReplayObservable<T> shareReplay({int maxSize}) =>
+  ReplayStream<T> shareReplay({int maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
 }

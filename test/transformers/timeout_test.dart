@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.timeout', () async {
+  test('Rx.timeout', () async {
     StreamSubscription<int> subscription;
 
-    Stream<int> observable = Observable<int>.fromFuture(
+    Stream<int> stream = Stream<int>.fromFuture(
             Future<int>.delayed(Duration(milliseconds: 30), () => 1))
         .timeout(Duration(milliseconds: 1));
 
-    subscription = observable.listen((_) {},
+    subscription = stream.listen((_) {},
         onError: expectAsync2((TimeoutException e, StackTrace s) {
           expect(e is TimeoutException, isTrue);
           subscription.cancel();

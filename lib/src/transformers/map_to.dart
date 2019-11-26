@@ -1,10 +1,11 @@
 import 'dart:async';
 
-/// Emits the given constant value on the output Observable every time the source Observable emits a value.
+/// Emits the given constant value on the output Stream every time the source
+/// Stream emits a value.
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .mapTo(true)
 ///       .listen(print); // prints true, true, true, true
 class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {

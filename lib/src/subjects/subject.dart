@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/observable.dart';
-
 /// The base for all Subjects. If you'd like to create a new Subject,
 /// extend from this class.
 ///
@@ -12,16 +10,16 @@ import 'package:rxdart/src/observables/observable.dart';
 /// Please see `PublishSubject` for the simplest example of how to
 /// extend from this class, or `BehaviorSubject` for a slightly more
 /// complex example.
-abstract class Subject<T> extends Observable<T> implements StreamController<T> {
+abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   final StreamController<T> _controller;
 
   bool _isAddingStreamItems = false;
 
   /// Constructs a [Subject] which wraps the provided [controller].
   /// This constructor is applicable only for classes that extend [Subject].
-  Subject(StreamController<T> controller, Observable<T> observable)
+  Subject(StreamController<T> controller, Stream<T> stream)
       : this._controller = controller,
-        super(observable);
+        super(stream);
 
   @override
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
@@ -35,7 +33,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   }
 
   @override
-  Observable<T> get stream => this;
+  Stream<T> get stream => this;
 
   @override
   ControllerCallback get onPause =>

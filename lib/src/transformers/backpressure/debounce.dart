@@ -13,15 +13,14 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// A window is open until the first window event emits.
 ///
-/// The debounce [StreamTransformer] filters out items
-/// emitted by the source Observable
-/// that are rapidly followed by another emitted item.
+/// The debounce [StreamTransformer] filters out items emitted by the source
+/// Stream that are rapidly followed by another emitted item.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#debounce)
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 2, 3, 4])
+///     Stream.fromIterable([1, 2, 3, 4])
 ///       .debounceTime(Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {

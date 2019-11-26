@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 
-/// Create an `Observable` which implements a [HashSet] under the hood, using
+/// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
 ///
-/// The `Observable` will only emit an event, if that event is not yet found
+/// The [Stream] will only emit an event, if that event is not yet found
 /// within the underlying [HashSet].
 ///
 /// ###  Example
@@ -68,6 +68,7 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
     });
   }
 }
+
 /// Extends the Stream class with the ability to skip items that have previously
 /// been emitted.
 extension DistinctUniqueExtension<T> on Stream<T> {

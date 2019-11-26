@@ -7,13 +7,13 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     Observable.fromIterable([1, 'two', 3, 'four'])
+///     Stream.fromIterable([1, 'two', 3, 'four'])
 ///       .whereType<int>()
 ///       .listen(print); // prints 1, 3
 ///
 /// // as opposed to:
 ///
-///     Observable.fromIterable([1, 'two', 3, 'four'])
+///     Stream.fromIterable([1, 'two', 3, 'four'])
 ///       .where((event) => event is int)
 ///       .cast<int>()
 ///       .listen(print); // prints 1, 3
