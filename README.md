@@ -7,13 +7,33 @@
 
 ## About
 
-RxDart adds additional capabilities to Dart [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) and [StreamControllers](https://api.dart.dev/stable/dart-async/StreamController-class.html).
+RxDart adds additional capabilities to Dart
+[Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) and
+[StreamControllers](https://api.dart.dev/stable/dart-async/StreamController-class.html).
 
-Dart comes with a very decent [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) API out-of-the-box; rather than attempting to provide an alternative to this API, RxDart adds functionality from the reactive extensions specification on top of it. 
+Dart comes with a very decent
+[Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) API
+out-of-the-box; rather than attempting to provide an alternative to this API,
+RxDart adds functionality from the reactive extensions specification on top of
+it. 
 
-RxDart does not provide its own Observable class as a replacement for Dart Streams. Rather, it provides a number of additional Stream classes, operators (extension methods on the Stream class), and Subjects. 
+RxDart does not provide its own Observable class as a replacement for Dart
+Streams. Rather, it provides a number of additional Stream classes, operators
+(extension methods on the Stream class), and Subjects. 
 
-If you are familiar with Observables from other languages, please see [the Rx Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams) for notable distinctions between the two.
+If you are familiar with Observables from other languages, please see [the Rx
+Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams)
+for notable distinctions between the two.
+
+## Upgrading from RxDart 0.22.x to 0.23.x
+
+RxDart 0.23.x moves away from the Observable class, utilizing Dart 2.6's new
+extension methods instead. This requires several small refactors that can be
+easily automated -- which is just what we've done!
+
+Please follow the instructions on the
+[rxdart_codemod](https://pub.dev/packages/rxdart_codemod) package to 
+automatically upgrade your code to support RxDart 0.23.x.
 
 ## How To Use RxDart
 
