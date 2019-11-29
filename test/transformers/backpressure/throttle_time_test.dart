@@ -33,14 +33,14 @@ void main() {
   });
 
   test('Rx.throttleTime.asBroadcastStream', () async {
-    final stream = _stream()
+    final future = _stream()
         .asBroadcastStream()
         .throttleTime(const Duration(milliseconds: 250))
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.throttleTime.error.shouldThrowA', () async {

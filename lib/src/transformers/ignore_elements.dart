@@ -10,6 +10,7 @@ import 'dart:async';
 ///       ErrorStream(Exception())
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
+@Deprecated('Use the drain method from the Stream class instead')
 class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
@@ -55,5 +56,6 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   ///      Stream.error(Exception())
   ///    ])
   ///    .listen(print, onError: print); // prints Exception
+  @Deprecated('Use the drain method from the Stream class instead')
   Stream<T> ignoreElements() => transform(IgnoreElementsStreamTransformer<T>());
 }

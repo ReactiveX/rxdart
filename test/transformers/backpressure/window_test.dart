@@ -90,16 +90,16 @@ void main() {
   });
 
   test('Rx.window.asBroadcastStream', () async {
-    final stream = getStream(4)
+    final future = getStream(4)
         .asBroadcastStream()
         .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(10)
             .asBroadcastStream())
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.window.error.shouldThrowA', () async {

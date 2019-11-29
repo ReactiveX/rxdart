@@ -21,6 +21,7 @@ void main() {
   test('Rx.ignoreElements', () async {
     var hasReceivedEvent = false;
 
+    // ignore: deprecated_member_use_from_same_package
     _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
@@ -30,6 +31,7 @@ void main() {
   });
 
   test('Rx.ignoreElements.reusable', () async {
+    // ignore: deprecated_member_use_from_same_package
     final transformer = IgnoreElementsStreamTransformer<int>();
     var hasReceivedEvent = false;
 
@@ -49,6 +51,7 @@ void main() {
   });
 
   test('Rx.ignoreElements.asBroadcastStream', () async {
+    // ignore: deprecated_member_use_from_same_package
     final stream = _getStream().asBroadcastStream().ignoreElements();
 
     // listen twice on same stream
@@ -61,6 +64,7 @@ void main() {
   test('Rx.ignoreElements.pause.resume', () async {
     var hasReceivedEvent = false;
 
+    // ignore: deprecated_member_use_from_same_package
     _getStream().ignoreElements().listen((_) {
       hasReceivedEvent = true;
     },
@@ -72,6 +76,7 @@ void main() {
   });
 
   test('Rx.ignoreElements.error.shouldThrow', () async {
+    // ignore: deprecated_member_use_from_same_package
     final streamWithError = Stream<void>.error(Exception()).ignoreElements();
 
     streamWithError.listen(null,

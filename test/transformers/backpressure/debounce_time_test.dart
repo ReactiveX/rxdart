@@ -36,13 +36,13 @@ void main() {
   });
 
   test('Rx.debounceTime.asBroadcastStream', () async {
-    final stream = _getStream()
+    final future = _getStream()
         .asBroadcastStream()
         .debounceTime(const Duration(milliseconds: 200))
-        .ignoreElements();
+        .drain<void>();
 
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.debounceTime.error.shouldThrowA', () async {

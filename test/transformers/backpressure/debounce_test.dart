@@ -50,14 +50,14 @@ void main() {
   });
 
   test('Rx.debounce.asBroadcastStream', () async {
-    final stream = _getStream()
+    final future = _getStream()
         .asBroadcastStream()
         .debounce((_) => Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200))))
-        .ignoreElements();
+        .drain<void>();
 
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.debounce.error.shouldThrowA', () async {

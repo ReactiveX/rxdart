@@ -41,14 +41,14 @@ void main() {
   });
 
   test('Rx.windowTest.asBroadcastStream', () async {
-    final stream = Stream.fromIterable(const [1, 2, 3, 4])
+    final future = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
         .windowTest((i) => i % 2 == 0)
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.windowTest.error.shouldThrowA', () async {

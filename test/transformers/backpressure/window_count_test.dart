@@ -84,14 +84,14 @@ void main() {
   });
 
   test('Rx.windowCount.asBroadcastStream', () async {
-    final stream = Stream.fromIterable(const [1, 2, 3, 4])
+    final future = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
         .windowCount(2)
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.windowCount.error.shouldThrowA', () async {

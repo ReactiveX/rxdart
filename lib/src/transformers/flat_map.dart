@@ -113,8 +113,7 @@ extension FlatMapExtension<T> on Stream<T> {
   /// ### Example
   ///
   ///     RangeStream(4, 1)
-  ///       .flatMap((i) =>
-  ///         TimerStream(i, Duration(minutes: i))
+  ///       .flatMap((i) => TimerStream(i, Duration(minutes: i))
   ///       .listen(print); // prints 1, 2, 3, 4
   Stream<S> flatMap<S>(Stream<S> mapper(T value)) =>
       transform(FlatMapStreamTransformer<T, S>(mapper));
@@ -129,8 +128,7 @@ extension FlatMapExtension<T> on Stream<T> {
   /// ### Example
   ///
   ///     RangeStream(1, 4)
-  ///       .flatMapIterable((i) =>
-  ///         Stream.fromIterable([[]i])
+  ///       .flatMapIterable((i) => Stream.fromIterable([[i]])
   ///       .listen(print); // prints 1, 2, 3, 4
   Stream<S> flatMapIterable<S>(Stream<Iterable<S>> mapper(T value)) =>
       transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper))

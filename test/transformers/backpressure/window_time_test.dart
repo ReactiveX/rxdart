@@ -68,14 +68,14 @@ void main() {
   });
 
   test('Rx.windowTime.asBroadcastStream', () async {
-    final stream = getStream(4)
+    final future = getStream(4)
         .asBroadcastStream()
         .windowTime(const Duration(milliseconds: 160))
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.windowTime.error.shouldThrowA', () async {

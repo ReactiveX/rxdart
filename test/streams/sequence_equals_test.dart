@@ -96,14 +96,14 @@ void main() {
   });
 
   test('Rx.sequenceEqual.asBroadcastStream', () async {
-    final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
+    final future = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
             Stream.fromIterable(const [1, 2, 3, 4, 5]))
         .asBroadcastStream()
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
   test('Rx.sequenceEqual.error.shouldThrowA', () {

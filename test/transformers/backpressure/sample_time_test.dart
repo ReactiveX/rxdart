@@ -20,10 +20,12 @@ void main() {
             .asBroadcastStream());
 
     await expectLater(
-        _getStream().transform(transformer).ignoreElements(), emitsDone);
+      _getStream().transform(transformer).drain<void>(),
+      completes,
+    );
     await expectLater(
-      _getStream().transform(transformer).ignoreElements(),
-      emitsDone,
+      _getStream().transform(transformer).drain<void>(),
+      completes,
     );
   });
 
