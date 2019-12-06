@@ -15,7 +15,7 @@ void main() {
   });
 
   test('Rx.onErrorReturnWith.asBroadcastStream', () async {
-    Stream<num> stream = Stream<num>.error(Exception())
+    final stream = Stream<num>.error(Exception())
         .onErrorReturnWith((dynamic e) => 0)
         .asBroadcastStream();
 

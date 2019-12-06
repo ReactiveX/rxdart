@@ -10,9 +10,9 @@ void main() {
 
   test('Rx.min.with.comparator', () async {
     await expectLater(
-        Stream<String>.fromIterable(<String>["one", "two", "three"])
+        Stream<String>.fromIterable(<String>['one', 'two', 'three'])
             .min((String a, String b) => a.length - b.length),
-        completion("one"));
+        completion('one'));
   });
 }
 

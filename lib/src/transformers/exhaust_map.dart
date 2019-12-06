@@ -21,14 +21,14 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   /// Constructs a [StreamTransformer] which maps events from the source [Stream] using [mapper].
   ///
   /// It ignores all items from the source [Stream] until the mapped [Stream] completes.
-  ExhaustMapStreamTransformer(Stream<S> mapper(T value))
+  ExhaustMapStreamTransformer(Stream<S> Function(T value) mapper)
       : _transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> mapper(T value)) {
+      Stream<S> Function(T value) mapper) {
     return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> inputSubscription;
@@ -100,6 +100,6 @@ extension ExhaustMapExtension<T> on Stream<T> {
   ///       .exhaustMap((i) =>
   ///         TimerStream(i, Duration(milliseconds: 75)))
   ///       .listen(print); // prints 0, 2
-  Stream<S> exhaustMap<S>(Stream<S> mapper(T value)) =>
+  Stream<S> exhaustMap<S>(Stream<S> Function(T value) mapper) =>
       transform(ExhaustMapStreamTransformer<T, S>(mapper));
 }

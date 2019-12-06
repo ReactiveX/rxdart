@@ -75,7 +75,7 @@ void main() {
 
   test('Rx.withLatestFrom.error.shouldThrowA', () async {
     final streamWithError = Stream<int>.error(Exception())
-        .withLatestFrom(_getLatestFromStream(), (first, int second) => "Hello");
+        .withLatestFrom(_getLatestFromStream(), (first, int second) => 'Hello');
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -86,7 +86,7 @@ void main() {
   test('Rx.withLatestFrom.error.shouldThrowB', () {
     expect(
         () => Stream.value(1)
-            .withLatestFrom(null, (first, int second) => "Hello"),
+            .withLatestFrom(null, (first, int second) => 'Hello'),
         throwsArgumentError);
   });
 
@@ -395,9 +395,7 @@ class Pair {
     if (identical(this, other)) {
       return true;
     }
-    return other is Pair &&
-        this.first == other.first &&
-        this.second == other.second;
+    return other is Pair && first == other.first && second == other.second;
   }
 
   @override
@@ -440,30 +438,30 @@ class _Tuple {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         other is _Tuple &&
-            this.item1 == other.item1 &&
-            this.item2 == other.item2 &&
-            this.item3 == other.item3 &&
-            this.item4 == other.item4 &&
-            this.item5 == other.item5 &&
-            this.item6 == other.item6 &&
-            this.item7 == other.item7 &&
-            this.item8 == other.item8 &&
-            this.item9 == other.item9 &&
-            this.item10 == other.item10;
+            item1 == other.item1 &&
+            item2 == other.item2 &&
+            item3 == other.item3 &&
+            item4 == other.item4 &&
+            item5 == other.item5 &&
+            item6 == other.item6 &&
+            item7 == other.item7 &&
+            item8 == other.item8 &&
+            item9 == other.item9 &&
+            item10 == other.item10;
   }
 
   @override
   int get hashCode {
-    return this.item1.hashCode ^
-        this.item2.hashCode ^
-        this.item3.hashCode ^
-        this.item4.hashCode ^
-        this.item5.hashCode ^
-        this.item6.hashCode ^
-        this.item7.hashCode ^
-        this.item8.hashCode ^
-        this.item9.hashCode ^
-        this.item10.hashCode;
+    return item1.hashCode ^
+        item2.hashCode ^
+        item3.hashCode ^
+        item4.hashCode ^
+        item5.hashCode ^
+        item6.hashCode ^
+        item7.hashCode ^
+        item8.hashCode ^
+        item9.hashCode ^
+        item10.hashCode;
   }
 
   @override

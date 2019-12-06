@@ -15,10 +15,10 @@ extension MaxExtension<T> on Stream<T> {
   ///
   /// ### Example with custom [Comparator]
   ///
-  ///     final stream = Stream.fromIterable(["short", "looooooong"]);
+  ///     final stream = Stream.fromIterable(['short', 'looooooong']);
   ///     final max = await stream.max((a, b) => a.length - b.length);
   ///
-  ///     print(max); // prints "looooooong"
+  ///     print(max); // prints 'looooooong'
   Future<T> max([Comparator<T> comparator]) =>
       toList().then((List<T> values) => (values..sort(comparator)).last);
 }

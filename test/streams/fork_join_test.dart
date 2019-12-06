@@ -118,7 +118,7 @@ void main() {
 
   test('Rx.forkJoin3', () async {
     var a = Stream<int>.value(1),
-        b = Stream<String>.value("2"),
+        b = Stream<String>.value('2'),
         c = Stream<double>.value(3.0);
 
     final stream = Rx.forkJoin3(a, b, c,
@@ -127,7 +127,7 @@ void main() {
     await expectLater(
         stream,
         emitsInOrder(<dynamic>[
-          const [1, "2", 3.0],
+          const [1, '2', 3.0],
           emitsDone
         ]));
   });
@@ -186,7 +186,7 @@ void main() {
         e = Stream<int>.value(5),
         f = Stream<int>.value(6);
 
-    Stream<List<int>> stream = Rx.combineLatest6(
+    final stream = Rx.combineLatest6(
         a,
         b,
         c,

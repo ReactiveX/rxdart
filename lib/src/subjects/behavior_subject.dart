@@ -53,8 +53,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ///
   /// See also [StreamController.broadcast]
   factory BehaviorSubject({
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -80,8 +80,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   /// See also [StreamController.broadcast]
   factory BehaviorSubject.seeded(
     T seedValue, {
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks

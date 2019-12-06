@@ -106,10 +106,10 @@ void main() {
   });
 
   test('Rx.combineLatest3', () async {
-    const expected = [1, "2", 3.0];
+    const expected = [1, '2', 3.0];
 
     var a = Stream<int>.value(1),
-        b = Stream<String>.value("2"),
+        b = Stream<String>.value('2'),
         c = Stream<double>.value(3.0);
 
     final stream = Rx.combineLatest3(a, b, c,
@@ -174,7 +174,7 @@ void main() {
         e = Stream<int>.value(5),
         f = Stream<int>.value(6);
 
-    Stream<List<int>> stream = Rx.combineLatest6(
+    final stream = Rx.combineLatest6(
         a,
         b,
         c,

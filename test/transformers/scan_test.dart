@@ -49,7 +49,7 @@ void main() {
   test('Rx.scan.error.shouldThrow', () async {
     final streamWithError = Stream.fromIterable(const [1, 2, 3, 4])
         .scan((num acc, num value, int index) {
-      throw StateError("oh noes!");
+      throw StateError('oh noes!');
     });
 
     streamWithError.listen(null,

@@ -27,9 +27,9 @@ import 'dart:async';
 /// stream. This is useful with a dynamic number of source streams!
 ///
 ///     ForkJoinStream.list<String>([
-///       Stream.fromIterable(["a"]),
-///       Stream.fromIterable(["b"]),
-///       Stream.fromIterable(["C", "D"])])
+///       Stream.fromIterable(['a']),
+///       Stream.fromIterable(['b']),
+///       Stream.fromIterable(['C', 'D'])])
 ///     .listen(print); //prints ['a', 'b', 'D']
 ///
 /// ### Example with combiner
@@ -38,9 +38,9 @@ import 'dart:async';
 ///
 ///     CombineLatestStream(
 ///       [
-///         Stream.fromIterable(["a"]),
-///         Stream.fromIterable(["b"]),
-///         Stream.fromIterable(["C", "D"])
+///         Stream.fromIterable(['a']),
+///         Stream.fromIterable(['b']),
+///         Stream.fromIterable(['C', 'D'])
 ///       ],
 ///       (values) => values.last
 ///     )
@@ -64,7 +64,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// After this event, the [Stream] closes.
   ForkJoinStream(
     Iterable<Stream<T>> streams,
-    R combiner(List<T> values),
+    R Function(List<T> values) combiner,
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
         assert(streams.isNotEmpty, 'provide at least 1 stream'),
@@ -88,7 +88,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   static ForkJoinStream<dynamic, R> combine2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
-    R combiner(A a, B b),
+    R Function(A a, B b) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamOne, streamTwo],
@@ -102,7 +102,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
-    R combiner(A a, B b, C c),
+    R Function(A a, B b, C c) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamA, streamB, streamC],
@@ -123,7 +123,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<B> streamB,
     Stream<C> streamC,
     Stream<D> streamD,
-    R combiner(A a, B b, C c, D d),
+    R Function(A a, B b, C c, D d) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamA, streamB, streamC, streamD],
@@ -146,7 +146,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<C> streamC,
     Stream<D> streamD,
     Stream<E> streamE,
-    R combiner(A a, B b, C c, D d, E e),
+    R Function(A a, B b, C c, D d, E e) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamA, streamB, streamC, streamD, streamE],
@@ -171,7 +171,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<D> streamD,
     Stream<E> streamE,
     Stream<F> streamF,
-    R combiner(A a, B b, C c, D d, E e, F f),
+    R Function(A a, B b, C c, D d, E e, F f) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamA, streamB, streamC, streamD, streamE, streamF],
@@ -198,7 +198,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<E> streamE,
     Stream<F> streamF,
     Stream<G> streamG,
-    R combiner(A a, B b, C c, D d, E e, F f, G g),
+    R Function(A a, B b, C c, D d, E e, F f, G g) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [streamA, streamB, streamC, streamD, streamE, streamF, streamG],
@@ -227,7 +227,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<F> streamF,
     Stream<G> streamG,
     Stream<H> streamH,
-    R combiner(A a, B b, C c, D d, E e, F f, G g, H h),
+    R Function(A a, B b, C c, D d, E e, F f, G g, H h) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [
@@ -267,7 +267,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Stream<G> streamG,
     Stream<H> streamH,
     Stream<I> streamI,
-    R combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i),
+    R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) combiner,
   ) =>
       ForkJoinStream<dynamic, R>(
         [
@@ -298,7 +298,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
   static StreamController<R> _buildController<T, R>(
     Iterable<Stream<T>> streams,
-    R combiner(List<T> values),
+    R Function(List<T> values) combiner,
   ) {
     StreamController<R> controller;
 

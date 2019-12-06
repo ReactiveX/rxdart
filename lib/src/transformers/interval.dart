@@ -7,7 +7,7 @@ import 'dart:async';
 ///
 ///     Stream.fromIterable([1, 2, 3])
 ///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
-///       .listen((i) => print("$i sec"); // prints 1 sec, 2 sec, 3 sec
+///       .listen((i) => print('$i sec'); // prints 1 sec, 2 sec, 3 sec
 class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
@@ -71,7 +71,7 @@ extension IntervalExtension<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1, 2, 3])
   ///       .interval(Duration(seconds: 1))
-  ///       .listen((i) => print("$i sec"); // prints 1 sec, 2 sec, 3 sec
+  ///       .listen((i) => print('$i sec'); // prints 1 sec, 2 sec, 3 sec
   Stream<T> interval(Duration duration) =>
       transform(IntervalStreamTransformer<T>(duration));
 }

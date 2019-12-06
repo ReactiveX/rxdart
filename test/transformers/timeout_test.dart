@@ -6,7 +6,7 @@ void main() {
   test('Rx.timeout', () async {
     StreamSubscription<int> subscription;
 
-    Stream<int> stream = Stream<int>.fromFuture(
+    final stream = Stream<int>.fromFuture(
             Future<int>.delayed(Duration(milliseconds: 30), () => 1))
         .timeout(Duration(milliseconds: 1));
 

@@ -17,7 +17,7 @@ class GroupByStreamTransformer<T, S>
 
   /// Constructs a [StreamTransformer] which groups events from the source
   /// [Stream] and emits them as [GroupByStream].
-  GroupByStreamTransformer(S grouper(T event))
+  GroupByStreamTransformer(S Function(T event) grouper)
       : _transformer = _buildTransformer<T, S>(grouper);
 
   @override
@@ -25,7 +25,7 @@ class GroupByStreamTransformer<T, S>
       _transformer.bind(stream);
 
   static StreamTransformer<T, GroupByStream<T, S>> _buildTransformer<T, S>(
-      S grouper(T event)) {
+      S Function(T event) grouper) {
     return StreamTransformer<T, GroupByStream<T, S>>(
         (Stream<T> input, bool cancelOnError) {
       final mapper = <S, StreamController<T>>{};
@@ -97,6 +97,6 @@ extension GroupByExtension<T> on Stream<T> {
   /// which receives its [Type] and value from the [grouper] Function.
   ///
   /// All items with the same key are emitted by the same [GroupByStream].
-  Stream<GroupByStream<T, S>> groupBy<S>(S grouper(T value)) =>
+  Stream<GroupByStream<T, S>> groupBy<S>(S Function(T value) grouper) =>
       transform(GroupByStreamTransformer<T, S>(grouper));
 }

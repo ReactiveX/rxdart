@@ -20,7 +20,7 @@ class WindowStreamTransformer<T>
   /// emits this [Stream] whenever [window] fires an event.
   ///
   /// The [Stream] is recreated and starts empty upon every [window] event.
-  WindowStreamTransformer(Stream window(T event))
+  WindowStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             ignoreEmptyWindows: false) {
@@ -90,7 +90,7 @@ class WindowTestStreamTransformer<T>
     extends BackpressureStreamTransformer<T, Stream<T>> {
   /// Constructs a [StreamTransformer] which buffers events into a [Stream] and
   /// emits this [Stream] whenever the [test] Function yields true.
-  WindowTestStreamTransformer(bool test(T value))
+  WindowTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             closeWindowWhen: (Iterable<T> queue) => test(queue.last)) {
@@ -148,7 +148,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .windowTest((i) => i % 2 == 0)
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
-  Stream<Stream<T>> windowTest(bool onTestHandler(T event)) =>
+  Stream<Stream<T>> windowTest(bool Function(T event) onTestHandler) =>
       transform(WindowTestStreamTransformer(onTestHandler));
 
   /// Creates a Stream where each item is a [Stream] containing the items from

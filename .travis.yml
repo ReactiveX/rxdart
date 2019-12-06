@@ -5,7 +5,6 @@ dart:
   - stable
 with_content_shell: false
 script:
-  - pub get
   - pub global activate coverage
   - dartfmt -n ./lib --set-exit-if-changed
   - dartanalyzer --fatal-infos --fatal-warnings ./

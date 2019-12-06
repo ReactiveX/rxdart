@@ -83,8 +83,8 @@ class TimeInterval<T> {
       return true;
     }
     return other is TimeInterval &&
-        this.interval == other.interval &&
-        this.value == other.value;
+        interval == other.interval &&
+        value == other.value;
   }
 
   @override

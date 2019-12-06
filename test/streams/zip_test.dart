@@ -7,19 +7,19 @@ void main() {
   test('Rx.zip', () async {
     expect(
       Rx.zip<String, String>([
-        Stream.fromIterable(["A1", "B1"]),
-        Stream.fromIterable(["A2", "B2", "C2"]),
+        Stream.fromIterable(['A1', 'B1']),
+        Stream.fromIterable(['A2', 'B2', 'C2']),
       ], (values) => values.first + values.last),
-      emitsInOrder(<dynamic>["A1A2", "B1B2", emitsDone]),
+      emitsInOrder(<dynamic>['A1A2', 'B1B2', emitsDone]),
     );
   });
 
   test('Rx.zipList', () async {
     expect(
       Rx.zipList([
-        Stream.fromIterable(["A1", "B1"]),
-        Stream.fromIterable(["A2", "B2", "C2"]),
-        Stream.fromIterable(["A3", "B3", "C3"]),
+        Stream.fromIterable(['A1', 'B1']),
+        Stream.fromIterable(['A2', 'B2', 'C2']),
+        Stream.fromIterable(['A3', 'B3', 'C3']),
       ]),
       emitsInOrder(<dynamic>[
         ['A1', 'A2', 'A3'],
@@ -81,9 +81,9 @@ void main() {
 
   test('Rx.zip3', () async {
     // Verify the ability to pass through various types with safety
-    const expected = [1, "2", 3.0];
+    const expected = [1, '2', 3.0];
 
-    final a = Stream.value(1), b = Stream.value("2"), c = Stream.value(3.0);
+    final a = Stream.value(1), b = Stream.value('2'), c = Stream.value(3.0);
 
     final stream = Rx.zip3(a, b, c,
         (int first, String second, double third) => [first, second, third]);
@@ -202,7 +202,7 @@ void main() {
         g = Stream.value(7),
         h = Stream.value(8);
 
-    Stream<List<int>> stream = Rx.zip8(
+    final stream = Rx.zip8(
         a,
         b,
         c,
@@ -233,7 +233,7 @@ void main() {
         h = Stream.value(8),
         i = Stream.value(9);
 
-    Stream<List<int>> stream = Rx.zip9(
+    final stream = Rx.zip9(
         a,
         b,
         c,

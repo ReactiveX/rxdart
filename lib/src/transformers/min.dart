@@ -15,10 +15,10 @@ extension MinExtension<T> on Stream<T> {
   ///
   /// ### Example with custom [Comparator]
   ///
-  ///     final stream = Stream.fromIterable(["short", "looooooong"]);
+  ///     final stream = Stream.fromIterable(['short', 'looooooong']);
   ///     final min = await stream.min((a, b) => a.length - b.length);
   ///
-  ///     print(min); // prints "short"
+  ///     print(min); // prints 'short'
   Future<T> min([Comparator<T> comparator]) =>
       toList().then((List<T> values) => (values..sort(comparator)).first);
 }

@@ -17,7 +17,7 @@ class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// an item or completes, emits the most recently emitted item (if any)
   /// emitted by the source [Stream] since the previous emission from
   /// the sample [Stream].
-  SampleStreamTransformer(Stream window(T event))
+  SampleStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (Iterable<T> queue) => queue.last) {
     assert(window != null, 'window stream factory cannot be null');

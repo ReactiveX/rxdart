@@ -18,8 +18,10 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// [Stream] while [window] is open.
   ///
   /// if trailing is true, then the last item is emitted instead
-  ThrottleStreamTransformer(Stream window(T event), {bool trailing = false})
-      : super(WindowStrategy.eventAfterLastWindow, window,
+  ThrottleStreamTransformer(
+    Stream Function(T event) window, {
+    bool trailing = false,
+  }) : super(WindowStrategy.eventAfterLastWindow, window,
             onWindowStart: trailing ? null : (event) => event,
             onWindowEnd: trailing ? (Iterable<T> queue) => queue.last : null) {
     assert(window != null, 'window stream factory cannot be null');
@@ -40,7 +42,8 @@ extension ThrottleExtensions<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1, 2, 3])
   ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)))
-  Stream<T> throttle(Stream window(T event), {bool trailing = false}) =>
+  Stream<T> throttle(Stream Function(T event) window,
+          {bool trailing = false}) =>
       transform(ThrottleStreamTransformer<T>(window, trailing: trailing));
 
   /// Emits only the first item emitted by the source [Stream] within a time

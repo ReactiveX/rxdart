@@ -25,14 +25,14 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   ///
   /// The mapped [Stream] will be be listened to and begin
   /// emitting items, and any previously created mapper [Stream]s will stop emitting.
-  SwitchMapStreamTransformer(Stream<S> mapper(T value))
+  SwitchMapStreamTransformer(Stream<S> Function(T value) mapper)
       : _transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> mapper(T value)) {
+      Stream<S> Function(T value) mapper) {
     return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
@@ -109,6 +109,6 @@ extension SwitchMapExtension<T> on Stream<T> {
   ///       .switchMap((i) =>
   ///         TimerStream(i, Duration(minutes: i))
   ///       .listen(print); // prints 1
-  Stream<S> switchMap<S>(Stream<S> mapper(T value)) =>
+  Stream<S> switchMap<S>(Stream<S> Function(T value) mapper) =>
       transform(SwitchMapStreamTransformer<T, S>(mapper));
 }

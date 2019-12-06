@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:collection';
 
 /// The strategy that is used to determine how and when a new window is created.
@@ -54,12 +53,12 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ///
   /// For more info on the parameters, see [BackpressureStreamTransformer],
   /// or see the various back pressure [StreamTransformer]s for examples.
-  BackpressureStreamTransformer(
-      WindowStrategy strategy, Stream<dynamic> windowStreamFactory(S event),
-      {T onWindowStart(S event),
-      T onWindowEnd(List<S> queue),
+  BackpressureStreamTransformer(WindowStrategy strategy,
+      Stream<dynamic> Function(S event) windowStreamFactory,
+      {T Function(S event) onWindowStart,
+      T Function(List<S> queue) onWindowEnd,
       int startBufferEvery = 0,
-      bool closeWindowWhen(List<S> queue),
+      bool Function(List<S> queue) closeWindowWhen,
       bool ignoreEmptyWindows = true,
       bool dispatchOnClose = true})
       : _transformer = _buildTransformer(
@@ -77,11 +76,11 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   static StreamTransformer<S, T> _buildTransformer<S, T>(
       WindowStrategy strategy,
-      Stream<dynamic> windowStreamFactory(S event),
-      T onWindowStart(S event),
-      T onWindowEnd(List<S> queue),
+      Stream<dynamic> Function(S event) windowStreamFactory,
+      T Function(S event) onWindowStart,
+      T Function(List<S> queue) onWindowEnd,
       int startBufferEvery,
-      bool closeWindowWhen(List<S> queue),
+      bool Function(List<S> queue) closeWindowWhen,
       bool ignoreEmptyWindows,
       bool dispatchOnClose) {
     return StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {

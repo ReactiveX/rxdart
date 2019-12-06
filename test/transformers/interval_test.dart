@@ -76,7 +76,7 @@ void main() {
               (Exception e, StackTrace s) => expect(e, isException)));
     },
         zoneSpecification: ZoneSpecification(
-            createTimer: (self, parent, zone, duration, void f()) =>
+            createTimer: (self, parent, zone, duration, void Function() f) =>
                 throw Exception('Zone createTimer error')));
   });
 }

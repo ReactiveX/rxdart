@@ -8,10 +8,10 @@ import 'package:rxdart/streams.dart';
 /// ### Example
 ///
 ///      Rx.combineLatest([
-///        Stream.value("a"),
-///        Stream.fromIterable(["b", "c", "d"])
+///        Stream.value('a'),
+///        Stream.fromIterable(['b', 'c', 'd'])
 ///      ], (list) => list.join())
-///      .listen(print); // prints "ab", "ac", "ad"
+///      .listen(print); // prints 'ab', 'ac', 'ad'
 ///
 /// ### Learning RxDart
 ///
@@ -33,7 +33,7 @@ import 'package:rxdart/streams.dart';
 ///
 /// ### Dart Streams vs Traditional Rx Observables
 /// In ReactiveX, the Observable class is the heart of the ecosystem.
-/// Observables represent data sources that emit "items" or "events" over time.
+/// Observables represent data sources that emit 'items' or 'events' over time.
 /// Dart already includes such a data source: Streams.
 ///
 /// In order to integrate fluently with the Dart ecosystem, Rx Dart does not
@@ -88,12 +88,12 @@ abstract class Rx {
   /// ### Example
   ///
   ///    Rx.combineLatest([
-  ///      Stream.value("a"),
-  ///      Stream.fromIterable(["b", "c", "d"])
+  ///      Stream.value('a'),
+  ///      Stream.fromIterable(['b', 'c', 'd'])
   ///    ], (list) => list.join())
-  ///    .listen(print); // prints "ab", "ac", "ad"
+  ///    .listen(print); // prints 'ab', 'ac', 'ad'
   static Stream<R> combineLatest<T, R>(
-          Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
+          Iterable<Stream<T>> streams, R Function(List<T> values) combiner) =>
       CombineLatestStream<T, R>(streams, combiner);
 
   /// Merges the given Streams into a single Stream that emits a List of the
@@ -131,8 +131,8 @@ abstract class Rx {
   ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 1, 2, 3
-  static Stream<T> combineLatest2<A, B, T>(
-          Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
+  static Stream<T> combineLatest2<A, B, T>(Stream<A> streamA, Stream<B> streamB,
+          T Function(A a, B b) combiner) =>
       CombineLatestStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
@@ -147,13 +147,16 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest3(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.fromIterable(["c", "c"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.fromIterable(['c', 'c']),
   ///       (a, b, c) => a + b + c)
-  ///     .listen(print); //prints "abc", "abc"
-  static Stream<T> combineLatest3<A, B, C, T>(Stream<A> streamA,
-          Stream<B> streamB, Stream<C> streamC, T combiner(A a, B b, C c)) =>
+  ///     .listen(print); //prints 'abc', 'abc'
+  static Stream<T> combineLatest3<A, B, C, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          T Function(A a, B b, C c) combiner) =>
       CombineLatestStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
@@ -168,18 +171,18 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest4(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.fromIterable(["d", "d"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.fromIterable(['d', 'd']),
   ///       (a, b, c, d) => a + b + c + d)
-  ///     .listen(print); //prints "abcd", "abcd"
+  ///     .listen(print); //prints 'abcd', 'abcd'
   static Stream<T> combineLatest4<A, B, C, D, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
-          T combiner(A a, B b, C c, D d)) =>
+          T Function(A a, B b, C c, D d) combiner) =>
       CombineLatestStream.combine4(
           streamA, streamB, streamC, streamD, combiner);
 
@@ -195,20 +198,20 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest5(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.fromIterable(["e", "e"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.fromIterable(['e', 'e']),
   ///       (a, b, c, d, e) => a + b + c + d + e)
-  ///     .listen(print); //prints "abcde", "abcde"
+  ///     .listen(print); //prints 'abcde', 'abcde'
   static Stream<T> combineLatest5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
-          T combiner(A a, B b, C c, D d, E e)) =>
+          T Function(A a, B b, C c, D d, E e) combiner) =>
       CombineLatestStream.combine5(
           streamA, streamB, streamC, streamD, streamE, combiner);
 
@@ -224,14 +227,14 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest6(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.fromIterable(["f", "f"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.fromIterable(['f', 'f']),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
-  ///     .listen(print); //prints "abcdef", "abcdef"
+  ///     .listen(print); //prints 'abcdef', 'abcdef'
   static Stream<T> combineLatest6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -239,7 +242,7 @@ abstract class Rx {
           Stream<D> streamD,
           Stream<E> streamE,
           Stream<F> streamF,
-          T combiner(A a, B b, C c, D d, E e, F f)) =>
+          T Function(A a, B b, C c, D d, E e, F f) combiner) =>
       CombineLatestStream.combine6(
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
@@ -255,15 +258,15 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest7(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.fromIterable(["g", "g"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.fromIterable(['g', 'g']),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
-  ///     .listen(print); //prints "abcdefg", "abcdefg"
+  ///     .listen(print); //prints 'abcdefg', 'abcdefg'
   static Stream<T> combineLatest7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -272,7 +275,7 @@ abstract class Rx {
           Stream<E> streamE,
           Stream<F> streamF,
           Stream<G> streamG,
-          T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g) combiner) =>
       CombineLatestStream.combine7(streamA, streamB, streamC, streamD, streamE,
           streamF, streamG, combiner);
 
@@ -288,16 +291,16 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest8(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.fromIterable(["h", "h"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.fromIterable(['h', 'h']),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
-  ///     .listen(print); //prints "abcdefgh", "abcdefgh"
+  ///     .listen(print); //prints 'abcdefgh', 'abcdefgh'
   static Stream<T> combineLatest8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -307,7 +310,7 @@ abstract class Rx {
           Stream<F> streamF,
           Stream<G> streamG,
           Stream<H> streamH,
-          T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h) combiner) =>
       CombineLatestStream.combine8(
         streamA,
         streamB,
@@ -332,17 +335,17 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.combineLatest9(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.value("h"),
-  ///       Stream.fromIterable(["i", "i"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.value('h'),
+  ///       Stream.fromIterable(['i', 'i']),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
-  ///     .listen(print); //prints "abcdefghi", "abcdefghi"
+  ///     .listen(print); //prints 'abcdefghi', 'abcdefghi'
   static Stream<T> combineLatest9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -353,7 +356,7 @@ abstract class Rx {
           Stream<G> streamG,
           Stream<H> streamH,
           Stream<I> streamI,
-          T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) combiner) =>
       CombineLatestStream.combine9(
         streamA,
         streamB,
@@ -421,7 +424,7 @@ abstract class Rx {
   ///
   ///     Rx.defer(() => Stream.value(1))
   ///       .listen(print); //prints 1
-  static Stream<T> defer<T>(Stream<T> streamFactory(),
+  static Stream<T> defer<T>(Stream<T> Function() streamFactory,
           {bool reusable = false}) =>
       DeferStream<T>(streamFactory, reusable: reusable);
 
@@ -451,12 +454,12 @@ abstract class Rx {
   /// ### Example
   ///
   ///    Rx.forkJoin([
-  ///      Stream.value("a"),
-  ///      Stream.fromIterable(["b", "c", "d"])
+  ///      Stream.value('a'),
+  ///      Stream.fromIterable(['b', 'c', 'd'])
   ///    ], (list) => list.join(', '))
-  ///    .listen(print); // prints "a, d"
+  ///    .listen(print); // prints 'a, d'
   static Stream<R> forkJoin<T, R>(
-          Iterable<Stream<T>> streams, R combiner(List<T> values)) =>
+          Iterable<Stream<T>> streams, R Function(List<T> values) combiner) =>
       ForkJoinStream<T, R>(streams, combiner);
 
   /// Merges the given Streams into a single Stream that emits a List of the
@@ -484,8 +487,8 @@ abstract class Rx {
   ///       Stream.fromIterable([0, 1, 2]),
   ///       (a, b) => a + b)
   ///     .listen(print); //prints 3
-  static Stream<T> forkJoin2<A, B, T>(
-          Stream<A> streamA, Stream<B> streamB, T combiner(A a, B b)) =>
+  static Stream<T> forkJoin2<A, B, T>(Stream<A> streamA, Stream<B> streamB,
+          T Function(A a, B b) combiner) =>
       ForkJoinStream.combine2(streamA, streamB, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
@@ -495,13 +498,13 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin3(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.fromIterable(["c", "d"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.fromIterable(['c', 'd']),
   ///       (a, b, c) => a + b + c)
-  ///     .listen(print); //prints "abd"
+  ///     .listen(print); //prints 'abd'
   static Stream<T> forkJoin3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
-          Stream<C> streamC, T combiner(A a, B b, C c)) =>
+          Stream<C> streamC, T Function(A a, B b, C c) combiner) =>
       ForkJoinStream.combine3(streamA, streamB, streamC, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
@@ -511,18 +514,18 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin4(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.fromIterable(["d", "e"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.fromIterable(['d', 'e']),
   ///       (a, b, c, d) => a + b + c + d)
-  ///     .listen(print); //prints "abce"
+  ///     .listen(print); //prints 'abce'
   static Stream<T> forkJoin4<A, B, C, D, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
-          T combiner(A a, B b, C c, D d)) =>
+          T Function(A a, B b, C c, D d) combiner) =>
       ForkJoinStream.combine4(streamA, streamB, streamC, streamD, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
@@ -532,20 +535,20 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin5(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.fromIterable(["e", "f"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.fromIterable(['e', 'f']),
   ///       (a, b, c, d, e) => a + b + c + d + e)
-  ///     .listen(print); //prints "abcdf"
+  ///     .listen(print); //prints 'abcdf'
   static Stream<T> forkJoin5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
-          T combiner(A a, B b, C c, D d, E e)) =>
+          T Function(A a, B b, C c, D d, E e) combiner) =>
       ForkJoinStream.combine5(
           streamA, streamB, streamC, streamD, streamE, combiner);
 
@@ -556,14 +559,14 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin6(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.fromIterable(["f", "g"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.fromIterable(['f', 'g']),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
-  ///     .listen(print); //prints "abcdeg"
+  ///     .listen(print); //prints 'abcdeg'
   static Stream<T> forkJoin6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -571,7 +574,7 @@ abstract class Rx {
           Stream<D> streamD,
           Stream<E> streamE,
           Stream<F> streamF,
-          T combiner(A a, B b, C c, D d, E e, F f)) =>
+          T Function(A a, B b, C c, D d, E e, F f) combiner) =>
       ForkJoinStream.combine6(
           streamA, streamB, streamC, streamD, streamE, streamF, combiner);
 
@@ -582,15 +585,15 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin7(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.fromIterable(["g", "h"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.fromIterable(['g', 'h']),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
-  ///     .listen(print); //prints "abcdefh"
+  ///     .listen(print); //prints 'abcdefh'
   static Stream<T> forkJoin7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -599,7 +602,7 @@ abstract class Rx {
           Stream<E> streamE,
           Stream<F> streamF,
           Stream<G> streamG,
-          T combiner(A a, B b, C c, D d, E e, F f, G g)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g) combiner) =>
       ForkJoinStream.combine7(streamA, streamB, streamC, streamD, streamE,
           streamF, streamG, combiner);
 
@@ -610,16 +613,16 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin8(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.fromIterable(["h", "i"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.fromIterable(['h', 'i']),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
-  ///     .listen(print); //prints "abcdefgi"
+  ///     .listen(print); //prints 'abcdefgi'
   static Stream<T> forkJoin8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -629,7 +632,7 @@ abstract class Rx {
           Stream<F> streamF,
           Stream<G> streamG,
           Stream<H> streamH,
-          T combiner(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h) combiner) =>
       ForkJoinStream.combine8(
         streamA,
         streamB,
@@ -649,17 +652,17 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.forkJoin9(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.value("h"),
-  ///       Stream.fromIterable(["i", "j"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.value('h'),
+  ///       Stream.fromIterable(['i', 'j']),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
-  ///     .listen(print); //prints "abcdefghj"
+  ///     .listen(print); //prints 'abcdefghj'
   static Stream<T> forkJoin9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -670,7 +673,7 @@ abstract class Rx {
           Stream<G> streamG,
           Stream<H> streamH,
           Stream<I> streamI,
-          T combiner(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) combiner) =>
       ForkJoinStream.combine9(
         streamA,
         streamB,
@@ -749,7 +752,7 @@ abstract class Rx {
   ///     RepeatStream((int repeatCount) =>
   ///       Stream.value('repeat index: $repeatCount'), 3)
   ///         .listen((i) => print(i); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
-  static Stream<T> repeat<T>(Stream<T> streamFactory(int repeatIndex),
+  static Stream<T> repeat<T>(Stream<T> Function(int repeatIndex) streamFactory,
           [int count]) =>
       RepeatStream<T>(streamFactory, count);
 
@@ -772,7 +775,7 @@ abstract class Rx {
   ///          Stream.value(1).concatWith([Stream.error(Error())]);
   ///        }, 1)
   ///        .listen(print, onError: (e, s) => print(e); // Prints 1, 1, RetryError
-  static Stream<T> retry<T>(Stream<T> streamFactory(), [int count]) =>
+  static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int count]) =>
       RetryStream<T>(streamFactory, count);
 
   /// Creates a Stream that will recreate and re-listen to the source
@@ -831,8 +834,10 @@ abstract class Rx {
   ///   onError: (e, s) => print(e),
   /// ); // Prints 0, 1, 2, 0, 1, 2, 3, RetryError
   /// ```
-  static Stream<T> retryWhen<T>(Stream<T> streamFactory(),
-          Stream<void> retryWhenFactory(dynamic error, StackTrace stack)) =>
+  static Stream<T> retryWhen<T>(
+    Stream<T> Function() streamFactory,
+    Stream<void> Function(dynamic error, StackTrace stack) retryWhenFactory,
+  ) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 
   /// Determine whether two Streams emit the same sequence of items.
@@ -848,10 +853,10 @@ abstract class Rx {
   ///     ])
   ///     .listen(print); // prints true
   static Stream<bool> sequenceEqual<A, B>(Stream<A> stream, Stream<B> other,
-          {bool equals(A a, B b)}) =>
+          {bool Function(A a, B b) equals}) =>
       SequenceEqualStream<A, B>(stream, other, equals: equals);
 
-  /// Convert a Stream that emits Streams (aka a "Higher Order Stream") into a
+  /// Convert a Stream that emits Streams (aka a 'Higher Order Stream') into a
   /// single Stream that emits the items emitted by the most-recently-emitted of
   /// those Streams.
   ///
@@ -882,8 +887,8 @@ abstract class Rx {
   ///
   /// ### Example
   ///
-  ///     Rx.timer("hi", Duration(minutes: 1))
-  ///         .listen((i) => print(i); // print "hi" after 1 minute
+  ///     Rx.timer('hi', Duration(minutes: 1))
+  ///         .listen((i) => print(i); // print 'hi' after 1 minute
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
 
@@ -905,12 +910,12 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip2(
-  ///       Stream.value("Hi "),
-  ///       Stream.fromIterable(["Friend", "Dropped"]),
+  ///       Stream.value('Hi '),
+  ///       Stream.fromIterable(['Friend', 'Dropped']),
   ///       (a, b) => a + b)
-  ///     .listen(print); // prints "Hi Friend"
+  ///     .listen(print); // prints 'Hi Friend'
   static Stream<T> zip2<A, B, T>(
-          Stream<A> streamA, Stream<B> streamB, T zipper(A a, B b)) =>
+          Stream<A> streamA, Stream<B> streamB, T Function(A a, B b) zipper) =>
       ZipStream.zip2(streamA, streamB, zipper);
 
   /// Merges the iterable streams into one stream sequence using the given
@@ -932,14 +937,14 @@ abstract class Rx {
   ///
   ///     Rx.zip(
   ///       [
-  ///         Stream.value("Hi "),
-  ///         Stream.fromIterable(["Friend", "Dropped"]),
+  ///         Stream.value('Hi '),
+  ///         Stream.fromIterable(['Friend', 'Dropped']),
   ///       ],
   ///       (values) => values.first + values.last
   ///     )
-  ///     .listen(print); // prints "Hi Friend"
+  ///     .listen(print); // prints 'Hi Friend'
   static Stream<R> zip<T, R>(
-          Iterable<Stream<T>> streams, R zipper(List<T> values)) =>
+          Iterable<Stream<T>> streams, R Function(List<T> values) zipper) =>
       ZipStream(streams, zipper);
 
   /// Merges the iterable streams into one stream sequence using the given
@@ -961,8 +966,8 @@ abstract class Rx {
   ///
   ///     Rx.zipList(
   ///       [
-  ///         Stream.value("Hi "),
-  ///         Stream.fromIterable(["Friend", "Dropped"]),
+  ///         Stream.value('Hi '),
+  ///         Stream.fromIterable(['Friend', 'Dropped']),
   ///       ],
   ///     )
   ///     .listen(print); // prints ['Hi ', 'Friend']
@@ -987,13 +992,13 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip3(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.fromIterable(["c", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.fromIterable(['c', 'dropped']),
   ///       (a, b, c) => a + b + c)
-  ///     .listen(print); //prints "abc"
+  ///     .listen(print); //prints 'abc'
   static Stream<T> zip3<A, B, C, T>(Stream<A> streamA, Stream<B> streamB,
-          Stream<C> streamC, T zipper(A a, B b, C c)) =>
+          Stream<C> streamC, T Function(A a, B b, C c) zipper) =>
       ZipStream.zip3(streamA, streamB, streamC, zipper);
 
   /// Merges the specified streams into one stream sequence using the given
@@ -1014,14 +1019,18 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip4(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.fromIterable(["d", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.fromIterable(['d', 'dropped']),
   ///       (a, b, c, d) => a + b + c + d)
-  ///     .listen(print); //prints "abcd"
-  static Stream<T> zip4<A, B, C, D, T>(Stream<A> streamA, Stream<B> streamB,
-          Stream<C> streamC, Stream<D> streamD, T zipper(A a, B b, C c, D d)) =>
+  ///     .listen(print); //prints 'abcd'
+  static Stream<T> zip4<A, B, C, D, T>(
+          Stream<A> streamA,
+          Stream<B> streamB,
+          Stream<C> streamC,
+          Stream<D> streamD,
+          T Function(A a, B b, C c, D d) zipper) =>
       ZipStream.zip4(streamA, streamB, streamC, streamD, zipper);
 
   /// Merges the specified streams into one stream sequence using the given
@@ -1042,20 +1051,20 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip5(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.fromIterable(["e", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.fromIterable(['e', 'dropped']),
   ///       (a, b, c, d, e) => a + b + c + d + e)
-  ///     .listen(print); //prints "abcde"
+  ///     .listen(print); //prints 'abcde'
   static Stream<T> zip5<A, B, C, D, E, T>(
           Stream<A> streamA,
           Stream<B> streamB,
           Stream<C> streamC,
           Stream<D> streamD,
           Stream<E> streamE,
-          T zipper(A a, B b, C c, D d, E e)) =>
+          T Function(A a, B b, C c, D d, E e) zipper) =>
       ZipStream.zip5(streamA, streamB, streamC, streamD, streamE, zipper);
 
   /// Merges the specified streams into one stream sequence using the given
@@ -1076,14 +1085,14 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip6(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.fromIterable(["f", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.fromIterable(['f', 'dropped']),
   ///       (a, b, c, d, e, f) => a + b + c + d + e + f)
-  ///     .listen(print); //prints "abcdef"
+  ///     .listen(print); //prints 'abcdef'
   static Stream<T> zip6<A, B, C, D, E, F, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -1091,7 +1100,7 @@ abstract class Rx {
           Stream<D> streamD,
           Stream<E> streamE,
           Stream<F> streamF,
-          T zipper(A a, B b, C c, D d, E e, F f)) =>
+          T Function(A a, B b, C c, D d, E e, F f) zipper) =>
       ZipStream.zip6(
         streamA,
         streamB,
@@ -1120,15 +1129,15 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip7(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.fromIterable(["g", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.fromIterable(['g', 'dropped']),
   ///       (a, b, c, d, e, f, g) => a + b + c + d + e + f + g)
-  ///     .listen(print); //prints "abcdefg"
+  ///     .listen(print); //prints 'abcdefg'
   static Stream<T> zip7<A, B, C, D, E, F, G, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -1137,7 +1146,7 @@ abstract class Rx {
           Stream<E> streamE,
           Stream<F> streamF,
           Stream<G> streamG,
-          T zipper(A a, B b, C c, D d, E e, F f, G g)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g) zipper) =>
       ZipStream.zip7(
         streamA,
         streamB,
@@ -1167,16 +1176,16 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip8(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.fromIterable(["h", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.fromIterable(['h', 'dropped']),
   ///       (a, b, c, d, e, f, g, h) => a + b + c + d + e + f + g + h)
-  ///     .listen(print); //prints "abcdefgh"
+  ///     .listen(print); //prints 'abcdefgh'
   static Stream<T> zip8<A, B, C, D, E, F, G, H, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -1186,7 +1195,7 @@ abstract class Rx {
           Stream<F> streamF,
           Stream<G> streamG,
           Stream<H> streamH,
-          T zipper(A a, B b, C c, D d, E e, F f, G g, H h)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h) zipper) =>
       ZipStream.zip8(
         streamA,
         streamB,
@@ -1217,17 +1226,17 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.zip9(
-  ///       Stream.value("a"),
-  ///       Stream.value("b"),
-  ///       Stream.value("c"),
-  ///       Stream.value("d"),
-  ///       Stream.value("e"),
-  ///       Stream.value("f"),
-  ///       Stream.value("g"),
-  ///       Stream.value("h"),
-  ///       Stream.fromIterable(["i", "dropped"]),
+  ///       Stream.value('a'),
+  ///       Stream.value('b'),
+  ///       Stream.value('c'),
+  ///       Stream.value('d'),
+  ///       Stream.value('e'),
+  ///       Stream.value('f'),
+  ///       Stream.value('g'),
+  ///       Stream.value('h'),
+  ///       Stream.fromIterable(['i', 'dropped']),
   ///       (a, b, c, d, e, f, g, h, i) => a + b + c + d + e + f + g + h + i)
-  ///     .listen(print); //prints "abcdefghi"
+  ///     .listen(print); //prints 'abcdefghi'
   static Stream<T> zip9<A, B, C, D, E, F, G, H, I, T>(
           Stream<A> streamA,
           Stream<B> streamB,
@@ -1238,7 +1247,7 @@ abstract class Rx {
           Stream<G> streamG,
           Stream<H> streamH,
           Stream<I> streamI,
-          T zipper(A a, B b, C c, D d, E e, F f, G g, H h, I i)) =>
+          T Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) zipper) =>
       ZipStream.zip9(
         streamA,
         streamB,

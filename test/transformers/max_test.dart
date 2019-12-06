@@ -10,9 +10,9 @@ void main() {
 
   test('Rx.max.with.comparator', () async {
     await expectLater(
-        Stream<String>.fromIterable(<String>["one", "two", "three"])
+        Stream<String>.fromIterable(<String>['one', 'two', 'three'])
             .max((String a, String b) => a.length - b.length),
-        completion("three"));
+        completion('three'));
   });
 }
 

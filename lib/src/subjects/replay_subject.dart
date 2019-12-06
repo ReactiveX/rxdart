@@ -54,8 +54,8 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   /// See also [StreamController.broadcast]
   factory ReplaySubject({
     int maxSize,
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks

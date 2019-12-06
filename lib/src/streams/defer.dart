@@ -22,7 +22,7 @@ class DeferStream<T> extends Stream<T> {
 
   /// Constructs a [Stream] lazily, at the moment of subscription, using
   /// the [streamFactory]
-  DeferStream(Stream<T> streamFactory(), {bool reusable = false})
+  DeferStream(Stream<T> Function() streamFactory, {bool reusable = false})
       : _isReusable = reusable,
         _factory = reusable
             ? streamFactory
@@ -32,8 +32,8 @@ class DeferStream<T> extends Stream<T> {
               }());
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
+  StreamSubscription<T> listen(void Function(T event) onData,
+          {Function onError, void Function() onDone, bool cancelOnError}) =>
       _factory().listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

@@ -20,14 +20,14 @@ class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
   /// The mapped [Stream] will be listened to and begin emitting items downstream.
-  FlatMapStreamTransformer(Stream<S> mapper(T value))
+  FlatMapStreamTransformer(Stream<S> Function(T value) mapper)
       : _transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> mapper(T value)) {
+      Stream<S> Function(T value) mapper) {
     return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       final subscriptions = <StreamSubscription<S>>[];
       StreamController<S> controller;
@@ -115,7 +115,7 @@ extension FlatMapExtension<T> on Stream<T> {
   ///     RangeStream(4, 1)
   ///       .flatMap((i) => TimerStream(i, Duration(minutes: i))
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<S> flatMap<S>(Stream<S> mapper(T value)) =>
+  Stream<S> flatMap<S>(Stream<S> Function(T value) mapper) =>
       transform(FlatMapStreamTransformer<T, S>(mapper));
 
   /// Converts each item into a Stream. The Stream must return an
@@ -130,7 +130,7 @@ extension FlatMapExtension<T> on Stream<T> {
   ///     RangeStream(1, 4)
   ///       .flatMapIterable((i) => Stream.fromIterable([[i]])
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> mapper(T value)) =>
+  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper) =>
       transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper))
           .expand((Iterable<S> iterable) => iterable);
 }

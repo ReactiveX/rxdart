@@ -21,7 +21,7 @@ class WithLatestFromStreamTransformer<T, S, R>
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from [latestFromStreams] using the provided function [fn].
   WithLatestFromStreamTransformer(
-      Iterable<Stream<S>> latestFromStreams, R fn(T t, List<S> values))
+      Iterable<Stream<S>> latestFromStreams, R Function(T t, List<S> values) fn)
       : _transformer = _buildTransformer(latestFromStreams, fn);
 
   @override
@@ -34,7 +34,7 @@ class WithLatestFromStreamTransformer<T, S, R>
   ) {
     return WithLatestFromStreamTransformer<T, T, List<T>>(
       latestFromStreams,
-      (s, values) => [s]..addAll(values),
+      (s, values) => [s, ...values],
     );
   }
 
@@ -42,7 +42,7 @@ class WithLatestFromStreamTransformer<T, S, R>
   /// the latest values from [latestFromStream] using the provided function [fn].
   static WithLatestFromStreamTransformer<T, S, R> with1<T, S, R>(
     Stream<S> latestFromStream,
-    R fn(T t, S s),
+    R Function(T t, S s) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -58,7 +58,7 @@ class WithLatestFromStreamTransformer<T, S, R>
   static WithLatestFromStreamTransformer<T, dynamic, R> with2<T, A, B, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
-    R fn(T t, A a, B b),
+    R Function(T t, A a, B b) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -75,7 +75,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
-    R fn(T t, A a, B b, C c),
+    R Function(T t, A a, B b, C c) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -104,7 +104,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
     Stream<D> latestFromStream4,
-    R fn(T t, A a, B b, C c, D d),
+    R Function(T t, A a, B b, C c, D d) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -137,7 +137,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<C> latestFromStream3,
     Stream<D> latestFromStream4,
     Stream<E> latestFromStream5,
-    R fn(T t, A a, B b, C c, D d, E e),
+    R Function(T t, A a, B b, C c, D d, E e) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -173,7 +173,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<D> latestFromStream4,
     Stream<E> latestFromStream5,
     Stream<F> latestFromStream6,
-    R fn(T t, A a, B b, C c, D d, E e, F f),
+    R Function(T t, A a, B b, C c, D d, E e, F f) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -212,7 +212,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<E> latestFromStream5,
     Stream<F> latestFromStream6,
     Stream<G> latestFromStream7,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -254,7 +254,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<F> latestFromStream6,
     Stream<G> latestFromStream7,
     Stream<H> latestFromStream8,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -299,7 +299,7 @@ class WithLatestFromStreamTransformer<T, S, R>
     Stream<G> latestFromStream7,
     Stream<H> latestFromStream8,
     Stream<I> latestFromStream9,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i) fn,
   ) {
     if (fn == null) {
       throw ArgumentError('Combiner cannot be null');
@@ -335,7 +335,7 @@ class WithLatestFromStreamTransformer<T, S, R>
 
   static StreamTransformer<T, R> _buildTransformer<T, S, R>(
     Iterable<Stream<S>> latestFromStreams,
-    R fn(T t, List<S> values),
+    R Function(T t, List<S> values) fn,
   ) {
     if (latestFromStreams == null) {
       throw ArgumentError('latestFromStreams cannot be null');
@@ -428,7 +428,8 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2]).withLatestFrom(
   ///       Stream.fromIterable([2, 3]), (a, b) => a + b)
   ///       .listen(print); // prints 4 (due to the async nature of streams)
-  Stream<R> withLatestFrom<S, R>(Stream<S> latestFromStream, R fn(T t, S s)) =>
+  Stream<R> withLatestFrom<S, R>(
+          Stream<S> latestFromStream, R Function(T t, S s) fn) =>
       transform(WithLatestFromStreamTransformer.with1(latestFromStream, fn));
 
   /// Creates a Stream that emits when the source stream emits, combining the
@@ -474,7 +475,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   Stream<R> withLatestFrom2<A, B, R>(
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
-    R fn(T t, A a, B b),
+    R Function(T t, A a, B b) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with2(
         latestFromStream1,
@@ -504,7 +505,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<A> latestFromStream1,
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
-    R fn(T t, A a, B b, C c),
+    R Function(T t, A a, B b, C c) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with3(
         latestFromStream1,
@@ -537,7 +538,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<B> latestFromStream2,
     Stream<C> latestFromStream3,
     Stream<D> latestFromStream4,
-    R fn(T t, A a, B b, C c, D d),
+    R Function(T t, A a, B b, C c, D d) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with4(
         latestFromStream1,
@@ -573,7 +574,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<C> latestFromStream3,
     Stream<D> latestFromStream4,
     Stream<E> latestFromStream5,
-    R fn(T t, A a, B b, C c, D d, E e),
+    R Function(T t, A a, B b, C c, D d, E e) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with5(
         latestFromStream1,
@@ -613,7 +614,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<D> latestFromStream4,
     Stream<E> latestFromStream5,
     Stream<F> latestFromStream6,
-    R fn(T t, A a, B b, C c, D d, E e, F f),
+    R Function(T t, A a, B b, C c, D d, E e, F f) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with6(
         latestFromStream1,
@@ -656,7 +657,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<E> latestFromStream5,
     Stream<F> latestFromStream6,
     Stream<G> latestFromStream7,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with7(
         latestFromStream1,
@@ -702,7 +703,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<F> latestFromStream6,
     Stream<G> latestFromStream7,
     Stream<H> latestFromStream8,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with8(
         latestFromStream1,
@@ -751,7 +752,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<G> latestFromStream7,
     Stream<H> latestFromStream8,
     Stream<I> latestFromStream9,
-    R fn(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i),
+    R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i) fn,
   ) =>
       transform(WithLatestFromStreamTransformer.with9(
         latestFromStream1,

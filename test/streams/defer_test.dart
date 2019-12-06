@@ -31,7 +31,7 @@ void main() {
   test('Rx.defer.streamFactory.called', () async {
     var count = 0;
 
-    streamFactory() {
+    Stream<int> streamFactory() {
       ++count;
       return Stream.value(1);
     }

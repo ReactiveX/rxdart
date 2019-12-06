@@ -19,7 +19,7 @@ class BufferStreamTransformer<T>
   /// emits this [List] whenever [window] fires an event.
   ///
   /// The [List] is cleared upon every [window] event.
-  BufferStreamTransformer(Stream window(T event))
+  BufferStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => queue, ignoreEmptyWindows: false) {
     if (window == null) throw ArgumentError.notNull('window');
@@ -86,7 +86,7 @@ class BufferTestStreamTransformer<T>
     extends BackpressureStreamTransformer<T, List<T>> {
   /// Constructs a [StreamTransformer] which buffers events into a [List] and
   /// emits this [List] whenever the [test] Function yields true.
-  BufferTestStreamTransformer(bool test(T value))
+  BufferTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => queue,
             closeWindowWhen: (Iterable<T> queue) => test(queue.last)) {
@@ -141,7 +141,7 @@ extension BufferExtensions<T> on Stream<T> {
   ///     Stream.periodic(Duration(milliseconds: 100), (int i) => i)
   ///       .bufferTest((i) => i % 2 == 0)
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
-  Stream<List<T>> bufferTest(bool onTestHandler(T event)) =>
+  Stream<List<T>> bufferTest(bool Function(T event) onTestHandler) =>
       transform(BufferTestStreamTransformer<T>(onTestHandler));
 
   /// Creates a Stream where each item is a [List] containing the items

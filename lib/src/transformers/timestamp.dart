@@ -64,8 +64,8 @@ class Timestamped<T> {
       return true;
     }
     return other is Timestamped &&
-        this.timestamp == other.timestamp &&
-        this.value == other.value;
+        timestamp == other.timestamp &&
+        value == other.value;
   }
 
   @override

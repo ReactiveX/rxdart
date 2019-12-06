@@ -15,7 +15,7 @@ void main() {
   });
 
   test('Rx.onErrorReturn.asBroadcastStream', () async {
-    Stream<num> stream =
+    final stream =
         Stream<num>.error(Exception()).onErrorReturn(0).asBroadcastStream();
 
     await expectLater(stream.isBroadcast, isTrue);
