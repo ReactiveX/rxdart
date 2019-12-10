@@ -1,3 +1,12 @@
+## 0.23.0-dev.3
+
+  * Fix missing exports:
+    - `ValueStream`
+    - `ReplayStream`
+    - `ConnectableStream`
+    - `ValueConnectableStream`
+    - `ReplayConnectableStream`
+
 ## 0.23.0-dev.2
   * Remove the Observable class. With extensions, you no longer need to wrap Streams in a [Stream]!
   * Convert all factories to static constructors to aid in discoverability of Stream classes

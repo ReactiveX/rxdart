@@ -11,6 +11,7 @@ export 'src/streams/never.dart';
 export 'src/streams/race.dart';
 export 'src/streams/range.dart';
 export 'src/streams/repeat.dart';
+export 'src/streams/replay_stream.dart';
 export 'src/streams/retry.dart';
 export 'src/streams/retry_when.dart';
 export 'src/streams/sequence_equal.dart';
