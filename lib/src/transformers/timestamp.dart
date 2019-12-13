@@ -1,12 +1,12 @@
 import 'dart:async';
 
-/// Wraps each item emitted by the source Observable in a [Timestamped] object
+/// Wraps each item emitted by the source Stream in a [Timestamped] object
 /// that includes the emitted item and the time when the item was emitted.
 ///
 /// Example
 ///
-///     new Stream.fromIterable([1])
-///        .transform(new TimestampStreamTransformer())
+///     Stream.fromIterable([1])
+///        .transform(TimestampStreamTransformer())
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
     extends StreamTransformerBase<T, Timestamped<T>> {
@@ -64,8 +64,8 @@ class Timestamped<T> {
       return true;
     }
     return other is Timestamped &&
-        this.timestamp == other.timestamp &&
-        this.value == other.value;
+        timestamp == other.timestamp &&
+        value == other.value;
   }
 
   @override
@@ -77,4 +77,20 @@ class Timestamped<T> {
   String toString() {
     return 'TimeStamp{timestamp: $timestamp, value: $value}';
   }
+}
+
+/// Extends the Stream class with the ability to wrap each item emitted by the
+/// source Stream in a [Timestamped] object that includes the emitted item and
+/// the time when the item was emitted.
+extension TimeStampExtension<T> on Stream<T> {
+  /// Wraps each item emitted by the source Stream in a [Timestamped] object
+  /// that includes the emitted item and the time when the item was emitted.
+  ///
+  /// Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///        .timestamp()
+  ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
+  Stream<Timestamped<T>> timestamp() =>
+      transform(TimestampStreamTransformer<T>());
 }

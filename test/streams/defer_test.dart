@@ -4,36 +4,36 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.defer', () async {
+  test('Rx.defer', () async {
     const value = 1;
 
-    final observable = _getDeferStream();
+    final stream = _getDeferStream();
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
   });
 
-  test('rx.Observable.defer.multiple.listeners', () async {
+  test('Rx.defer.multiple.listeners', () async {
     const value = 1;
 
-    final observable = _getBroadcastDeferStream();
+    final stream = _getBroadcastDeferStream();
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
 
-    observable.listen(expectAsync1((actual) {
+    stream.listen(expectAsync1((actual) {
       expect(actual, value);
     }, count: 1));
   });
 
-  test('rx.Observable.defer.streamFactory.called', () async {
+  test('Rx.defer.streamFactory.called', () async {
     var count = 0;
 
-    streamFactory() {
+    Stream<int> streamFactory() {
       ++count;
-      return Observable.just(1);
+      return Stream.value(1);
     }
 
     var deferStream = DeferStream(
@@ -50,10 +50,10 @@ void main() {
     );
   });
 
-  test('rx.Observable.defer.reusable', () async {
+  test('Rx.defer.reusable', () async {
     const value = 1;
 
-    final observable = Observable.defer(
+    final stream = Rx.defer(
       () => Stream.fromFuture(
         Future.delayed(
           Duration(seconds: 1),
@@ -63,13 +63,13 @@ void main() {
       reusable: true,
     );
 
-    observable.listen(
+    stream.listen(
       expectAsync1(
         (actual) => expect(actual, value),
         count: 1,
       ),
     );
-    observable.listen(
+    stream.listen(
       expectAsync1(
         (actual) => expect(actual, value),
         count: 1,
@@ -77,32 +77,32 @@ void main() {
     );
   });
 
-  test('rx.Observable.defer.single.subscription', () async {
-    final observable = _getDeferStream();
+  test('Rx.defer.single.subscription', () async {
+    final stream = _getDeferStream();
 
     try {
-      observable.listen(null);
-      observable.listen(null);
+      stream.listen(null);
+      stream.listen(null);
       expect(true, false);
     } catch (e) {
       expect(e, isStateError);
     }
   });
 
-  test('rx.Observable.defer.error.shouldThrow', () async {
-    final observableWithError = Observable.defer(() => _getErroneousStream());
+  test('Rx.defer.error.shouldThrow', () async {
+    final streamWithError = Rx.defer(() => _getErroneousStream());
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync1((Exception e) {
           expect(e, isException);
         }, count: 1));
   });
 }
 
-Stream<int> _getDeferStream() => Observable.defer(() => Observable.just(1));
+Stream<int> _getDeferStream() => Rx.defer(() => Stream.value(1));
 
 Stream<int> _getBroadcastDeferStream() =>
-    Observable.defer(() => Observable.just(1)).asBroadcastStream();
+    Rx.defer(() => Stream.value(1)).asBroadcastStream();
 
 Stream<int> _getErroneousStream() {
   final controller = StreamController<int>();

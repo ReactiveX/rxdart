@@ -6,10 +6,10 @@ import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.retry', () async {
+  test('Rx.retry', () async {
     const retries = 3;
 
-    await expectLater(Observable.retry(_getRetryStream(retries), retries),
+    await expectLater(Rx.retry(_getRetryStream(retries), retries),
         emitsInOrder(<dynamic>[1, emitsDone]));
   });
 
@@ -66,19 +66,19 @@ void main() {
   });
 
   test('RetryStream.error.shouldThrow', () async {
-    final observableWithError = RetryStream(_getRetryStream(3), 2);
+    final streamWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(
             <Matcher>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryStream.error.capturesErrors', () async {
-    final observableWithError = RetryStream(_getRetryStream(3), 2);
+    final streamWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<Matcher>[
           emitsError(
             predicate<RetryError>((a) {
@@ -113,9 +113,9 @@ Stream<int> Function() _getRetryStream(int failCount) {
   return () {
     if (count < failCount) {
       count++;
-      return ErrorStream<int>(Error());
+      return Stream<int>.error(Error(), StackTrace.fromString('S'));
     } else {
-      return Observable.just(1);
+      return Stream.value(1);
     }
   };
 }
@@ -128,13 +128,13 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
       count++;
 
       // Emit first item
-      return Observable.just(1)
+      return Stream.value(1)
           // Emit the error
-          .concatWith([ErrorStream<int>(Error())])
+          .concatWith([Stream<int>.error(Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith([Observable.just(1)]);
+          .concatWith([Stream.value(1)]);
     } else {
-      return Observable.just(2);
+      return Stream.value(2);
     }
   };
 }

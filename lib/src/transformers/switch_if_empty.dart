@@ -1,7 +1,7 @@
 import 'dart:async';
 
-/// When the original observable emits no items, this operator subscribes to
-/// the given fallback stream and emits items from that observable instead.
+/// When the original stream emits no items, this operator subscribes to
+/// the given fallback stream and emits items from that stream instead.
 ///
 /// This can be particularly useful when consuming data from multiple sources.
 /// For example, when using the Repository Pattern. Assuming you have some
@@ -90,4 +90,35 @@ class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extend the Stream class with the ability to return an alternative Stream
+/// if the initial Stream completes with no items.
+extension SwitchIfEmptyExtension<T> on Stream<T> {
+  /// When the original Stream emits no items, this operator subscribes to the
+  /// given fallback stream and emits items from that Stream instead.
+  ///
+  /// This can be particularly useful when consuming data from multiple sources.
+  /// For example, when using the Repository Pattern. Assuming you have some
+  /// data you need to load, you might want to start with the fastest access
+  /// point and keep falling back to the slowest point. For example, first query
+  /// an in-memory database, then a database on the file system, then a network
+  /// call if the data isn't on the local machine.
+  ///
+  /// This can be achieved quite simply with switchIfEmpty!
+  ///
+  /// ### Example
+  ///
+  ///     // Let's pretend we have some Data sources that complete without
+  ///     // emitting any items if they don't contain the data we're looking for
+  ///     Stream<Data> memory;
+  ///     Stream<Data> disk;
+  ///     Stream<Data> network;
+  ///
+  ///     // Start with memory, fallback to disk, then fallback to network.
+  ///     // Simple as that!
+  ///     Stream<Data> getThatData =
+  ///         memory.switchIfEmpty(disk).switchIfEmpty(network);
+  Stream<T> switchIfEmpty(Stream<T> fallbackStream) =>
+      transform(SwitchIfEmptyStreamTransformer<T>(fallbackStream));
 }

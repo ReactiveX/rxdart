@@ -13,44 +13,44 @@ List<Stream<int>> _getStreams() {
 List<Stream<int>> _getStreamsIncludingEmpty() {
   var a = Stream.fromIterable(const [0, 1, 2]),
       b = Stream.fromIterable(const [3, 4, 5]),
-      c = Observable<int>.empty();
+      c = Stream<int>.empty();
 
   return [c, a, b];
 }
 
 void main() {
-  test('rx.Observable.concat', () async {
+  test('Rx.concat', () async {
     const expectedOutput = [0, 1, 2, 3, 4, 5];
     var count = 0;
 
-    final observable = Observable.concat(_getStreams());
+    final stream = Rx.concat(_getStreams());
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.concatEager.single.subscription', () async {
-    final observable = Observable.concat(_getStreams());
+  test('Rx.concatEager.single.subscription', () async {
+    final stream = Rx.concat(_getStreams());
 
-    observable.listen(null);
-    await expectLater(() => observable.listen(null), throwsA(isStateError));
+    stream.listen(null);
+    await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('rx.Observable.concat.withEmptyStream', () async {
+  test('Rx.concat.withEmptyStream', () async {
     const expectedOutput = [0, 1, 2, 3, 4, 5];
     var count = 0;
 
-    final observable = Observable.concat(_getStreamsIncludingEmpty());
+    final stream = Rx.concat(_getStreamsIncludingEmpty());
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.concat.withBroadcastStreams', () async {
+  test('Rx.concat.withBroadcastStreams', () async {
     const expectedOutput = [1, 2, 3, 4];
     final ctrlA = StreamController<int>.broadcast(),
         ctrlB = StreamController<int>.broadcast(),
@@ -73,47 +73,46 @@ void main() {
       }
     });
 
-    final observable =
-        Observable.concat([ctrlA.stream, ctrlB.stream, ctrlC.stream]);
+    final stream = Rx.concat([ctrlA.stream, ctrlB.stream, ctrlC.stream]);
 
-    observable.listen(expectAsync1((result) {
+    stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
       expect(result, expectedOutput[count++]);
     }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.concat.asBroadcastStream', () async {
-    final observable = Observable.concat(_getStreams()).asBroadcastStream();
+  test('Rx.concat.asBroadcastStream', () async {
+    final stream = Rx.concat(_getStreams()).asBroadcastStream();
 
     // listen twice on same stream
-    observable.listen(null);
-    observable.listen(null);
+    stream.listen(null);
+    stream.listen(null);
     // code should reach here
-    await expectLater(observable.isBroadcast, isTrue);
+    await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.concat.error.shouldThrowA', () async {
-    final observableWithError =
-        Observable.concat(_getStreams()..add(ErrorStream<int>(Exception())));
+  test('Rx.concat.error.shouldThrowA', () async {
+    final streamWithError =
+        Rx.concat(_getStreams()..add(Stream<int>.error(Exception())));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.concat.error.shouldThrowB', () {
-    expect(() => Observable<int>.concat(null), throwsArgumentError);
+  test('Rx.concat.error.shouldThrowB', () {
+    expect(() => Rx.concat<int>(null), throwsArgumentError);
   });
 
-  test('rx.Observable.concat.error.shouldThrowC', () {
-    expect(() => Observable<int>.concat(const []), throwsArgumentError);
+  test('Rx.concat.error.shouldThrowC', () {
+    expect(() => Rx.concat<int>(const []), throwsArgumentError);
   });
 
-  test('rx.Observable.concat.error.shouldThrowD', () {
+  test('Rx.concat.error.shouldThrowD', () {
     expect(
         () => [
-              Observable.concat([Observable.just(1), null]),
+              Rx.concat([Stream.value(1), null]),
               null
             ],
         throwsArgumentError);

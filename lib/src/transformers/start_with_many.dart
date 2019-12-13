@@ -4,8 +4,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([3])
-///       .transform(new StartWithManyStreamTransformer([1, 2]))
+///     Stream.fromIterable([3])
+///       .transform(StartWithManyStreamTransformer([1, 2]))
 ///       .listen(print); // prints 1, 2, 3
 class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
@@ -47,4 +47,17 @@ class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream class with the ability to emit the given values as the
+/// first items.
+extension StartWithManyExtension<T> on Stream<T> {
+  /// Prepends a sequence of values to the source Stream.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([3]).startWithMany([1, 2])
+  ///       .listen(print); // prints 1, 2, 3
+  Stream<T> startWithMany(List<T> startValues) =>
+      transform(StartWithManyStreamTransformer<T>(startValues));
 }

@@ -4,49 +4,44 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.switchIfEmpty.whenEmpty', () async {
+  test('Rx.switchIfEmpty.whenEmpty', () async {
     expect(
-      Observable<int>.empty().switchIfEmpty(Observable.just(1)),
+      Stream<int>.empty().switchIfEmpty(Stream.value(1)),
       emitsInOrder(<dynamic>[1, emitsDone]),
     );
   });
 
-  test('rx.Observable.initial.completes', () async {
+  test('Rx.initial.completes', () async {
     expect(
-      Observable.just(99).switchIfEmpty(Observable.just(1)),
+      Stream.value(99).switchIfEmpty(Stream.value(1)),
       emitsInOrder(<dynamic>[99, emitsDone]),
     );
   });
 
-  test('rx.Observable.switchIfEmpty.reusable', () async {
+  test('Rx.switchIfEmpty.reusable', () async {
     final transformer = SwitchIfEmptyStreamTransformer<bool>(
-        Observable.just(true).asBroadcastStream());
+        Stream.value(true).asBroadcastStream());
 
-    Observable(Stream<bool>.empty())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    Stream<bool>.empty().transform(transformer).listen(expectAsync1((result) {
           expect(result, true);
         }, count: 1));
 
-    Observable(Stream<bool>.empty())
-        .transform(transformer)
-        .listen(expectAsync1((result) {
+    Stream<bool>.empty().transform(transformer).listen(expectAsync1((result) {
           expect(result, true);
         }, count: 1));
   });
 
-  test('rx.Observable.switchIfEmpty.whenNotEmpty', () async {
-    Observable.just(false)
-        .switchIfEmpty(Observable.just(true))
+  test('Rx.switchIfEmpty.whenNotEmpty', () async {
+    Stream.value(false)
+        .switchIfEmpty(Stream.value(true))
         .listen(expectAsync1((result) {
           expect(result, false);
         }, count: 1));
   });
 
-  test('rx.Observable.switchIfEmpty.asBroadcastStream', () async {
-    final stream = Observable(Stream<int>.empty())
-        .switchIfEmpty(Observable.just(1))
-        .asBroadcastStream();
+  test('Rx.switchIfEmpty.asBroadcastStream', () async {
+    final stream =
+        Stream<int>.empty().switchIfEmpty(Stream.value(1)).asBroadcastStream();
 
     // listen twice on same stream
     stream.listen(null);
@@ -56,25 +51,23 @@ void main() {
     await expectLater(stream.isBroadcast, isTrue);
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<int>(Exception()))
-        .switchIfEmpty(Observable.just(1));
+  test('Rx.switchIfEmpty.error.shouldThrowA', () async {
+    final streamWithError =
+        Stream<int>.error(Exception()).switchIfEmpty(Stream.value(1));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.switchIfEmpty.error.shouldThrowB', () {
-    expect(() => Observable<void>.empty().switchIfEmpty(null),
-        throwsArgumentError);
+  test('Rx.switchIfEmpty.error.shouldThrowB', () {
+    expect(() => Stream<void>.empty().switchIfEmpty(null), throwsArgumentError);
   });
 
-  test('rx.Observable.switchIfEmpty.pause.resume', () async {
+  test('Rx.switchIfEmpty.pause.resume', () async {
     StreamSubscription<int> subscription;
-    final stream =
-        Observable(Stream<int>.empty()).switchIfEmpty(Observable.just(1));
+    final stream = Stream<int>.empty().switchIfEmpty(Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, 1);

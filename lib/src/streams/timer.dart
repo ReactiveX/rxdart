@@ -4,8 +4,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new TimerStream("hi", new Duration(minutes: 1))
-///         .listen((i) => print(i)); // print "hi" after 1 minute
+///     TimerStream('hi', Duration(minutes: 1))
+///         .listen((i) => print(i)); // print 'hi' after 1 minute
 class TimerStream<T> extends Stream<T> {
   final StreamController<T> _controller;
 

@@ -4,29 +4,29 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.materialize.happyPath', () async {
-    final observable = Observable.just(1);
+  test('Rx.materialize.happyPath', () async {
+    final stream = Stream.value(1);
     final notifications = <Notification<int>>[];
 
-    observable.materialize().listen(notifications.add, onDone: expectAsync0(() {
+    stream.materialize().listen(notifications.add, onDone: expectAsync0(() {
       expect(
           notifications, [Notification.onData(1), Notification<int>.onDone()]);
     }));
   });
 
-  test('rx.Observable.materialize.reusable', () async {
+  test('Rx.materialize.reusable', () async {
     final transformer = MaterializeStreamTransformer<int>();
-    final observable = Observable.just(1).asBroadcastStream();
+    final stream = Stream.value(1).asBroadcastStream();
     final notificationsA = <Notification<int>>[],
         notificationsB = <Notification<int>>[];
 
-    observable.transform(transformer).listen(notificationsA.add,
+    stream.transform(transformer).listen(notificationsA.add,
         onDone: expectAsync0(() {
       expect(
           notificationsA, [Notification.onData(1), Notification<int>.onDone()]);
     }));
 
-    observable.transform(transformer).listen(notificationsB.add,
+    stream.transform(transformer).listen(notificationsB.add,
         onDone: expectAsync0(() {
       expect(
           notificationsB, [Notification.onData(1), Notification<int>.onDone()]);
@@ -46,7 +46,7 @@ void main() {
   });
 
   test('materializeTransformer.sadPath', () async {
-    final stream = ErrorStream<int>(Exception());
+    final stream = Stream<int>.error(Exception());
     final notifications = <Notification<int>>[];
 
     stream

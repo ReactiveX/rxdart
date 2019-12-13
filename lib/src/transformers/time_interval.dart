@@ -1,13 +1,13 @@
 import 'dart:async';
 
-/// Records the time interval between consecutive values in an observable
+/// Records the time interval between consecutive values in an stream
 /// sequence.
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1])
-///       .transform(new IntervalStreamTransformer(new Duration(seconds: 1)))
-///       .transform(new TimeIntervalStreamTransformer())
+///     Stream.fromIterable([1])
+///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
+///       .transform(TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T>
     extends StreamTransformerBase<T, TimeInterval<T>> {
@@ -83,8 +83,8 @@ class TimeInterval<T> {
       return true;
     }
     return other is TimeInterval &&
-        this.interval == other.interval &&
-        this.value == other.value;
+        interval == other.interval &&
+        value == other.value;
   }
 
   @override
@@ -96,4 +96,19 @@ class TimeInterval<T> {
   String toString() {
     return 'TimeInterval{interval: $interval, value: $value}';
   }
+}
+
+/// Extends the Stream class with the ability to record the time interval
+/// between consecutive values in an stream
+extension TimeIntervalExtension<T> on Stream<T> {
+  /// Records the time interval between consecutive values in a Stream sequence.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///       .interval(Duration(seconds: 1))
+  ///       .timeInterval()
+  ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
+  Stream<TimeInterval<T>> timeInterval() =>
+      transform(TimeIntervalStreamTransformer<T>());
 }

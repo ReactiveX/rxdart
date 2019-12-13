@@ -3,68 +3,67 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> _observable() =>
-    Observable.periodic(const Duration(milliseconds: 100), (i) => i + 1)
-        .take(10);
+Stream<int> _stream() =>
+    Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
 void main() {
-  test('rx.Observable.throttleTime', () async {
+  test('Rx.throttleTime', () async {
     await expectLater(
-        _observable().throttleTime(const Duration(milliseconds: 250)).take(3),
+        _stream().throttleTime(const Duration(milliseconds: 250)).take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.trailing', () async {
+  test('Rx.throttleTime.trailing', () async {
     await expectLater(
-        _observable()
+        _stream()
             .throttleTime(const Duration(milliseconds: 250), trailing: true)
             .take(3),
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.reusable', () async {
+  test('Rx.throttleTime.reusable', () async {
     final transformer = ThrottleStreamTransformer<int>(
         (_) => Stream<void>.periodic(const Duration(milliseconds: 250)));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await expectLater(_observable().transform(transformer).take(2),
+    await expectLater(_stream().transform(transformer).take(2),
         emitsInOrder(<dynamic>[1, 4, emitsDone]));
   });
 
-  test('rx.Observable.throttleTime.asBroadcastStream', () async {
-    final stream = _observable()
+  test('Rx.throttleTime.asBroadcastStream', () async {
+    final future = _stream()
         .asBroadcastStream()
         .throttleTime(const Duration(milliseconds: 250))
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
-  test('rx.Observable.throttleTime.error.shouldThrowA', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+  test('Rx.throttleTime.error.shouldThrowA', () async {
+    final streamWithError = Stream<void>.error(Exception())
         .throttleTime(const Duration(milliseconds: 200));
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.throttleTime.error.shouldThrowB', () {
-    expect(() => Observable.just(1).throttleTime(null),
+  test('Rx.throttleTime.error.shouldThrowB', () {
+    expect(() => Stream.value(1).throttleTime(null),
         throwsA(const TypeMatcher<AssertionError>()));
   }, skip: true);
 
-  test('rx.Observable.throttleTime.pause.resume', () async {
+  test('Rx.throttleTime.pause.resume', () async {
     StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
 
-    subscription = _observable()
+    subscription = _stream()
         .throttleTime(const Duration(milliseconds: 250))
         .take(2)
         .listen(controller.add, onDone: () {

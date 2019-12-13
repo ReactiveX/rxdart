@@ -4,29 +4,29 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('Rx.Observable.timestamp', () async {
+  test('Rx.Rx.timestamp', () async {
     const expected = [1, 2, 3];
     var count = 0;
 
-    Observable(Stream.fromIterable(const [1, 2, 3]))
+    Stream.fromIterable(const [1, 2, 3])
         .timestamp()
         .listen(expectAsync1((result) {
           expect(result.value, expected[count++]);
         }, count: expected.length));
   });
 
-  test('Rx.Observable.timestamp.reusable', () async {
+  test('Rx.Rx.timestamp.reusable', () async {
     final transformer = TimestampStreamTransformer<int>();
     const expected = [1, 2, 3];
     var countA = 0, countB = 0;
 
-    Observable(Stream.fromIterable(const [1, 2, 3]))
+    Stream.fromIterable(const [1, 2, 3])
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result.value, expected[countA++]);
         }, count: expected.length));
 
-    Observable(Stream.fromIterable(const [1, 2, 3]))
+    Stream.fromIterable(const [1, 2, 3])
         .transform(transformer)
         .listen(expectAsync1((result) {
           expect(result.value, expected[countB++]);
@@ -58,7 +58,7 @@ void main() {
 
   test('timestampTransformer.error.shouldThrow', () async {
     final streamWithError =
-        ErrorStream<int>(Exception()).transform(TimestampStreamTransformer());
+        Stream<int>.error(Exception()).transform(TimestampStreamTransformer());
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {

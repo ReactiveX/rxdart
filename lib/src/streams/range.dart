@@ -5,9 +5,9 @@ import 'dart:async';
 ///
 /// ### Examples
 ///
-///     new RangeStream(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
+///     RangeStream(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
 ///
-///     new RangeStream(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
+///     RangeStream(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
 class RangeStream extends Stream<int> {
   final Stream<int> _stream;
 
@@ -17,8 +17,8 @@ class RangeStream extends Stream<int> {
       : _stream = _buildStream(startInclusive, endInclusive);
 
   @override
-  StreamSubscription<int> listen(void onData(int event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
+  StreamSubscription<int> listen(void Function(int event) onData,
+          {Function onError, void Function() onDone, bool cancelOnError}) =>
       _stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 

@@ -8,8 +8,8 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new RepeatStream((int repeatCount) =>
-///       Observable.just('repeat index: $repeatCount'), 3)
+///     RepeatStream((int repeatCount) =>
+///       Stream.value('repeat index: $repeatCount'), 3)
 ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
 class RepeatStream<T> extends Stream<T> {
   /// The factory method used at subscription time
@@ -32,9 +32,9 @@ class RepeatStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void onData(T event), {
+    void Function(T event) onData, {
     Function onError,
-    void onDone(),
+    void Function() onDone,
     bool cancelOnError,
   }) {
     _controller ??= StreamController<T>(

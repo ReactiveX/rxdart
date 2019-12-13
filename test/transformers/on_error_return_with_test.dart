@@ -6,16 +6,16 @@ import 'package:test/test.dart';
 void main() {
   const num expected = 0;
 
-  test('rx.Observable.onErrorReturnWith', () async {
-    Observable<num>(ErrorStream<num>(Exception()))
+  test('Rx.onErrorReturnWith', () async {
+    Stream<num>.error(Exception())
         .onErrorReturnWith((dynamic e) => e is StateError ? 1 : 0)
         .listen(expectAsync1((num result) {
       expect(result, expected);
     }));
   });
 
-  test('rx.Observable.onErrorReturnWith.asBroadcastStream', () async {
-    Stream<num> stream = Observable<num>(ErrorStream<num>(Exception()))
+  test('Rx.onErrorReturnWith.asBroadcastStream', () async {
+    final stream = Stream<num>.error(Exception())
         .onErrorReturnWith((dynamic e) => 0)
         .asBroadcastStream();
 
@@ -30,10 +30,10 @@ void main() {
     }));
   });
 
-  test('rx.Observable.onErrorReturnWith.pause.resume', () async {
+  test('Rx.onErrorReturnWith.pause.resume', () async {
     StreamSubscription<num> subscription;
 
-    subscription = Observable<num>(ErrorStream<num>(Exception()))
+    subscription = Stream<num>.error(Exception())
         .onErrorReturnWith((dynamic e) => 0)
         .listen(expectAsync1((num result) {
       expect(result, expected);

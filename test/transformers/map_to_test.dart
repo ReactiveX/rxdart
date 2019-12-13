@@ -4,15 +4,14 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.mapTo', () async {
-    await expectLater(Observable.range(1, 4).mapTo(true),
+  test('Rx.mapTo', () async {
+    await expectLater(Rx.range(1, 4).mapTo(true),
         emitsInOrder(<dynamic>[true, true, true, true, emitsDone]));
   });
 
-  test('rx.Observable.mapTo.shouldThrow', () async {
+  test('Rx.mapTo.shouldThrow', () async {
     await expectLater(
-        Observable.range(1, 4)
-            .concatWith([ErrorStream<int>(Error())]).mapTo(true),
+        Rx.range(1, 4).concatWith([Stream<int>.error(Error())]).mapTo(true),
         emitsInOrder(<dynamic>[
           true,
           true,
@@ -23,19 +22,19 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.mapTo.reusable', () async {
+  test('Rx.mapTo.reusable', () async {
     final transformer = MapToStreamTransformer<int, bool>(true);
-    final observable = Observable.range(1, 4).asBroadcastStream();
+    final stream = Rx.range(1, 4).asBroadcastStream();
 
-    observable.transform(transformer).listen(null);
-    observable.transform(transformer).listen(null);
+    stream.transform(transformer).listen(null);
+    stream.transform(transformer).listen(null);
 
     await expectLater(true, true);
   });
 
-  test('rx.Observable.mapTo.pause.resume', () async {
+  test('Rx.mapTo.pause.resume', () async {
     StreamSubscription<bool> subscription;
-    final stream = Observable.just(1).mapTo(true);
+    final stream = Stream.value(1).mapTo(true);
 
     subscription = stream.listen(expectAsync1((value) {
       expect(value, isTrue);

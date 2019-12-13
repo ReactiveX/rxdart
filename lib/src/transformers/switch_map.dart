@@ -12,10 +12,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([4, 3, 2, 1])
-///       .transform(new SwitchMapStreamTransformer((i) =>
-///         new Stream.fromFuture(
-///           new Future.delayed(new Duration(minutes: i), () => i))
+///     Stream.fromIterable([4, 3, 2, 1])
+///       .transform(SwitchMapStreamTransformer((i) =>
+///         Stream.fromFuture(
+///           Future.delayed(Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
 class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   final StreamTransformer<T, S> _transformer;
@@ -25,14 +25,14 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   ///
   /// The mapped [Stream] will be be listened to and begin
   /// emitting items, and any previously created mapper [Stream]s will stop emitting.
-  SwitchMapStreamTransformer(Stream<S> mapper(T value))
+  SwitchMapStreamTransformer(Stream<S> Function(T value) mapper)
       : _transformer = _buildTransformer(mapper);
 
   @override
   Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> mapper(T value)) {
+      Stream<S> Function(T value) mapper) {
     return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
       StreamController<S> controller;
       StreamSubscription<T> subscription;
@@ -87,4 +87,28 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream with the ability to convert one stream into a new Stream
+/// whenever the source emits an item. Every time a new Stream is created, the
+/// previous Stream is discarded.
+extension SwitchMapExtension<T> on Stream<T> {
+  /// Converts each emitted item into a Stream using the given mapper function.
+  /// The newly created Stream will be be listened to and begin emitting items,
+  /// and any previously created Stream will stop emitting.
+  ///
+  /// The switchMap operator is similar to the flatMap and concatMap methods,
+  /// but it only emits items from the most recently created Stream.
+  ///
+  /// This can be useful when you only want the very latest state from
+  /// asynchronous APIs, for example.
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(4, 1)
+  ///       .switchMap((i) =>
+  ///         TimerStream(i, Duration(minutes: i))
+  ///       .listen(print); // prints 1
+  Stream<S> switchMap<S>(Stream<S> Function(T value) mapper) =>
+      transform(SwitchMapStreamTransformer<T, S>(mapper));
 }

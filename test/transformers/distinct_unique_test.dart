@@ -4,66 +4,66 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group("DistinctUniqueStreamTransformer", () {
-    test("works with the equals and hascode of the class", () async {
-      final observable = Observable.fromIterable(const [
-        _TestObject("a"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a")
+  group('DistinctUniqueStreamTransformer', () {
+    test('works with the equals and hascode of the class', () async {
+      final stream = Stream.fromIterable(const [
+        _TestObject('a'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a')
       ]).distinctUnique();
 
       await expectLater(
-          observable,
+          stream,
           emitsInOrder(<dynamic>[
-            const _TestObject("a"),
-            const _TestObject("b"),
-            const _TestObject("c"),
+            const _TestObject('a'),
+            const _TestObject('b'),
+            const _TestObject('c'),
             emitsDone
           ]));
     });
 
-    test("works with a provided equals and hashcode", () async {
-      final observable = Observable.fromIterable(const [
-        _TestObject("a"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a")
+    test('works with a provided equals and hashcode', () async {
+      final stream = Stream.fromIterable(const [
+        _TestObject('a'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a')
       ]).distinctUnique(
           equals: (a, b) => a.key == b.key, hashCode: (o) => o.key.hashCode);
 
       await expectLater(
-          observable,
+          stream,
           emitsInOrder(<dynamic>[
-            const _TestObject("a"),
-            const _TestObject("b"),
-            const _TestObject("c"),
+            const _TestObject('a'),
+            const _TestObject('b'),
+            const _TestObject('c'),
             emitsDone
           ]));
     });
 
     test(
-        "sends an error to the subscription if an error occurs in the equals or hashmap methods",
+        'sends an error to the subscription if an error occurs in the equals or hashmap methods',
         () async {
-      final observable = Observable.fromIterable(
-              const [_TestObject("a"), _TestObject("b"), _TestObject("c")])
+      final stream = Stream.fromIterable(
+              const [_TestObject('a'), _TestObject('b'), _TestObject('c')])
           .distinctUnique(
               equals: (a, b) => a.key == b.key,
               hashCode: (o) => throw Exception('Catch me if you can!'));
 
-      observable.listen(
+      stream.listen(
         null,
         onError: expectAsync2(
           (Exception e, StackTrace s) => expect(e, isException),
@@ -72,20 +72,20 @@ void main() {
       );
     });
 
-    test("is reusable", () async {
+    test('is reusable', () async {
       const data = [
-        _TestObject("a"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("a"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a"),
-        _TestObject("b"),
-        _TestObject("c"),
-        _TestObject("a")
+        _TestObject('a'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('a'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a'),
+        _TestObject('b'),
+        _TestObject('c'),
+        _TestObject('a')
       ];
 
       final distinctUniqueStreamTransformer =
@@ -100,18 +100,18 @@ void main() {
       await expectLater(
           firstStream,
           emitsInOrder(<dynamic>[
-            const _TestObject("a"),
-            const _TestObject("b"),
-            const _TestObject("c"),
+            const _TestObject('a'),
+            const _TestObject('b'),
+            const _TestObject('c'),
             emitsDone
           ]));
 
       await expectLater(
           secondStream,
           emitsInOrder(<dynamic>[
-            const _TestObject("a"),
-            const _TestObject("b"),
-            const _TestObject("c"),
+            const _TestObject('a'),
+            const _TestObject('b'),
+            const _TestObject('c'),
             emitsDone
           ]));
     });

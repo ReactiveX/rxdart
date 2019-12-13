@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/observables/observable.dart';
-import 'package:rxdart/src/observables/replay_observable.dart';
+import 'package:rxdart/src/rx.dart';
+import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
+import 'package:rxdart/src/transformers/start_with_many.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -22,7 +23,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///
 /// ### Example
 ///
-///     final subject = new ReplaySubject<int>();
+///     final subject = ReplaySubject<int>();
 ///
 ///     subject.add(1);
 ///     subject.add(2);
@@ -34,7 +35,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///
 /// ### Example with maxSize
 ///
-///     final subject = new ReplaySubject<int>(maxSize: 2);
+///     final subject = ReplaySubject<int>(maxSize: 2);
 ///
 ///     subject.add(1);
 ///     subject.add(2);
@@ -43,7 +44,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
-class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
+class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   final Queue<T> _queue;
   final int _maxSize;
 
@@ -53,8 +54,8 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
   /// See also [StreamController.broadcast]
   factory ReplaySubject({
     int maxSize,
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -68,10 +69,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
 
     return ReplaySubject<T>._(
       controller,
-      Observable<T>.defer(
-          () => Observable<T>(controller.stream)
-              .startWithMany(queue.toList(growable: false)),
-          reusable: true),
+      Rx.defer<T>(
+        () => controller.stream.startWithMany(queue.toList(growable: false)),
+        reusable: true,
+      ),
       queue,
       maxSize,
     );
@@ -79,10 +80,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayObservable<T> {
 
   ReplaySubject._(
     StreamController<T> controller,
-    Observable<T> observable,
+    Stream<T> stream,
     this._queue,
     this._maxSize,
-  ) : super(controller, observable);
+  ) : super(controller, stream);
 
   @override
   void onAdd(T event) {

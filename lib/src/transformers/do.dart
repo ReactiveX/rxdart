@@ -26,31 +26,31 @@ import 'package:rxdart/src/utils/notification.dart';
 /// of the [Notification].
 ///
 /// If no callbacks are passed in, a runtime error will be thrown in dev mode
-/// in order to "fail fast" and alert the developer that the transformer should
+/// in order to 'fail fast' and alert the developer that the transformer should
 /// be used or safely removed.
 ///
 /// ### Example
 ///
-///     new Stream.fromIterable([1])
-///         .transform(new DoStreamTransformer(
+///     Stream.fromIterable([1])
+///         .transform(DoStreamTransformer(
 ///           onData: print,
-///           onError: (e, s) => print("Oh no!"),
-///           onDone: () => print("Done")))
-///         .listen(null); // Prints: 1, "Done"
+///           onError: (e, s) => print('Oh no!'),
+///           onDone: () => print('Done')))
+///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
 
   /// Constructs a [StreamTransformer] which will trigger any of the provided
   /// handlers as they occur.
   DoStreamTransformer(
-      {void onCancel(),
-      void onData(T event),
-      void onDone(),
-      void onEach(Notification<T> notification),
+      {dynamic Function() onCancel,
+      void Function(T event) onData,
+      void Function() onDone,
+      void Function(Notification<T> notification) onEach,
       Function onError,
-      void onListen(),
-      void onPause(Future<dynamic> resumeSignal),
-      void onResume()})
+      void Function() onListen,
+      void Function(Future<dynamic> resumeSignal) onPause,
+      void Function() onResume})
       : _transformer = _buildTransformer(
             onCancel: onCancel,
             onData: onData,
@@ -65,14 +65,14 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      {dynamic onCancel(),
-      void onData(T event),
-      void onDone(),
-      void onEach(Notification<T> notification),
+      {dynamic Function() onCancel,
+      void Function(T event) onData,
+      void Function() onDone,
+      void Function(Notification<T> notification) onEach,
       Function onError,
-      void onListen(),
-      void onPause(Future<dynamic> resumeSignal),
-      void onResume()}) {
+      void Function() onListen,
+      void Function(Future<dynamic> resumeSignal) onPause,
+      void Function() onResume}) {
     if (onCancel == null &&
         onData == null &&
         onDone == null &&
@@ -81,7 +81,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         onListen == null &&
         onPause == null &&
         onResume == null) {
-      throw ArgumentError("Must provide at least one handler");
+      throw ArgumentError('Must provide at least one handler');
     }
 
     final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
@@ -217,4 +217,106 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream class with the ability to execute a callback function
+/// at different points in the Stream's lifecycle.
+extension DoExtensions<T> on Stream<T> {
+  /// Invokes the given callback function when the stream subscription is
+  /// cancelled. Often called doOnUnsubscribe or doOnDispose in other
+  /// implementations.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = TimerStream(1, Duration(minutes: 1))
+  ///       .doOnCancel(() => print('hi'));
+  ///       .listen(null);
+  ///
+  ///     subscription.cancel(); // prints 'hi'
+  Stream<T> doOnCancel(void Function() onCancel) =>
+      transform(DoStreamTransformer<T>(onCancel: onCancel));
+
+  /// Invokes the given callback function when the stream emits an item. In
+  /// other implementations, this is called doOnNext.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .doOnData(print)
+  ///       .listen(null); // prints 1, 2, 3
+  Stream<T> doOnData(void Function(T event) onData) =>
+      transform(DoStreamTransformer<T>(onData: onData));
+
+  /// Invokes the given callback function when the stream finishes emitting
+  /// items. In other implementations, this is called doOnComplete(d).
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .doOnDone(() => print('all set'))
+  ///       .listen(null); // prints 'all set'
+  Stream<T> doOnDone(void Function() onDone) =>
+      transform(DoStreamTransformer<T>(onDone: onDone));
+
+  /// Invokes the given callback function when the stream emits data, emits
+  /// an error, or emits done. The callback receives a [Notification] object.
+  ///
+  /// The [Notification] object contains the [Kind] of event (OnData, onDone,
+  /// or OnError), and the item or error that was emitted. In the case of
+  /// onDone, no data is emitted as part of the [Notification].
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///       .doOnEach(print)
+  ///       .listen(null); // prints Notification{kind: OnData, value: 1, errorAndStackTrace: null}, Notification{kind: OnDone, value: null, errorAndStackTrace: null}
+  Stream<T> doOnEach(void Function(Notification<T> notification) onEach) =>
+      transform(DoStreamTransformer<T>(onEach: onEach));
+
+  /// Invokes the given callback function when the stream emits an error.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.error(Exception())
+  ///       .doOnError((error, stacktrace) => print('oh no'))
+  ///       .listen(null); // prints 'Oh no'
+  Stream<T> doOnError(Function onError) =>
+      transform(DoStreamTransformer<T>(onError: onError));
+
+  /// Invokes the given callback function when the stream is first listened to.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///       .doOnListen(() => print('Is someone there?'))
+  ///       .listen(null); // prints 'Is someone there?'
+  Stream<T> doOnListen(void Function() onListen) =>
+      transform(DoStreamTransformer<T>(onListen: onListen));
+
+  /// Invokes the given callback function when the stream subscription is
+  /// paused.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = Stream.fromIterable([1])
+  ///       .doOnPause(() => print('Gimme a minute please'))
+  ///       .listen(null);
+  ///
+  ///     subscription.pause(); // prints 'Gimme a minute please'
+  Stream<T> doOnPause(void Function(Future<dynamic> resumeSignal) onPause) =>
+      transform(DoStreamTransformer<T>(onPause: onPause));
+
+  /// Invokes the given callback function when the stream subscription
+  /// resumes receiving items.
+  ///
+  /// ### Example
+  ///
+  ///     final subscription = Stream.fromIterable([1])
+  ///       .doOnResume(() => print('Let's do this!'))
+  ///       .listen(null);
+  ///
+  ///     subscription.pause();
+  ///     subscription.resume(); 'Let's do this!'
+  Stream<T> doOnResume(void Function() onResume) =>
+      transform(DoStreamTransformer<T>(onResume: onResume));
 }

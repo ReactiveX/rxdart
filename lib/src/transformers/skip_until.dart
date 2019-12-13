@@ -4,11 +4,11 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///       new Observable.just(1),
-///       new TimerStream(2, new Duration(minutes: 2))
+///     MergeStream([
+///       Stream.value(1),
+///       TimerStream(2, Duration(minutes: 2))
 ///     ])
-///     .transform(skipUntilTransformer(new TimerStream(1, new Duration(minutes: 1))))
+///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
@@ -71,4 +71,21 @@ class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream class with the ability to skip events until another
+/// Stream emits an item.
+extension SkipUntilExtension<T> on Stream<T> {
+  /// Starts emitting items only after the given stream emits an item.
+  ///
+  /// ### Example
+  ///
+  ///     MergeStream([
+  ///         Stream.fromIterable([1]),
+  ///         TimerStream(2, Duration(minutes: 2))
+  ///       ])
+  ///       .skipUntil(TimerStream(true, Duration(minutes: 1)))
+  ///       .listen(print); // prints 2;
+  Stream<T> skipUntil<S>(Stream<S> otherStream) =>
+      transform(SkipUntilStreamTransformer<T, S>(otherStream));
 }

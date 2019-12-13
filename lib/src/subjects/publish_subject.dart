@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/observable.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 
 /// Exactly like a normal broadcast StreamController with one exception:
-/// `stream` returns an `Observable` instead of a `Stream`.
+/// this class is both a Stream and Sink.
 ///
 /// This Subject allows sending data, error and done events to the listener.
 ///
@@ -14,7 +13,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///
 /// ### Example
 ///
-///     final subject = new PublishSubject<int>();
+///     final subject = PublishSubject<int>();
 ///
 ///     // observer1 will receive all data and done events
 ///     subject.stream.listen(observer1);
@@ -26,15 +25,15 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///     subject.add(3);
 ///     subject.close();
 class PublishSubject<T> extends Subject<T> {
-  PublishSubject._(StreamController<T> controller, Observable<T> observable)
-      : super(controller, observable);
+  PublishSubject._(StreamController<T> controller, Stream<T> stream)
+      : super(controller, stream);
 
   /// Constructs a [PublishSubject], optionally pass handlers for
   /// [onListen], [onCancel] and a flag to handle events [sync].
   ///
   /// See also [StreamController.broadcast]
   factory PublishSubject(
-      {void onListen(), void onCancel(), bool sync = false}) {
+      {void Function() onListen, void Function() onCancel, bool sync = false}) {
     // ignore: close_sinks
     final controller = StreamController<T>.broadcast(
       onListen: onListen,
@@ -44,7 +43,7 @@ class PublishSubject<T> extends Subject<T> {
 
     return PublishSubject<T>._(
       controller,
-      Observable<T>(controller.stream),
+      controller.stream,
     );
   }
 }

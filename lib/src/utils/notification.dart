@@ -52,10 +52,10 @@ class Notification<T> {
       return true;
     }
     return other is Notification &&
-        this.kind == other.kind &&
-        this.error == other.error &&
-        this.stackTrace == other.stackTrace &&
-        this.value == other.value;
+        kind == other.kind &&
+        error == other.error &&
+        stackTrace == other.stackTrace &&
+        value == other.value;
   }
 
   @override

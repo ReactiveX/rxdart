@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/observable.dart';
-
 /// The base for all Subjects. If you'd like to create a new Subject,
 /// extend from this class.
 ///
@@ -12,16 +10,16 @@ import 'package:rxdart/src/observables/observable.dart';
 /// Please see `PublishSubject` for the simplest example of how to
 /// extend from this class, or `BehaviorSubject` for a slightly more
 /// complex example.
-abstract class Subject<T> extends Observable<T> implements StreamController<T> {
+abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   final StreamController<T> _controller;
 
   bool _isAddingStreamItems = false;
 
   /// Constructs a [Subject] which wraps the provided [controller].
   /// This constructor is applicable only for classes that extend [Subject].
-  Subject(StreamController<T> controller, Observable<T> observable)
-      : this._controller = controller,
-        super(observable);
+  Subject(StreamController<T> controller, Stream<T> stream)
+      : _controller = controller,
+        super(stream);
 
   @override
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
@@ -30,34 +28,34 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   ControllerCallback get onListen => _controller.onListen;
 
   @override
-  set onListen(void onListenHandler()) {
+  set onListen(void Function() onListenHandler) {
     _controller.onListen = onListenHandler;
   }
 
   @override
-  Observable<T> get stream => this;
+  Stream<T> get stream => this;
 
   @override
   ControllerCallback get onPause =>
-      throw UnsupportedError("Subjects do not support pause callbacks");
+      throw UnsupportedError('Subjects do not support pause callbacks');
 
   @override
-  set onPause(void onPauseHandler()) =>
-      throw UnsupportedError("Subjects do not support pause callbacks");
+  set onPause(void Function() onPauseHandler) =>
+      throw UnsupportedError('Subjects do not support pause callbacks');
 
   @override
   ControllerCallback get onResume =>
-      throw UnsupportedError("Subjects do not support resume callbacks");
+      throw UnsupportedError('Subjects do not support resume callbacks');
 
   @override
-  set onResume(void onResumeHandler()) =>
-      throw UnsupportedError("Subjects do not support resume callbacks");
+  set onResume(void Function() onResumeHandler) =>
+      throw UnsupportedError('Subjects do not support resume callbacks');
 
   @override
   ControllerCancelCallback get onCancel => _controller.onCancel;
 
   @override
-  set onCancel(void onCancelHandler()) {
+  set onCancel(void Function() onCancelHandler) {
     _controller.onCancel = onCancelHandler;
   }
 
@@ -77,7 +75,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   void addError(Object error, [StackTrace stackTrace]) {
     if (_isAddingStreamItems) {
       throw StateError(
-          "You cannot add an error while items are being added from addStream");
+          'You cannot add an error while items are being added from addStream');
     }
 
     _addError(error, stackTrace);
@@ -98,7 +96,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   Future<dynamic> addStream(Stream<T> source, {bool cancelOnError = true}) {
     if (_isAddingStreamItems) {
       throw StateError(
-          "You cannot add items while items are being added from addStream");
+          'You cannot add items while items are being added from addStream');
     }
 
     final completer = Completer<T>();
@@ -125,7 +123,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   void add(T event) {
     if (_isAddingStreamItems) {
       throw StateError(
-          "You cannot add items while items are being added from addStream");
+          'You cannot add items while items are being added from addStream');
     }
 
     _add(event);
@@ -146,7 +144,7 @@ abstract class Subject<T> extends Observable<T> implements StreamController<T> {
   Future<dynamic> close() {
     if (_isAddingStreamItems) {
       throw StateError(
-          "You cannot close the subject while items are being added from addStream");
+          'You cannot close the subject while items are being added from addStream');
     }
 
     return _controller.close();

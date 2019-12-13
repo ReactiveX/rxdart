@@ -5,10 +5,10 @@ import 'package:rxdart/src/streams/repeat.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.repeat', () async {
+  test('Rx.repeat', () async {
     const retries = 3;
 
-    await expectLater(Observable.repeat(_getRepeatStream('A'), retries),
+    await expectLater(Rx.repeat(_getRepeatStream('A'), retries),
         emitsInOrder(<dynamic>['A0', 'A1', 'A2', emitsDone]));
   });
 
@@ -57,10 +57,10 @@ void main() {
   });
 
   test('RepeatStream.error.shouldThrow', () async {
-    final observableWithError = RepeatStream(_getErroneusRepeatStream('A'), 2);
+    final streamWithError = RepeatStream(_getErroneusRepeatStream('A'), 2);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<dynamic>[
           'A0',
           emitsError(TypeMatcher<Error>()),
@@ -94,7 +94,7 @@ Stream<String> Function(int) _getRepeatStream(String symbol) =>
 
 Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
     (int repeatIndex) {
-      return Observable.just('A0')
+      return Stream.value('A0')
           // Emit the error
-          .concatWith([ErrorStream<String>(Error())]);
+          .concatWith([Stream<String>.error(Error())]);
     };

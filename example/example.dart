@@ -23,7 +23,7 @@ void main(List<String> arguments) {
   // starting value for the [scan] method
   const seed = IndexedPair(1, 1, 0);
 
-  Observable
+  Rx
           // amount of numbers to compute
           .range(1, n)
       // accumulator: computes a new accumulated

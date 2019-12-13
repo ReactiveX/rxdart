@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:collection';
 
-/// Create an `Observable` which implements a [HashSet] under the hood, using
+/// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
 ///
-/// The `Observable` will only emit an event, if that event is not yet found
+/// The [Stream] will only emit an event, if that event is not yet found
 /// within the underlying [HashSet].
 ///
 /// ###  Example
 ///
-///     new Stream.fromIterable([1, 2, 1, 2, 1, 2, 3, 2, 1])
+///     Stream.fromIterable([1, 2, 1, 2, 1, 2, 3, 2, 1])
 ///         .listen((event) => print(event));
 ///
 /// will emit:
@@ -28,14 +28,15 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// [Stream] as if they were processed through a [HashSet].
   ///
   /// See [HashSet] for a more detailed explanation.
-  DistinctUniqueStreamTransformer({bool equals(T e1, T e2), int hashCode(T e)})
+  DistinctUniqueStreamTransformer(
+      {bool Function(T e1, T e2) equals, int Function(T e) hashCode})
       : _transformer = _buildTransformer(equals, hashCode);
 
   @override
   Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
-      bool equals(T e1, T e2), int hashCode(T e)) {
+      bool Function(T e1, T e2) equals, int Function(T e) hashCode) {
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       var collection = HashSet<T>(equals: equals, hashCode: hashCode);
       StreamController<T> controller;
@@ -67,4 +68,28 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream class with the ability to skip items that have previously
+/// been emitted.
+extension DistinctUniqueExtension<T> on Stream<T> {
+  /// WARNING: More commonly known as distinct in other Rx implementations.
+  /// Creates a Stream where data events are skipped if they have already
+  /// been emitted before.
+  ///
+  /// Equality is determined by the provided equals and hashCode methods.
+  /// If these are omitted, the '==' operator and hashCode on the last provided
+  /// data element are used.
+  ///
+  /// The returned stream is a broadcast stream if this stream is. If a
+  /// broadcast stream is listened to more than once, each subscription will
+  /// individually perform the equals and hashCode tests.
+  ///
+  /// [Interactive marble diagram](http://rxmarbles.com/#distinct)
+  Stream<T> distinctUnique({
+    bool Function(T e1, T e2) equals,
+    int Function(T e) hashCode,
+  }) =>
+      transform(DistinctUniqueStreamTransformer<T>(
+          equals: equals, hashCode: hashCode));
 }

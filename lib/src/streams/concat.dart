@@ -10,10 +10,10 @@ import 'dart:async';
 ///
 /// ### Example
 ///
-///     new ConcatStream([
-///       new Stream.fromIterable([1]),
-///       new TimerStream(2, new Duration(days: 1)),
-///       new Stream.fromIterable([3])
+///     ConcatStream([
+///       Stream.fromIterable([1]),
+///       TimerStream(2, Duration(days: 1)),
+///       Stream.fromIterable([3])
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
 class ConcatStream<T> extends Stream<T> {
@@ -27,8 +27,12 @@ class ConcatStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
+  StreamSubscription<T> listen(
+    void Function(T event) onData, {
+    Function onError,
+    void Function() onDone,
+    bool cancelOnError,
+  }) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
@@ -75,4 +79,20 @@ class ConcatStream<T> extends Stream<T> {
 
     return controller;
   }
+}
+
+/// Extends the Stream class with the ability to concatenate one stream with
+/// another.
+extension ConcatExtensions<T> on Stream<T> {
+  /// Returns a Stream that emits all items from the current Stream,
+  /// then emits all items from the given streams, one after the next.
+  ///
+  /// ### Example
+  ///
+  ///     TimerStream(1, Duration(seconds: 10))
+  ///         .concatWith([Stream.fromIterable([2])])
+  ///         .listen(print); // prints 1, 2
+  Stream<T> concatWith(Iterable<Stream<T>> other) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => ConcatStream<T>([stream, ...other])));
 }

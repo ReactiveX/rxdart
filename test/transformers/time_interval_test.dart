@@ -6,11 +6,11 @@ import 'package:test/test.dart';
 Stream<int> _getStream() => Stream<int>.fromIterable(<int>[0, 1, 2]);
 
 void main() {
-  test('rx.Observable.timeInterval', () async {
+  test('Rx.timeInterval', () async {
     const expectedOutput = [0, 1, 2];
     var count = 0;
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((result) {
@@ -21,12 +21,12 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.timeInterval.reusable', () async {
+  test('Rx.timeInterval.reusable', () async {
     final transformer = TimeIntervalStreamTransformer<int>();
     const expectedOutput = [0, 1, 2];
     var countA = 0, countB = 0;
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .transform(transformer)
         .listen(expectAsync1((result) {
@@ -36,7 +36,7 @@ void main() {
               result.interval.inMicroseconds >= 1000 /* microseconds! */, true);
         }, count: expectedOutput.length));
 
-    Observable(_getStream())
+    _getStream()
         .interval(const Duration(milliseconds: 1))
         .transform(transformer)
         .listen(expectAsync1((result) {
@@ -47,8 +47,9 @@ void main() {
         }, count: expectedOutput.length));
   });
 
-  test('rx.Observable.timeInterval.asBroadcastStream', () async {
-    final stream = Observable(_getStream().asBroadcastStream())
+  test('Rx.timeInterval.asBroadcastStream', () async {
+    final stream = _getStream()
+        .asBroadcastStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval();
 
@@ -59,23 +60,23 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('rx.Observable.timeInterval.error.shouldThrow', () async {
-    final observableWithError = Observable(ErrorStream<void>(Exception()))
+  test('Rx.timeInterval.error.shouldThrow', () async {
+    final streamWithError = Stream<void>.error(Exception())
         .interval(const Duration(milliseconds: 1))
         .timeInterval();
 
-    observableWithError.listen(null,
+    streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
   });
 
-  test('rx.Observable.timeInterval.pause.resume', () async {
+  test('Rx.timeInterval.pause.resume', () async {
     StreamSubscription<TimeInterval<int>> subscription;
     const expectedOutput = [0, 1, 2];
     var count = 0;
 
-    subscription = Observable(_getStream())
+    subscription = _getStream()
         .interval(const Duration(milliseconds: 1))
         .timeInterval()
         .listen(expectAsync1((result) {

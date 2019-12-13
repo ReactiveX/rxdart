@@ -20,9 +20,8 @@ void main() {
   ];
 
   final result = querySelector('#result');
-  final keyUp = Observable<KeyboardEvent>(document.onKeyUp);
 
-  keyUp
+  document.onKeyUp
       // Use map() to get the keyCode
       .map((event) => event.keyCode)
       // Use bufferCount() to remember the last 10 keyCodes

@@ -13,12 +13,12 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Example
 ///
-///     new RetryStream(() { new Stream.fromIterable([1]); })
+///     RetryStream(() { Stream.fromIterable([1]); })
 ///         .listen((i) => print(i)); // Prints 1
 ///
-///     new RetryStream(() {
-///          new Stream.fromIterable([1])
-///             .concatWith([new ErrorStream(new Error())]);
+///     RetryStream(() {
+///          Stream.fromIterable([1])
+///             .concatWith([ErrorStream(Error())]);
 ///        }, 1)
 ///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
@@ -31,7 +31,7 @@ class RetryStream<T> extends Stream<T> {
   int _retryStep = 0;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
-  List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
+  final _errors = <ErrorAndStacktrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created by the provided factory method) the specified number
@@ -41,9 +41,9 @@ class RetryStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void onData(T event), {
+    void Function(T event) onData, {
     Function onError,
-    void onDone(),
+    void Function() onDone,
     bool cancelOnError,
   }) {
     void Function([int]) retry;

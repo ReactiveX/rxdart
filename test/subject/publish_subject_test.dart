@@ -110,7 +110,8 @@ void main() {
       final subject = PublishSubject<int>();
 
       await expectLater(
-          subject.addStream(ErrorStream<int>(Exception()), cancelOnError: true),
+          subject.addStream(Stream<int>.error(Exception()),
+              cancelOnError: true),
           throwsException);
 
       scheduleMicrotask(() => subject.add(1));

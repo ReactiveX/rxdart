@@ -6,17 +6,16 @@ import 'dart:async';
 /// Can be cleared or disposed. When disposed, cannot be used again.
 /// ### Example
 /// // init your subscriptions
-/// composite.add(observable1.listen(listener1))
-/// ..add(observable2.listen(listener1))
-/// ..add(observable3.listen(listener1));
+/// composite.add(stream1.listen(listener1))
+/// ..add(stream2.listen(listener1))
+/// ..add(stream3.listen(listener1));
 ///
 /// // clear them all at once
 /// composite.clear();
 class CompositeSubscription {
   bool _isDisposed = false;
 
-  final List<StreamSubscription<dynamic>> _subscriptionsList =
-      List<StreamSubscription<dynamic>>();
+  final List<StreamSubscription<dynamic>> _subscriptionsList = [];
 
   /// Checks if this composite is disposed. If it is, the composite can't be used again
   /// and will throw an error if you try to add more subscriptions to it.
@@ -27,7 +26,7 @@ class CompositeSubscription {
   /// Throws an exception if this composite was disposed
   StreamSubscription<T> add<T>(StreamSubscription<T> subscription) {
     if (isDisposed) {
-      throw ("This composite was disposed, try to use new instance instead");
+      throw ('This composite was disposed, try to use new instance instead');
     }
     _subscriptionsList.add(subscription);
     return subscription;

@@ -14,10 +14,10 @@ import 'package:rxdart/src/streams/concat.dart';
 ///
 /// ### Example
 ///
-///     new ConcatEagerStream([
-///       new Stream.fromIterable([1]),
-///       new TimerStream(2, new Duration(days: 1)),
-///       new Stream.fromIterable([3])
+///     ConcatEagerStream([
+///       Stream.fromIterable([1]),
+///       TimerStream(2, Duration(days: 1)),
+///       Stream.fromIterable([3])
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
 class ConcatEagerStream<T> extends Stream<T> {
@@ -32,8 +32,8 @@ class ConcatEagerStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event) onData,
+      {Function onError, void Function() onDone, bool cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }

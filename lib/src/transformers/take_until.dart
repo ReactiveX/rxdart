@@ -1,16 +1,16 @@
 import 'dart:async';
 
-/// Returns the values from the source observable sequence until the other
+/// Returns the values from the source stream sequence until the other
 /// stream sequence produces a value.
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///         new Stream.fromIterable([1]),
-///         new TimerStream(2, new Duration(minutes: 1))
+///     MergeStream([
+///         Stream.fromIterable([1]),
+///         TimerStream(2, Duration(minutes: 1))
 ///       ])
-///       .transform(new TakeUntilStreamTransformer(
-///         new TimerStream(3, new Duration(seconds: 10))))
+///       .transform(TakeUntilStreamTransformer(
+///         TimerStream(3, Duration(seconds: 10))))
 ///       .listen(print); // prints 1
 class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
@@ -26,7 +26,7 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   static StreamTransformer<T, T> _buildTransformer<T, S>(
       Stream<S> otherStream) {
     if (otherStream == null) {
-      throw ArgumentError("take until stream cannot be null");
+      throw ArgumentError('take until stream cannot be null');
     }
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
@@ -63,4 +63,22 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
       return controller.stream.listen(null);
     });
   }
+}
+
+/// Extends the Stream class with the ability receive events from the source
+/// Stream until another Stream produces a value.
+extension TakeUntilExtension<T> on Stream<T> {
+  /// Returns the values from the source Stream sequence until the other Stream
+  /// sequence produces a value.
+  ///
+  /// ### Example
+  ///
+  ///     MergeStream([
+  ///         Stream.fromIterable([1]),
+  ///         TimerStream(2, Duration(minutes: 1))
+  ///       ])
+  ///       .takeUntil(TimerStream(3, Duration(seconds: 10)))
+  ///       .listen(print); // prints 1
+  Stream<T> takeUntil<S>(Stream<S> otherStream) =>
+      transform(TakeUntilStreamTransformer<T, S>(otherStream));
 }

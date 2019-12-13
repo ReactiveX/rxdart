@@ -5,9 +5,9 @@ import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('rx.Observable.retryWhen', () {
+  test('Rx.retryWhen', () {
     expect(
-      Observable.retryWhen(_sourceStream(3), _alwaysThrow),
+      Rx.retryWhen(_sourceStream(3), _alwaysThrow),
       emitsInOrder(<dynamic>[0, 1, 2, emitsDone]),
     );
   });
@@ -64,21 +64,19 @@ void main() {
   });
 
   test('RetryWhenStream.error.shouldThrow', () {
-    final observableWithError =
-        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+    final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
-        observableWithError,
+        streamWithError,
         emitsInOrder(
             <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
-    final observableWithError =
-        RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
+    final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
-        observableWithError,
+        streamWithError,
         emitsInOrder(<dynamic>[
           emitsError(
             predicate<RetryError>((a) {
@@ -108,15 +106,15 @@ void main() {
 
 Stream<int> Function() _sourceStream(int i, [int throwAt]) {
   return throwAt == null
-      ? () => Observable.fromIterable(range(i))
-      : () => Observable.fromIterable(range(i))
-          .map((i) => i == throwAt ? throw i : i);
+      ? () => Stream.fromIterable(range(i))
+      : () =>
+          Stream.fromIterable(range(i)).map((i) => i == throwAt ? throw i : i);
 }
 
 Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
-    Observable<void>.error(Error());
+    Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => Observable.just('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;
@@ -126,30 +124,16 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
       count++;
 
       // Emit first item
-      return Observable.just(1)
+      return Stream.value(1)
           // Emit the error
-          .concatWith([ErrorStream<int>(Error())])
+          .concatWith([Stream<int>.error(Error())])
           // Emit an extra item, testing that it is not included
-          .concatWith([Observable.just(1)]);
+          .concatWith([Stream.value(1)]);
     } else {
-      return Observable.just(2);
+      return Stream.value(2);
     }
   };
 }
-
-// Copyright 2013 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 /// Returns an [Iterable] sequence of [int]s.
 ///

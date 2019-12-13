@@ -1,15 +1,15 @@
 import 'dart:async';
 
-/// Flattens the items emitted by the given streams into a single Observable
+/// Flattens the items emitted by the given streams into a single Stream
 /// sequence.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#merge)
 ///
 /// ### Example
 ///
-///     new MergeStream([
-///       new TimerStream(1, new Duration(days: 10)),
-///       new Stream.fromIterable([2])
+///     MergeStream([
+///       TimerStream(1, Duration(days: 10)),
+///       Stream.fromIterable([2])
 ///     ])
 ///     .listen(print); // prints 2, 1
 class MergeStream<T> extends Stream<T> {
@@ -21,8 +21,8 @@ class MergeStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void onData(T event),
-          {Function onError, void onDone(), bool cancelOnError}) =>
+  StreamSubscription<T> listen(void Function(T event) onData,
+          {Function onError, void Function() onDone, bool cancelOnError}) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
@@ -67,4 +67,20 @@ class MergeStream<T> extends Stream<T> {
 
     return controller;
   }
+}
+
+/// Extends the Stream class with the ability to merge one stream with another.
+extension MergeExtension<T> on Stream<T> {
+  /// Combines the items emitted by multiple streams into a single stream of
+  /// items. The items are emitted in the order they are emitted by their
+  /// sources.
+  ///
+  /// ### Example
+  ///
+  ///     TimerStream(1, Duration(seconds: 10))
+  ///         .mergeWith([Stream.fromIterable([2])])
+  ///         .listen(print); // prints 2, 1
+  Stream<T> mergeWith(Iterable<Stream<T>> streams) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => MergeStream<T>([stream, ...streams])));
 }

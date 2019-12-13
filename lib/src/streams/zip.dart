@@ -1,16 +1,16 @@
 import 'dart:async';
 
-/// Merges the specified streams into one observable sequence using the given
-/// zipper Function whenever all of the observable sequences have produced
+/// Merges the specified streams into one stream sequence using the given
+/// zipper Function whenever all of the stream sequences have produced
 /// an element at a corresponding index.
 ///
 /// It applies this function in strict sequence, so the first item emitted by
-/// the new Observable will be the result of the function applied to the first
-/// item emitted by Observable #1 and the first item emitted by Observable #2;
-/// the second item emitted by the new zip-Observable will be the result of
-/// the function applied to the second item emitted by Observable #1 and the
-/// second item emitted by Observable #2; and so forth. It will only emit as
-/// many items as the number of items emitted by the source Observable that
+/// the new Stream will be the result of the function applied to the first
+/// item emitted by Stream #1 and the first item emitted by Stream #2;
+/// the second item emitted by the new ZipStream will be the result of
+/// the function applied to the second item emitted by Stream #1 and the
+/// second item emitted by Stream #2; and so forth. It will only emit as
+/// many items as the number of items emitted by the source Stream that
 /// emits the fewest items.
 ///
 /// [Interactive marble diagram](http://rxmarbles.com/#zip)
@@ -43,7 +43,7 @@ class ZipStream<T, R> extends StreamView<R> {
   /// an element at a corresponding index.
   ZipStream(
     Iterable<Stream<T>> streams,
-    R zipper(List<T> values),
+    R Function(List<T> values) zipper,
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
         assert(zipper != null, 'must provide a zipper function'),
@@ -64,7 +64,7 @@ class ZipStream<T, R> extends StreamView<R> {
   static ZipStream<dynamic, R> zip2<A, B, R>(
     Stream<A> streamOne,
     Stream<B> streamTwo,
-    R zipper(A a, B b),
+    R Function(A a, B b) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamOne, streamTwo],
@@ -79,7 +79,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<A> streamA,
     Stream<B> streamB,
     Stream<C> streamC,
-    R zipper(A a, B b, C c),
+    R Function(A a, B b, C c) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC],
@@ -101,7 +101,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<B> streamB,
     Stream<C> streamC,
     Stream<D> streamD,
-    R zipper(A a, B b, C c, D d),
+    R Function(A a, B b, C c, D d) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC, streamD],
@@ -125,7 +125,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<C> streamC,
     Stream<D> streamD,
     Stream<E> streamE,
-    R zipper(A a, B b, C c, D d, E e),
+    R Function(A a, B b, C c, D d, E e) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE],
@@ -151,7 +151,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<D> streamD,
     Stream<E> streamE,
     Stream<F> streamF,
-    R zipper(A a, B b, C c, D d, E e, F f),
+    R Function(A a, B b, C c, D d, E e, F f) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF],
@@ -179,7 +179,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<E> streamE,
     Stream<F> streamF,
     Stream<G> streamG,
-    R zipper(A a, B b, C c, D d, E e, F f, G g),
+    R Function(A a, B b, C c, D d, E e, F f, G g) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG],
@@ -209,7 +209,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<F> streamF,
     Stream<G> streamG,
     Stream<H> streamH,
-    R zipper(A a, B b, C c, D d, E e, F f, G g, H h),
+    R Function(A a, B b, C c, D d, E e, F f, G g, H h) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [streamA, streamB, streamC, streamD, streamE, streamF, streamG, streamH],
@@ -241,7 +241,7 @@ class ZipStream<T, R> extends StreamView<R> {
     Stream<G> streamG,
     Stream<H> streamH,
     Stream<I> streamI,
-    R zipper(A a, B b, C c, D d, E e, F f, G g, H h, I i),
+    R Function(A a, B b, C c, D d, E e, F f, G g, H h, I i) zipper,
   ) {
     return ZipStream<dynamic, R>(
       [
@@ -273,7 +273,7 @@ class ZipStream<T, R> extends StreamView<R> {
 
   static StreamController<R> _buildController<T, R>(
     Iterable<Stream<T>> streams,
-    R zipper(List<T> values),
+    R Function(List<T> values) zipper,
   ) {
     {
       StreamController<R> controller;
@@ -368,4 +368,19 @@ class _Window<T> {
 
     return List.unmodifiable(_values);
   }
+}
+
+/// Extends the Stream class with the ability to zip one Stream with another.
+extension ZipWithExtension<T> on Stream<T> {
+  /// Returns a Stream that combines the current stream together with another
+  /// stream using a given zipper function.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable([1])
+  ///         .zipWith(Stream.fromIterable([2]), (one, two) => one + two)
+  ///         .listen(print); // prints 3
+  Stream<R> zipWith<S, R>(Stream<S> other, R Function(T t, S s) zipper) =>
+      transform(StreamTransformer.fromBind(
+          (stream) => ZipStream.zip2(stream, other, zipper)));
 }

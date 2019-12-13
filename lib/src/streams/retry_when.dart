@@ -12,20 +12,20 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Basic Example
 /// ```dart
-/// new RetryWhenStream<int>(
-///   () => new Stream<int>.fromIterable(<int>[1]),
+/// RetryWhenStream<int>(
+///   () => Stream<int>.fromIterable(<int>[1]),
 ///   (dynamic error, StackTrace s) => throw error,
 /// ).listen(print); // Prints 1
 /// ```
 ///
 /// ### Periodic Example
 /// ```dart
-/// new RetryWhenStream<int>(
-///   () => new Observable<int>
+/// RetryWhenStream<int>(
+///   () => Stream<int>
 ///       .periodic(const Duration(seconds: 1), (int i) => i)
 ///       .map((int i) => i == 2 ? throw 'exception' : i),
 ///   (dynamic e, StackTrace s) {
-///     return new Observable<String>
+///     return Rx<String>
 ///         .timer('random value', const Duration(milliseconds: 200));
 ///   },
 /// ).take(4).listen(print); // Prints 0, 1, 0, 1
@@ -34,8 +34,8 @@ import 'package:rxdart/src/streams/utils.dart';
 /// ### Complex Example
 /// ```dart
 /// bool errorHappened = false;
-/// new RetryWhenStream(
-///   () => new Observable
+/// RetryWhenStream(
+///   () => Stream
 ///       .periodic(const Duration(seconds: 1), (i) => i)
 ///       .map((i) {
 ///         if (i == 3 && !errorHappened) {
@@ -49,9 +49,9 @@ import 'package:rxdart/src/streams/utils.dart';
 ///   (e, s) {
 ///     errorHappened = true;
 ///     if (e == 'We can take this. Please restart.') {
-///       return new Observable.just('Ok. Here you go!');
+///       return Stream.value('Ok. Here you go!');
 ///     } else {
-///       return new Observable.error(e);
+///       return Stream.error(e);
 ///     }
 ///   },
 /// ).listen(
@@ -67,7 +67,7 @@ class RetryWhenStream<T> extends Stream<T> {
   final RetryWhenStreamFactory retryWhenFactory;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
-  List<ErrorAndStacktrace> _errors = <ErrorAndStacktrace>[];
+  final _errors = <ErrorAndStacktrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created by the provided factory method).
@@ -77,9 +77,9 @@ class RetryWhenStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void onData(T event), {
+    void Function(T event) onData, {
     Function onError,
-    void onDone(),
+    void Function() onDone,
     bool cancelOnError,
   }) {
     _controller ??= StreamController<T>(

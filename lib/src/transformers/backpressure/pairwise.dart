@@ -5,7 +5,7 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///
 /// ### Example
 ///
-///     Observable.range(1, 4)
+///     Rx.range(1, 4)
 ///       .pairwise()
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
 class PairwiseStreamTransformer<T>
@@ -17,4 +17,17 @@ class PairwiseStreamTransformer<T>
             startBufferEvery: 1,
             closeWindowWhen: (Iterable<T> queue) => queue.length == 2,
             dispatchOnClose: false);
+}
+
+/// Extends the Stream class with the ability to emit the nth and n-1th events
+/// as a pair
+extension PairwiseExtension<T> on Stream<T> {
+  /// Emits the n-th and n-1th events as a pair..
+  ///
+  /// ### Example
+  ///
+  ///     RangeStream(1, 4)
+  ///       .pairwise()
+  ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
+  Stream<Iterable<T>> pairwise() => transform(PairwiseStreamTransformer());
 }

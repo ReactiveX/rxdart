@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:rxdart/src/observables/observable.dart';
-import 'package:rxdart/src/observables/value_observable.dart';
+import 'package:rxdart/src/rx.dart';
+import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
@@ -22,7 +22,7 @@ import 'package:rxdart/src/transformers/start_with_error.dart';
 ///
 /// ### Example
 ///
-///     final subject = new BehaviorSubject<int>();
+///     final subject = BehaviorSubject<int>();
 ///
 ///     subject.add(1);
 ///     subject.add(2);
@@ -34,27 +34,27 @@ import 'package:rxdart/src/transformers/start_with_error.dart';
 ///
 /// ### Example with seed value
 ///
-///     final subject = new BehaviorSubject<int>.seeded(1);
+///     final subject = BehaviorSubject<int>.seeded(1);
 ///
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1
 ///     subject.stream.listen(print); // prints 1
-class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
+class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   _Wrapper<T> _wrapper;
 
   BehaviorSubject._(
     StreamController<T> controller,
-    Observable<T> observable,
+    Stream<T> stream,
     this._wrapper,
-  ) : super(controller, observable);
+  ) : super(controller, stream);
 
   /// Constructs a [BehaviorSubject], optionally pass handlers for
   /// [onListen], [onCancel] and a flag to handle events [sync].
   ///
   /// See also [StreamController.broadcast]
   factory BehaviorSubject({
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -68,7 +68,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
 
     return BehaviorSubject<T>._(
         controller,
-        Observable<T>.defer(_deferStream(wrapper, controller), reusable: true),
+        Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
         wrapper);
   }
 
@@ -80,8 +80,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
   /// See also [StreamController.broadcast]
   factory BehaviorSubject.seeded(
     T seedValue, {
-    void onListen(),
-    void onCancel(),
+    void Function() onListen,
+    void Function() onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -94,9 +94,10 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
     final wrapper = _Wrapper<T>.seeded(seedValue);
 
     return BehaviorSubject<T>._(
-        controller,
-        Observable<T>.defer(_deferStream(wrapper, controller), reusable: true),
-        wrapper);
+      controller,
+      Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
+      wrapper,
+    );
   }
 
   static Stream<T> Function() _deferStream<T>(
@@ -121,7 +122,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueObservable<T> {
       _wrapper.setError(error, stackTrace);
 
   @override
-  ValueObservable<T> get stream => this;
+  ValueStream<T> get stream => this;
 
   @override
   bool get hasValue => _wrapper.latestIsValue;

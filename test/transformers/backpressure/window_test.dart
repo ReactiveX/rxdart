@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Observable<int> getStream(int n) => Observable<int>((int n) async* {
-      var k = 0;
+Stream<int> getStream(int n) async* {
+  var k = 0;
 
-      while (k < n) {
-        await Future<Null>.delayed(const Duration(milliseconds: 100));
+  while (k < n) {
+    await Future<Null>.delayed(const Duration(milliseconds: 100));
 
-        yield k++;
-      }
-    }(n));
+    yield k++;
+  }
+}
 
 void main() {
-  test('rx.Observable.window', () async {
+  test('Rx.window', () async {
     await expectLater(
         getStream(4)
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
@@ -27,9 +27,9 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.sampleBeforeEvent.shouldEmit', () async {
+  test('Rx.window.sampleBeforeEvent.shouldEmit', () async {
     await expectLater(
-        Observable.fromFuture(
+        Stream.fromFuture(
                 Future<Null>.delayed(const Duration(milliseconds: 200))
                     .then((_) => 'end'))
             .startWith('start')
@@ -46,13 +46,13 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.shouldClose', () async {
+  test('Rx.window.shouldClose', () async {
     final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
 
     scheduleMicrotask(controller.close);
 
     await expectLater(
-        Observable(controller.stream)
+        controller.stream
             .window(Stream<Null>.periodic(const Duration(seconds: 3)))
             .asyncMap((stream) => stream.toList())
             .take(1),
@@ -62,7 +62,7 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.reusable', () async {
+  test('Rx.window.reusable', () async {
     final transformer = WindowStreamTransformer<int>((_) =>
         Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(3)
@@ -89,28 +89,28 @@ void main() {
         ]));
   });
 
-  test('rx.Observable.window.asBroadcastStream', () async {
-    final stream = getStream(4)
+  test('Rx.window.asBroadcastStream', () async {
+    final future = getStream(4)
         .asBroadcastStream()
         .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
             .take(10)
             .asBroadcastStream())
-        .ignoreElements();
+        .drain<void>();
 
     // listen twice on same stream
-    await expectLater(stream, emitsDone);
-    await expectLater(stream, emitsDone);
+    await expectLater(future, completes);
+    await expectLater(future, completes);
   });
 
-  test('rx.Observable.window.error.shouldThrowA', () async {
+  test('Rx.window.error.shouldThrowA', () async {
     await expectLater(
-        Observable(ErrorStream<Null>(Exception()))
+        Stream<Null>.error(Exception())
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
 
-  test('rx.Observable.window.error.shouldThrowB', () async {
-    await expectLater(Observable.fromIterable(const [1, 2, 3, 4]).window(null),
+  test('Rx.window.error.shouldThrowB', () async {
+    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
         emitsError(isArgumentError));
   });
 }
