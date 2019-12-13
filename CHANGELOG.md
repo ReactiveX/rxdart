@@ -1,3 +1,7 @@
+## 0.23.1
+
+  * Fix API doc links in README
+
 ## 0.23.0
 
   * Extension Methods replace `Observable` class!
