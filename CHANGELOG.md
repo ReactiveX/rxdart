@@ -1,3 +1,31 @@
+## 0.23.0
+
+  * Extension Methods replace `Observable` class!
+  * Please upgrade existing code by using the rxdart_codemod package
+  * Remove the Observable class. With extensions, you no longer need to wrap Streams in a [Stream]!
+    * Convert all factories to static constructors to aid in discoverability of Stream classes
+    * Move all factories to an `Rx` class.
+    * Remove `Observable.just`, use `Stream.value`
+    * Remove `Observable.error`, use `Stream.error`
+    * Remove all tests that check base Stream methods
+    * Subjects and *Observable classes extend Stream instead of base Observable
+    * Rename *Observable to *Stream to reflect the fact they're just Streams.
+      * `ValueObservable` -> `ValueStream`
+      * `ReplayObservable` -> `ReplayStream`
+      * `ConnectableObservable` -> `ConnectableStream`
+      * `ValueConnectableObservable` -> `ValueConnectableStream`
+      * `ReplayConnectableObservable` -> `ReplayConnectableStream`
+  * All transformation methods removed from Observable class
+      * Transformation methods are now Extensions of the Stream class
+      * Any Stream can make use of the transformation methods provided by RxDart
+    * Observable class remains in place with factory methods to create different types of Streams
+    * Removed deprecated `ofType` method, use `whereType` instead
+    * Deprecated `concatMap`, use standard Stream `asyncExpand`.
+    * Removed `AsObservableFuture`, `MinFuture`, `MaxFuture`, and `WrappedFuture`
+      * This removes `asObservable` method in chains
+      * Use default `asStream` method from the base `Future` class instead.
+      * `min` and `max` now implemented directly on the Stream class
+
 ## 0.23.0-dev.3
 
   * Fix missing exports:
