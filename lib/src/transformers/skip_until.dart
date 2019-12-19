@@ -8,7 +8,7 @@ import 'dart:async';
 ///       Stream.value(1),
 ///       TimerStream(2, Duration(minutes: 2))
 ///     ])
-///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
+///     .transform(SkipUntilStreamTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
   final StreamTransformer<T, T> _transformer;
