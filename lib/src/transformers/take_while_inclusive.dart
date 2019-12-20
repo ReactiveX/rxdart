@@ -1,8 +1,8 @@
 import 'dart:async';
 
 /// Emits values emitted by the source Stream so long as each value
-/// satisfies the given test. When the test is not satisfied by a value, will
-/// emit it and complete.
+/// satisfies the given test. When the test is not satisfied by a value, it
+/// will emit this value as a final event and then complete.
 ///
 /// ### Example
 ///
@@ -79,8 +79,8 @@ class TakeWhileInclusiveStreamTransformer<T>
 /// the condition given and include last event that doesn't pass the condition.
 extension TakeWhileInclusiveExtension<T> on Stream<T> {
   /// Emits values emitted by the source Stream so long as each value
-  /// satisfies the given test. When the test is not satisfied by a value, will
-  /// emit it and complete.
+  /// satisfies the given test. When the test is not satisfied by a value, it
+  /// will emit this value as a final event and then complete.
   ///
   /// ### Example
   ///
