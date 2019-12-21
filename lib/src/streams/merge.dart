@@ -81,6 +81,5 @@ extension MergeExtension<T> on Stream<T> {
   ///         .mergeWith([Stream.fromIterable([2])])
   ///         .listen(print); // prints 2, 1
   Stream<T> mergeWith(Iterable<Stream<T>> streams) =>
-      transform(StreamTransformer.fromBind(
-          (stream) => MergeStream<T>([stream, ...streams])));
+      MergeStream<T>([this, ...streams]);
 }

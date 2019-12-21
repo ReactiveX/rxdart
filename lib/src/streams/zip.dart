@@ -381,6 +381,5 @@ extension ZipWithExtension<T> on Stream<T> {
   ///         .zipWith(Stream.fromIterable([2]), (one, two) => one + two)
   ///         .listen(print); // prints 3
   Stream<R> zipWith<S, R>(Stream<S> other, R Function(T t, S s) zipper) =>
-      transform(StreamTransformer.fromBind(
-          (stream) => ZipStream.zip2(stream, other, zipper)));
+      ZipStream.zip2(this, other, zipper);
 }
