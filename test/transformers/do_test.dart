@@ -288,5 +288,33 @@ void main() {
             ..pause()
             ..resume();
     });
+
+    test(
+        'doOnListen correctly throws when subscribing multiple times on a single subscription stream',
+        () {
+      final controller = StreamController<int>();
+      final stream = controller.stream.doOnListen(() {
+        // do nothing
+      });
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsError(TypeMatcher<StateError>()));
+
+      controller.close();
+    });
+
+    test(
+        'doOnListen correctly allows subscribing multiple times on a broadcast stream',
+        () {
+      final controller = StreamController<int>.broadcast();
+      final stream = controller.stream.doOnListen(() {
+        // do nothing
+      });
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsDone);
+
+      controller.close();
+    });
   });
 }

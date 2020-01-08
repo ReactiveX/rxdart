@@ -84,21 +84,13 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       throw ArgumentError('Must provide at least one handler');
     }
 
-    final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
+    final subscriptions = <Stream<T>, StreamSubscription<T>>{};
+    final dummyListeners = <Stream<T>, List<StreamSubscription<T>>>{};
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
-      final onListenLocal = () {
-        if (onListen != null) {
-          try {
-            onListen();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
-        subscriptions.putIfAbsent(
-          input,
-          () => input.listen(
+
+      final doOnListen = () => input.listen(
             (T value) {
               if (onData != null) {
                 try {
@@ -116,7 +108,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
               }
               controller.add(value);
             },
-            onError: (dynamic e, StackTrace s) {
+            onError: (Object e, StackTrace s) {
               if (onError != null) {
                 try {
                   onError(e, s);
@@ -151,8 +143,38 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
               controller.close();
             },
             cancelOnError: cancelOnError,
-          ),
-        );
+          );
+
+      final onListenLocal = () {
+        if (onListen != null) {
+          try {
+            onListen();
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
+
+        if (input.isBroadcast) {
+          if (subscriptions.containsKey(input)) {
+            // create a 'dummy' listener
+            dummyListeners.putIfAbsent(input, () => <StreamSubscription<T>>[]);
+
+            dummyListeners[input].add(input.listen(null,
+                onDone: () => controller.close(),
+                onError: (Object e, StackTrace s) =>
+                    controller.addError(e, s)));
+          } else {
+            subscriptions[input] = doOnListen();
+          }
+        } else {
+          try {
+            var eagerSubscription = doOnListen();
+
+            subscriptions.putIfAbsent(input, () => eagerSubscription);
+          } on StateError catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
       };
       final onCancelLocal = () {
         dynamic onCancelResult;
@@ -172,10 +194,20 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
             ? onCancelResult
             : Future<dynamic>.value(onCancelResult);
         final cancelFuture =
-            subscriptions[input].cancel() ?? Future<dynamic>.value();
+            subscriptions[input]?.cancel() ?? Future<dynamic>.value();
 
-        return Future.wait<dynamic>([cancelFuture, cancelResultFuture])
-            .whenComplete(() => subscriptions.remove(input));
+        if (dummyListeners.containsKey(input)) {
+          // do not await these
+          dummyListeners[input].map((subscription) => subscription.cancel());
+        }
+
+        return Future.wait<dynamic>([
+          cancelFuture,
+          cancelResultFuture,
+        ]).whenComplete(() {
+          subscriptions.remove(input);
+          dummyListeners.remove(input);
+        });
       };
 
       if (input.isBroadcast) {
@@ -198,7 +230,9 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
               }
             }
 
-            subscriptions[input].pause(resumeSignal);
+            subscriptions[input]?.pause(resumeSignal);
+            dummyListeners[input]
+                ?.forEach((subscription) => subscription.pause(resumeSignal));
           },
           onResume: () {
             if (onResume != null) {
@@ -209,7 +243,9 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
               }
             }
 
-            subscriptions[input].resume();
+            subscriptions[input]?.resume();
+            dummyListeners[input]
+                ?.forEach((subscription) => subscription.resume());
           },
         );
       }
