@@ -12,7 +12,7 @@ import 'package:rxdart/src/utils/notification.dart';
 /// ### Example
 ///
 ///     Stream<int>.fromIterable([1])
-///         .transform(materializeTransformer())
+///         .transform(MaterializeStreamTransformer())
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification
 class MaterializeStreamTransformer<T>
     extends StreamTransformerBase<T, Notification<T>> {
