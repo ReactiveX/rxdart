@@ -84,144 +84,123 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
       throw ArgumentError('Must provide at least one handler');
     }
 
-    final subscriptions = <Stream<T>, StreamSubscription<T>>{};
-    final dummyListeners = <Stream<T>, List<StreamSubscription<T>>>{};
+    // Keep track of emitted Errors
+    // This Set is checked when an Error happens,
+    // if it does not yet contain the Error, then emit it,
+    // otherwise do nothing.
+    //
+    // This will prevent multiple listeners to the same Stream to emit
+    // onError with the same error multiple times.
+    final emittedErrors = <Object>{};
+    // For each input, register the current event index
+    // then when invoking onData, match the actual current event index
+    // with the stored event index and only emit when the match.
+    //
+    // This will prevent multiple listeners to the same Stream to emit
+    // onData with the same event multiple times.
+    var streamEventIndex = <Stream<T>, int>{};
+
+    StreamSubscription<T> subscription;
 
     return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
       StreamController<T> controller;
 
-      final doOnListen = () => input.listen(
-            (T value) {
-              if (onData != null) {
-                try {
-                  onData(value);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onData(value));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.add(value);
-            },
-            onError: (Object e, StackTrace s) {
-              if (onError != null) {
-                try {
-                  onError(e, s);
-                } catch (e2, s2) {
-                  controller.addError(e2, s2);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onError(e, s));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.addError(e, s);
-            },
-            onDone: () {
-              if (onDone != null) {
-                try {
-                  onDone();
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onDone());
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.close();
-            },
-            cancelOnError: cancelOnError,
-          );
-
-      final onListenLocal = () {
-        if (onListen != null) {
-          try {
-            onListen();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
-
-        if (input.isBroadcast) {
-          if (subscriptions.containsKey(input)) {
-            // create a 'dummy' listener
-            dummyListeners.putIfAbsent(input, () => <StreamSubscription<T>>[]);
-
-            dummyListeners[input].add(input.listen(null,
-                onDone: () => controller.close(),
-                onError: (Object e, StackTrace s) =>
-                    controller.addError(e, s)));
-          } else {
-            subscriptions[input] = doOnListen();
-          }
-        } else {
-          try {
-            var eagerSubscription = doOnListen();
-
-            subscriptions.putIfAbsent(input, () => eagerSubscription);
-          } on StateError catch (e, s) {
-            controller.addError(e, s);
-          }
+      final onEachHandler = (Notification<T> notification) {
+        try {
+          onEach(notification);
+        } catch (e, s) {
+          controller.addError(e, s);
         }
       };
-      final onCancelLocal = () {
-        dynamic onCancelResult;
+      final onDataHandler = (T event, int index, Stream<T> input) {
+        final targetIndex = streamEventIndex[input];
 
-        if (onCancel != null) {
-          try {
-            onCancelResult = onCancel();
-          } catch (e, s) {
-            if (!controller.isClosed) {
+        if ((onData != null || onEach != null) && targetIndex == index) {
+          if (onData != null) {
+            try {
+              onData(event);
+            } catch (e, s) {
               controller.addError(e, s);
-            } else {
-              Zone.current.handleUncaughtError(e, s);
             }
           }
-        }
-        final cancelResultFuture = onCancelResult is Future
-            ? onCancelResult
-            : Future<dynamic>.value(onCancelResult);
-        final cancelFuture =
-            subscriptions[input]?.cancel() ?? Future<dynamic>.value();
 
-        if (dummyListeners.containsKey(input)) {
-          // do not await these
-          dummyListeners[input].map((subscription) => subscription.cancel());
+          if (onEach != null) {
+            onEachHandler(Notification.onData(event));
+          }
+
+          streamEventIndex[input]++;
         }
 
-        return Future.wait<dynamic>([
-          cancelFuture,
-          cancelResultFuture,
-        ]).whenComplete(() {
-          subscriptions.remove(input);
-          dummyListeners.remove(input);
-        });
+        controller.add(event);
+      };
+      final onErrorHandler = (Object e, StackTrace s) {
+        if ((onError != null || onEach != null) && emittedErrors.add(e)) {
+          if (onError != null) {
+            try {
+              onError(e, s);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
+          }
+
+          if (onEach != null) {
+            onEachHandler(Notification.onError(e, s));
+          }
+        }
+
+        controller.addError(e);
+      };
+      final onCancelHandler = () async {
+        if (onCancel != null) {
+          dynamic result = onCancel();
+
+          if (result is Future) {
+            return Future.wait<dynamic>([result, subscription.cancel()]);
+          }
+        }
+
+        return subscription.cancel();
+      };
+      final onDoneHandler = () {
+        if (onDone != null) {
+          try {
+            onDone();
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
+
+        if (onEach != null) {
+          onEachHandler(Notification.onDone());
+        }
+
+        controller.close();
       };
 
-      if (input.isBroadcast) {
-        controller = StreamController<T>.broadcast(
+      controller = StreamController<T>(
           sync: true,
-          onListen: onListenLocal,
-          onCancel: onCancelLocal,
-        );
-      } else {
-        controller = StreamController<T>(
-          sync: true,
-          onListen: onListenLocal,
-          onCancel: onCancelLocal,
+          onListen: () {
+            var eventIndex = 0;
+
+            streamEventIndex[input] = 0;
+
+            if (onListen != null) {
+              try {
+                onListen();
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            }
+
+            subscription = input.listen(
+                (event) => onDataHandler(event, eventIndex++, input),
+                onError: onErrorHandler,
+                onDone: onDoneHandler,
+                cancelOnError: cancelOnError);
+          },
           onPause: ([Future<dynamic> resumeSignal]) {
+            subscription.pause(resumeSignal);
+
             if (onPause != null) {
               try {
                 onPause(resumeSignal);
@@ -229,12 +208,10 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 controller.addError(e, s);
               }
             }
-
-            subscriptions[input]?.pause(resumeSignal);
-            dummyListeners[input]
-                ?.forEach((subscription) => subscription.pause(resumeSignal));
           },
           onResume: () {
+            subscription.resume();
+
             if (onResume != null) {
               try {
                 onResume();
@@ -242,13 +219,8 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
                 controller.addError(e, s);
               }
             }
-
-            subscriptions[input]?.resume();
-            dummyListeners[input]
-                ?.forEach((subscription) => subscription.resume());
           },
-        );
-      }
+          onCancel: onCancelHandler);
 
       return controller.stream.listen(null);
     });

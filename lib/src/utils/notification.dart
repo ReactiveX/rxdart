@@ -32,7 +32,7 @@ class Notification<T> {
   /// Constructs a [Notification] which, depending on the [kind], wraps either
   /// [value], or [error] and [stackTrace], or neither if it is just a
   /// [Kind.OnData] event.
-  Notification(this.kind, this.value, this.error, this.stackTrace);
+  const Notification(this.kind, this.value, this.error, this.stackTrace);
 
   /// Constructs a [Notification] with [Kind.OnData] and wraps a [value]
   factory Notification.onData(T value) =>
@@ -40,7 +40,7 @@ class Notification<T> {
 
   /// Constructs a [Notification] with [Kind.OnDone]
   factory Notification.onDone() =>
-      Notification<T>(Kind.OnDone, null, null, null);
+      const Notification(Kind.OnDone, null, null, null);
 
   /// Constructs a [Notification] with [Kind.OnError] and wraps an [error] and [stackTrace]
   factory Notification.onError(dynamic error, StackTrace stackTrace) =>

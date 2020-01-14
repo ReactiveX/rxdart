@@ -198,13 +198,10 @@ void main() {
       final streamA = Stream.value(1).transform(transformer),
           streamB = Stream.value(1).transform(transformer);
 
-      streamA.listen(null, onDone: expectAsync0(() {
-        expect(callCount, 2);
-      }));
+      await expectLater(streamA, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(streamB, emitsInOrder(<dynamic>[1, emitsDone]));
 
-      streamB.listen(null, onDone: expectAsync0(() {
-        expect(callCount, 2);
-      }));
+      expect(callCount, 2);
     });
 
     test('throws an error when no arguments are provided', () {
@@ -248,8 +245,8 @@ void main() {
                 ..cancel();
         },
         onError: expectAsync2(
-          (Exception e, [StackTrace s]) => expect(e, isException),
-        ),
+            (Exception e, [StackTrace s]) => expect(e, isException),
+            count: 2),
       );
 
       Stream.value(1)
@@ -290,20 +287,6 @@ void main() {
     });
 
     test(
-        'doOnListen correctly throws when subscribing multiple times on a single subscription stream',
-        () {
-      final controller = StreamController<int>();
-      final stream = controller.stream.doOnListen(() {
-        // do nothing
-      });
-
-      expectLater(stream, emitsDone);
-      expectLater(stream, emitsError(TypeMatcher<StateError>()));
-
-      controller.close();
-    });
-
-    test(
         'doOnListen correctly allows subscribing multiple times on a broadcast stream',
         () {
       final controller = StreamController<int>.broadcast();
@@ -311,10 +294,10 @@ void main() {
         // do nothing
       });
 
-      expectLater(stream, emitsDone);
-      expectLater(stream, emitsDone);
-
       controller.close();
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsDone);
     });
   });
 }
