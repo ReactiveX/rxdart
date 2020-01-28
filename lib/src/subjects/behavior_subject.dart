@@ -133,6 +133,12 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
   /// Set and emit the new value
   set value(T newValue) => add(newValue);
+
+  /// A flag that turns true as soon as at an error event has been emitted.
+  bool get hasError => _wrapper.latestIsError;
+
+  /// Get the latest error emitted by the Subject
+  Object get error => _wrapper.latestError;
 }
 
 class _Wrapper<T> {

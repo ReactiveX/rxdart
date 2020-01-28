@@ -515,6 +515,118 @@ void main() {
       expect(subject.hasValue, isTrue);
     });
 
+    test('hasError returns false for an empty subject', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      expect(subject.hasError, isFalse);
+    });
+
+    test('hasError returns false for a seeded subject with non-null seed', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(1);
+
+      expect(subject.hasError, isFalse);
+    });
+
+    test('hasError returns false for a seeded subject with null seed', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(null);
+
+      expect(subject.hasError, isFalse);
+    });
+
+    test('hasError returns false for an unseeded subject after an emission', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      subject.add(1);
+
+      expect(subject.hasError, isFalse);
+    });
+
+    test('hasError returns true for an unseeded subject after addError', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.addError('error');
+
+      expect(subject.hasError, isTrue);
+    });
+
+    test('hasError returns true for a seeded subject after addError', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(1);
+
+      subject.addError('error');
+
+      expect(subject.hasError, isTrue);
+    });
+
+    test('error returns null for an empty subject', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      expect(subject.error, isNull);
+    });
+
+    test('error returns null for a seeded subject with non-null seed', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(1);
+
+      expect(subject.error, isNull);
+    });
+
+    test('error returns null for a seeded subject with null seed', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(null);
+
+      expect(subject.error, isNull);
+    });
+
+    test('can synchronously get the latest error', () async {
+      // ignore: close_sinks
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
+
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.add(3);
+      expect(unseeded.error, isNull);
+      unseeded.addError(Exception('oh noes!'));
+      expect(unseeded.error, isException);
+
+      seeded.add(1);
+      seeded.add(2);
+      seeded.add(3);
+      expect(seeded.error, isNull);
+      seeded.addError(Exception('oh noes!'));
+      expect(seeded.error, isException);
+    });
+
+    test('emits event after error to every subscriber, ensures error is null', () async {
+      // ignore: close_sinks
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
+
+      unseeded.add(1);
+      unseeded.add(2);
+      unseeded.addError(Exception('oh noes!'));
+      expect(unseeded.error, isException);
+      unseeded.add(3);
+      expect(unseeded.error, isNull);
+
+      seeded.add(1);
+      seeded.add(2);
+      seeded.addError(Exception('oh noes!'));
+      expect(seeded.error, isException);
+      seeded.add(3);
+      expect(seeded.error, isNull);
+    });
+
     test(
         'issue/350: emits duplicate values when listening multiple times and starting with an Error',
         () async {
