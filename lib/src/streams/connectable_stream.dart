@@ -170,6 +170,12 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   bool get hasValue => _subject.hasValue;
+
+  @override
+  Object get error => _subject.error;
+
+  @override
+  bool get hasError => _subject.hasError;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into

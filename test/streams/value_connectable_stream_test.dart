@@ -142,6 +142,26 @@ void main() {
       }, count: items.length));
     });
 
+    test('provides access to the latest error', () async {
+      final source = StreamController<int>();
+      final stream = ValueConnectableStream(source.stream).autoConnect();
+
+      source.sink.add(1);
+      source.sink.add(2);
+      source.sink.add(3);
+      source.sink.addError(Exception('error'));
+
+      stream.listen(
+        null,
+        onError: (Object error) {
+          expect(stream.value, isNull);
+          expect(stream.hasValue, isFalse);
+          expect(stream.error, error);
+          expect(stream.hasError, isTrue);
+        },
+      );
+    });
+
     test('provide a function to autoconnect that stops listening', () async {
       final stream = Stream.fromIterable(const [1, 2, 3])
           .publishValue()
