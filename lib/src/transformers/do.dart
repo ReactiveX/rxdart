@@ -92,7 +92,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
     // This will prevent multiple listeners to the same Stream to emit
     // onError with the same error multiple times.
     final emittedErrors = <Object>{};
-    var onDataCallback = onData;
+    final onDataManifest = <Stream<T>>[];
 
     StreamSubscription<T> subscription;
 
@@ -106,7 +106,9 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           controller.addError(e, s);
         }
       };
-      final onDataHandler = (void Function(T event) onData) => (T event) {
+      final onDataHandler = (void Function(T event) onData,
+              void Function(Notification<T> notification) onEach) =>
+          (T event) {
             if ((onData != null || onEach != null)) {
               if (onData != null) {
                 try {
@@ -165,6 +167,8 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           onEachHandler(Notification.onDone());
         }
 
+        onDataManifest.clear();
+
         controller.close();
       };
       final onListenDelegate = () {
@@ -176,18 +180,21 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           }
         }
 
-        // if onDataCallback is null, then onDataHandler will do nothing
-        // see also below
-        subscription = input.listen(onDataHandler(onDataCallback),
+        // checks if this input Stream is already handling onData...
+        final isOnDataHandled = onDataManifest.contains(input);
+        // ...and if it does, pass null handlers to the onDataHandler,
+        // resulting in this onData pass to be ignored
+        subscription = input.listen(
+            onDataHandler(isOnDataHandled ? null : onData,
+                isOnDataHandled ? null : onEach),
             onError: onErrorHandler,
             onDone: onDoneHandler,
             cancelOnError: cancelOnError);
 
-        // clear onDataCallback =>
-        // we've now handling the onData callback...
-        // by clearing, we prevent any potential future
-        // onListen callbacks to setup a duplicate onData callback.
-        onDataCallback = null;
+        // because we want to prevent duplicate onData handling
+        // for the same input Stream, a List is being kept of all
+        // Streams that already do onData handling
+        onDataManifest.add(input);
       };
 
       controller = StreamController<T>(
