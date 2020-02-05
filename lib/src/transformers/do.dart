@@ -176,28 +176,29 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
         controller.close();
       };
+      final onListenDelegate = () {
+        var localEventIndex = 0;
+
+        streamEventIndex[input] = 0;
+
+        if (onListen != null) {
+          try {
+            onListen();
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        }
+
+        subscription = input.listen(
+            (event) => onDataHandler(event, localEventIndex++, input),
+            onError: onErrorHandler,
+            onDone: onDoneHandler,
+            cancelOnError: cancelOnError);
+      };
 
       controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            var eventIndex = 0;
-
-            streamEventIndex[input] = 0;
-
-            if (onListen != null) {
-              try {
-                onListen();
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-
-            subscription = input.listen(
-                (event) => onDataHandler(event, eventIndex++, input),
-                onError: onErrorHandler,
-                onDone: onDoneHandler,
-                cancelOnError: cancelOnError);
-          },
+          sync: false,
+          onListen: onListenDelegate,
           onPause: ([Future<dynamic> resumeSignal]) {
             subscription.pause(resumeSignal);
 
