@@ -185,16 +185,16 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
 
         // checks if this input Stream is already handling onX...
-        final isOnDataHandled = onDataManifest.contains(input);
+        final isOnXHandled = onDataManifest.contains(input);
+        final maybeOnData = isOnXHandled ? null : onData;
+        final maybeOnError = isOnXHandled ? null : onError;
+        final maybeOnDone = isOnXHandled ? null : onDone;
+        final maybeOnEach = isOnXHandled ? null : onEach;
         // ...and if it does, pass null handlers to the onX handler,
         // resulting in this onX pass to be ignored
-        subscription = input.listen(
-            onDataHandler(isOnDataHandled ? null : onData,
-                isOnDataHandled ? null : onEach),
-            onError: onErrorHandler(isOnDataHandled ? null : onError,
-                isOnDataHandled ? null : onEach),
-            onDone: onDoneHandler(isOnDataHandled ? null : onDone,
-                isOnDataHandled ? null : onEach),
+        subscription = input.listen(onDataHandler(maybeOnData, maybeOnEach),
+            onError: onErrorHandler(maybeOnError, maybeOnEach),
+            onDone: onDoneHandler(maybeOnDone, maybeOnEach),
             cancelOnError: cancelOnError);
 
         // because we want to prevent duplicate onX handling
