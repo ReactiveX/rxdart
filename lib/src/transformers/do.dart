@@ -92,13 +92,7 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
     // This will prevent multiple listeners to the same Stream to emit
     // onError with the same error multiple times.
     final emittedErrors = <Object>{};
-    // For each input, register the current event index
-    // then when invoking onData, match the actual current event index
-    // with the stored event index and only emit when the match.
-    //
-    // This will prevent multiple listeners to the same Stream to emit
-    // onData with the same event multiple times.
-    var streamEventIndex = <Stream<T>, int>{};
+    var onDataCallback = onData;
 
     StreamSubscription<T> subscription;
 
@@ -112,27 +106,24 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           controller.addError(e, s);
         }
       };
-      final onDataHandler = (T event, int index, Stream<T> input) {
-        final targetIndex = streamEventIndex[input];
+      final onDataHandler = (void Function(T event) onData) => (T event) {
+            if ((onData != null || onEach != null)) {
+              if (onData != null) {
+                try {
+                  onData(event);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              }
 
-        if ((onData != null || onEach != null) && targetIndex == index) {
-          if (onData != null) {
-            try {
-              onData(event);
-            } catch (e, s) {
-              controller.addError(e, s);
+              if (onEach != null) {
+                onEachHandler(Notification.onData(event));
+              }
             }
-          }
 
-          if (onEach != null) {
-            onEachHandler(Notification.onData(event));
-          }
-
-          streamEventIndex[input]++;
-        }
-
-        controller.add(event);
-      };
+            controller.add(event);
+          };
+      ;
       final onErrorHandler = (Object e, StackTrace s) {
         if ((onError != null || onEach != null) && emittedErrors.add(e)) {
           if (onError != null) {
@@ -177,10 +168,6 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         controller.close();
       };
       final onListenDelegate = () {
-        var localEventIndex = 0;
-
-        streamEventIndex[input] = 0;
-
         if (onListen != null) {
           try {
             onListen();
@@ -189,11 +176,18 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           }
         }
 
-        subscription = input.listen(
-            (event) => onDataHandler(event, localEventIndex++, input),
+        // if onDataCallback is null, then onDataHandler will do nothing
+        // see also below
+        subscription = input.listen(onDataHandler(onDataCallback),
             onError: onErrorHandler,
             onDone: onDoneHandler,
             cancelOnError: cancelOnError);
+
+        // clear onDataCallback =>
+        // we've now handling the onData callback...
+        // by clearing, we prevent any potential future
+        // onListen callbacks to setup a duplicate onData callback.
+        onDataCallback = null;
       };
 
       controller = StreamController<T>(
