@@ -126,23 +126,25 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
             controller.add(event);
           };
       ;
-      final onErrorHandler = (Object e, StackTrace s) {
-        if ((onError != null || onEach != null) && emittedErrors.add(e)) {
-          if (onError != null) {
-            try {
-              onError(e, s);
-            } catch (e, s) {
-              controller.addError(e, s);
+      final onErrorHandler = (Function onError,
+              void Function(Notification<T> notification) onEach) =>
+          (Object e, StackTrace s) {
+            if ((onError != null || onEach != null) && emittedErrors.add(e)) {
+              if (onError != null) {
+                try {
+                  onError(e, s);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              }
+
+              if (onEach != null) {
+                onEachHandler(Notification.onError(e, s));
+              }
             }
-          }
 
-          if (onEach != null) {
-            onEachHandler(Notification.onError(e, s));
-          }
-        }
-
-        controller.addError(e);
-      };
+            controller.addError(e);
+          };
       final onCancelHandler = () async {
         if (onCancel != null) {
           dynamic result = onCancel();
@@ -154,23 +156,25 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
         return subscription.cancel();
       };
-      final onDoneHandler = () {
-        if (onDone != null) {
-          try {
-            onDone();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
+      final onDoneHandler = (void Function() onDone,
+              void Function(Notification<T> notification) onEach) =>
+          () {
+            if (onDone != null) {
+              try {
+                onDone();
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            }
 
-        if (onEach != null) {
-          onEachHandler(Notification.onDone());
-        }
+            if (onEach != null) {
+              onEachHandler(Notification.onDone());
+            }
 
-        onDataManifest.clear();
+            onDataManifest.clear();
 
-        controller.close();
-      };
+            controller.close();
+          };
       final onListenDelegate = () {
         if (onListen != null) {
           try {
@@ -180,25 +184,27 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
           }
         }
 
-        // checks if this input Stream is already handling onData...
+        // checks if this input Stream is already handling onX...
         final isOnDataHandled = onDataManifest.contains(input);
-        // ...and if it does, pass null handlers to the onDataHandler,
-        // resulting in this onData pass to be ignored
+        // ...and if it does, pass null handlers to the onX handler,
+        // resulting in this onX pass to be ignored
         subscription = input.listen(
             onDataHandler(isOnDataHandled ? null : onData,
                 isOnDataHandled ? null : onEach),
-            onError: onErrorHandler,
-            onDone: onDoneHandler,
+            onError: onErrorHandler(isOnDataHandled ? null : onError,
+                isOnDataHandled ? null : onEach),
+            onDone: onDoneHandler(isOnDataHandled ? null : onDone,
+                isOnDataHandled ? null : onEach),
             cancelOnError: cancelOnError);
 
-        // because we want to prevent duplicate onData handling
+        // because we want to prevent duplicate onX handling
         // for the same input Stream, a List is being kept of all
-        // Streams that already do onData handling
+        // Streams that already do onX handling
         onDataManifest.add(input);
       };
 
       controller = StreamController<T>(
-          sync: false,
+          sync: true,
           onListen: onListenDelegate,
           onPause: ([Future<dynamic> resumeSignal]) {
             subscription.pause(resumeSignal);
