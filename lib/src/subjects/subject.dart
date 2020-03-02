@@ -109,7 +109,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
       if (cancelOnError) {
         _isAddingStreamItems = false;
-        completer.completeError(e);
+        completer.complete();
       }
     }, onDone: () {
       _isAddingStreamItems = false;
