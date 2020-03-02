@@ -100,6 +100,14 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     }
 
     final completer = Completer<T>();
+    var isOnDoneCalled = false;
+    final complete = () {
+      if (!isOnDoneCalled) {
+        isOnDoneCalled = true;
+        _isAddingStreamItems = false;
+        completer.complete();
+      }
+    };
     _isAddingStreamItems = true;
 
     source.listen((T event) {
@@ -108,12 +116,10 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
       _controller.addError(e, s);
 
       if (cancelOnError) {
-        _isAddingStreamItems = false;
-        completer.complete();
+        complete();
       }
     }, onDone: () {
-      _isAddingStreamItems = false;
-      completer.complete();
+      complete();
     }, cancelOnError: cancelOnError);
 
     return completer.future;
