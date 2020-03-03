@@ -74,7 +74,7 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
         },
         onCancel: () async {
           await inputSubscription.cancel();
-          if (outputIsEmitting) await outputSubscription.cancel();
+          if (outputIsEmitting) await outputSubscription?.cancel();
         },
       );
 
