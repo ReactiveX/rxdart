@@ -101,7 +101,10 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  ValueConnectableStream._(this._source, this._subject) : super(_subject);
+  ValueConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
