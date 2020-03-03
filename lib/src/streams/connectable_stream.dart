@@ -49,7 +49,10 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
     return PublishConnectableStream<T>._(source, PublishSubject<T>());
   }
 
-  PublishConnectableStream._(this._source, this._subject) : super(_subject);
+  PublishConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   @override
   Stream<T> autoConnect({
@@ -193,7 +196,10 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
     );
   }
 
-  ReplayConnectableStream._(this._source, this._subject) : super(_subject);
+  ReplayConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   @override
   ReplayStream<T> autoConnect({
