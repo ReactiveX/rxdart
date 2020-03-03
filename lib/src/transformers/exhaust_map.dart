@@ -42,7 +42,6 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
             (T value) {
               try {
                 if (!outputIsEmitting) {
-                  outputIsEmitting = true;
                   outputSubscription = mapper(value).listen(
                     controller.add,
                     onError: controller.addError,
@@ -51,6 +50,7 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                       if (inputClosed) controller.close();
                     },
                   );
+                  outputIsEmitting = true;
                 }
               } catch (e, s) {
                 controller.addError(e, s);
@@ -74,7 +74,7 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
         },
         onCancel: () async {
           await inputSubscription.cancel();
-          if (outputIsEmitting) await outputSubscription?.cancel();
+          if (outputIsEmitting) await outputSubscription.cancel();
         },
       );
 
