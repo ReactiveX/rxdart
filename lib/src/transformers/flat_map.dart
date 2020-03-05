@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be listened to and begin
 /// emitting items downstream.
@@ -16,86 +18,79 @@ import 'dart:async';
 ///             Future.delayed(Duration(minutes: i), () => i))
 ///         .listen(print); // prints 1, 2, 3, 4
 class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+  /// Method which converts incoming events into a new [Stream]
+  final Stream<S> Function(T value) mapper;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
   /// The mapped [Stream] will be listened to and begin emitting items downstream.
-  FlatMapStreamTransformer(Stream<S> Function(T value) mapper)
-      : _transformer = _buildTransformer(mapper);
+  FlatMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) {
+    final subscriptions = <StreamSubscription<S>>[];
+    StreamController<S> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> Function(T value) mapper) {
-    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      final subscriptions = <StreamSubscription<S>>[];
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
+    var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
 
-      var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen(
+                  (T value) {
+                try {
+                  StreamSubscription<S> otherSubscription;
+                  var otherStream = mapper(value);
 
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  try {
-                    StreamSubscription<S> otherSubscription;
-                    var otherStream = mapper(value);
+                  hasMainEvent = true;
 
-                    hasMainEvent = true;
+                  openStreams++;
 
-                    openStreams++;
+                  otherSubscription = otherStream.listen(controller.add,
+                      onError: controller.addError, onDone: () {
+                        openStreams--;
 
-                    otherSubscription = otherStream.listen(controller.add,
-                        onError: controller.addError, onDone: () {
-                      openStreams--;
+                        if (closeAfterNextEvent && openStreams == 0) {
+                          controller.close();
+                        }
+                      });
 
-                      if (closeAfterNextEvent && openStreams == 0) {
-                        controller.close();
-                      }
-                    });
+                  subscriptions.add(otherSubscription);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              },
+              onError: controller.addError,
+              onDone: () {
+                if (!hasMainEvent || openStreams == 0) {
+                  controller.close();
+                } else {
+                  closeAfterNextEvent = true;
+                }
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) {
+          subscription.pause(resumeSignal);
 
-                    subscriptions.add(otherSubscription);
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (!hasMainEvent || openStreams == 0) {
-                    controller.close();
-                  } else {
-                    closeAfterNextEvent = true;
-                  }
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
+          subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
+              otherSubscription.pause(resumeSignal));
+        },
+        onResume: () {
+          subscription.resume();
 
-            subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
-                otherSubscription.pause(resumeSignal));
-          },
-          onResume: () {
-            subscription.resume();
+          subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
+              otherSubscription.resume());
+        },
+        onCancel: () {
+          final list = List<StreamSubscription<dynamic>>.from(subscriptions)
+            ..add(subscription);
 
-            subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
-                otherSubscription.resume());
-          },
-          onCancel: () {
-            final list = List<StreamSubscription<dynamic>>.from(subscriptions)
-              ..add(subscription);
+          return Future.wait<dynamic>(list
+              .map((StreamSubscription<dynamic> subscription) =>
+              subscription.cancel())
+              .where((Future<dynamic> cancelFuture) => cancelFuture != null));
+        });
 
-            return Future.wait<dynamic>(list
-                .map((StreamSubscription<dynamic> subscription) =>
-                    subscription.cancel())
-                .where((Future<dynamic> cancelFuture) => cancelFuture != null));
-          });
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

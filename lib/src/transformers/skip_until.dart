@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Starts emitting events only after the given stream emits an event.
 ///
 /// ### Example
@@ -11,65 +13,53 @@ import 'dart:async';
 ///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  /// The [Stream] which is required to emit first, before this [Stream] starts emitting
+  final Stream<S> otherStream;
 
   /// Constructs a [StreamTransformer] which starts emitting events
   /// only after [otherStream] emits an event.
-  SkipUntilStreamTransformer(Stream<S> otherStream)
-      : _transformer = _buildTransformer(otherStream);
+  SkipUntilStreamTransformer(this.otherStream);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T, S>(
-      Stream<S> otherStream) {
+  Stream<T> bind(Stream<T> stream) {
     if (otherStream == null) {
       throw ArgumentError('otherStream cannot be null');
     }
 
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
-      var goTime = false;
+    StreamController<T> controller;
+    StreamSubscription<T> subscription;
+    StreamSubscription<S> otherSubscription;
+    var goTime = false;
 
-      void onDone() {
-        if (controller.isClosed) return;
+    void onDone() {
+      if (controller.isClosed) return;
 
-        controller.close();
-      }
+      controller.close();
+    }
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((T data) {
-              if (goTime) {
-                controller.add(data);
-              }
-            },
-                onError: controller.addError,
-                onDone: onDone,
-                cancelOnError: cancelOnError);
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen((T data) {
+            if (goTime) {
+              controller.add(data);
+            }
+          }, onError: controller.addError, onDone: onDone);
 
-            otherSubscription = otherStream.listen((_) {
-              goTime = true;
+          otherSubscription = otherStream.listen((_) {
+            goTime = true;
 
-              otherSubscription.cancel();
-            },
-                onError: controller.addError,
-                cancelOnError: cancelOnError,
-                onDone: onDone);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () async {
-            await otherSubscription?.cancel();
-            await subscription?.cancel();
-          });
+            otherSubscription.cancel();
+          }, onError: controller.addError, onDone: onDone);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () async {
+          await otherSubscription?.cancel();
+          await subscription?.cancel();
+        });
 
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

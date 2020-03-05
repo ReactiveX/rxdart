@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be be listened to and begin
 /// emitting items, and any previously created Stream will stop emitting.
@@ -18,74 +20,67 @@ import 'dart:async';
 ///           Future.delayed(Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
 class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+  /// Method which converts incoming events into a new [Stream]
+  final Stream<S> Function(T value) mapper;
 
   /// Constructs a [StreamTransformer] which maps each event from the source [Stream]
   /// using [mapper].
   ///
   /// The mapped [Stream] will be be listened to and begin
   /// emitting items, and any previously created mapper [Stream]s will stop emitting.
-  SwitchMapStreamTransformer(Stream<S> Function(T value) mapper)
-      : _transformer = _buildTransformer(mapper);
+  SwitchMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) {
+    StreamController<S> controller;
+    StreamSubscription<T> subscription;
+    StreamSubscription<S> otherSubscription;
+    var leftClosed = false, rightClosed = false, hasMainEvent = false;
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> Function(T value) mapper) {
-    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
-      var leftClosed = false, rightClosed = false, hasMainEvent = false;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen(
+              (T value) {
+                try {
+                  otherSubscription?.cancel();
 
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  try {
-                    otherSubscription?.cancel();
+                  // Since we start a new listener on mapper(value),
+                  // this state needs to be set to false again.
+                  rightClosed = false;
+                  hasMainEvent = true;
 
-                    // Since we start a new listener on mapper(value),
-                    // this state needs to be set to false again.
-                    rightClosed = false;
-                    hasMainEvent = true;
+                  otherSubscription = mapper(value).listen(controller.add,
+                      onError: controller.addError, onDone: () {
+                    rightClosed = true;
 
-                    otherSubscription = mapper(value).listen(controller.add,
-                        onError: controller.addError, onDone: () {
-                      rightClosed = true;
+                    if (leftClosed) controller.close();
+                  });
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              },
+              onError: controller.addError,
+              onDone: () {
+                leftClosed = true;
 
-                      if (leftClosed) controller.close();
-                    });
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  leftClosed = true;
+                if (rightClosed || !hasMainEvent) controller.close();
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) {
+          subscription.pause(resumeSignal);
+          otherSubscription?.pause(resumeSignal);
+        },
+        onResume: () {
+          subscription.resume();
+          otherSubscription?.resume();
+        },
+        onCancel: () async {
+          await subscription.cancel();
 
-                  if (rightClosed || !hasMainEvent) controller.close();
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-            otherSubscription?.pause(resumeSignal);
-          },
-          onResume: () {
-            subscription.resume();
-            otherSubscription?.resume();
-          },
-          onCancel: () async {
-            await subscription.cancel();
+          if (hasMainEvent) await otherSubscription?.cancel();
+        });
 
-            if (hasMainEvent) await otherSubscription?.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

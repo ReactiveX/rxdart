@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Records the time interval between consecutive values in an stream
 /// sequence.
 ///
@@ -11,56 +13,47 @@ import 'dart:async';
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
 class TimeIntervalStreamTransformer<T>
     extends StreamTransformerBase<T, TimeInterval<T>> {
-  final StreamTransformer<T, TimeInterval<T>> _transformer;
-
   /// Constructs a [StreamTransformer] which emits events from the
   /// source [Stream] as snapshots in the form of [TimeInterval].
-  TimeIntervalStreamTransformer() : _transformer = _buildTransformer();
+  TimeIntervalStreamTransformer();
 
   @override
-  Stream<TimeInterval<T>> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<TimeInterval<T>> bind(Stream<T> stream) {
+    StreamController<TimeInterval<T>> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, TimeInterval<T>> _buildTransformer<T>() {
-    return StreamTransformer<T, TimeInterval<T>>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<TimeInterval<T>> controller;
-      StreamSubscription<T> subscription;
+    controller = createController(stream,
+        onListen: () {
+          var stopwatch = Stopwatch()..start();
+          int ems;
 
-      controller = StreamController<TimeInterval<T>>(
-          sync: true,
-          onListen: () {
-            var stopwatch = Stopwatch()..start();
-            int ems;
+          subscription = stream.listen(
+                  (T value) {
+                ems = stopwatch.elapsedMicroseconds;
 
-            subscription = input.listen(
-                (T value) {
-                  ems = stopwatch.elapsedMicroseconds;
+                stopwatch.stop();
 
-                  stopwatch.stop();
+                try {
+                  controller.add(
+                      TimeInterval<T>(value, Duration(microseconds: ems)));
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
 
-                  try {
-                    controller.add(
-                        TimeInterval<T>(value, Duration(microseconds: ems)));
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
+                stopwatch = Stopwatch()..start();
+              },
+              onError: controller.addError,
+              onDone: () {
+                stopwatch.stop();
+                controller.close();
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
 
-                  stopwatch = Stopwatch()..start();
-                },
-                onError: controller.addError,
-                onDone: () {
-                  stopwatch.stop();
-                  controller.close();
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

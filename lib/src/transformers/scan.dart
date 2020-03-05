@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Applies an accumulator function over an stream sequence and returns
 /// each intermediate result. The optional seed value is used as the initial
 /// accumulator value.
@@ -10,51 +12,41 @@ import 'dart:async';
 ///        .transform(ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
 class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+  /// Method which accumulates incoming event into a single, accumulated object
+  final S Function(S accumulated, T value, int index) accumulator;
+  /// The initial value for the accumulated value in the [accumulator]
+  final S seed;
 
   /// Constructs a [ScanStreamTransformer] which applies an accumulator Function
   /// over the source [Stream] and returns each intermediate result.
   /// The optional seed value is used as the initial accumulator value.
-  ScanStreamTransformer(
-      S Function(S accumulated, T value, int index) accumulator,
-      [S seed])
-      : _transformer = _buildTransformer<T, S>(accumulator, seed);
+  ScanStreamTransformer(this.accumulator, [this.seed]);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) {
+    var index = 0;
+    var acc = seed;
+    StreamController<S> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      S Function(S accumulated, T value, int index) accumulator,
-      [S seed]) {
-    return StreamTransformer<T, S>((input, bool cancelOnError) {
-      var index = 0;
-      var acc = seed;
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen((value) {
+            try {
+              acc = accumulator(acc, value, index++);
 
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((value) {
-              try {
-                acc = accumulator(acc, value, index++);
+              controller.add(acc);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
+          }, onError: controller.addError, onDone: controller.close);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
 
-                controller.add(acc);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

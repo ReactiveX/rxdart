@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Prepends a sequence of values to the source Stream.
 ///
 /// ### Example
@@ -8,44 +10,44 @@ import 'dart:async';
 ///       .transform(StartWithManyStreamTransformer([1, 2]))
 ///       .listen(print); // prints 1, 2, 3
 class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  /// The starting events of this [Stream]
+  final Iterable<T> startValues;
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
   /// with all values from [startValues].
-  StartWithManyStreamTransformer(Iterable<T> startValues)
-      : _transformer = _buildTransformer(startValues);
+  StartWithManyStreamTransformer(this.startValues);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(Iterable<T> startValues) {
+  Stream<T> bind(Stream<T> stream) {
     if (startValues == null) {
       throw ArgumentError('startValues cannot be null');
     }
 
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+    StreamController<T> controller;
+    StreamSubscription<T> subscription;
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            startValues.forEach(controller.add);
+    controller = createController(stream,
+        onListen: () {
+          final prependedStream = () async* {
+            for (var i=0, len=startValues.length; i<len; i++) {
+              yield startValues.elementAt(i);
+            }
 
-            subscription = input.listen(
-              controller.add,
-              onError: controller.addError,
-              onDone: controller.close,
-              cancelOnError: cancelOnError,
-            );
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
+            yield* stream;
+          };
 
-      return controller.stream.listen(null);
-    });
+          subscription = prependedStream().listen(
+            controller.add,
+            onError: controller.addError,
+            onDone: controller.close
+          );
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
+
+    return controller.stream;
   }
 }
 

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// A StreamTransformer that emits when the source stream emits, combining
 /// the latest values from the two streams using the provided function.
 ///
@@ -16,16 +18,87 @@ import 'dart:async';
 ///       .listen(print); // prints 4 (due to the async nature of streams)
 class WithLatestFromStreamTransformer<T, S, R>
     extends StreamTransformerBase<T, R> {
-  final StreamTransformer<T, R> _transformer;
+  /// A collection of [Stream]s of which the latest values will be combined.
+  final Iterable<Stream<S>> latestFromStreams;
+  /// The combiner Function
+  final R Function(T t, List<S> values) fn;
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from [latestFromStreams] using the provided function [fn].
   WithLatestFromStreamTransformer(
-      Iterable<Stream<S>> latestFromStreams, R Function(T t, List<S> values) fn)
-      : _transformer = _buildTransformer(latestFromStreams, fn);
+      this.latestFromStreams, this.fn);
 
   @override
-  Stream<R> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<R> bind(Stream<T> stream) {
+    if (latestFromStreams == null) {
+      throw ArgumentError('latestFromStreams cannot be null');
+    }
+    if (latestFromStreams.any((s) => s == null)) {
+      throw ArgumentError('All streams must be not null');
+    }
+    if (fn == null) {
+      throw ArgumentError('combiner cannot be null');
+    }
+
+    final len = latestFromStreams.length;
+    StreamController<R> controller;
+    StreamSubscription<T> subscription;
+    final subscriptions = List<StreamSubscription<S>>(len);
+
+    void onDone() {
+      if (controller.isClosed) return;
+      controller.close();
+    }
+
+    controller = createController(stream,
+      onListen: () {
+        final latestValues = List<S>(len);
+        final hasValues = List.filled(len, false);
+
+        subscription = stream.listen(
+              (T value) {
+            if (hasValues.every((hasValue) => hasValue)) {
+              try {
+                controller.add(fn(value, List.unmodifiable(latestValues)));
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            }
+          },
+          onError: controller.addError,
+          onDone: onDone,
+        );
+
+        var index = 0;
+        for (final latestFromStream in latestFromStreams) {
+          final currentIndex = index;
+          subscriptions[index] = latestFromStream.listen(
+                (latest) {
+              hasValues[currentIndex] = true;
+              latestValues[currentIndex] = latest;
+            },
+            onError: controller.addError
+          );
+          index++;
+        }
+      },
+      onPause: ([Future<dynamic> resumeSignal]) =>
+          subscription.pause(resumeSignal),
+      onResume: () => subscription.resume(),
+      onCancel: () {
+        final list = List<StreamSubscription>.of(subscriptions)
+          ..add(subscription);
+
+        final cancelFutures = list
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null);
+
+        return Future.wait<dynamic>(cancelFutures);
+      },
+    );
+
+    return controller.stream;
+  }
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from [latestFromStreams] using a [List].
@@ -331,84 +404,6 @@ class WithLatestFromStreamTransformer<T, S, R>
         );
       },
     );
-  }
-
-  static StreamTransformer<T, R> _buildTransformer<T, S, R>(
-    Iterable<Stream<S>> latestFromStreams,
-    R Function(T t, List<S> values) fn,
-  ) {
-    if (latestFromStreams == null) {
-      throw ArgumentError('latestFromStreams cannot be null');
-    }
-    if (latestFromStreams.any((s) => s == null)) {
-      throw ArgumentError('All streams must be not null');
-    }
-    if (fn == null) {
-      throw ArgumentError('combiner cannot be null');
-    }
-
-    return StreamTransformer<T, R>((Stream<T> input, bool cancelOnError) {
-      final len = latestFromStreams.length;
-      StreamController<R> controller;
-      StreamSubscription<T> subscription;
-      final subscriptions = List<StreamSubscription<S>>(len);
-
-      void onDone() {
-        if (controller.isClosed) return;
-        controller.close();
-      }
-
-      controller = StreamController<R>(
-        sync: true,
-        onListen: () {
-          final latestValues = List<S>(len);
-          final hasValues = List.filled(len, false);
-
-          subscription = input.listen(
-            (T value) {
-              if (hasValues.every((hasValue) => hasValue)) {
-                try {
-                  controller.add(fn(value, List.unmodifiable(latestValues)));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-            },
-            onError: controller.addError,
-            onDone: onDone,
-          );
-
-          var index = 0;
-          for (final latestFromStream in latestFromStreams) {
-            final currentIndex = index;
-            subscriptions[index] = latestFromStream.listen(
-              (latest) {
-                hasValues[currentIndex] = true;
-                latestValues[currentIndex] = latest;
-              },
-              onError: controller.addError,
-              cancelOnError: cancelOnError,
-            );
-            index++;
-          }
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () {
-          final list = List<StreamSubscription>.of(subscriptions)
-            ..add(subscription);
-
-          final cancelFutures = list
-              .map((subscription) => subscription.cancel())
-              .where((cancelFuture) => cancelFuture != null);
-
-          return Future.wait<dynamic>(cancelFutures);
-        },
-      );
-
-      return controller.stream.listen(null);
-    });
   }
 }
 

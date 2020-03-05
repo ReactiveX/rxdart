@@ -73,7 +73,7 @@ void main() {
         ]));
 
     await expectLater(
-        stream, emitsInOrder(<dynamic>[const <int>[], emitsDone]));
+        stream, emitsInOrder(<dynamic>[emitsDone]));
   });
 
   test('Rx.bufferTime.error.shouldThrowA', () async {

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Wraps each item emitted by the source Stream in a [Timestamped] object
 /// that includes the emitted item and the time when the item was emitted.
 ///
@@ -10,38 +12,29 @@ import 'dart:async';
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
 class TimestampStreamTransformer<T>
     extends StreamTransformerBase<T, Timestamped<T>> {
-  final StreamTransformer<T, Timestamped<T>> _transformer;
-
   /// Constructs a [StreamTransformer] which emits events from the
   /// source [Stream] as snapshots in the form of [Timestamped].
-  TimestampStreamTransformer() : _transformer = _buildTransformer();
+  TimestampStreamTransformer();
 
   @override
-  Stream<Timestamped<T>> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<Timestamped<T>> bind(Stream<T> stream) {
+    StreamController<Timestamped<T>> controller;
+    StreamSubscription<Timestamped<T>> subscription;
 
-  static StreamTransformer<T, Timestamped<T>> _buildTransformer<T>() {
-    return StreamTransformer<T, Timestamped<T>>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<Timestamped<T>> controller;
-      StreamSubscription<Timestamped<T>> subscription;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream
+              .map((T value) => Timestamped<T>(DateTime.now(), value))
+              .listen(controller.add,
+              onError: controller.addError,
+              onDone: controller.close);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
 
-      controller = StreamController<Timestamped<T>>(
-          sync: true,
-          onListen: () {
-            subscription = input
-                .map((T value) => Timestamped<T>(DateTime.now(), value))
-                .listen(controller.add,
-                    onError: controller.addError,
-                    onDone: controller.close,
-                    cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

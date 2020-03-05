@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Intercepts error events and switches to a recovery stream created by the
 /// provided recoveryFn Function.
 ///
@@ -19,69 +21,53 @@ import 'dart:async';
 ///           Stream.value(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  final Stream<T> Function(dynamic error) recoveryFn;
 
   /// Constructs a [StreamTransformer] which intercepts error events and
   /// switches to a recovery [Stream] created by the provided [recoveryFn] Function.
-  OnErrorResumeStreamTransformer(Stream<T> Function(dynamic error) recoveryFn)
-      : _transformer = _buildTransformer(recoveryFn);
+  OnErrorResumeStreamTransformer(this.recoveryFn);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) {
+    StreamSubscription<T> inputSubscription;
+    StreamSubscription<T> recoverySubscription;
+    StreamController<T> controller;
+    var shouldCloseController = true;
 
-  static StreamTransformer<T, T> _buildTransformer<T>(
-    Stream<T> Function(dynamic error) recoveryFn,
-  ) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamSubscription<T> inputSubscription;
-      StreamSubscription<T> recoverySubscription;
-      StreamController<T> controller;
-      var shouldCloseController = true;
-
-      void safeClose() {
-        if (shouldCloseController) {
-          controller.close();
-        }
+    void safeClose() {
+      if (shouldCloseController) {
+        controller.close();
       }
+    }
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            inputSubscription = input.listen(
-              controller.add,
-              onError: (dynamic e, dynamic s) {
-                shouldCloseController = false;
+    controller = createController(stream,
+        onListen: () {
+          inputSubscription =
+              stream.listen(controller.add, onError: (dynamic e, dynamic s) {
+            shouldCloseController = false;
 
-                recoverySubscription = recoveryFn(e).listen(
-                  controller.add,
-                  onError: controller.addError,
-                  onDone: controller.close,
-                  cancelOnError: cancelOnError,
-                );
+            recoverySubscription = recoveryFn(e).listen(controller.add,
+                onError: controller.addError, onDone: controller.close);
 
-                inputSubscription.cancel();
-              },
-              onDone: safeClose,
-              cancelOnError: cancelOnError,
-            );
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            inputSubscription?.pause(resumeSignal);
-            recoverySubscription?.pause(resumeSignal);
-          },
-          onResume: () {
-            inputSubscription?.resume();
-            recoverySubscription?.resume();
-          },
-          onCancel: () {
-            return Future.wait<dynamic>(<Future<dynamic>>[
-              inputSubscription?.cancel(),
-              recoverySubscription?.cancel()
-            ].where((Future<dynamic> future) => future != null));
-          });
+            inputSubscription.cancel();
+          }, onDone: safeClose);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) {
+          inputSubscription?.pause(resumeSignal);
+          recoverySubscription?.pause(resumeSignal);
+        },
+        onResume: () {
+          inputSubscription?.resume();
+          recoverySubscription?.resume();
+        },
+        onCancel: () {
+          return Future.wait<dynamic>(<Future<dynamic>>[
+            inputSubscription?.cancel(),
+            recoverySubscription?.cancel()
+          ].where((Future<dynamic> future) => future != null));
+        });
 
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

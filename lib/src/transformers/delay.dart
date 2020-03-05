@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// The Delay operator modifies its source Stream by pausing for
 /// a particular increment of time (that you specify) before emitting
 /// each of the source Stream’s items.
@@ -14,66 +16,60 @@ import 'dart:async';
 ///       .delay(Duration(seconds: 1))
 ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
 class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  /// The delay used to pause initial emission of events by
+  final Duration duration;
 
   /// Constructs a [StreamTransformer] which will first pause for [duration] of time,
   /// before submitting events from the source [Stream].
-  DelayStreamTransformer(Duration duration)
-      : _transformer = _buildTransformer(duration);
+  DelayStreamTransformer(this.duration);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) {
+    var onDoneCalled = false, hasNoEvents = true;
+    var timers = <Timer>[];
+    StreamController<T> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      var onDoneCalled = false, hasNoEvents = true;
-      var timers = <Timer>[];
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen(
+              (value) {
+                hasNoEvents = false;
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (value) {
-                  hasNoEvents = false;
+                try {
+                  Timer timer;
+                  timer = Timer(duration, () {
+                    controller.add(value);
 
-                  try {
-                    Timer timer;
-                    timer = Timer(duration, () {
-                      controller.add(value);
+                    timers.remove(timer);
 
-                      timers.remove(timer);
+                    if (onDoneCalled && timers.isEmpty) {
+                      controller.close();
+                    }
+                  });
 
-                      if (onDoneCalled && timers.isEmpty) {
-                        controller.close();
-                      }
-                    });
+                  timers.add(timer);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              },
+              onError: controller.addError,
+              onDone: () {
+                if (hasNoEvents) controller.close();
 
-                    timers.add(timer);
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (hasNoEvents) controller.close();
+                onDoneCalled = true;
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () {
+          timers.forEach(_cancelTimerIfActive);
 
-                  onDoneCalled = true;
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () {
-            timers.forEach(_cancelTimerIfActive);
+          return subscription.cancel();
+        });
 
-            return subscription.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 
   static void _cancelTimerIfActive(Timer _timer) {

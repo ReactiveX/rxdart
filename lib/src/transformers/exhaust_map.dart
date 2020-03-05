@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Converts events from the source stream into a new Stream using a given
 /// mapper. It ignores all items from the source stream until the new stream
 /// completes.
@@ -16,33 +18,27 @@ import 'dart:async';
 ///       ))
 ///     .listen(print); // prints 0, 2
 class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+  /// Method which converts incoming events into a new [Stream]
+  final Stream<S> Function(T value) mapper;
 
   /// Constructs a [StreamTransformer] which maps events from the source [Stream] using [mapper].
   ///
   /// It ignores all items from the source [Stream] until the mapped [Stream] completes.
-  ExhaustMapStreamTransformer(Stream<S> Function(T value) mapper)
-      : _transformer = _buildTransformer(mapper);
+  ExhaustMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<S> bind(Stream<T> stream) {
+    StreamController<S> controller;
+    StreamSubscription<T> inputSubscription;
+    StreamSubscription<S> outputSubscription;
+    var inputClosed = false, outputIsEmitting = false;
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> Function(T value) mapper) {
-    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> inputSubscription;
-      StreamSubscription<S> outputSubscription;
-      var inputClosed = false, outputIsEmitting = false;
-
-      controller = StreamController<S>(
-        sync: true,
-        onListen: () {
-          inputSubscription = input.listen(
+    controller = createController(stream,
+      onListen: () {
+        inputSubscription = stream.listen(
             (T value) {
               try {
                 if (!outputIsEmitting) {
-                  outputIsEmitting = true;
                   outputSubscription = mapper(value).listen(
                     controller.add,
                     onError: controller.addError,
@@ -51,6 +47,7 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
                       if (inputClosed) controller.close();
                     },
                   );
+                  outputIsEmitting = true;
                 }
               } catch (e, s) {
                 controller.addError(e, s);
@@ -60,26 +57,23 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
             onDone: () {
               inputClosed = true;
               if (!outputIsEmitting) controller.close();
-            },
-            cancelOnError: cancelOnError,
-          );
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          inputSubscription.pause(resumeSignal);
-          outputSubscription?.pause(resumeSignal);
-        },
-        onResume: () {
-          inputSubscription.resume();
-          outputSubscription?.resume();
-        },
-        onCancel: () async {
-          await inputSubscription.cancel();
-          if (outputIsEmitting) await outputSubscription.cancel();
-        },
-      );
+            });
+      },
+      onPause: ([Future<dynamic> resumeSignal]) {
+        inputSubscription.pause(resumeSignal);
+        outputSubscription?.pause(resumeSignal);
+      },
+      onResume: () {
+        inputSubscription.resume();
+        outputSubscription?.resume();
+      },
+      onCancel: () async {
+        await inputSubscription.cancel();
+        if (outputIsEmitting) await outputSubscription.cancel();
+      },
+    );
 
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

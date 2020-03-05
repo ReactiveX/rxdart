@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// The GroupBy operator divides a [Stream] that emits items into
 /// a [Stream] that emits [GroupByStream],
 /// each one of which emits some subset of the items
@@ -13,65 +15,57 @@ import 'dart:async';
 
 class GroupByStreamTransformer<T, S>
     extends StreamTransformerBase<T, GroupByStream<T, S>> {
-  final StreamTransformer<T, GroupByStream<T, S>> _transformer;
+  /// Method which converts incoming events into a new [GroupByStream]
+  final S Function(T event) grouper;
 
   /// Constructs a [StreamTransformer] which groups events from the source
   /// [Stream] and emits them as [GroupByStream].
-  GroupByStreamTransformer(S Function(T event) grouper)
-      : _transformer = _buildTransformer<T, S>(grouper);
+  GroupByStreamTransformer(this.grouper);
 
   @override
-  Stream<GroupByStream<T, S>> bind(Stream<T> stream) =>
-      _transformer.bind(stream);
+  Stream<GroupByStream<T, S>> bind(Stream<T> stream) {
+    final mapper = <S, StreamController<T>>{};
+    StreamController<GroupByStream<T, S>> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, GroupByStream<T, S>> _buildTransformer<T, S>(
-      S Function(T event) grouper) {
-    return StreamTransformer<T, GroupByStream<T, S>>(
-        (Stream<T> input, bool cancelOnError) {
-      final mapper = <S, StreamController<T>>{};
-      StreamController<GroupByStream<T, S>> controller;
-      StreamSubscription<T> subscription;
+    final controllerBuilder = (S forKey) => () {
+      final groupedController = StreamController<T>();
 
-      final controllerBuilder = (S forKey) => () {
-            final groupedController = StreamController<T>();
+      controller
+          .add(GroupByStream<T, S>(forKey, groupedController.stream));
 
-            controller
-                .add(GroupByStream<T, S>(forKey, groupedController.stream));
+      return groupedController;
+    };
 
-            return groupedController;
-          };
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen(
+                  (T value) {
+                try {
+                  final key = grouper(value);
+                  // ignore: close_sinks
+                  final groupedController =
+                  mapper.putIfAbsent(key, controllerBuilder(key));
 
-      controller = StreamController<GroupByStream<T, S>>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  try {
-                    final key = grouper(value);
-                    // ignore: close_sinks
-                    final groupedController =
-                        mapper.putIfAbsent(key, controllerBuilder(key));
+                  groupedController.add(value);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              },
+              onError: controller.addError,
+              onDone: () {
+                mapper.values.forEach((controller) => controller.close());
+                mapper.clear();
 
-                    groupedController.add(value);
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  mapper.values.forEach((controller) => controller.close());
-                  mapper.clear();
+                controller.close();
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () => subscription.cancel());
 
-                  controller.close();
-                });
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

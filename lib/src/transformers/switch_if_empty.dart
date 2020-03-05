@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// When the original stream emits no items, this operator subscribes to
 /// the given fallback stream and emits items from that stream instead.
 ///
@@ -25,70 +27,59 @@ import 'dart:async';
 ///     Stream<Data> getThatData =
 ///         memory.switchIfEmpty(disk).switchIfEmpty(network);
 class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  /// The [Stream] which will be used as fallback, if the source [Stream] is empty.
+  final Stream<T> fallbackStream;
 
   /// Constructs a [StreamTransformer] which, when the source [Stream] emits
   /// no events, switches over to [fallbackStream].
-  SwitchIfEmptyStreamTransformer(Stream<T> fallbackStream)
-      : _transformer = _buildTransformer(fallbackStream);
+  SwitchIfEmptyStreamTransformer(this.fallbackStream);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      Stream<T> fallbackStream) {
+  Stream<T> bind(Stream<T> stream) {
     if (fallbackStream == null) {
       throw ArgumentError('fallbackStream cannot be null');
     }
 
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> defaultSubscription;
-      StreamSubscription<T> switchSubscription;
-      var hasEvent = false;
+    StreamController<T> controller;
+    StreamSubscription<T> defaultSubscription;
+    StreamSubscription<T> switchSubscription;
+    var hasEvent = false;
 
-      void onDone() {
-        if (controller.isClosed) return;
+    void onDone() {
+      if (controller.isClosed) return;
 
-        controller.close();
-        switchSubscription?.cancel();
-      }
+      controller.close();
+      switchSubscription?.cancel();
+    }
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            defaultSubscription = input.listen(
-                (T value) {
-                  hasEvent = true;
-                  controller.add(value);
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (hasEvent) {
-                    controller.close();
-                  } else {
-                    switchSubscription = fallbackStream.listen(
-                      controller.add,
-                      onError: controller.addError,
-                      onDone: onDone,
-                      cancelOnError: cancelOnError,
-                    );
-                  }
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            defaultSubscription?.pause(resumeSignal);
-            switchSubscription?.pause(resumeSignal);
-          },
-          onResume: () {
-            defaultSubscription?.resume();
-            switchSubscription?.resume();
-          },
-          onCancel: () => defaultSubscription?.cancel());
+    controller = createController(stream,
+        onListen: () {
+          defaultSubscription = stream.listen(
+              (T value) {
+                hasEvent = true;
+                controller.add(value);
+              },
+              onError: controller.addError,
+              onDone: () {
+                if (hasEvent) {
+                  controller.close();
+                } else {
+                  switchSubscription = fallbackStream.listen(controller.add,
+                      onError: controller.addError, onDone: onDone);
+                }
+              });
+        },
+        onPause: ([Future<dynamic> resumeSignal]) {
+          defaultSubscription?.pause(resumeSignal);
+          switchSubscription?.pause(resumeSignal);
+        },
+        onResume: () {
+          defaultSubscription?.resume();
+          switchSubscription?.resume();
+        },
+        onCancel: () => defaultSubscription?.cancel());
 
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 

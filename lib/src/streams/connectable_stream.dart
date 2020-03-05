@@ -49,7 +49,10 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
     return PublishConnectableStream<T>._(source, PublishSubject<T>());
   }
 
-  PublishConnectableStream._(this._source, this._subject) : super(_subject);
+  PublishConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   @override
   Stream<T> autoConnect({
@@ -101,7 +104,10 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  ValueConnectableStream._(this._source, this._subject) : super(_subject);
+  ValueConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
@@ -116,9 +122,9 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
   factory ValueConnectableStream.seeded(
-    Stream<T> source,
-    T seedValue,
-  ) =>
+      Stream<T> source,
+      T seedValue,
+      ) =>
       ValueConnectableStream<T>._(
         source,
         BehaviorSubject<T>.seeded(seedValue),
@@ -190,7 +196,10 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
     );
   }
 
-  ReplayConnectableStream._(this._source, this._subject) : super(_subject);
+  ReplayConnectableStream._(Stream<T> source, this._subject)
+      : _source =
+  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+        super(_subject);
 
   @override
   ReplayStream<T> autoConnect({
@@ -235,6 +244,9 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   List<T> get values => _subject.values;
+
+  @override
+  List<Object> get errors => _subject.errors;
 }
 
 /// A special [StreamSubscription] that not only cancels the connection to

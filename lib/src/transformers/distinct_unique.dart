@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/utils/controller.dart';
+
 /// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
 ///
@@ -22,51 +24,44 @@ import 'dart:collection';
 /// `Object.==` and `Object.hashCode`. If you supply one of `equals` and
 /// `hashCode`, you should generally also to supply the other.
 class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+  /// Optional method which determines equality between two events
+  final bool Function(T e1, T e2) equals;
+
+  /// Optional method which is used to create a hash from an event
+  final int Function(T e) hashCodeMethod;
 
   /// Constructs a [StreamTransformer] which emits events from the source
   /// [Stream] as if they were processed through a [HashSet].
   ///
   /// See [HashSet] for a more detailed explanation.
-  DistinctUniqueStreamTransformer(
-      {bool Function(T e1, T e2) equals, int Function(T e) hashCode})
-      : _transformer = _buildTransformer(equals, hashCode);
+  DistinctUniqueStreamTransformer({this.equals, this.hashCodeMethod});
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<T> bind(Stream<T> stream) {
+    var collection = HashSet<T>(equals: equals, hashCode: hashCodeMethod);
+    StreamController<T> controller;
+    StreamSubscription<T> subscription;
 
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      bool Function(T e1, T e2) equals, int Function(T e) hashCode) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      var collection = HashSet<T>(equals: equals, hashCode: hashCode);
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+    controller = createController(stream,
+        onListen: () {
+          subscription = stream.listen((T value) {
+            try {
+              if (collection.add(value)) controller.add(value);
+            } catch (e, s) {
+              controller.addError(e, s);
+            }
+          }, onError: controller.addError, onDone: controller.close);
+        },
+        onPause: ([Future<dynamic> resumeSignal]) =>
+            subscription.pause(resumeSignal),
+        onResume: () => subscription.resume(),
+        onCancel: () {
+          collection.clear();
+          collection = null;
+          return subscription.cancel();
+        });
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((T value) {
-              try {
-                if (collection.add(value)) controller.add(value);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () {
-            collection.clear();
-            collection = null;
-            return subscription.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
+    return controller.stream;
   }
 }
 
@@ -91,5 +86,5 @@ extension DistinctUniqueExtension<T> on Stream<T> {
     int Function(T e) hashCode,
   }) =>
       transform(DistinctUniqueStreamTransformer<T>(
-          equals: equals, hashCode: hashCode));
+          equals: equals, hashCodeMethod: hashCode));
 }
