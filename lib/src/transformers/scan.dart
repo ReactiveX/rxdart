@@ -14,6 +14,7 @@ import 'package:rxdart/src/utils/controller.dart';
 class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   /// Method which accumulates incoming event into a single, accumulated object
   final S Function(S accumulated, T value, int index) accumulator;
+
   /// The initial value for the accumulated value in the [accumulator]
   final S seed;
 

@@ -26,31 +26,27 @@ class MaterializeStreamTransformer<T>
     StreamController<Notification<T>> controller;
     StreamSubscription<T> subscription;
 
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            try {
-              controller.add(Notification<T>.onData(value));
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          }, onError: (dynamic e, StackTrace s) {
-            controller.add(Notification<T>.onError(e, s));
-          }, onDone: () {
-            controller.add(Notification<T>.onDone());
+    controller = createController(stream, onListen: () {
+      subscription = stream.listen((T value) {
+        try {
+          controller.add(Notification<T>.onData(value));
+        } catch (e, s) {
+          controller.addError(e, s);
+        }
+      }, onError: (dynamic e, StackTrace s) {
+        controller.add(Notification<T>.onError(e, s));
+      }, onDone: () {
+        controller.add(Notification<T>.onDone());
 
-            controller.close();
-          });
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
-        },
-        onResume: () {
-          subscription.resume();
-        },
-        onCancel: () {
-          return subscription.cancel();
-        });
+        controller.close();
+      });
+    }, onPause: ([Future<dynamic> resumeSignal]) {
+      subscription.pause(resumeSignal);
+    }, onResume: () {
+      subscription.resume();
+    }, onCancel: () {
+      return subscription.cancel();
+    });
 
     return controller.stream;
   }

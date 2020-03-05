@@ -51,7 +51,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
   PublishConnectableStream._(Stream<T> source, this._subject)
       : _source =
-  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
         super(_subject);
 
   @override
@@ -106,7 +106,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   ValueConnectableStream._(Stream<T> source, this._subject)
       : _source =
-  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
         super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
@@ -122,9 +122,9 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
   factory ValueConnectableStream.seeded(
-      Stream<T> source,
-      T seedValue,
-      ) =>
+    Stream<T> source,
+    T seedValue,
+  ) =>
       ValueConnectableStream<T>._(
         source,
         BehaviorSubject<T>.seeded(seedValue),
@@ -198,7 +198,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   ReplayConnectableStream._(Stream<T> source, this._subject)
       : _source =
-  source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
         super(_subject);
 
   @override

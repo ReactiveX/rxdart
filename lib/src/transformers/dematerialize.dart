@@ -35,32 +35,27 @@ class DematerializeStreamTransformer<T>
     StreamController<T> controller;
     StreamSubscription<Notification<T>> subscription;
 
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((Notification<T> notification) {
-            try {
-              if (notification.isOnData) {
-                controller.add(notification.value);
-              } else if (notification.isOnDone) {
-                controller.close();
-              } else if (notification.isOnError) {
-                controller.addError(
-                    notification.error, notification.stackTrace);
-              }
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          }, onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
-        },
-        onResume: () {
-          subscription.resume();
-        },
-        onCancel: () {
-          return subscription.cancel();
-        });
+    controller = createController(stream, onListen: () {
+      subscription = stream.listen((Notification<T> notification) {
+        try {
+          if (notification.isOnData) {
+            controller.add(notification.value);
+          } else if (notification.isOnDone) {
+            controller.close();
+          } else if (notification.isOnError) {
+            controller.addError(notification.error, notification.stackTrace);
+          }
+        } catch (e, s) {
+          controller.addError(e, s);
+        }
+      }, onError: controller.addError, onDone: controller.close);
+    }, onPause: ([Future<dynamic> resumeSignal]) {
+      subscription.pause(resumeSignal);
+    }, onResume: () {
+      subscription.resume();
+    }, onCancel: () {
+      return subscription.cancel();
+    });
 
     return controller.stream;
   }

@@ -39,9 +39,7 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             } catch (e, s) {
               controller.addError(e, s);
             }
-          },
-              onError: controller.addError,
-              onDone: controller.close);
+          }, onError: controller.addError, onDone: controller.close);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),

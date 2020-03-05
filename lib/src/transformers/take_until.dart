@@ -41,12 +41,10 @@ class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
     controller = createController(stream,
         onListen: () {
           subscription = stream.listen(controller.add,
-              onError: controller.addError,
-              onDone: onDone);
+              onError: controller.addError, onDone: onDone);
 
           otherSubscription = otherStream.listen((_) => onDone(),
-              onError: controller.addError,
-              onDone: onDone);
+              onError: controller.addError, onDone: onDone);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),

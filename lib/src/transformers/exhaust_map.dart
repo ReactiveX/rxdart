@@ -33,7 +33,8 @@ class ExhaustMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
     StreamSubscription<S> outputSubscription;
     var inputClosed = false, outputIsEmitting = false;
 
-    controller = createController(stream,
+    controller = createController(
+      stream,
       onListen: () {
         inputSubscription = stream.listen(
             (T value) {

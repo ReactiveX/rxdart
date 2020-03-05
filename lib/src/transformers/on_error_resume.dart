@@ -40,32 +40,28 @@ class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
       }
     }
 
-    controller = createController(stream,
-        onListen: () {
-          inputSubscription =
-              stream.listen(controller.add, onError: (dynamic e, dynamic s) {
-            shouldCloseController = false;
+    controller = createController(stream, onListen: () {
+      inputSubscription =
+          stream.listen(controller.add, onError: (dynamic e, dynamic s) {
+        shouldCloseController = false;
 
-            recoverySubscription = recoveryFn(e).listen(controller.add,
-                onError: controller.addError, onDone: controller.close);
+        recoverySubscription = recoveryFn(e).listen(controller.add,
+            onError: controller.addError, onDone: controller.close);
 
-            inputSubscription.cancel();
-          }, onDone: safeClose);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          inputSubscription?.pause(resumeSignal);
-          recoverySubscription?.pause(resumeSignal);
-        },
-        onResume: () {
-          inputSubscription?.resume();
-          recoverySubscription?.resume();
-        },
-        onCancel: () {
-          return Future.wait<dynamic>(<Future<dynamic>>[
-            inputSubscription?.cancel(),
-            recoverySubscription?.cancel()
-          ].where((Future<dynamic> future) => future != null));
-        });
+        inputSubscription.cancel();
+      }, onDone: safeClose);
+    }, onPause: ([Future<dynamic> resumeSignal]) {
+      inputSubscription?.pause(resumeSignal);
+      recoverySubscription?.pause(resumeSignal);
+    }, onResume: () {
+      inputSubscription?.resume();
+      recoverySubscription?.resume();
+    }, onCancel: () {
+      return Future.wait<dynamic>(<Future<dynamic>>[
+        inputSubscription?.cancel(),
+        recoverySubscription?.cancel()
+      ].where((Future<dynamic> future) => future != null));
+    });
 
     return controller.stream;
   }

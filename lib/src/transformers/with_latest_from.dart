@@ -20,13 +20,13 @@ class WithLatestFromStreamTransformer<T, S, R>
     extends StreamTransformerBase<T, R> {
   /// A collection of [Stream]s of which the latest values will be combined.
   final Iterable<Stream<S>> latestFromStreams;
+
   /// The combiner Function
   final R Function(T t, List<S> values) fn;
 
   /// Constructs a [StreamTransformer] that emits when the source [Stream] emits, combining
   /// the latest values from [latestFromStreams] using the provided function [fn].
-  WithLatestFromStreamTransformer(
-      this.latestFromStreams, this.fn);
+  WithLatestFromStreamTransformer(this.latestFromStreams, this.fn);
 
   @override
   Stream<R> bind(Stream<T> stream) {
@@ -50,13 +50,14 @@ class WithLatestFromStreamTransformer<T, S, R>
       controller.close();
     }
 
-    controller = createController(stream,
+    controller = createController(
+      stream,
       onListen: () {
         final latestValues = List<S>(len);
         final hasValues = List.filled(len, false);
 
         subscription = stream.listen(
-              (T value) {
+          (T value) {
             if (hasValues.every((hasValue) => hasValue)) {
               try {
                 controller.add(fn(value, List.unmodifiable(latestValues)));
@@ -72,13 +73,10 @@ class WithLatestFromStreamTransformer<T, S, R>
         var index = 0;
         for (final latestFromStream in latestFromStreams) {
           final currentIndex = index;
-          subscriptions[index] = latestFromStream.listen(
-                (latest) {
-              hasValues[currentIndex] = true;
-              latestValues[currentIndex] = latest;
-            },
-            onError: controller.addError
-          );
+          subscriptions[index] = latestFromStream.listen((latest) {
+            hasValues[currentIndex] = true;
+            latestValues[currentIndex] = latest;
+          }, onError: controller.addError);
           index++;
         }
       },

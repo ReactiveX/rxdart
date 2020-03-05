@@ -29,23 +29,22 @@ class GroupByStreamTransformer<T, S>
     StreamSubscription<T> subscription;
 
     final controllerBuilder = (S forKey) => () {
-      final groupedController = StreamController<T>();
+          final groupedController = StreamController<T>();
 
-      controller
-          .add(GroupByStream<T, S>(forKey, groupedController.stream));
+          controller.add(GroupByStream<T, S>(forKey, groupedController.stream));
 
-      return groupedController;
-    };
+          return groupedController;
+        };
 
     controller = createController(stream,
         onListen: () {
           subscription = stream.listen(
-                  (T value) {
+              (T value) {
                 try {
                   final key = grouper(value);
                   // ignore: close_sinks
                   final groupedController =
-                  mapper.putIfAbsent(key, controllerBuilder(key));
+                      mapper.putIfAbsent(key, controllerBuilder(key));
 
                   groupedController.add(value);
                 } catch (e, s) {

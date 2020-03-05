@@ -26,8 +26,7 @@ class TimestampStreamTransformer<T>
           subscription = stream
               .map((T value) => Timestamped<T>(DateTime.now(), value))
               .listen(controller.add,
-              onError: controller.addError,
-              onDone: controller.close);
+                  onError: controller.addError, onDone: controller.close);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),

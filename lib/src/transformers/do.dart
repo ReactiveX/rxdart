@@ -44,35 +44,35 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// handlers as they occur.
   DoStreamTransformer(
       {dynamic Function() onCancel,
-        void Function(T event) onData,
-        void Function() onDone,
-        void Function(Notification<T> notification) onEach,
-        Function onError,
-        void Function() onListen,
-        void Function(Future<dynamic> resumeSignal) onPause,
-        void Function() onResume})
+      void Function(T event) onData,
+      void Function() onDone,
+      void Function(Notification<T> notification) onEach,
+      Function onError,
+      void Function() onListen,
+      void Function(Future<dynamic> resumeSignal) onPause,
+      void Function() onResume})
       : _transformer = _buildTransformer(
-      onCancel: onCancel,
-      onData: onData,
-      onDone: onDone,
-      onEach: onEach,
-      onError: onError,
-      onListen: onListen,
-      onPause: onPause,
-      onResume: onResume);
+            onCancel: onCancel,
+            onData: onData,
+            onDone: onDone,
+            onEach: onEach,
+            onError: onError,
+            onListen: onListen,
+            onPause: onPause,
+            onResume: onResume);
 
   @override
   Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
 
   static StreamTransformer<T, T> _buildTransformer<T>(
       {dynamic Function() onCancel,
-        void Function(T event) onData,
-        void Function() onDone,
-        void Function(Notification<T> notification) onEach,
-        Function onError,
-        void Function() onListen,
-        void Function(Future<dynamic> resumeSignal) onPause,
-        void Function() onResume}) {
+      void Function(T event) onData,
+      void Function() onDone,
+      void Function(Notification<T> notification) onEach,
+      Function onError,
+      void Function() onListen,
+      void Function(Future<dynamic> resumeSignal) onPause,
+      void Function() onResume}) {
     if (onCancel == null &&
         onData == null &&
         onDone == null &&
@@ -107,44 +107,44 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         }
       };
       final onDataHandler = (void Function(T event) onData,
-          void Function(Notification<T> notification) onEach) =>
+              void Function(Notification<T> notification) onEach) =>
           (T event) {
-        if ((onData != null || onEach != null)) {
-          if (onData != null) {
-            try {
-              onData(event);
-            } catch (e, s) {
-              controller.addError(e, s);
+            if ((onData != null || onEach != null)) {
+              if (onData != null) {
+                try {
+                  onData(event);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              }
+
+              if (onEach != null) {
+                onEachHandler(Notification.onData(event));
+              }
             }
-          }
 
-          if (onEach != null) {
-            onEachHandler(Notification.onData(event));
-          }
-        }
-
-        controller.add(event);
-      };
+            controller.add(event);
+          };
       ;
       final onErrorHandler = (Function onError,
-          void Function(Notification<T> notification) onEach) =>
+              void Function(Notification<T> notification) onEach) =>
           (Object e, StackTrace s) {
-        if ((onError != null || onEach != null) && emittedErrors.add(e)) {
-          if (onError != null) {
-            try {
-              onError(e, s);
-            } catch (e, s) {
-              controller.addError(e, s);
+            if ((onError != null || onEach != null) && emittedErrors.add(e)) {
+              if (onError != null) {
+                try {
+                  onError(e, s);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+              }
+
+              if (onEach != null) {
+                onEachHandler(Notification.onError(e, s));
+              }
             }
-          }
 
-          if (onEach != null) {
-            onEachHandler(Notification.onError(e, s));
-          }
-        }
-
-        controller.addError(e);
-      };
+            controller.addError(e);
+          };
       final onCancelHandler = () async {
         if (onCancel != null) {
           dynamic result = onCancel();
@@ -157,24 +157,24 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         return subscription.cancel();
       };
       final onDoneHandler = (void Function() onDone,
-          void Function(Notification<T> notification) onEach) =>
+              void Function(Notification<T> notification) onEach) =>
           () {
-        if (onDone != null) {
-          try {
-            onDone();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
+            if (onDone != null) {
+              try {
+                onDone();
+              } catch (e, s) {
+                controller.addError(e, s);
+              }
+            }
 
-        if (onEach != null) {
-          onEachHandler(Notification.onDone());
-        }
+            if (onEach != null) {
+              onEachHandler(Notification.onDone());
+            }
 
-        onDataManifest.clear();
+            onDataManifest.clear();
 
-        controller.close();
-      };
+            controller.close();
+          };
       final onListenDelegate = () {
         if (onListen != null) {
           try {

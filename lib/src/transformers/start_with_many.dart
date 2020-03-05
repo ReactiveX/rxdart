@@ -29,18 +29,15 @@ class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
     controller = createController(stream,
         onListen: () {
           final prependedStream = () async* {
-            for (var i=0, len=startValues.length; i<len; i++) {
+            for (var i = 0, len = startValues.length; i < len; i++) {
               yield startValues.elementAt(i);
             }
 
             yield* stream;
           };
 
-          subscription = prependedStream().listen(
-            controller.add,
-            onError: controller.addError,
-            onDone: controller.close
-          );
+          subscription = prependedStream().listen(controller.add,
+              onError: controller.addError, onDone: controller.close);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),

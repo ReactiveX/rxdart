@@ -25,9 +25,9 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
     Future<T> onInterval;
 
     final combinedWait = (Future<dynamic> resumeSignal) =>
-    (resumeSignal != null && onInterval != null)
-        ? Future.wait<dynamic>([onInterval, resumeSignal])
-        : resumeSignal;
+        (resumeSignal != null && onInterval != null)
+            ? Future.wait<dynamic>([onInterval, resumeSignal])
+            : resumeSignal;
 
     controller = createController(stream,
         onListen: () {
@@ -44,9 +44,7 @@ class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
             } catch (e, s) {
               controller.addError(e, s);
             }
-          },
-              onError: controller.addError,
-              onDone: controller.close);
+          }, onError: controller.addError, onDone: controller.close);
         },
         // await also onInterval, if it is active
         onPause: ([Future<dynamic> resumeSignal]) =>

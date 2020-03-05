@@ -28,14 +28,14 @@ class TimeIntervalStreamTransformer<T>
           int ems;
 
           subscription = stream.listen(
-                  (T value) {
+              (T value) {
                 ems = stopwatch.elapsedMicroseconds;
 
                 stopwatch.stop();
 
                 try {
-                  controller.add(
-                      TimeInterval<T>(value, Duration(microseconds: ems)));
+                  controller
+                      .add(TimeInterval<T>(value, Duration(microseconds: ems)));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }

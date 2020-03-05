@@ -12,6 +12,7 @@ import 'package:rxdart/src/utils/controller.dart';
 class StartWithErrorStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// The starting error of this [Stream]
   final Object error;
+
   /// The starting stackTrace of this [Stream]
   final StackTrace stackTrace;
 
@@ -33,8 +34,7 @@ class StartWithErrorStreamTransformer<T> extends StreamTransformerBase<T, T> {
           };
 
           subscription = prependedStream().listen(controller.add,
-              onError: controller.addError,
-              onDone: controller.close);
+              onError: controller.addError, onDone: controller.close);
         },
         onPause: ([Future<dynamic> resumeSignal]) =>
             subscription.pause(resumeSignal),
