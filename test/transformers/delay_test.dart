@@ -51,7 +51,7 @@ void main() {
     final stream = _getStream()
         .asBroadcastStream()
         .delay(const Duration(milliseconds: 200));
-    print(stream.isBroadcast);
+
     // listen twice on same stream
     stream.listen(null);
     stream.listen(null);
