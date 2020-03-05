@@ -5,7 +5,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
-import 'package:rxdart/src/transformers/start_with_many.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new

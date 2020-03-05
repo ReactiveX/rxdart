@@ -21,6 +21,7 @@ import 'package:rxdart/src/utils/controller.dart';
 ///           Stream.value(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
 class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
+  /// Method which returns a [Stream], based from the error.
   final Stream<T> Function(dynamic error) recoveryFn;
 
   /// Constructs a [StreamTransformer] which intercepts error events and
