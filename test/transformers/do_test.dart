@@ -75,8 +75,9 @@ void main() {
       final subject = BehaviorSubject<int>(sync: true);
       final stream = subject.doOnCancel(() => count++);
 
-      stream.listen(null);
       await stream.listen(null).cancel();
+
+      scheduleMicrotask(() async => await stream.listen(null).cancel());
 
       await expectLater(count, 1);
       await subject.close();
@@ -166,8 +167,8 @@ void main() {
 
       final stream = sc.stream.doOnListen(() => onListenCallCount++);
 
-      stream.listen(null);
-      stream.listen(null);
+      await stream.listen(null).cancel();
+      await stream.listen(null).cancel();
 
       await expectLater(onListenCallCount, 2);
       await sc.close();
