@@ -13,8 +13,12 @@ class _TimeIntervalStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
     if (data.isOnListenEvent) {
       _stopwatch.start();
     } else {
+      _stopwatch.stop();
       _outputSink.add(TimeInterval<S>(
           data.event, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
+      _stopwatch
+        ..reset()
+        ..start();
     }
   }
 

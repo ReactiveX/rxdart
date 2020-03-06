@@ -384,7 +384,7 @@ class WithLatestFromStreamTransformer<S, T, R>
 
   @override
   Stream<R> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream,
+      toOnListenEnabledStream(stream),
       (sink) => _WithLatestFromStreamSink<S, T, R>(
           sink, latestFromStreams, combiner));
 }
