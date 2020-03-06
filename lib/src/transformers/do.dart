@@ -13,7 +13,9 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
   final void Function() _onListen;
   final void Function(Future<dynamic> resumeSignal) _onPause;
   final void Function() _onResume;
+  final _HandlerCounter _transfomerHandlerCounter;
   final EventSink<S> _outputSink;
+  final _HandlerCounter _selfHandlerCounter = _HandlerCounter();
 
   _DoStreamSink(
       this._outputSink,
@@ -24,38 +26,51 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
       this._onError,
       this._onListen,
       this._onPause,
-      this._onResume);
+      this._onResume,
+      this._transfomerHandlerCounter);
 
   @override
   void add(S data) {
+    if (_selfHandlerCounter.onDataCounter ==
+        _transfomerHandlerCounter.onDataCounter) {
+      _transfomerHandlerCounter.onDataCounter++;
+
+      if (_onData != null) {
+        _onData(data);
+      }
+
+      if (_onEach != null) {
+        _onEach(Notification.onData(data));
+      }
+    }
+
     _outputSink.add(data);
 
-    if (_onData != null) {
-      _onData(data);
-    }
-
-    if (_onEach != null) {
-      _onEach(Notification.onData(data));
-    }
+    _selfHandlerCounter.onDataCounter++;
   }
 
   @override
   void addError(e, [st]) {
+    if (_selfHandlerCounter.onErrorCounter ==
+        _transfomerHandlerCounter.onErrorCounter) {
+      _transfomerHandlerCounter.onErrorCounter++;
+
+      if (_onError != null) {
+        _onError(e, st);
+      }
+
+      if (_onEach != null) {
+        _onEach(Notification.onError(e, st));
+      }
+    }
+
     _outputSink.addError(e, st);
 
-    if (_onError != null) {
-      _onError(e, st);
-    }
-
-    if (_onEach != null) {
-      _onEach(Notification.onError(e, st));
-    }
+    _selfHandlerCounter.onErrorCounter++;
   }
 
   @override
   void close() {
-    _outputSink.close();
-
     if (_onDone != null) {
       _onDone();
     }
@@ -63,12 +78,14 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
     if (_onEach != null) {
       _onEach(Notification.onDone());
     }
+
+    _outputSink.close();
   }
 
   @override
-  void onCancel() {
+  FutureOr onCancel() {
     if (_onCancel != null) {
-      _onCancel();
+      return _onCancel();
     }
   }
 
@@ -180,12 +197,26 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   @override
   Stream<S> bind(Stream<S> stream) {
     final forwardedStream = forwardStream<S>(stream);
+    final handlerCounter = _HandlerCounter();
 
     return Stream.eventTransformed(
         forwardedStream.stream,
-        (sink) => forwardedStream.connect(_DoStreamSink<S>(sink, onCancel,
-            onData, onDone, onEach, onError, onListen, onPause, onResume)));
+        (sink) => forwardedStream.connect(_DoStreamSink<S>(
+            sink,
+            onCancel,
+            onData,
+            onDone,
+            onEach,
+            onError,
+            onListen,
+            onPause,
+            onResume,
+            handlerCounter)));
   }
+}
+
+class _HandlerCounter {
+  int onDataCounter = 0, onErrorCounter = 0;
 }
 
 /// Extends the Stream class with the ability to execute a callback function

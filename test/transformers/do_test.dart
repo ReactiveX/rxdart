@@ -226,8 +226,7 @@ void main() {
               throw Exception('catch me if you can! doOnError'))
           .listen(null,
               onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException),
-                  count: 2));
+                  (Exception e, [StackTrace s]) => expect(e, isException)));
 
       // a cancel() call may occur after the controller is already closed
       // in that case, the error is forwarded to the current [Zone]
