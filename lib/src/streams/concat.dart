@@ -93,6 +93,5 @@ extension ConcatExtensions<T> on Stream<T> {
   ///         .concatWith([Stream.fromIterable([2])])
   ///         .listen(print); // prints 1, 2
   Stream<T> concatWith(Iterable<Stream<T>> other) =>
-      transform(StreamTransformer.fromBind(
-          (stream) => ConcatStream<T>([stream, ...other])));
+      ConcatStream<T>([this, ...other]);
 }

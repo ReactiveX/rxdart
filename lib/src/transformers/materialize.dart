@@ -32,7 +32,7 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
 /// ### Example
 ///
 ///     Stream<int>.fromIterable([1])
-///         .transform(materializeTransformer())
+///         .transform(MaterializeStreamTransformer())
 ///         .listen((i) => print(i)); // Prints onData & onDone Notification
 class MaterializeStreamTransformer<S>
     extends StreamTransformerBase<S, Notification<S>> {

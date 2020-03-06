@@ -36,14 +36,14 @@ class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
 ///
 ///     Stream<Notification<int>>
 ///         .fromIterable([Notification.onData(1), Notification.onDone()])
-///         .transform(dematerializeTransformer())
+///         .transform(DematerializeStreamTransformer())
 ///         .listen((i) => print(i)); // Prints 1
 ///
 /// ### Error example
 ///
 ///     Stream<Notification<int>>
 ///         .fromIterable([Notification.onError(Exception(), null)])
-///         .transform(dematerializeTransformer())
+///         .transform(DematerializeStreamTransformer())
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
 class DematerializeStreamTransformer<S>
     extends StreamTransformerBase<Notification<S>, S> {

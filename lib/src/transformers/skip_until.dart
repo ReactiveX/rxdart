@@ -50,7 +50,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
 ///       Stream.value(1),
 ///       TimerStream(2, Duration(minutes: 2))
 ///     ])
-///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
+///     .transform(SkipUntilStreamTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
 class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   /// The [Stream] which is required to emit first, before this [Stream] starts emitting
