@@ -75,10 +75,10 @@ void main() {
       final subject = BehaviorSubject<int>(sync: true);
       final stream = subject.doOnCancel(() => count++);
 
-      stream.listen(null);
+      await stream.listen(null).cancel();
       await stream.listen(null).cancel();
 
-      await expectLater(count, 1);
+      await expectLater(count, 2);
       await subject.close();
     });
 

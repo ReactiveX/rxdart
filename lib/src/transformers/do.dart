@@ -1,6 +1,98 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
+
+class _DoStreamSink<S> implements ForwardingSink<S> {
+  final dynamic Function() _onCancel;
+  final void Function(S event) _onData;
+  final void Function() _onDone;
+  final void Function(Notification<S> notification) _onEach;
+  final Function _onError;
+  final void Function() _onListen;
+  final void Function(Future<dynamic> resumeSignal) _onPause;
+  final void Function() _onResume;
+  final EventSink<S> _outputSink;
+
+  _DoStreamSink(
+      this._outputSink,
+      this._onCancel,
+      this._onData,
+      this._onDone,
+      this._onEach,
+      this._onError,
+      this._onListen,
+      this._onPause,
+      this._onResume);
+
+  @override
+  void add(S data) {
+    _outputSink.add(data);
+
+    if (_onData != null) {
+      _onData(data);
+    }
+
+    if (_onEach != null) {
+      _onEach(Notification.onData(data));
+    }
+  }
+
+  @override
+  void addError(e, [st]) {
+    _outputSink.addError(e, st);
+
+    if (_onError != null) {
+      _onError(e, st);
+    }
+
+    if (_onEach != null) {
+      _onEach(Notification.onError(e, st));
+    }
+  }
+
+  @override
+  void close() {
+    _outputSink.close();
+
+    if (_onDone != null) {
+      _onDone();
+    }
+
+    if (_onEach != null) {
+      _onEach(Notification.onDone());
+    }
+  }
+
+  @override
+  void onCancel() {
+    if (_onCancel != null) {
+      _onCancel();
+    }
+  }
+
+  @override
+  void onListen() {
+    if (_onListen != null) {
+      _onListen();
+    }
+  }
+
+  @override
+  void onPause() {
+    if (_onPause != null) {
+      _onPause(null);
+    }
+  }
+
+  @override
+  void onResume() {
+    if (_onResume != null) {
+      _onResume();
+    }
+  }
+}
 
 /// Invokes the given callback at the corresponding point the the stream
 /// lifecycle. For example, if you pass in an onDone callback, it will
@@ -37,42 +129,42 @@ import 'package:rxdart/src/utils/notification.dart';
 ///           onError: (e, s) => print('Oh no!'),
 ///           onDone: () => print('Done')))
 ///         .listen(null); // Prints: 1, 'Done'
-class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// fires when all subscriptions have cancelled.
+  final dynamic Function() onCancel;
+
+  /// fires when data is emitted
+  final void Function(S event) onData;
+
+  /// fires on close
+  final void Function() onDone;
+
+  /// fires on data, close and error
+  final void Function(Notification<S> notification) onEach;
+
+  /// fires on errors
+  final Function onError;
+
+  /// fires when a subscription first starts
+  final void Function() onListen;
+
+  /// fires when the subscription pauses
+  final void Function(Future<dynamic> resumeSignal) onPause;
+
+  /// fires when the subscription resumes
+  final void Function() onResume;
 
   /// Constructs a [StreamTransformer] which will trigger any of the provided
   /// handlers as they occur.
   DoStreamTransformer(
-      {dynamic Function() onCancel,
-      void Function(T event) onData,
-      void Function() onDone,
-      void Function(Notification<T> notification) onEach,
-      Function onError,
-      void Function() onListen,
-      void Function(Future<dynamic> resumeSignal) onPause,
-      void Function() onResume})
-      : _transformer = _buildTransformer(
-            onCancel: onCancel,
-            onData: onData,
-            onDone: onDone,
-            onEach: onEach,
-            onError: onError,
-            onListen: onListen,
-            onPause: onPause,
-            onResume: onResume);
-
-  @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      {dynamic Function() onCancel,
-      void Function(T event) onData,
-      void Function() onDone,
-      void Function(Notification<T> notification) onEach,
-      Function onError,
-      void Function() onListen,
-      void Function(Future<dynamic> resumeSignal) onPause,
-      void Function() onResume}) {
+      {this.onCancel,
+      this.onData,
+      this.onDone,
+      this.onEach,
+      this.onError,
+      this.onListen,
+      this.onPause,
+      this.onResume}) {
     if (onCancel == null &&
         onData == null &&
         onDone == null &&
@@ -83,155 +175,16 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         onResume == null) {
       throw ArgumentError('Must provide at least one handler');
     }
+  }
 
-    // Keep track of emitted Errors
-    // This Set is checked when an Error happens,
-    // if it does not yet contain the Error, then emit it,
-    // otherwise do nothing.
-    //
-    // This will prevent multiple listeners to the same Stream to emit
-    // onError with the same error multiple times.
-    final emittedErrors = <Object>{};
-    final onDataManifest = <Stream<T>>[];
+  @override
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-    StreamSubscription<T> subscription;
-
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-
-      final onEachHandler = (Notification<T> notification) {
-        try {
-          onEach(notification);
-        } catch (e, s) {
-          controller.addError(e, s);
-        }
-      };
-      final onDataHandler = (void Function(T event) onData,
-              void Function(Notification<T> notification) onEach) =>
-          (T event) {
-            if ((onData != null || onEach != null)) {
-              if (onData != null) {
-                try {
-                  onData(event);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-
-              if (onEach != null) {
-                onEachHandler(Notification.onData(event));
-              }
-            }
-
-            controller.add(event);
-          };
-      ;
-      final onErrorHandler = (Function onError,
-              void Function(Notification<T> notification) onEach) =>
-          (Object e, StackTrace s) {
-            if ((onError != null || onEach != null) && emittedErrors.add(e)) {
-              if (onError != null) {
-                try {
-                  onError(e, s);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-
-              if (onEach != null) {
-                onEachHandler(Notification.onError(e, s));
-              }
-            }
-
-            controller.addError(e);
-          };
-      final onCancelHandler = () async {
-        if (onCancel != null) {
-          dynamic result = onCancel();
-
-          if (result is Future) {
-            return Future.wait<dynamic>([result, subscription.cancel()]);
-          }
-        }
-
-        return subscription.cancel();
-      };
-      final onDoneHandler = (void Function() onDone,
-              void Function(Notification<T> notification) onEach) =>
-          () {
-            if (onDone != null) {
-              try {
-                onDone();
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-
-            if (onEach != null) {
-              onEachHandler(Notification.onDone());
-            }
-
-            onDataManifest.clear();
-
-            controller.close();
-          };
-      final onListenDelegate = () {
-        if (onListen != null) {
-          try {
-            onListen();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
-
-        // checks if this input Stream is already handling onX...
-        final isOnXHandled = onDataManifest.contains(input);
-        final maybeOnData = isOnXHandled ? null : onData;
-        final maybeOnError = isOnXHandled ? null : onError;
-        final maybeOnDone = isOnXHandled ? null : onDone;
-        final maybeOnEach = isOnXHandled ? null : onEach;
-        // ...and if it does, pass null handlers to the onX handler,
-        // resulting in this onX pass to be ignored
-        subscription = input.listen(onDataHandler(maybeOnData, maybeOnEach),
-            onError: onErrorHandler(maybeOnError, maybeOnEach),
-            onDone: onDoneHandler(maybeOnDone, maybeOnEach),
-            cancelOnError: cancelOnError);
-
-        // because we want to prevent duplicate onX handling
-        // for the same input Stream, a List is being kept of all
-        // Streams that already do onX handling
-        onDataManifest.add(input);
-      };
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: onListenDelegate,
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-
-            if (onPause != null) {
-              try {
-                onPause(resumeSignal);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-          },
-          onResume: () {
-            subscription.resume();
-
-            if (onResume != null) {
-              try {
-                onResume();
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-          },
-          onCancel: onCancelHandler);
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream.connect(_DoStreamSink<S>(sink, onCancel,
+            onData, onDone, onEach, onError, onListen, onPause, onResume)));
   }
 }
 
