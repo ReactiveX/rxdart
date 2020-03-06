@@ -28,7 +28,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  void onCancel() {}
+  FutureOr onCancel() {}
 
   @override
   void onListen() => _otherSubscription = _otherStream
