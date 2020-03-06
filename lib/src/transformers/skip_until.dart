@@ -1,6 +1,36 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+import 'package:rxdart/src/utils/on_listen_stream.dart';
+
+class _SkipUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
+  final Stream<T> _otherStream;
+  final EventSink<S> _outputSink;
+  StreamSubscription<T> _otherSubscription;
+  var _canAdd = false;
+
+  _SkipUntilStreamSink(this._outputSink, this._otherStream);
+
+  @override
+  void add(OnListenStreamEvent<S> data) {
+    if (_canAdd) {
+      _outputSink.add(data.event);
+    }
+
+    if (data.isOnListenEvent) {
+      _otherSubscription = _otherStream.take(1).listen(null,
+          onError: _outputSink.addError, onDone: () => _canAdd = true);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _otherSubscription?.cancel();
+    _outputSink.close();
+  }
+}
 
 /// Starts emitting events only after the given stream emits an event.
 ///
@@ -12,55 +42,22 @@ import 'package:rxdart/src/utils/controller.dart';
 ///     ])
 ///     .transform(skipUntilTransformer(TimerStream(1, Duration(minutes: 1))))
 ///     .listen(print); // prints 2;
-class SkipUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
+class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   /// The [Stream] which is required to emit first, before this [Stream] starts emitting
-  final Stream<S> otherStream;
+  final Stream<T> otherStream;
 
   /// Constructs a [StreamTransformer] which starts emitting events
   /// only after [otherStream] emits an event.
-  SkipUntilStreamTransformer(this.otherStream);
-
-  @override
-  Stream<T> bind(Stream<T> stream) {
+  SkipUntilStreamTransformer(this.otherStream) {
     if (otherStream == null) {
       throw ArgumentError('otherStream cannot be null');
     }
-
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-    StreamSubscription<S> otherSubscription;
-    var goTime = false;
-
-    void onDone() {
-      if (controller.isClosed) return;
-
-      controller.close();
-    }
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((T data) {
-            if (goTime) {
-              controller.add(data);
-            }
-          }, onError: controller.addError, onDone: onDone);
-
-          otherSubscription = otherStream.listen((_) {
-            goTime = true;
-
-            otherSubscription.cancel();
-          }, onError: controller.addError, onDone: onDone);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () async {
-          await otherSubscription?.cancel();
-          await subscription?.cancel();
-        });
-
-    return controller.stream;
   }
+
+  @override
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      toOnListenEnabledStream(stream),
+      (sink) => _SkipUntilStreamSink<S, T>(sink, otherStream));
 }
 
 /// Extends the Stream class with the ability to skip events until another

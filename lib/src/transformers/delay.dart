@@ -1,6 +1,40 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _DelayStreamSink<S> implements EventSink<S> {
+  final Duration _duration;
+  final EventSink<S> _outputSink;
+  var _openTimers = 0;
+  var _inputClosed = false;
+
+  _DelayStreamSink(this._outputSink, this._duration);
+
+  @override
+  void add(S data) {
+    _openTimers++;
+
+    Timer(_duration, () {
+      _openTimers--;
+
+      _outputSink.add(data);
+
+      if (_inputClosed && _openTimers == 0) {
+        _outputSink.close();
+      }
+    });
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _inputClosed = true;
+
+    if (_openTimers == 0) {
+      _outputSink.close();
+    }
+  }
+}
 
 /// The Delay operator modifies its source Stream by pausing for
 /// a particular increment of time (that you specify) before emitting
@@ -15,7 +49,7 @@ import 'package:rxdart/src/utils/controller.dart';
 ///     Stream.fromIterable([1, 2, 3, 4])
 ///       .delay(Duration(seconds: 1))
 ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
-class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class DelayStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// The delay used to pause initial emission of events by
   final Duration duration;
 
@@ -24,59 +58,8 @@ class DelayStreamTransformer<T> extends StreamTransformerBase<T, T> {
   DelayStreamTransformer(this.duration);
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    var onDoneCalled = false, hasNoEvents = true;
-    var timers = <Timer>[];
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen(
-              (value) {
-                hasNoEvents = false;
-
-                try {
-                  Timer timer;
-                  timer = Timer(duration, () {
-                    controller.add(value);
-
-                    timers.remove(timer);
-
-                    if (onDoneCalled && timers.isEmpty) {
-                      controller.close();
-                    }
-                  });
-
-                  timers.add(timer);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              },
-              onError: controller.addError,
-              onDone: () {
-                if (hasNoEvents) controller.close();
-
-                onDoneCalled = true;
-              });
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () {
-          timers.forEach(_cancelTimerIfActive);
-
-          return subscription.cancel();
-        });
-
-    return controller.stream;
-  }
-
-  static void _cancelTimerIfActive(Timer _timer) {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
-    }
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _DelayStreamSink<S>(sink, duration));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted

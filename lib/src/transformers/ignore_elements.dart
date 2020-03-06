@@ -1,6 +1,19 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _IgnoreElementsStreamSink<S> implements EventSink<S> {
+  final EventSink<S> _outputSink;
+
+  _IgnoreElementsStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {}
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// Creates a [Stream] where all emitted items are ignored, only the
 /// error / completed notifications are passed
@@ -13,28 +26,14 @@ import 'package:rxdart/src/utils/controller.dart';
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
 @Deprecated('Use the drain method from the Stream class instead')
-class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class IgnoreElementsStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Constructs a [StreamTransformer] which simply ignores all events from
   /// the source [Stream], except for error or completed events.
   IgnoreElementsStreamTransformer();
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen(null,
-              onError: controller.addError, onDone: () => controller.close());
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _IgnoreElementsStreamSink<S>(sink));
 }
 
 /// Extends the Stream class with the ability to skip, or ignore, data events.

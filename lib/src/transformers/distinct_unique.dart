@@ -1,7 +1,30 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _DistinctUniqueStreamSink<S> implements EventSink<S> {
+  final EventSink<S> _outputSink;
+  final HashSet<S> _collection;
+
+  _DistinctUniqueStreamSink(this._outputSink,
+      {bool Function(S e1, S e2) equals, int Function(S e) hashCodeMethod})
+      : _collection = HashSet<S>(equals: equals, hashCode: hashCodeMethod);
+
+  @override
+  void add(S data) {
+    if (_collection.add(data)) {
+      _outputSink.add(data);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _collection.clear();
+    _outputSink.close();
+  }
+}
 
 /// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
@@ -23,12 +46,12 @@ import 'package:rxdart/src/utils/controller.dart';
 /// If `equals` or `hashCode` are omitted, the set uses the elements' intrinsic
 /// `Object.==` and `Object.hashCode`. If you supply one of `equals` and
 /// `hashCode`, you should generally also to supply the other.
-class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class DistinctUniqueStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Optional method which determines equality between two events
-  final bool Function(T e1, T e2) equals;
+  final bool Function(S e1, S e2) equals;
 
   /// Optional method which is used to create a hash from an event
-  final int Function(T e) hashCodeMethod;
+  final int Function(S e) hashCodeMethod;
 
   /// Constructs a [StreamTransformer] which emits events from the source
   /// [Stream] as if they were processed through a [HashSet].
@@ -37,32 +60,10 @@ class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
   DistinctUniqueStreamTransformer({this.equals, this.hashCodeMethod});
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    var collection = HashSet<T>(equals: equals, hashCode: hashCodeMethod);
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((T value) {
-            try {
-              if (collection.add(value)) controller.add(value);
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          }, onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () {
-          collection.clear();
-          collection = null;
-          return subscription.cancel();
-        });
-
-    return controller.stream;
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream,
+      (sink) => _DistinctUniqueStreamSink<S>(sink,
+          equals: equals, hashCodeMethod: hashCodeMethod));
 }
 
 /// Extends the Stream class with the ability to skip items that have previously

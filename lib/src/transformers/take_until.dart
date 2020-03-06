@@ -1,6 +1,33 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+import 'package:rxdart/src/utils/on_listen_stream.dart';
+
+class _TakeUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
+  final Stream<T> _otherStream;
+  final EventSink<S> _outputSink;
+  StreamSubscription<T> _otherSubscription;
+
+  _TakeUntilStreamSink(this._outputSink, this._otherStream);
+
+  @override
+  void add(OnListenStreamEvent<S> data) {
+    if (data.isOnListenEvent) {
+      _otherSubscription = _otherStream.take(1).listen(null,
+          onError: _outputSink.addError, onDone: _outputSink.close);
+    } else {
+      _outputSink.add(data.event);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _otherSubscription?.cancel();
+    _outputSink.close();
+  }
+}
 
 /// Returns the values from the source stream sequence until the other
 /// stream sequence produces a value.
@@ -14,48 +41,22 @@ import 'package:rxdart/src/utils/controller.dart';
 ///       .transform(TakeUntilStreamTransformer(
 ///         TimerStream(3, Duration(seconds: 10))))
 ///       .listen(print); // prints 1
-class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
+class TakeUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   /// The [Stream] which closes this [Stream] as soon as it emits an event.
-  final Stream<S> otherStream;
+  final Stream<T> otherStream;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream],
   /// until [otherStream] fires.
-  TakeUntilStreamTransformer(this.otherStream);
+  TakeUntilStreamTransformer(this.otherStream) {
+    if (otherStream == null) {
+      throw ArgumentError('otherStream cannot be null');
+    }
+  }
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    if (otherStream == null) {
-      throw ArgumentError('take until stream cannot be null');
-    }
-
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-    StreamSubscription<S> otherSubscription;
-
-    void onDone() {
-      if (controller.isClosed) return;
-
-      controller.close();
-    }
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen(controller.add,
-              onError: controller.addError, onDone: onDone);
-
-          otherSubscription = otherStream.listen((_) => onDone(),
-              onError: controller.addError, onDone: onDone);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () async {
-          await otherSubscription?.cancel();
-          await subscription?.cancel();
-        });
-
-    return controller.stream;
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      toOnListenEnabledStream(stream),
+      (sink) => _TakeUntilStreamSink<S, T>(sink, otherStream));
 }
 
 /// Extends the Stream class with the ability receive events from the source

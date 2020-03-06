@@ -1,6 +1,20 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _MapToStreamSink<S, T> implements EventSink<S> {
+  final T _value;
+  final EventSink<T> _outputSink;
+
+  _MapToStreamSink(this._outputSink, this._value);
+
+  @override
+  void add(S data) => _outputSink.add(_value);
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// Emits the given constant value on the output Stream every time the source
 /// Stream emits a value.
@@ -19,27 +33,13 @@ class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   MapToStreamTransformer(this.value);
 
   @override
-  Stream<T> bind(Stream<S> stream) {
-    StreamController<T> controller;
-    StreamSubscription<S> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((_) => controller.add(value),
-              onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
-  }
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _MapToStreamSink<S, T>(sink, value));
 }
 
 /// Extends the Stream class with the ability to convert each item to the same
 /// value.
-extension MapToExtension<T> on Stream<T> {
+extension MapToExtension<S> on Stream<S> {
   /// Emits the given constant value on the output Stream every time the source
   /// Stream emits a value.
   ///
@@ -48,5 +48,5 @@ extension MapToExtension<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2, 3, 4])
   ///       .mapTo(true)
   ///       .listen(print); // prints true, true, true, true
-  Stream<S> mapTo<S>(S value) => transform(MapToStreamTransformer<T, S>(value));
+  Stream<T> mapTo<T>(T value) => transform(MapToStreamTransformer(value));
 }

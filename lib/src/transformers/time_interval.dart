@@ -1,6 +1,29 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+import 'package:rxdart/src/utils/on_listen_stream.dart';
+
+class _TimeIntervalStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+  final EventSink<TimeInterval<S>> _outputSink;
+  final _stopwatch = Stopwatch();
+
+  _TimeIntervalStreamSink(this._outputSink);
+
+  @override
+  void add(OnListenStreamEvent<S> data) {
+    if (data.isOnListenEvent) {
+      _stopwatch.start();
+    } else {
+      _outputSink.add(TimeInterval<S>(
+          data.event, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// Records the time interval between consecutive values in an stream
 /// sequence.
@@ -11,50 +34,16 @@ import 'package:rxdart/src/utils/controller.dart';
 ///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
 ///       .transform(TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
-class TimeIntervalStreamTransformer<T>
-    extends StreamTransformerBase<T, TimeInterval<T>> {
+class TimeIntervalStreamTransformer<S>
+    extends StreamTransformerBase<S, TimeInterval<S>> {
   /// Constructs a [StreamTransformer] which emits events from the
   /// source [Stream] as snapshots in the form of [TimeInterval].
   TimeIntervalStreamTransformer();
 
   @override
-  Stream<TimeInterval<T>> bind(Stream<T> stream) {
-    StreamController<TimeInterval<T>> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          var stopwatch = Stopwatch()..start();
-          int ems;
-
-          subscription = stream.listen(
-              (T value) {
-                ems = stopwatch.elapsedMicroseconds;
-
-                stopwatch.stop();
-
-                try {
-                  controller
-                      .add(TimeInterval<T>(value, Duration(microseconds: ems)));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-
-                stopwatch = Stopwatch()..start();
-              },
-              onError: controller.addError,
-              onDone: () {
-                stopwatch.stop();
-                controller.close();
-              });
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
-  }
+  Stream<TimeInterval<S>> bind(Stream<S> stream) => Stream.eventTransformed(
+      toOnListenEnabledStream(stream),
+      (sink) => _TimeIntervalStreamSink<S>(sink));
 }
 
 /// A class that represents a snapshot of the current value emitted by a

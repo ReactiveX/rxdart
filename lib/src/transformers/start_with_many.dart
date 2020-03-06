@@ -1,6 +1,30 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+import 'package:rxdart/src/utils/on_listen_stream.dart';
+
+class _StartWithManyStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+  final Iterable<S> _startValues;
+  final EventSink<S> _outputSink;
+
+  _StartWithManyStreamSink(this._outputSink, this._startValues);
+
+  @override
+  void add(OnListenStreamEvent<S> data) {
+    if (data.isOnListenEvent) {
+      for (var i = 0, len = _startValues.length; i < len; i++) {
+        _outputSink.add(_startValues.elementAt(i));
+      }
+    } else {
+      _outputSink.add(data.event);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// Prepends a sequence of values to the source Stream.
 ///
@@ -9,43 +33,22 @@ import 'package:rxdart/src/utils/controller.dart';
 ///     Stream.fromIterable([3])
 ///       .transform(StartWithManyStreamTransformer([1, 2]))
 ///       .listen(print); // prints 1, 2, 3
-class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// The starting events of this [Stream]
-  final Iterable<T> startValues;
+  final Iterable<S> startValues;
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
-  /// with all values from [startValues].
-  StartWithManyStreamTransformer(this.startValues);
-
-  @override
-  Stream<T> bind(Stream<T> stream) {
+  /// with [startValue].
+  StartWithManyStreamTransformer(this.startValues) {
     if (startValues == null) {
       throw ArgumentError('startValues cannot be null');
     }
-
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          final prependedStream = () async* {
-            for (var i = 0, len = startValues.length; i < len; i++) {
-              yield startValues.elementAt(i);
-            }
-
-            yield* stream;
-          };
-
-          subscription = prependedStream().listen(controller.add,
-              onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
   }
+
+  @override
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      toOnListenEnabledStream(stream),
+      (sink) => _StartWithManyStreamSink<S>(sink, startValues));
 }
 
 /// Extends the Stream class with the ability to emit the given values as the

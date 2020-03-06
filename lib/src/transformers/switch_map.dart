@@ -1,6 +1,39 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _SwitchMapStreamSink<S, T> implements EventSink<S> {
+  final Stream<T> Function(S value) _mapper;
+  final EventSink<T> _outputSink;
+  StreamSubscription<T> _mapperSubscription;
+  bool _inputClosed = false;
+
+  _SwitchMapStreamSink(this._outputSink, this._mapper);
+
+  @override
+  void add(S data) {
+    final mappedStream = _mapper(data);
+
+    _mapperSubscription?.cancel();
+
+    _mapperSubscription =
+        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
+      if (_inputClosed) {
+        _outputSink.close();
+
+        _mapperSubscription = null;
+      }
+    });
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _inputClosed = true;
+
+    _mapperSubscription ?? _outputSink.close();
+  }
+}
 
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be be listened to and begin
@@ -19,9 +52,9 @@ import 'package:rxdart/src/utils/controller.dart';
 ///         Stream.fromFuture(
 ///           Future.delayed(Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
-class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
+class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   /// Method which converts incoming events into a new [Stream]
-  final Stream<S> Function(T value) mapper;
+  final Stream<T> Function(S value) mapper;
 
   /// Constructs a [StreamTransformer] which maps each event from the source [Stream]
   /// using [mapper].
@@ -31,53 +64,8 @@ class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
   SwitchMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) {
-    StreamController<S> controller;
-    StreamSubscription<T> subscription;
-    StreamSubscription<S> otherSubscription;
-    var leftClosed = false, rightClosed = false, hasMainEvent = false;
-
-    controller = createController(stream, onListen: () {
-      subscription = stream.listen(
-          (T value) {
-            try {
-              otherSubscription?.cancel();
-
-              // Since we start a new listener on mapper(value),
-              // this state needs to be set to false again.
-              rightClosed = false;
-              hasMainEvent = true;
-
-              otherSubscription = mapper(value).listen(controller.add,
-                  onError: controller.addError, onDone: () {
-                rightClosed = true;
-
-                if (leftClosed) controller.close();
-              });
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          },
-          onError: controller.addError,
-          onDone: () {
-            leftClosed = true;
-
-            if (rightClosed || !hasMainEvent) controller.close();
-          });
-    }, onPause: ([Future<dynamic> resumeSignal]) {
-      subscription.pause(resumeSignal);
-      otherSubscription?.pause(resumeSignal);
-    }, onResume: () {
-      subscription.resume();
-      otherSubscription?.resume();
-    }, onCancel: () async {
-      await subscription.cancel();
-
-      if (hasMainEvent) await otherSubscription?.cancel();
-    });
-
-    return controller.stream;
-  }
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _SwitchMapStreamSink<S, T>(sink, mapper));
 }
 
 /// Extends the Stream with the ability to convert one stream into a new Stream

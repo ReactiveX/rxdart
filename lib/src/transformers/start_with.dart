@@ -1,6 +1,28 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+import 'package:rxdart/src/utils/on_listen_stream.dart';
+
+class _StartWithStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+  final S _startValue;
+  final EventSink<S> _outputSink;
+
+  _StartWithStreamSink(this._outputSink, this._startValue);
+
+  @override
+  void add(OnListenStreamEvent<S> data) {
+    if (data.isOnListenEvent) {
+      _outputSink.add(_startValue);
+    } else {
+      _outputSink.add(data.event);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// Prepends a value to the source Stream.
 ///
@@ -9,36 +31,18 @@ import 'package:rxdart/src/utils/controller.dart';
 ///     Stream.fromIterable([2])
 ///       .transform(StartWithStreamTransformer(1))
 ///       .listen(print); // prints 1, 2
-class StartWithStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// The starting event of this [Stream]
-  final T startValue;
+  final S startValue;
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
   /// with [startValue].
   StartWithStreamTransformer(this.startValue);
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    StreamController<T> controller;
-    StreamSubscription<T> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          final prependedStream = () async* {
-            yield startValue;
-            yield* stream;
-          };
-
-          subscription = prependedStream().listen(controller.add,
-              onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      toOnListenEnabledStream(stream),
+      (sink) => _StartWithStreamSink<S>(sink, startValue));
 }
 
 /// Extends the Stream class with the ability to emit the given value as the

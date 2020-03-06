@@ -1,6 +1,36 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _OnErrorResumeStreamSink<S> implements EventSink<S> {
+  final Stream<S> Function(Object error) _recoveryFn;
+  final EventSink<S> _outputSink;
+  var _inRecovery = false;
+
+  _OnErrorResumeStreamSink(this._outputSink, this._recoveryFn);
+
+  @override
+  void add(S data) {
+    if (!_inRecovery) {
+      _outputSink.add(data);
+    }
+  }
+
+  @override
+  void addError(e, [st]) {
+    _inRecovery = true;
+
+    final recoveryStream = _recoveryFn(e);
+
+    recoveryStream.listen(_outputSink.add,
+        onError: _outputSink.addError, onDone: _outputSink.close);
+  }
+
+  @override
+  void close() {
+    if (!_inRecovery) {
+      _outputSink.close();
+    }
+  }
+}
 
 /// Intercepts error events and switches to a recovery stream created by the
 /// provided recoveryFn Function.
@@ -20,52 +50,17 @@ import 'package:rxdart/src/utils/controller.dart';
 ///       .onErrorResume((dynamic e) =>
 ///           Stream.value(e is StateError ? 1 : 0)
 ///       .listen(print); // prints 0
-class OnErrorResumeStreamTransformer<T> extends StreamTransformerBase<T, T> {
+class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Method which returns a [Stream], based from the error.
-  final Stream<T> Function(dynamic error) recoveryFn;
+  final Stream<S> Function(Object error) recoveryFn;
 
   /// Constructs a [StreamTransformer] which intercepts error events and
   /// switches to a recovery [Stream] created by the provided [recoveryFn] Function.
   OnErrorResumeStreamTransformer(this.recoveryFn);
 
   @override
-  Stream<T> bind(Stream<T> stream) {
-    StreamSubscription<T> inputSubscription;
-    StreamSubscription<T> recoverySubscription;
-    StreamController<T> controller;
-    var shouldCloseController = true;
-
-    void safeClose() {
-      if (shouldCloseController) {
-        controller.close();
-      }
-    }
-
-    controller = createController(stream, onListen: () {
-      inputSubscription =
-          stream.listen(controller.add, onError: (dynamic e, dynamic s) {
-        shouldCloseController = false;
-
-        recoverySubscription = recoveryFn(e).listen(controller.add,
-            onError: controller.addError, onDone: controller.close);
-
-        inputSubscription.cancel();
-      }, onDone: safeClose);
-    }, onPause: ([Future<dynamic> resumeSignal]) {
-      inputSubscription?.pause(resumeSignal);
-      recoverySubscription?.pause(resumeSignal);
-    }, onResume: () {
-      inputSubscription?.resume();
-      recoverySubscription?.resume();
-    }, onCancel: () {
-      return Future.wait<dynamic>(<Future<dynamic>>[
-        inputSubscription?.cancel(),
-        recoverySubscription?.cancel()
-      ].where((Future<dynamic> future) => future != null));
-    });
-
-    return controller.stream;
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _OnErrorResumeStreamSink<S>(sink, recoveryFn));
 }
 
 /// Extends the Stream class with the ability to recover from errors in various
