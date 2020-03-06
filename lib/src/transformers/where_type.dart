@@ -1,6 +1,23 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
+class _WhereTypeStreamSink<S, T> implements EventSink<S> {
+  final EventSink<T> _outputSink;
+
+  _WhereTypeStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {
+    if (data is T) {
+      _outputSink.add(data);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
 
 /// This transformer is a shorthand for [Stream.where] followed by [Stream.cast].
 ///
@@ -25,29 +42,8 @@ class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   WhereTypeStreamTransformer();
 
   @override
-  Stream<T> bind(Stream<S> stream) {
-    StreamController<T> controller;
-    StreamSubscription<S> subscription;
-
-    controller = createController(stream,
-        onListen: () {
-          subscription = stream.listen((event) {
-            try {
-              if (event is T) {
-                controller.add(event);
-              }
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          }, onError: controller.addError, onDone: controller.close);
-        },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
-        onResume: () => subscription.resume(),
-        onCancel: () => subscription.cancel());
-
-    return controller.stream;
-  }
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _WhereTypeStreamSink<S, T>(sink));
 }
 
 /// Extends the Stream class with the ability to filter down events to only

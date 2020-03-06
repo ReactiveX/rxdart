@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/controller.dart';
-
 class _TimestampStreamSink<S> implements EventSink<S> {
   final EventSink<Timestamped<S>> _outputSink;
 

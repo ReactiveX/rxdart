@@ -48,9 +48,4 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
   Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
       toOnListenEnabledStream(stream),
       (sink) => _StartWithErrorStreamSink<S>(sink, error, stackTrace));
-
-  Stream<S> _startWithStream(Stream<S> stream) async* {
-    yield null;
-    yield* stream;
-  }
 }
