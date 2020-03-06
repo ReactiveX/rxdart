@@ -15,19 +15,35 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     stream.listen(controller.add,
         onError: controller.addError, onDone: controller.close);
 
-    connectedSink?.onListen();
+    try {
+      connectedSink?.onListen();
+    } catch (e, s) {
+      controller.addError(e, s);
+    }
   };
 
   final onCancel = () {
-    connectedSink?.onCancel();
+    try {
+      connectedSink?.onCancel();
+    } catch (e, s) {
+      controller.addError(e, s);
+    }
   };
 
   final onPause = () {
-    connectedSink?.onPause();
+    try {
+      connectedSink?.onPause();
+    } catch (e, s) {
+      controller.addError(e, s);
+    }
   };
 
   final onResume = () {
-    connectedSink?.onResume();
+    try {
+      connectedSink?.onResume();
+    } catch (e, s) {
+      controller.addError(e, s);
+    }
   };
 
   controller = stream.isBroadcast
