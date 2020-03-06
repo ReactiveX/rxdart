@@ -30,7 +30,7 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void onCancel() {}
+  FutureOr onCancel() {}
 
   @override
   void onListen() => scheduleMicrotask(_addFirstEvent);

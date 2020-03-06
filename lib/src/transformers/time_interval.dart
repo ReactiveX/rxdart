@@ -26,7 +26,7 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
   void close() => _outputSink.close();
 
   @override
-  void onCancel() {}
+  FutureOr onCancel() {}
 
   @override
   void onListen() => _stopwatch.start();

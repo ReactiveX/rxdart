@@ -22,11 +22,9 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     }
   };
 
-  final onCancel = () {
-    try {
-      connectedSink?.onCancel();
-    } catch (e, s) {
-      controller.addError(e, s);
+  final onCancel = () async {
+    if (connectedSink?.onCancel != null) {
+      return connectedSink.onCancel();
     }
   };
 
@@ -48,7 +46,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
 
   controller = stream.isBroadcast
       ? StreamController<T>.broadcast(
-          onListen: onListen, onCancel: onCancel, sync: true)
+          onListen: onListen, onCancel: () => onCancel(), sync: true)
       : StreamController<T>(
           onListen: onListen,
           onCancel: onCancel,

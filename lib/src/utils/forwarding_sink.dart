@@ -19,5 +19,5 @@ abstract class ForwardingSink<T> implements EventSink<T> {
   void onResume();
 
   /// Fires when a subscriber cancels.
-  void onCancel();
+  FutureOr onCancel();
 }
