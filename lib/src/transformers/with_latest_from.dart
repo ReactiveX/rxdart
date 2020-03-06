@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WithLatestFromStreamSink<S, T, R>
-    implements EventSink<OnListenStreamEvent<S>> {
+class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
   final EventSink<R> _outputSink;
@@ -16,20 +16,9 @@ class _WithLatestFromStreamSink<S, T, R>
         _latestValues = List<T>(_latestFromStreams.length);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
-    if (data.isOnListenEvent) {
-      var index = 0;
-      for (final latestFromStream in _latestFromStreams) {
-        final currentIndex = index;
-
-        latestFromStream.listen((latest) {
-          _hasValues[currentIndex] = true;
-          _latestValues[currentIndex] = latest;
-        }, onError: _outputSink.addError);
-        index++;
-      }
-    } else if (_hasValues.every((hasValue) => hasValue)) {
-      _outputSink.add(_combiner(data.event, List.unmodifiable(_latestValues)));
+  void add(S data) {
+    if (_hasValues.every((hasValue) => hasValue)) {
+      _outputSink.add(_combiner(data, List.unmodifiable(_latestValues)));
     }
   }
 
@@ -38,6 +27,31 @@ class _WithLatestFromStreamSink<S, T, R>
 
   @override
   void close() => _outputSink.close();
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() {
+    var index = 0;
+
+    for (final latestFromStream in _latestFromStreams) {
+      final currentIndex = index;
+
+      latestFromStream.listen((latest) {
+        _hasValues[currentIndex] = true;
+        _latestValues[currentIndex] = latest;
+      }, onError: addError);
+
+      index++;
+    }
+  }
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
@@ -383,10 +397,14 @@ class WithLatestFromStreamTransformer<S, T, R>
   }
 
   @override
-  Stream<R> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _WithLatestFromStreamSink<S, T, R>(
-          sink, latestFromStreams, combiner));
+  Stream<R> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream.connect(_WithLatestFromStreamSink<S, T, R>(
+            sink, latestFromStreams, combiner)));
+  }
 }
 
 /// Extends the Stream class with the ability to merge the source Stream with

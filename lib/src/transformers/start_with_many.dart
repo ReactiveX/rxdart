@@ -1,29 +1,54 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithManyStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
   final Iterable<S> _startValues;
   final EventSink<S> _outputSink;
+  var _isFirstEventAdded = false;
 
   _StartWithManyStreamSink(this._outputSink, this._startValues);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
-    if (data.isOnListenEvent) {
-      for (var i = 0, len = _startValues.length; i < len; i++) {
-        _outputSink.add(_startValues.elementAt(i));
-      }
-    } else {
-      _outputSink.add(data.event);
-    }
+  void add(S data) {
+    _addFirstEvent();
+    _outputSink.add(data);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [st]) {
+    _addFirstEvent();
+    _outputSink.addError(e, st);
+  }
 
   @override
-  void close() => _outputSink.close();
+  void close() {
+    _addFirstEvent();
+    _outputSink.close();
+  }
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() => scheduleMicrotask(_addFirstEvent);
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
+
+  void _addFirstEvent() {
+    if (!_isFirstEventAdded) {
+      _isFirstEventAdded = true;
+
+      for (var i = 0, len = _startValues.length; i < len; i++) {
+        _outputSink.add(_startValues.elementAt(i));
+      }
+    }
+  }
 }
 
 /// Prepends a sequence of values to the source Stream.
@@ -46,9 +71,14 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _StartWithManyStreamSink<S>(sink, startValues));
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream
+            .connect(_StartWithManyStreamSink<S>(sink, startValues)));
+  }
 }
 
 /// Extends the Stream class with the ability to emit the given values as the

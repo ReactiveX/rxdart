@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SkipUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
+class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> _otherStream;
   final EventSink<S> _outputSink;
   StreamSubscription<T> _otherSubscription;
@@ -11,14 +12,9 @@ class _SkipUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
   _SkipUntilStreamSink(this._outputSink, this._otherStream);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
+  void add(S data) {
     if (_canAdd) {
-      _outputSink.add(data.event);
-    }
-
-    if (data.isOnListenEvent) {
-      _otherSubscription = _otherStream.take(1).listen(null,
-          onError: _outputSink.addError, onDone: () => _canAdd = true);
+      _outputSink.add(data);
     }
   }
 
@@ -30,6 +26,20 @@ class _SkipUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
     _otherSubscription?.cancel();
     _outputSink.close();
   }
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() => _otherSubscription = _otherStream
+      .take(1)
+      .listen(null, onError: addError, onDone: () => _canAdd = true);
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
 }
 
 /// Starts emitting events only after the given stream emits an event.
@@ -55,9 +65,14 @@ class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _SkipUntilStreamSink<S, T>(sink, otherStream));
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream
+            .connect(_SkipUntilStreamSink<S, T>(sink, otherStream)));
+  }
 }
 
 /// Extends the Stream class with the ability to skip events until another

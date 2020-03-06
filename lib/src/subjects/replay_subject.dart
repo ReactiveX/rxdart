@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
+import 'package:rxdart/src/transformers/start_with_error.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -70,17 +71,22 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
     return ReplaySubject<T>._(
       controller,
       Rx.defer<T>(
-        () => ConcatEagerStream([
-          Stream.fromIterable(queue.map((event) {
-            if (event.isError) {
-              controller.addError(event.errorAndStackTrace.error,
-                  event.errorAndStackTrace.stackTrace);
-            }
+        () {
+          var stream = controller.stream;
 
-            return event.event;
-          }).toList()),
-          controller.stream
-        ]),
+          queue.toList(growable: false).reversed.forEach((event) {
+            if (event.isError) {
+              stream = stream.transform(StartWithErrorStreamTransformer(
+                  event.errorAndStackTrace.error,
+                  event.errorAndStackTrace.stackTrace));
+            } else {
+              stream =
+                  stream.transform(StartWithStreamTransformer(event.event));
+            }
+          });
+
+          return stream;
+        },
         reusable: true,
       ),
       queue,

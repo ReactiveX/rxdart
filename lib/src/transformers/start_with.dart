@@ -1,27 +1,51 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+class _StartWithStreamSink<S> implements ForwardingSink<S> {
   final S _startValue;
   final EventSink<S> _outputSink;
+  var _isFirstEventAdded = false;
 
   _StartWithStreamSink(this._outputSink, this._startValue);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
-    if (data.isOnListenEvent) {
-      _outputSink.add(_startValue);
-    } else {
-      _outputSink.add(data.event);
-    }
+  void add(S data) {
+    _addFirstEvent();
+    _outputSink.add(data);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(e, [st]) {
+    _addFirstEvent();
+    _outputSink.addError(e, st);
+  }
 
   @override
-  void close() => _outputSink.close();
+  void close() {
+    _addFirstEvent();
+    _outputSink.close();
+  }
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() => scheduleMicrotask(_addFirstEvent);
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
+
+  void _addFirstEvent() {
+    if (!_isFirstEventAdded) {
+      _isFirstEventAdded = true;
+      _outputSink.add(_startValue);
+    }
+  }
 }
 
 /// Prepends a value to the source Stream.
@@ -40,9 +64,14 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
   StartWithStreamTransformer(this.startValue);
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _StartWithStreamSink<S>(sink, startValue));
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_StartWithStreamSink<S>(sink, startValue)));
+  }
 }
 
 /// Extends the Stream class with the ability to emit the given value as the

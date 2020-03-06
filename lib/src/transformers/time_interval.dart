@@ -1,25 +1,22 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TimeIntervalStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
+class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
   final EventSink<TimeInterval<S>> _outputSink;
   final _stopwatch = Stopwatch();
 
   _TimeIntervalStreamSink(this._outputSink);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
-    if (data.isOnListenEvent) {
-      _stopwatch.start();
-    } else {
-      _stopwatch.stop();
-      _outputSink.add(TimeInterval<S>(
-          data.event, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
-      _stopwatch
-        ..reset()
-        ..start();
-    }
+  void add(S data) {
+    _stopwatch.stop();
+    _outputSink.add(TimeInterval<S>(
+        data, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
+    _stopwatch
+      ..reset()
+      ..start();
   }
 
   @override
@@ -27,6 +24,18 @@ class _TimeIntervalStreamSink<S> implements EventSink<OnListenStreamEvent<S>> {
 
   @override
   void close() => _outputSink.close();
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() => _stopwatch.start();
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
 }
 
 /// Records the time interval between consecutive values in an stream
@@ -45,9 +54,12 @@ class TimeIntervalStreamTransformer<S>
   TimeIntervalStreamTransformer();
 
   @override
-  Stream<TimeInterval<S>> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _TimeIntervalStreamSink<S>(sink));
+  Stream<TimeInterval<S>> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => forwardedStream.connect(_TimeIntervalStreamSink<S>(sink)));
+  }
 }
 
 /// A class that represents a snapshot of the current value emitted by a

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/on_listen_stream.dart';
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TakeUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
+class _TakeUntilStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> _otherStream;
   final EventSink<S> _outputSink;
   StreamSubscription<T> _otherSubscription;
@@ -10,14 +11,7 @@ class _TakeUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
   _TakeUntilStreamSink(this._outputSink, this._otherStream);
 
   @override
-  void add(OnListenStreamEvent<S> data) {
-    if (data.isOnListenEvent) {
-      _otherSubscription = _otherStream.take(1).listen(null,
-          onError: _outputSink.addError, onDone: _outputSink.close);
-    } else {
-      _outputSink.add(data.event);
-    }
-  }
+  void add(S data) => _outputSink.add(data);
 
   @override
   void addError(e, [st]) => _outputSink.addError(e, st);
@@ -27,6 +21,20 @@ class _TakeUntilStreamSink<S, T> implements EventSink<OnListenStreamEvent<S>> {
     _otherSubscription?.cancel();
     _outputSink.close();
   }
+
+  @override
+  void onCancel() {}
+
+  @override
+  void onListen() => _otherSubscription = _otherStream
+      .take(1)
+      .listen(null, onError: addError, onDone: _outputSink.close);
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
 }
 
 /// Returns the values from the source stream sequence until the other
@@ -54,9 +62,14 @@ class TakeUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      toOnListenEnabledStream(stream),
-      (sink) => _TakeUntilStreamSink<S, T>(sink, otherStream));
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream
+            .connect(_TakeUntilStreamSink<S, T>(sink, otherStream)));
+  }
 }
 
 /// Extends the Stream class with the ability receive events from the source
