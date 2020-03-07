@@ -113,4 +113,15 @@ void main() {
     },
     timeout: Timeout(Duration(seconds: 3)),
   );
+
+  test('Rx.delay accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.delay(Duration(seconds: 10));
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

@@ -382,6 +382,17 @@ void main() {
       ),
     );
   });
+  test('Rx.withLatestFrom accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream
+        .withLatestFrom(Stream<int>.empty(), (_, dynamic __) => true);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }
 
 class Pair {

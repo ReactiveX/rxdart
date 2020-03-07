@@ -326,5 +326,16 @@ void main() {
 
       controller.close();
     });
+
+    test('Rx.do accidental broadcast', () async {
+      final controller = StreamController<int>();
+
+      final stream = controller.stream.doOnEach((_) {});
+
+      stream.listen(null);
+      expect(() => stream.listen(null), throwsStateError);
+
+      controller.add(1);
+    });
   });
 }

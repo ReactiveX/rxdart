@@ -114,4 +114,14 @@ void main() {
           expect(e, isException);
         }, count: 4));
   });
+  test('Rx.groupBy accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.groupBy((_) => _);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

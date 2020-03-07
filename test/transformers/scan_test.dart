@@ -57,4 +57,16 @@ void main() {
           expect(e, isStateError);
         }, count: 4));
   });
+
+  test('Rx.scan accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream
+        .scan((int acc, int value, int index) => (acc ?? 0) + value);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

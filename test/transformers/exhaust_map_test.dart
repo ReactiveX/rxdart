@@ -87,5 +87,16 @@ void main() {
       subscription.pause();
       subscription.resume();
     });
+
+    test('Rx.exhaustMap accidental broadcast', () async {
+      final controller = StreamController<int>();
+
+      final stream = controller.stream.exhaustMap((_) => Stream<int>.empty());
+
+      stream.listen(null);
+      expect(() => stream.listen(null), throwsStateError);
+
+      controller.add(1);
+    });
   });
 }

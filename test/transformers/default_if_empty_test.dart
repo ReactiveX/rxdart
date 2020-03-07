@@ -67,4 +67,14 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+  test('Rx.defaultIfEmpty accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.defaultIfEmpty(1);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

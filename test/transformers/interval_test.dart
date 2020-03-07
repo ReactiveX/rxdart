@@ -79,4 +79,15 @@ void main() {
             createTimer: (self, parent, zone, duration, void Function() f) =>
                 throw Exception('Zone createTimer error')));
   });
+
+  test('Rx.interval accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.interval(const Duration(milliseconds: 10));
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

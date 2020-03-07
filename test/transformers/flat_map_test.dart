@@ -105,4 +105,14 @@ void main() {
       emitsInOrder(<dynamic>[3, emitsDone]),
     );
   });
+  test('Rx.flatMap accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.flatMap((_) => Stream<int>.empty());
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

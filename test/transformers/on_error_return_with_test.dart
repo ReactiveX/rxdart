@@ -44,4 +44,15 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('Rx.onErrorReturnWith accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.onErrorReturnWith((Object _) => 1);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }
