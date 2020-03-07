@@ -1,5 +1,53 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _StartWithStreamSink<S> implements ForwardingSink<S> {
+  final S _startValue;
+  final EventSink<S> _outputSink;
+  var _isFirstEventAdded = false;
+
+  _StartWithStreamSink(this._outputSink, this._startValue);
+
+  @override
+  void add(S data) {
+    _addFirstEvent();
+    _outputSink.add(data);
+  }
+
+  @override
+  void addError(e, [st]) {
+    _addFirstEvent();
+    _outputSink.addError(e, st);
+  }
+
+  @override
+  void close() {
+    _addFirstEvent();
+    _outputSink.close();
+  }
+
+  @override
+  FutureOr onCancel() {}
+
+  @override
+  void onListen() => scheduleMicrotask(_addFirstEvent);
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
+
+  void _addFirstEvent() {
+    if (!_isFirstEventAdded) {
+      _isFirstEventAdded = true;
+      _outputSink.add(_startValue);
+    }
+  }
+}
+
 /// Prepends a value to the source Stream.
 ///
 /// ### Example
@@ -17,12 +65,12 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) {
-    final generator = () async* {
-      yield startValue;
-      yield* stream;
-    };
+    final forwardedStream = forwardStream<S>(stream);
 
-    return stream.isBroadcast ? generator().asBroadcastStream() : generator();
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_StartWithStreamSink<S>(sink, startValue)));
   }
 }
 
