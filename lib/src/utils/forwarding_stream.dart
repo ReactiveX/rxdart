@@ -23,10 +23,16 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
         onError: controller.addError, onDone: controller.close);
   };
 
-  final onCancel = () async {
+  final onCancel = () {
     if (connectedSink?.onCancel != null) {
-      return connectedSink.onCancel();
+      final onCancelFuture = connectedSink.onCancel();
+
+      if (onCancelFuture is Future) {
+        return Future.wait<dynamic>([subscription.cancel(), onCancelFuture]);
+      }
     }
+
+    return subscription.cancel();
   };
 
   final onPause = () {
