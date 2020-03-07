@@ -159,7 +159,8 @@ void main() {
       await expectLater(onListenCalled, isTrue);
     });
 
-    test('calls onListen every time a consumer listens to a broadcast stream',
+    test(
+        'calls onListen once when multiple subscribers open, without cancelling',
         () async {
       var onListenCallCount = 0;
       final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
@@ -168,6 +169,21 @@ void main() {
 
       stream.listen(null);
       stream.listen(null);
+
+      await expectLater(onListenCallCount, 1);
+      await sc.close();
+    });
+
+    test(
+        'calls onListen every time after all previous subscribers have cancelled',
+        () async {
+      var onListenCallCount = 0;
+      final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
+
+      final stream = sc.stream.doOnListen(() => onListenCallCount++);
+
+      await stream.listen(null).cancel();
+      await stream.listen(null).cancel();
 
       await expectLater(onListenCallCount, 2);
       await sc.close();
@@ -297,6 +313,18 @@ void main() {
 
       expectLater(stream, emitsDone);
       expectLater(stream, emitsDone);
+    });
+
+    test('issue/389', () {
+      final controller = StreamController<int>.broadcast();
+      final stream = controller.stream.doOnListen(() {
+        // do nothing
+      });
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsDone); // #issue/389 : is being ignored/hangs up
+
+      controller.close();
     });
   });
 }

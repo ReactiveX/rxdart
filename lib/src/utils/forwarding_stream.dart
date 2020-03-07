@@ -12,13 +12,10 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
   ForwardingSink<T> connectedSink;
 
   final onListen = () {
-    stream.listen(controller.add,
-        onError: controller.addError, onDone: controller.close);
-
     try {
       connectedSink?.onListen();
     } catch (e, s) {
-      controller.addError(e, s);
+      connectedSink.addError(e, s);
     }
   };
 
@@ -32,7 +29,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     try {
       connectedSink?.onPause();
     } catch (e, s) {
-      controller.addError(e, s);
+      connectedSink.addError(e, s);
     }
   };
 
@@ -40,7 +37,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     try {
       connectedSink?.onResume();
     } catch (e, s) {
-      controller.addError(e, s);
+      connectedSink.addError(e, s);
     }
   };
 
@@ -53,6 +50,8 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
           onPause: onPause,
           onResume: onResume,
           sync: true);
+
+  controller.addStream(stream).whenComplete(controller.close);
 
   return _ForwardStream<T>(
       controller.stream, (ForwardingSink<T> sink) => connectedSink = sink);
