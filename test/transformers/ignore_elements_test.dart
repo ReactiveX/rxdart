@@ -88,6 +88,7 @@ void main() {
   test('Rx.flatMap accidental broadcast', () async {
     final controller = StreamController<int>();
 
+    // ignore: deprecated_member_use_from_same_package
     final stream = controller.stream.ignoreElements();
 
     stream.listen(null);
