@@ -10,6 +10,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
   StreamController<T> controller;
   ForwardingSink<T> connectedSink;
+  StreamSubscription<T> subscription;
 
   final onListen = () {
     try {
@@ -17,6 +18,9 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     } catch (e, s) {
       connectedSink.addError(e, s);
     }
+
+    subscription = stream.listen(controller.add,
+        onError: controller.addError, onDone: controller.close);
   };
 
   final onCancel = () async {
@@ -26,6 +30,8 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
   };
 
   final onPause = () {
+    subscription.pause();
+
     try {
       connectedSink?.onPause();
     } catch (e, s) {
@@ -34,6 +40,8 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
   };
 
   final onResume = () {
+    subscription.resume();
+
     try {
       connectedSink?.onResume();
     } catch (e, s) {
@@ -41,17 +49,17 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     }
   };
 
-  controller = stream.isBroadcast
-      ? StreamController<T>.broadcast(
-          onListen: onListen, onCancel: () => onCancel(), sync: true)
-      : StreamController<T>(
-          onListen: onListen,
-          onCancel: onCancel,
-          onPause: onPause,
-          onResume: onResume,
-          sync: true);
-
-  controller.addStream(stream).whenComplete(controller.close);
+  if (stream.isBroadcast) {
+    controller = StreamController<T>.broadcast(
+        onListen: onListen, onCancel: onCancel, sync: true);
+  } else {
+    controller = StreamController<T>(
+        onListen: onListen,
+        onPause: onPause,
+        onResume: onResume,
+        onCancel: onCancel,
+        sync: true);
+  }
 
   return _ForwardStream<T>(
       controller.stream, (ForwardingSink<T> sink) => connectedSink = sink);
