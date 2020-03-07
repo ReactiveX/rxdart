@@ -28,18 +28,18 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  FutureOr onCancel() {}
+  FutureOr onCancel(EventSink<S> sink) {}
 
   @override
-  void onListen() => _otherSubscription = _otherStream
+  void onListen(EventSink<S> sink) => _otherSubscription = _otherStream
       .take(1)
       .listen(null, onError: addError, onDone: () => _canAdd = true);
 
   @override
-  void onPause() {}
+  void onPause(EventSink<S> sink) {}
 
   @override
-  void onResume() {}
+  void onResume(EventSink<S> sink) {}
 }
 
 /// Starts emitting events only after the given stream emits an event.

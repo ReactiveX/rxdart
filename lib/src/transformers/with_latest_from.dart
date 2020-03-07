@@ -29,10 +29,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   void close() => _outputSink.close();
 
   @override
-  FutureOr onCancel() {}
+  FutureOr onCancel(EventSink<S> sink) {}
 
   @override
-  void onListen() {
+  void onListen(EventSink<S> sink) {
     var index = 0;
 
     for (final latestFromStream in _latestFromStreams) {
@@ -48,10 +48,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause() {}
+  void onPause(EventSink<S> sink) {}
 
   @override
-  void onResume() {}
+  void onResume(EventSink<S> sink) {}
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining

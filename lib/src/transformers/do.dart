@@ -83,28 +83,28 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  FutureOr onCancel() {
+  FutureOr onCancel(EventSink<S> sink) {
     if (_onCancel != null) {
       return _onCancel();
     }
   }
 
   @override
-  void onListen() {
+  void onListen(EventSink<S> sink) {
     if (_onListen != null) {
       _onListen();
     }
   }
 
   @override
-  void onPause() {
+  void onPause(EventSink<S> sink) {
     if (_onPause != null) {
       _onPause(null);
     }
   }
 
   @override
-  void onResume() {
+  void onResume(EventSink<S> sink) {
     if (_onResume != null) {
       _onResume();
     }

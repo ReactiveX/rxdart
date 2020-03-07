@@ -23,18 +23,18 @@ class _TakeUntilStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  FutureOr onCancel() {}
+  FutureOr onCancel(EventSink<S> sink) {}
 
   @override
-  void onListen() => _otherSubscription = _otherStream
+  void onListen(EventSink<S> sink) => _otherSubscription = _otherStream
       .take(1)
       .listen(null, onError: addError, onDone: _outputSink.close);
 
   @override
-  void onPause() {}
+  void onPause(EventSink<S> sink) {}
 
   @override
-  void onResume() {}
+  void onResume(EventSink<S> sink) {}
 }
 
 /// Returns the values from the source stream sequence until the other

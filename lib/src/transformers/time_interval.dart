@@ -26,16 +26,16 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
   void close() => _outputSink.close();
 
   @override
-  FutureOr onCancel() {}
+  FutureOr onCancel(EventSink<S> sink) {}
 
   @override
-  void onListen() => _stopwatch.start();
+  void onListen(EventSink<S> sink) => _stopwatch.start();
 
   @override
-  void onPause() {}
+  void onPause(EventSink<S> sink) {}
 
   @override
-  void onResume() {}
+  void onResume(EventSink<S> sink) {}
 }
 
 /// Records the time interval between consecutive values in an stream

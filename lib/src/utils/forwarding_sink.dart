@@ -10,14 +10,14 @@ import 'dart:async';
 /// `EventSink`s to transform events.
 abstract class ForwardingSink<T> implements EventSink<T> {
   /// Fires when a listener subscribes on the underlying [Stream].
-  void onListen();
+  void onListen(EventSink<T> sink);
 
   /// Fires when a subscriber pauses.
-  void onPause();
+  void onPause(EventSink<T> sink);
 
   /// Fires when a subscriber resumes after a pause.
-  void onResume();
+  void onResume(EventSink<T> sink);
 
   /// Fires when a subscriber cancels.
-  FutureOr onCancel();
+  FutureOr onCancel(EventSink<T> sink);
 }

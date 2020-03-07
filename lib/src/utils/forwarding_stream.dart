@@ -14,7 +14,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
 
   final onListen = () {
     try {
-      connectedSink?.onListen();
+      connectedSink?.onListen(controller.sink);
     } catch (e, s) {
       connectedSink.addError(e, s);
     }
@@ -25,7 +25,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
 
   final onCancel = () {
     if (connectedSink?.onCancel != null) {
-      final onCancelFuture = connectedSink.onCancel();
+      final onCancelFuture = connectedSink.onCancel(controller.sink);
 
       if (onCancelFuture is Future) {
         return Future.wait<dynamic>([subscription.cancel(), onCancelFuture]);
@@ -39,7 +39,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     subscription.pause();
 
     try {
-      connectedSink?.onPause();
+      connectedSink?.onPause(controller.sink);
     } catch (e, s) {
       connectedSink.addError(e, s);
     }
@@ -49,7 +49,7 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     subscription.resume();
 
     try {
-      connectedSink?.onResume();
+      connectedSink?.onResume(controller.sink);
     } catch (e, s) {
       connectedSink.addError(e, s);
     }
