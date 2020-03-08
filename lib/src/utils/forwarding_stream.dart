@@ -25,10 +25,20 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
 
   final onCancel = () {
     if (connectedSink?.onCancel != null) {
-      final onCancelFuture = connectedSink.onCancel(controller.sink);
+      final onCancelSelfFuture = subscription.cancel();
+      final onCancelConnectedFuture = connectedSink.onCancel(controller.sink);
+      final futures = <Future>[];
 
-      if (onCancelFuture is Future) {
-        return Future.wait<dynamic>([subscription.cancel(), onCancelFuture]);
+      if (onCancelSelfFuture is Future) {
+        futures.add(onCancelSelfFuture);
+      }
+
+      if (onCancelConnectedFuture is Future) {
+        futures.add(onCancelConnectedFuture);
+      }
+
+      if (futures.isNotEmpty) {
+        return Future.wait<dynamic>(futures);
       }
     }
 
