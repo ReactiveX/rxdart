@@ -71,22 +71,16 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
     return ReplaySubject<T>._(
       controller,
       Rx.defer<T>(
-        () {
-          var stream = controller.stream;
-
-          queue.toList(growable: false).reversed.forEach((event) {
-            if (event.isError) {
-              stream = stream.transform(StartWithErrorStreamTransformer(
-                  event.errorAndStackTrace.error,
-                  event.errorAndStackTrace.stackTrace));
-            } else {
-              stream =
-                  stream.transform(StartWithStreamTransformer(event.event));
-            }
-          });
-
-          return stream;
-        },
+        () => queue.toList(growable: false).reversed.fold(controller.stream,
+            (Stream<T> stream, event) {
+          if (event.isError) {
+            return stream.transform(StartWithErrorStreamTransformer(
+                event.errorAndStackTrace.error,
+                event.errorAndStackTrace.stackTrace));
+          } else {
+            return stream.transform(StartWithStreamTransformer(event.event));
+          }
+        }),
         reusable: true,
       ),
       queue,
