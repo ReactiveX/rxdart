@@ -315,7 +315,7 @@ void main() {
       expectLater(stream, emitsDone);
     });
 
-    test('issue/389', () {
+    test('issue/389/1', () {
       final controller = StreamController<int>.broadcast();
       final stream = controller.stream.doOnListen(() {
         // do nothing
@@ -325,6 +325,24 @@ void main() {
       expectLater(stream, emitsDone); // #issue/389 : is being ignored/hangs up
 
       controller.close();
+    });
+
+    test('issue/389/2', () {
+      final controller = StreamController<int>();
+      var isListening = false;
+
+      final stream = controller.stream.doOnListen(() {
+        isListening = true;
+      });
+
+      controller.close();
+
+      // should be done
+      expectLater(stream, emitsDone);
+      // should have called onX
+      expect(isListening, true);
+      // should not be converted to a broadcast Stream
+      expect(() => stream.listen(null), throwsStateError);
     });
 
     test('Rx.do accidental broadcast', () async {
