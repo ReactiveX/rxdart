@@ -1,6 +1,9 @@
 import 'dart:async';
 
-class _SwitchMapStreamSink<S, T> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _SwitchMapStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
   StreamSubscription<T> _mapperSubscription;
@@ -33,6 +36,18 @@ class _SwitchMapStreamSink<S, T> implements EventSink<S> {
 
     _mapperSubscription ?? _outputSink.close();
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink) => _mapperSubscription?.pause();
+
+  @override
+  void onResume(EventSink<S> sink) => _mapperSubscription?.resume();
 }
 
 /// Converts each emitted item into a new Stream using the given mapper
@@ -64,8 +79,12 @@ class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   SwitchMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _SwitchMapStreamSink<S, T>(sink, mapper));
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => _SwitchMapStreamSink<S, T>(sink, mapper));
+  }
 }
 
 /// Extends the Stream with the ability to convert one stream into a new Stream

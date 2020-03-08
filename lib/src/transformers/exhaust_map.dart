@@ -1,6 +1,9 @@
 import 'dart:async';
 
-class _ExhaustMapStreamSink<S, T> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
   StreamSubscription<T> _mapperSubscription;
@@ -35,6 +38,18 @@ class _ExhaustMapStreamSink<S, T> implements EventSink<S> {
 
     _mapperSubscription ?? _outputSink.close();
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink) => _mapperSubscription?.pause();
+
+  @override
+  void onResume(EventSink<S> sink) => _mapperSubscription?.resume();
 }
 
 /// Converts events from the source stream into a new Stream using a given
@@ -64,8 +79,12 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ExhaustMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _ExhaustMapStreamSink<S, T>(sink, mapper));
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => _ExhaustMapStreamSink<S, T>(sink, mapper));
+  }
 }
 
 /// Extends the Stream class with the ability to transform the Stream into

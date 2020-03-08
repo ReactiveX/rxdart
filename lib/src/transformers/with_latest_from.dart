@@ -9,6 +9,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   final EventSink<R> _outputSink;
   final List<bool> _hasValues;
   final List<T> _latestValues;
+  StreamSubscription<T> _subscription;
 
   _WithLatestFromStreamSink(
       this._outputSink, this._latestFromStreams, this._combiner)
@@ -26,10 +27,13 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  void close() => _outputSink.close();
+  void close() {
+    _subscription?.cancel();
+    _outputSink.close();
+  }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {}
+  FutureOr onCancel(EventSink<S> sink) => _subscription?.cancel();
 
   @override
   void onListen(EventSink<S> sink) {
@@ -38,7 +42,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
     for (final latestFromStream in _latestFromStreams) {
       final currentIndex = index;
 
-      latestFromStream.listen((latest) {
+      _subscription = latestFromStream.listen((latest) {
         _hasValues[currentIndex] = true;
         _latestValues[currentIndex] = latest;
       }, onError: addError);
@@ -48,10 +52,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink) {}
+  void onPause(EventSink<S> sink) => _subscription?.pause();
 
   @override
-  void onResume(EventSink<S> sink) {}
+  void onResume(EventSink<S> sink) => _subscription?.resume();
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining

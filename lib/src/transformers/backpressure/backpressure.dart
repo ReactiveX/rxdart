@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
 /// The strategy that is used to determine how and when a new window is created.
 enum WindowStrategy {
   /// cancels the open window (if any) and immediately opens a fresh one.
@@ -19,7 +22,7 @@ enum WindowStrategy {
   onHandler
 }
 
-class _BackpressureStreamSink<S, T> implements EventSink<S> {
+class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   final WindowStrategy _strategy;
   final Stream<dynamic> Function(S event) _windowStreamFactory;
   final T Function(S event) _onWindowStart;
@@ -73,8 +76,22 @@ class _BackpressureStreamSink<S, T> implements EventSink<S> {
     resolveWindowEnd(true);
 
     queue.clear();
+
+    _windowSubscription?.cancel();
     _outputSink.close();
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) => _windowSubscription?.cancel();
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink) => _windowSubscription?.pause();
+
+  @override
+  void onResume(EventSink<S> sink) => _windowSubscription?.resume();
 
   void maybeCreateWindow(S event) {
     switch (_strategy) {
@@ -280,16 +297,20 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       this.dispatchOnClose = true});
 
   @override
-  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream,
-      (sink) => _BackpressureStreamSink<S, T>(
-          sink,
-          strategy,
-          windowStreamFactory,
-          onWindowStart,
-          onWindowEnd,
-          startBufferEvery,
-          closeWindowWhen,
-          ignoreEmptyWindows,
-          dispatchOnClose));
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => _BackpressureStreamSink<S, T>(
+            sink,
+            strategy,
+            windowStreamFactory,
+            onWindowStart,
+            onWindowEnd,
+            startBufferEvery,
+            closeWindowWhen,
+            ignoreEmptyWindows,
+            dispatchOnClose));
+  }
 }

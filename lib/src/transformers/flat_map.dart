@@ -1,8 +1,12 @@
 import 'dart:async';
 
-class _FlatMapStreamSink<S, T> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
+  final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
   bool _inputClosed = false;
 
@@ -14,13 +18,19 @@ class _FlatMapStreamSink<S, T> implements EventSink<S> {
 
     _openSubscriptions++;
 
-    mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
+    StreamSubscription<T> subscription;
+
+    subscription =
+        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
       _openSubscriptions--;
+      _subscriptions.remove(subscription);
 
       if (_inputClosed && _openSubscriptions == 0) {
         _outputSink.close();
       }
     });
+
+    _subscriptions.add(subscription);
   }
 
   @override
@@ -34,6 +44,19 @@ class _FlatMapStreamSink<S, T> implements EventSink<S> {
       _outputSink.close();
     }
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) =>
+      Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink) => _subscriptions.forEach((s) => s.pause());
+
+  @override
+  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
 }
 
 /// Converts each emitted item into a new Stream using the given mapper
@@ -60,8 +83,12 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   FlatMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
+  }
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into
