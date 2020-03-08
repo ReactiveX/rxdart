@@ -72,7 +72,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       controller,
       Rx.defer<T>(
         () => queue.toList(growable: false).reversed.fold(controller.stream,
-            (Stream<T> stream, event) {
+            (stream, event) {
           if (event.isError) {
             return stream.transform(StartWithErrorStreamTransformer(
                 event.errorAndStackTrace.error,
