@@ -107,6 +107,23 @@ void main() {
       await controller.close();
     });
 
+    test('onData only emits once for subjects with multiple listeners',
+        () async {
+      final actual = <int>[];
+      final controller = BehaviorSubject<int>(sync: true);
+      final stream =
+          controller.stream.transform(DoStreamTransformer(onData: actual.add));
+
+      stream.listen(null);
+      stream.listen(null);
+
+      controller.add(1);
+      controller.add(2);
+
+      await expectLater(actual, const [1, 2]);
+      await controller.close();
+    });
+
     test('emits onEach Notifications for Data, Error, and Done', () async {
       StackTrace stacktrace;
       final actual = <Notification<int>>[];
