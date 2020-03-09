@@ -46,4 +46,12 @@ class PublishSubject<T> extends Subject<T> {
       controller.stream,
     );
   }
+
+  @override
+  StreamController<T> createForwardingController({
+    void Function() onListen,
+    void Function() onCancel,
+    bool sync = false,
+  }) =>
+      PublishSubject(onCancel: onCancel, onListen: onListen, sync: sync);
 }
