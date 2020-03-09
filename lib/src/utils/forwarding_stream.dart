@@ -46,11 +46,11 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     return subscription.cancel();
   };
 
-  final onPause = () {
-    subscription.pause();
+  final onPause = ([Future resumeSignal]) {
+    subscription.pause(resumeSignal);
 
     try {
-      connectedSink?.onPause(controller.sink);
+      connectedSink?.onPause(controller.sink, resumeSignal);
     } catch (e, s) {
       connectedSink.addError(e, s);
     }

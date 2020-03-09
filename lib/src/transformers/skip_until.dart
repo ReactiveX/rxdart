@@ -36,7 +36,8 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
       .listen(null, onError: addError, onDone: () => _canAdd = true);
 
   @override
-  void onPause(EventSink<S> sink) => _otherSubscription?.pause();
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _otherSubscription?.pause(resumeSignal);
 
   @override
   void onResume(EventSink<S> sink) => _otherSubscription?.resume();

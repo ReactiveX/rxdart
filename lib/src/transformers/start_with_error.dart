@@ -41,7 +41,7 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink) {}
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
 
   @override
   void onResume(EventSink<S> sink) {}

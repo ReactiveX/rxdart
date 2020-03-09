@@ -52,7 +52,8 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink) => _subscription?.pause();
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _subscription?.pause(resumeSignal);
 
   @override
   void onResume(EventSink<S> sink) => _subscription?.resume();

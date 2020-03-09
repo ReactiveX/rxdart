@@ -88,7 +88,8 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink) => _windowSubscription?.pause();
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _windowSubscription?.pause(resumeSignal);
 
   @override
   void onResume(EventSink<S> sink) => _windowSubscription?.resume();

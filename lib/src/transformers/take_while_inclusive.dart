@@ -42,7 +42,7 @@ class _TakeWhileInclusiveStreamSink<S> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink) {}
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
 
   @override
   void onResume(EventSink<S> sink) {}

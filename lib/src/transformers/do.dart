@@ -110,9 +110,9 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  void onPause(EventSink<S> sink) {
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {
     if (_onPause != null) {
-      _onPause(null);
+      _onPause(resumeSignal);
     }
   }
 
