@@ -75,4 +75,20 @@ void main() {
 
     controller.add(1);
   });
+
+  test(
+      'Rx.startWith broadcast stream should not startWith on multiple subscribers',
+      () async {
+    final controller = StreamController<int>.broadcast();
+
+    final stream = controller.stream.startWith(1);
+
+    await controller.close();
+
+    stream.listen(null);
+
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    await expectLater(stream, emits(emitsDone));
+  });
 }
