@@ -94,6 +94,9 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
 
   @override
   FutureOr onCancel(EventSink<S> sink) {
+    _selfHandlerCounter.reset();
+    _bindHandlerCounter.reset();
+
     if (_onCancel != null) {
       return _onCancel();
     }
@@ -233,6 +236,9 @@ class _HandlerCounter {
 
   void incrementOnData() => _onDataCounter++;
   void incrementOnError() => _onErrorCounter++;
+  void reset() {
+    _onDataCounter = _onErrorCounter = 0;
+  }
 
   bool isSameOnDataIndexAs(_HandlerCounter otherCounter) =>
       _onDataCounter == otherCounter._onDataCounter;

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 
 /// @private
@@ -65,7 +66,18 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     }
   };
 
-  if (stream.isBroadcast) {
+  // construct a duplicate controller, so that events will keep being passed in
+  // the same way.
+  if (stream is PublishSubject) {
+    controller =
+        PublishSubject<T>(onListen: onListen, onCancel: onCancel, sync: true);
+  } else if (stream is BehaviorSubject) {
+    controller =
+        BehaviorSubject<T>(onListen: onListen, onCancel: onCancel, sync: true);
+  } else if (stream is ReplaySubject) {
+    controller =
+        ReplaySubject<T>(onListen: onListen, onCancel: onCancel, sync: true);
+  } else if (stream.isBroadcast) {
     controller = StreamController<T>.broadcast(
         onListen: onListen, onCancel: onCancel, sync: true);
   } else {

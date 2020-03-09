@@ -124,6 +124,26 @@ void main() {
       await controller.close();
     });
 
+    test('onData only emits correctly with ReplaySubject', () async {
+      final controller = ReplaySubject<int>(sync: true)..add(1)..add(2);
+      final actual = <int>[];
+
+      await controller.close();
+
+      final stream =
+          controller.stream.transform(DoStreamTransformer(onData: actual.add));
+
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      await stream.listen(null);
+      await expectLater(actual, const [1, 2]);
+
+      actual.clear();
+
+      await stream.listen(null);
+      await expectLater(actual, const [1, 2]);
+    });
+
     test('emits onEach Notifications for Data, Error, and Done', () async {
       StackTrace stacktrace;
       final actual = <Notification<int>>[];
