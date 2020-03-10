@@ -394,8 +394,9 @@ void main() {
     });
 
     test('nested doOnX', () async {
+      final completer = Completer<void>();
       final stream =
-          Rx.range(0, 10000).interval(const Duration(milliseconds: 100));
+          Rx.range(0, 30).interval(const Duration(milliseconds: 100));
       final result = <String>[];
       const expectedOutput = [
         'A: 0',
@@ -438,7 +439,6 @@ void main() {
         'A: 29',
         'A: 30'
       ];
-      final completer = Completer<void>();
       StreamSubscription<int> subscription;
 
       final addToResult = (String value) {
