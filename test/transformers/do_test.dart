@@ -392,5 +392,78 @@ void main() {
 
       controller.add(1);
     });
+
+    test('nested doOnX', () async {
+      final stream =
+          Rx.range(0, 10000).interval(const Duration(milliseconds: 100));
+      final result = <String>[];
+      const expectedOutput = [
+        'A: 0',
+        'B: 0',
+        'pause',
+        'A: 1',
+        'A: 2',
+        'A: 3',
+        'A: 4',
+        'A: 5',
+        'A: 6',
+        'A: 7',
+        'A: 8',
+        'A: 9',
+        'A: 10',
+        'A: 11',
+        'A: 12',
+        'A: 13',
+        'A: 14',
+        'A: 15',
+        'A: 16',
+        'A: 17',
+        'A: 18',
+        'A: 19',
+        'B: 1',
+        'B: 2',
+        'B: 3',
+        'B: 4',
+        'B: 5',
+        'pause',
+        'A: 20',
+        'A: 21',
+        'A: 22',
+        'A: 23',
+        'A: 24',
+        'A: 25',
+        'A: 26',
+        'A: 27',
+        'A: 28',
+        'A: 29',
+        'A: 30'
+      ];
+      final completer = Completer<void>();
+      StreamSubscription<int> subscription;
+
+      final addToResult = (String value) {
+        result.add(value);
+
+        if (result.length == expectedOutput.length) {
+          subscription.cancel();
+          completer.complete();
+        }
+      };
+
+      subscription = Stream.value(1)
+          .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))
+          .doOnPause((_) => addToResult('pause'))
+          .doOnData((data) => addToResult('B: $data'))
+          .take(expectedOutput.length)
+          .listen((value) {
+        if (value % 5 == 0) {
+          subscription.pause(Future<void>.delayed(const Duration(seconds: 2)));
+        }
+      });
+
+      await completer.future;
+
+      expect(result, expectedOutput);
+    });
   });
 }
