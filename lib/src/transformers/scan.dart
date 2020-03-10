@@ -1,5 +1,27 @@
 import 'dart:async';
 
+class _ScanStreamSink<S, T> implements EventSink<S> {
+  final T Function(T accumulated, S value, int index) _accumulator;
+  final EventSink<T> _outputSink;
+  T _acc;
+  var _index = 0;
+
+  _ScanStreamSink(this._outputSink, this._accumulator, [T seed]) : _acc = seed;
+
+  @override
+  void add(S data) {
+    _acc = _accumulator(_acc, data, _index++);
+
+    _outputSink.add(_acc);
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// Applies an accumulator function over an stream sequence and returns
 /// each intermediate result. The optional seed value is used as the initial
 /// accumulator value.
@@ -9,53 +31,21 @@ import 'dart:async';
 ///     Stream.fromIterable([1, 2, 3])
 ///        .transform(ScanStreamTransformer((acc, curr, i) => acc + curr, 0))
 ///        .listen(print); // prints 1, 3, 6
-class ScanStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+class ScanStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
+  /// Method which accumulates incoming event into a single, accumulated object
+  final T Function(T accumulated, S value, int index) accumulator;
+
+  /// The initial value for the accumulated value in the [accumulator]
+  final T seed;
 
   /// Constructs a [ScanStreamTransformer] which applies an accumulator Function
   /// over the source [Stream] and returns each intermediate result.
   /// The optional seed value is used as the initial accumulator value.
-  ScanStreamTransformer(
-      S Function(S accumulated, T value, int index) accumulator,
-      [S seed])
-      : _transformer = _buildTransformer<T, S>(accumulator, seed);
+  ScanStreamTransformer(this.accumulator, [this.seed]);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      S Function(S accumulated, T value, int index) accumulator,
-      [S seed]) {
-    return StreamTransformer<T, S>((input, bool cancelOnError) {
-      var index = 0;
-      var acc = seed;
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
-
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((value) {
-              try {
-                acc = accumulator(acc, value, index++);
-
-                controller.add(acc);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
-  }
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _ScanStreamSink<S, T>(sink, accumulator, seed));
 }
 
 /// Extends

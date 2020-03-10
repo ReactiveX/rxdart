@@ -1,5 +1,22 @@
 import 'dart:async';
 
+class _TimestampStreamSink<S> implements EventSink<S> {
+  final EventSink<Timestamped<S>> _outputSink;
+
+  _TimestampStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {
+    _outputSink.add(Timestamped(DateTime.now(), data));
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// Wraps each item emitted by the source Stream in a [Timestamped] object
 /// that includes the emitted item and the time when the item was emitted.
 ///
@@ -8,41 +25,15 @@ import 'dart:async';
 ///     Stream.fromIterable([1])
 ///        .transform(TimestampStreamTransformer())
 ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
-class TimestampStreamTransformer<T>
-    extends StreamTransformerBase<T, Timestamped<T>> {
-  final StreamTransformer<T, Timestamped<T>> _transformer;
-
+class TimestampStreamTransformer<S>
+    extends StreamTransformerBase<S, Timestamped<S>> {
   /// Constructs a [StreamTransformer] which emits events from the
   /// source [Stream] as snapshots in the form of [Timestamped].
-  TimestampStreamTransformer() : _transformer = _buildTransformer();
+  TimestampStreamTransformer();
 
   @override
-  Stream<Timestamped<T>> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, Timestamped<T>> _buildTransformer<T>() {
-    return StreamTransformer<T, Timestamped<T>>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<Timestamped<T>> controller;
-      StreamSubscription<Timestamped<T>> subscription;
-
-      controller = StreamController<Timestamped<T>>(
-          sync: true,
-          onListen: () {
-            subscription = input
-                .map((T value) => Timestamped<T>(DateTime.now(), value))
-                .listen(controller.add,
-                    onError: controller.addError,
-                    onDone: controller.close,
-                    cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
-  }
+  Stream<Timestamped<S>> bind(Stream<S> stream) =>
+      Stream.eventTransformed(stream, (sink) => _TimestampStreamSink<S>(sink));
 }
 
 /// A class that represents a snapshot of the current value emitted by a

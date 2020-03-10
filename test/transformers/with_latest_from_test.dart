@@ -29,15 +29,13 @@ void main() {
       Pair(5, 1),
       Pair(6, 2)
     ];
-    var count = 0;
 
-    _getStream()
-        .withLatestFrom(
-            _getLatestFromStream(), (first, int second) => Pair(first, second))
-        .take(5)
-        .listen(expectAsync1((result) {
-          expect(result, expectedOutput[count++]);
-        }, count: expectedOutput.length));
+    await expectLater(
+        _getStream()
+            .withLatestFrom(_getLatestFromStream(),
+                (first, int second) => Pair(first, second))
+            .take(5),
+        emitsInOrder(expectedOutput));
   });
 
   test('Rx.withLatestFrom.reusable', () async {
@@ -381,6 +379,17 @@ void main() {
         ],
       ),
     );
+  });
+  test('Rx.withLatestFrom accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream
+        .withLatestFrom(Stream<int>.empty(), (_, dynamic __) => true);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
   });
 }
 

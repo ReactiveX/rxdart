@@ -20,6 +20,37 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(const <int>[1, 2, 3]));
     });
 
+    test('replays the previously emitted errors to every subscriber', () async {
+      // ignore: close_sinks
+      final subject = ReplaySubject<int>();
+
+      subject.addError(Exception());
+      subject.addError(Exception());
+      subject.addError(Exception());
+
+      await expectLater(
+          subject.stream,
+          emitsInOrder(<StreamMatcher>[
+            emitsError(isException),
+            emitsError(isException),
+            emitsError(isException)
+          ]));
+      await expectLater(
+          subject.stream,
+          emitsInOrder(<StreamMatcher>[
+            emitsError(isException),
+            emitsError(isException),
+            emitsError(isException)
+          ]));
+      await expectLater(
+          subject.stream,
+          emitsInOrder(<StreamMatcher>[
+            emitsError(isException),
+            emitsError(isException),
+            emitsError(isException)
+          ]));
+    });
+
     test(
         'replays the previously emitted items to every subscriber that directly subscribes to the Subject',
         () async {
@@ -35,6 +66,43 @@ void main() {
       await expectLater(subject, emitsInOrder(const <int>[1, 2, 3]));
     });
 
+    test(
+        'replays the previously emitted items and errors to every subscriber that directly subscribes to the Subject',
+        () async {
+      // ignore: close_sinks
+      final subject = ReplaySubject<int>();
+
+      subject.add(1);
+      subject.addError(Exception());
+      subject.addError(Exception());
+      subject.add(2);
+
+      await expectLater(
+          subject,
+          emitsInOrder(<dynamic>[
+            1,
+            emitsError(isException),
+            emitsError(isException),
+            2
+          ]));
+      await expectLater(
+          subject,
+          emitsInOrder(<dynamic>[
+            1,
+            emitsError(isException),
+            emitsError(isException),
+            2
+          ]));
+      await expectLater(
+          subject,
+          emitsInOrder(<dynamic>[
+            1,
+            emitsError(isException),
+            emitsError(isException),
+            2
+          ]));
+    });
+
     test('synchronously get the previous items', () async {
       // ignore: close_sinks
       final subject = ReplaySubject<int>();
@@ -44,6 +112,19 @@ void main() {
       subject.add(3);
 
       await expectLater(subject.values, const <int>[1, 2, 3]);
+    });
+
+    test('synchronously get the previous errors', () async {
+      // ignore: close_sinks
+      final subject = ReplaySubject<int>();
+      final e1 = Exception(), e2 = Exception(), e3 = Exception();
+
+      subject.addError(e1);
+      subject.addError(e2);
+      subject.addError(e3);
+
+      await expectLater(
+          subject.errors, containsAllInOrder(<Exception>[e1, e2, e3]));
     });
 
     test('replays the most recently emitted items up to a max size', () async {

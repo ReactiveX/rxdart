@@ -244,6 +244,9 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   List<T> get values => _subject.values;
+
+  @override
+  List<Object> get errors => _subject.errors;
 }
 
 /// A special [StreamSubscription] that not only cancels the connection to

@@ -75,10 +75,10 @@ void main() {
       final subject = BehaviorSubject<int>(sync: true);
       final stream = subject.doOnCancel(() => count++);
 
-      stream.listen(null);
+      await stream.listen(null).cancel();
       await stream.listen(null).cancel();
 
-      await expectLater(count, 1);
+      await expectLater(count, 2);
       await subject.close();
     });
 
@@ -105,6 +105,43 @@ void main() {
 
       await expectLater(actual, const [1, 2]);
       await controller.close();
+    });
+
+    test('onData only emits once for subjects with multiple listeners',
+        () async {
+      final actual = <int>[];
+      final controller = BehaviorSubject<int>(sync: true);
+      final stream =
+          controller.stream.transform(DoStreamTransformer(onData: actual.add));
+
+      stream.listen(null);
+      stream.listen(null);
+
+      controller.add(1);
+      controller.add(2);
+
+      await expectLater(actual, const [1, 2]);
+      await controller.close();
+    });
+
+    test('onData only emits correctly with ReplaySubject', () async {
+      final controller = ReplaySubject<int>(sync: true)..add(1)..add(2);
+      final actual = <int>[];
+
+      await controller.close();
+
+      final stream =
+          controller.stream.transform(DoStreamTransformer(onData: actual.add));
+
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      await stream.listen(null);
+      await expectLater(actual, const [1, 2]);
+
+      actual.clear();
+
+      await stream.listen(null);
+      await expectLater(actual, const [1, 2]);
     });
 
     test('emits onEach Notifications for Data, Error, and Done', () async {
@@ -159,7 +196,8 @@ void main() {
       await expectLater(onListenCalled, isTrue);
     });
 
-    test('calls onListen every time a consumer listens to a broadcast stream',
+    test(
+        'calls onListen once when multiple subscribers open, without cancelling',
         () async {
       var onListenCallCount = 0;
       final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
@@ -168,6 +206,21 @@ void main() {
 
       stream.listen(null);
       stream.listen(null);
+
+      await expectLater(onListenCallCount, 1);
+      await sc.close();
+    });
+
+    test(
+        'calls onListen every time after all previous subscribers have cancelled',
+        () async {
+      var onListenCallCount = 0;
+      final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
+
+      final stream = sc.stream.doOnListen(() => onListenCallCount++);
+
+      await stream.listen(null).cancel();
+      await stream.listen(null).cancel();
 
       await expectLater(onListenCallCount, 2);
       await sc.close();
@@ -198,13 +251,10 @@ void main() {
       final streamA = Stream.value(1).transform(transformer),
           streamB = Stream.value(1).transform(transformer);
 
-      streamA.listen(null, onDone: expectAsync0(() {
-        expect(callCount, 2);
-      }));
+      await expectLater(streamA, emitsInOrder(<dynamic>[1, emitsDone]));
+      await expectLater(streamB, emitsInOrder(<dynamic>[1, emitsDone]));
 
-      streamB.listen(null, onDone: expectAsync0(() {
-        expect(callCount, 2);
-      }));
+      expect(callCount, 2);
     });
 
     test('throws an error when no arguments are provided', () {
@@ -229,8 +279,7 @@ void main() {
               throw Exception('catch me if you can! doOnError'))
           .listen(null,
               onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException),
-                  count: 2));
+                  (Exception e, [StackTrace s]) => expect(e, isException)));
 
       // a cancel() call may occur after the controller is already closed
       // in that case, the error is forwarded to the current [Zone]
@@ -248,8 +297,8 @@ void main() {
                 ..cancel();
         },
         onError: expectAsync2(
-          (Exception e, [StackTrace s]) => expect(e, isException),
-        ),
+            (Exception e, [StackTrace s]) => expect(e, isException),
+            count: 2),
       );
 
       Stream.value(1)
@@ -287,6 +336,134 @@ void main() {
                   (Exception e, [StackTrace s]) => expect(e, isException)))
             ..pause()
             ..resume();
+    });
+
+    test(
+        'doOnListen correctly allows subscribing multiple times on a broadcast stream',
+        () {
+      final controller = StreamController<int>.broadcast();
+      final stream = controller.stream.doOnListen(() {
+        // do nothing
+      });
+
+      controller.close();
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsDone);
+    });
+
+    test('issue/389/1', () {
+      final controller = StreamController<int>.broadcast();
+      final stream = controller.stream.doOnListen(() {
+        // do nothing
+      });
+
+      expectLater(stream, emitsDone);
+      expectLater(stream, emitsDone); // #issue/389 : is being ignored/hangs up
+
+      controller.close();
+    });
+
+    test('issue/389/2', () {
+      final controller = StreamController<int>();
+      var isListening = false;
+
+      final stream = controller.stream.doOnListen(() {
+        isListening = true;
+      });
+
+      controller.close();
+
+      // should be done
+      expectLater(stream, emitsDone);
+      // should have called onX
+      expect(isListening, true);
+      // should not be converted to a broadcast Stream
+      expect(() => stream.listen(null), throwsStateError);
+    });
+
+    test('Rx.do accidental broadcast', () async {
+      final controller = StreamController<int>();
+
+      final stream = controller.stream.doOnEach((_) {});
+
+      stream.listen(null);
+      expect(() => stream.listen(null), throwsStateError);
+
+      controller.add(1);
+    });
+
+    test('nested doOnX', () async {
+      final completer = Completer<void>();
+      final stream =
+          Rx.range(0, 30).interval(const Duration(milliseconds: 100));
+      final result = <String>[];
+      const expectedOutput = [
+        'A: 0',
+        'B: 0',
+        'pause',
+        'A: 1',
+        'A: 2',
+        'A: 3',
+        'A: 4',
+        'A: 5',
+        'A: 6',
+        'A: 7',
+        'A: 8',
+        'A: 9',
+        'A: 10',
+        'A: 11',
+        'A: 12',
+        'A: 13',
+        'A: 14',
+        'A: 15',
+        'A: 16',
+        'A: 17',
+        'A: 18',
+        'A: 19',
+        'B: 1',
+        'B: 2',
+        'B: 3',
+        'B: 4',
+        'B: 5',
+        'pause',
+        'A: 20',
+        'A: 21',
+        'A: 22',
+        'A: 23',
+        'A: 24',
+        'A: 25',
+        'A: 26',
+        'A: 27',
+        'A: 28',
+        'A: 29',
+        'A: 30'
+      ];
+      StreamSubscription<int> subscription;
+
+      final addToResult = (String value) {
+        result.add(value);
+
+        if (result.length == expectedOutput.length) {
+          subscription.cancel();
+          completer.complete();
+        }
+      };
+
+      subscription = Stream.value(1)
+          .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))
+          .doOnPause((_) => addToResult('pause'))
+          .doOnData((data) => addToResult('B: $data'))
+          .take(expectedOutput.length)
+          .listen((value) {
+        if (value % 5 == 0) {
+          subscription.pause(Future<void>.delayed(const Duration(seconds: 2)));
+        }
+      });
+
+      await completer.future;
+
+      expect(result, expectedOutput);
     });
   });
 }

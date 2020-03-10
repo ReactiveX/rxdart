@@ -1,5 +1,43 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
+  final EventSink<TimeInterval<S>> _outputSink;
+  final _stopwatch = Stopwatch();
+
+  _TimeIntervalStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {
+    _stopwatch.stop();
+    _outputSink.add(TimeInterval<S>(
+        data, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
+    _stopwatch
+      ..reset()
+      ..start();
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {}
+
+  @override
+  void onListen(EventSink<S> sink) => _stopwatch.start();
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+
+  @override
+  void onResume(EventSink<S> sink) {}
+}
+
 /// Records the time interval between consecutive values in an stream
 /// sequence.
 ///
@@ -9,58 +47,18 @@ import 'dart:async';
 ///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
 ///       .transform(TimeIntervalStreamTransformer())
 ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
-class TimeIntervalStreamTransformer<T>
-    extends StreamTransformerBase<T, TimeInterval<T>> {
-  final StreamTransformer<T, TimeInterval<T>> _transformer;
-
+class TimeIntervalStreamTransformer<S>
+    extends StreamTransformerBase<S, TimeInterval<S>> {
   /// Constructs a [StreamTransformer] which emits events from the
   /// source [Stream] as snapshots in the form of [TimeInterval].
-  TimeIntervalStreamTransformer() : _transformer = _buildTransformer();
+  TimeIntervalStreamTransformer();
 
   @override
-  Stream<TimeInterval<T>> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<TimeInterval<S>> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-  static StreamTransformer<T, TimeInterval<T>> _buildTransformer<T>() {
-    return StreamTransformer<T, TimeInterval<T>>(
-        (Stream<T> input, bool cancelOnError) {
-      StreamController<TimeInterval<T>> controller;
-      StreamSubscription<T> subscription;
-
-      controller = StreamController<TimeInterval<T>>(
-          sync: true,
-          onListen: () {
-            var stopwatch = Stopwatch()..start();
-            int ems;
-
-            subscription = input.listen(
-                (T value) {
-                  ems = stopwatch.elapsedMicroseconds;
-
-                  stopwatch.stop();
-
-                  try {
-                    controller.add(
-                        TimeInterval<T>(value, Duration(microseconds: ems)));
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-
-                  stopwatch = Stopwatch()..start();
-                },
-                onError: controller.addError,
-                onDone: () {
-                  stopwatch.stop();
-                  controller.close();
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => forwardedStream.connect(_TimeIntervalStreamSink<S>(sink)));
   }
 }
 

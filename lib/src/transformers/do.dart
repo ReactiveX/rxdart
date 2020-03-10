@@ -1,6 +1,128 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
+
+class _DoStreamSink<S> implements ForwardingSink<S> {
+  final dynamic Function() _onCancel;
+  final void Function(S event) _onData;
+  final void Function() _onDone;
+  final void Function(Notification<S> notification) _onEach;
+  final Function _onError;
+  final void Function() _onListen;
+  final void Function(Future<dynamic> resumeSignal) _onPause;
+  final void Function() _onResume;
+  final _HandlerCounter _bindHandlerCounter;
+  final EventSink<S> _outputSink;
+  final _HandlerCounter _selfHandlerCounter = _HandlerCounter();
+
+  _DoStreamSink(
+      this._outputSink,
+      this._onCancel,
+      this._onData,
+      this._onDone,
+      this._onEach,
+      this._onError,
+      this._onListen,
+      this._onPause,
+      this._onResume,
+      this._bindHandlerCounter);
+
+  @override
+  void add(S data) {
+    // test is this event already invoked doOnData
+    final canInvokeDoOnData =
+        _selfHandlerCounter.isSameOnDataIndexAs(_bindHandlerCounter);
+
+    if (canInvokeDoOnData) {
+      // increment the bind-counter so that other potential sinks will not
+      // call doOnData for this event again.
+      _bindHandlerCounter.incrementOnData();
+
+      if (_onData != null) {
+        _onData(data);
+      }
+
+      if (_onEach != null) {
+        _onEach(Notification.onData(data));
+      }
+    }
+
+    _outputSink.add(data);
+    // increment the self-counter, readying it for the next event.
+    _selfHandlerCounter.incrementOnData();
+  }
+
+  @override
+  void addError(e, [st]) {
+    // test is this error already invoked doOnData
+    final canInvokeDoOnError =
+        _selfHandlerCounter.isSameOnErrorIndexAs(_bindHandlerCounter);
+
+    if (canInvokeDoOnError) {
+      // increment the bind-counter so that other potential sinks will not
+      // call doOnError for this error again.
+      _bindHandlerCounter.incrementOnError();
+
+      if (_onError != null) {
+        _onError(e, st);
+      }
+
+      if (_onEach != null) {
+        _onEach(Notification.onError(e, st));
+      }
+    }
+
+    _outputSink.addError(e, st);
+    // increment the self-counter, readying it for the next error.
+    _selfHandlerCounter.incrementOnError();
+  }
+
+  @override
+  void close() {
+    if (_onDone != null) {
+      _onDone();
+    }
+
+    if (_onEach != null) {
+      _onEach(Notification.onDone());
+    }
+
+    _outputSink.close();
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {
+    _selfHandlerCounter.reset();
+    _bindHandlerCounter.reset();
+
+    if (_onCancel != null) {
+      return _onCancel();
+    }
+  }
+
+  @override
+  void onListen(EventSink<S> sink) {
+    if (_onListen != null) {
+      _onListen();
+    }
+  }
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {
+    if (_onPause != null) {
+      _onPause(resumeSignal);
+    }
+  }
+
+  @override
+  void onResume(EventSink<S> sink) {
+    if (_onResume != null) {
+      _onResume();
+    }
+  }
+}
 
 /// Invokes the given callback at the corresponding point the the stream
 /// lifecycle. For example, if you pass in an onDone callback, it will
@@ -37,42 +159,42 @@ import 'package:rxdart/src/utils/notification.dart';
 ///           onError: (e, s) => print('Oh no!'),
 ///           onDone: () => print('Done')))
 ///         .listen(null); // Prints: 1, 'Done'
-class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// fires when all subscriptions have cancelled.
+  final dynamic Function() onCancel;
+
+  /// fires when data is emitted
+  final void Function(S event) onData;
+
+  /// fires on close
+  final void Function() onDone;
+
+  /// fires on data, close and error
+  final void Function(Notification<S> notification) onEach;
+
+  /// fires on errors
+  final Function onError;
+
+  /// fires when a subscription first starts
+  final void Function() onListen;
+
+  /// fires when the subscription pauses
+  final void Function(Future<dynamic> resumeSignal) onPause;
+
+  /// fires when the subscription resumes
+  final void Function() onResume;
 
   /// Constructs a [StreamTransformer] which will trigger any of the provided
   /// handlers as they occur.
   DoStreamTransformer(
-      {dynamic Function() onCancel,
-      void Function(T event) onData,
-      void Function() onDone,
-      void Function(Notification<T> notification) onEach,
-      Function onError,
-      void Function() onListen,
-      void Function(Future<dynamic> resumeSignal) onPause,
-      void Function() onResume})
-      : _transformer = _buildTransformer(
-            onCancel: onCancel,
-            onData: onData,
-            onDone: onDone,
-            onEach: onEach,
-            onError: onError,
-            onListen: onListen,
-            onPause: onPause,
-            onResume: onResume);
-
-  @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      {dynamic Function() onCancel,
-      void Function(T event) onData,
-      void Function() onDone,
-      void Function(Notification<T> notification) onEach,
-      Function onError,
-      void Function() onListen,
-      void Function(Future<dynamic> resumeSignal) onPause,
-      void Function() onResume}) {
+      {this.onCancel,
+      this.onData,
+      this.onDone,
+      this.onEach,
+      this.onError,
+      this.onListen,
+      this.onPause,
+      this.onResume}) {
     if (onCancel == null &&
         onData == null &&
         onDone == null &&
@@ -83,140 +205,45 @@ class DoStreamTransformer<T> extends StreamTransformerBase<T, T> {
         onResume == null) {
       throw ArgumentError('Must provide at least one handler');
     }
-
-    final subscriptions = <Stream<dynamic>, StreamSubscription<dynamic>>{};
-
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      final onListenLocal = () {
-        if (onListen != null) {
-          try {
-            onListen();
-          } catch (e, s) {
-            controller.addError(e, s);
-          }
-        }
-        subscriptions.putIfAbsent(
-          input,
-          () => input.listen(
-            (T value) {
-              if (onData != null) {
-                try {
-                  onData(value);
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onData(value));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.add(value);
-            },
-            onError: (dynamic e, StackTrace s) {
-              if (onError != null) {
-                try {
-                  onError(e, s);
-                } catch (e2, s2) {
-                  controller.addError(e2, s2);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onError(e, s));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.addError(e, s);
-            },
-            onDone: () {
-              if (onDone != null) {
-                try {
-                  onDone();
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              if (onEach != null) {
-                try {
-                  onEach(Notification<T>.onDone());
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-              controller.close();
-            },
-            cancelOnError: cancelOnError,
-          ),
-        );
-      };
-      final onCancelLocal = () {
-        dynamic onCancelResult;
-
-        if (onCancel != null) {
-          try {
-            onCancelResult = onCancel();
-          } catch (e, s) {
-            if (!controller.isClosed) {
-              controller.addError(e, s);
-            } else {
-              Zone.current.handleUncaughtError(e, s);
-            }
-          }
-        }
-        final cancelResultFuture = onCancelResult is Future
-            ? onCancelResult
-            : Future<dynamic>.value(onCancelResult);
-        final cancelFuture =
-            subscriptions[input].cancel() ?? Future<dynamic>.value();
-
-        return Future.wait<dynamic>([cancelFuture, cancelResultFuture])
-            .whenComplete(() => subscriptions.remove(input));
-      };
-
-      if (input.isBroadcast) {
-        controller = StreamController<T>.broadcast(
-          sync: true,
-          onListen: onListenLocal,
-          onCancel: onCancelLocal,
-        );
-      } else {
-        controller = StreamController<T>(
-          sync: true,
-          onListen: onListenLocal,
-          onCancel: onCancelLocal,
-          onPause: ([Future<dynamic> resumeSignal]) {
-            if (onPause != null) {
-              try {
-                onPause(resumeSignal);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-
-            subscriptions[input].pause(resumeSignal);
-          },
-          onResume: () {
-            if (onResume != null) {
-              try {
-                onResume();
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            }
-
-            subscriptions[input].resume();
-          },
-        );
-      }
-
-      return controller.stream.listen(null);
-    });
   }
+
+  @override
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
+    final handlerCounter = _HandlerCounter();
+
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream.connect(_DoStreamSink<S>(
+            sink,
+            onCancel,
+            onData,
+            onDone,
+            onEach,
+            onError,
+            onListen,
+            onPause,
+            onResume,
+            handlerCounter)));
+  }
+}
+
+/// A utility class, used with doOnData and doOnError.
+/// The class simply holds counters, so that doOnData and doOnError handlers
+/// are only called once for multiple registered subscribers.
+class _HandlerCounter {
+  int _onDataCounter = 0, _onErrorCounter = 0;
+
+  void incrementOnData() => _onDataCounter++;
+  void incrementOnError() => _onErrorCounter++;
+  void reset() {
+    _onDataCounter = _onErrorCounter = 0;
+  }
+
+  bool isSameOnDataIndexAs(_HandlerCounter otherCounter) =>
+      _onDataCounter == otherCounter._onDataCounter;
+  bool isSameOnErrorIndexAs(_HandlerCounter otherCounter) =>
+      _onErrorCounter == otherCounter._onErrorCounter;
 }
 
 /// Extends the Stream class with the ability to execute a callback function

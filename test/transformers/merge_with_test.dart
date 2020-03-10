@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
@@ -11,5 +13,16 @@ void main() {
     delayedStream.mergeWith([immediateStream]).listen(expectAsync1((result) {
       expect(result, expected[count++]);
     }, count: expected.length));
+  });
+
+  test('Rx.flatMap accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.mergeWith([Stream<int>.empty()]);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
   });
 }

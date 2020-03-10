@@ -2,6 +2,29 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/notification.dart';
 
+class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
+  final EventSink<S> _outputSink;
+
+  _DematerializeStreamSink(this._outputSink);
+
+  @override
+  void add(Notification<S> data) {
+    if (data.isOnData) {
+      _outputSink.add(data.value);
+    } else if (data.isOnDone) {
+      _outputSink.close();
+    } else if (data.isOnError) {
+      _outputSink.addError(data.error, data.stackTrace);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// Converts the onData, onDone, and onError [Notification] objects from a
 /// materialized stream into normal onData, onDone, and onError events.
 ///
@@ -22,58 +45,16 @@ import 'package:rxdart/src/utils/notification.dart';
 ///         .fromIterable([Notification.onError(Exception(), null)])
 ///         .transform(DematerializeStreamTransformer())
 ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
-class DematerializeStreamTransformer<T>
-    extends StreamTransformerBase<Notification<T>, T> {
-  final StreamTransformer<Notification<T>, T> _transformer;
-
+class DematerializeStreamTransformer<S>
+    extends StreamTransformerBase<Notification<S>, S> {
   /// Constructs a [StreamTransformer] which converts the onData, onDone, and
   /// onError [Notification] objects from a materialized stream into normal
   /// onData, onDone, and onError events.
-  DematerializeStreamTransformer() : _transformer = _buildTransformer();
+  DematerializeStreamTransformer();
 
   @override
-  Stream<T> bind(Stream<Notification<T>> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<Notification<T>, T> _buildTransformer<T>() {
-    return StreamTransformer<Notification<T>, T>(
-        (Stream<Notification<T>> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<Notification<T>> subscription;
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((Notification<T> notification) {
-              try {
-                if (notification.isOnData) {
-                  controller.add(notification.value);
-                } else if (notification.isOnDone) {
-                  controller.close();
-                } else if (notification.isOnError) {
-                  controller.addError(
-                      notification.error, notification.stackTrace);
-                }
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-          },
-          onResume: () {
-            subscription.resume();
-          },
-          onCancel: () {
-            return subscription.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
-  }
+  Stream<S> bind(Stream<Notification<S>> stream) =>
+      Stream.eventTransformed(stream, (sink) => _DematerializeStreamSink(sink));
 }
 
 /// Converts the onData, onDone, and onError [Notification]s from a

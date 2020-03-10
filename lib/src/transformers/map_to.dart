@@ -1,5 +1,21 @@
 import 'dart:async';
 
+class _MapToStreamSink<S, T> implements EventSink<S> {
+  final T _value;
+  final EventSink<T> _outputSink;
+
+  _MapToStreamSink(this._outputSink, this._value);
+
+  @override
+  void add(S data) => _outputSink.add(_value);
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// Emits the given constant value on the output Stream every time the source
 /// Stream emits a value.
 ///
@@ -9,40 +25,21 @@ import 'dart:async';
 ///       .mapTo(true)
 ///       .listen(print); // prints true, true, true, true
 class MapToStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
-  final StreamTransformer<S, T> _transformer;
+  /// A constant [value] which will always be returned when using this transformer.
+  final T value;
 
   /// Constructs a [StreamTransformer] which always maps every event from
   /// the source [Stream] to a constant [value].
-  MapToStreamTransformer(T value) : _transformer = _buildTransformer(value);
+  MapToStreamTransformer(this.value);
 
   @override
-  Stream<T> bind(Stream<S> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<S, T> _buildTransformer<S, T>(T value) =>
-      StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
-        StreamController<T> controller;
-        StreamSubscription<S> subscription;
-
-        controller = StreamController<T>(
-            sync: true,
-            onListen: () {
-              subscription = input.listen((_) => controller.add(value),
-                  onError: controller.addError,
-                  onDone: controller.close,
-                  cancelOnError: cancelOnError);
-            },
-            onPause: ([Future<dynamic> resumeSignal]) =>
-                subscription.pause(resumeSignal),
-            onResume: () => subscription.resume(),
-            onCancel: () => subscription.cancel());
-
-        return controller.stream.listen(null);
-      });
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _MapToStreamSink<S, T>(sink, value));
 }
 
 /// Extends the Stream class with the ability to convert each item to the same
 /// value.
-extension MapToExtension<T> on Stream<T> {
+extension MapToExtension<S> on Stream<S> {
   /// Emits the given constant value on the output Stream every time the source
   /// Stream emits a value.
   ///
@@ -51,5 +48,5 @@ extension MapToExtension<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2, 3, 4])
   ///       .mapTo(true)
   ///       .listen(print); // prints true, true, true, true
-  Stream<S> mapTo<S>(S value) => transform(MapToStreamTransformer<T, S>(value));
+  Stream<T> mapTo<T>(T value) => transform(MapToStreamTransformer(value));
 }

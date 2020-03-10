@@ -126,4 +126,15 @@ void main() {
     await controller.close();
     expect(await list, [1, 1, 2, 2]);
   });
+
+  test('Rx.switchMap accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.switchMap((_) => Stream<int>.empty());
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

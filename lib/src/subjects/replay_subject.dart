@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
-import 'package:rxdart/src/transformers/start_with_many.dart';
+import 'package:rxdart/src/transformers/start_with_error.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -45,7 +46,7 @@ import 'package:rxdart/src/transformers/start_with_many.dart';
 ///     subject.stream.listen(print); // prints 2, 3
 ///     subject.stream.listen(print); // prints 2, 3
 class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
-  final Queue<T> _queue;
+  final Queue<_Event<T>> _queue;
   final int _maxSize;
 
   /// Constructs a [ReplaySubject], optionally pass handlers for
@@ -65,12 +66,21 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       sync: sync,
     );
 
-    final queue = Queue<T>();
+    final queue = Queue<_Event<T>>();
 
     return ReplaySubject<T>._(
       controller,
       Rx.defer<T>(
-        () => controller.stream.startWithMany(queue.toList(growable: false)),
+        () => queue.toList(growable: false).reversed.fold(controller.stream,
+            (stream, event) {
+          if (event.isError) {
+            return stream.transform(StartWithErrorStreamTransformer(
+                event.errorAndStackTrace.error,
+                event.errorAndStackTrace.stackTrace));
+          } else {
+            return stream.transform(StartWithStreamTransformer(event.event));
+          }
+        }),
         reusable: true,
       ),
       queue,
@@ -91,9 +101,55 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       _queue.removeFirst();
     }
 
-    _queue.add(event);
+    _queue.add(_Event(false, event: event));
   }
 
   @override
-  List<T> get values => _queue.toList(growable: false);
+  void onAddError(Object error, [StackTrace stackTrace]) {
+    if (_queue.length == _maxSize) {
+      _queue.removeFirst();
+    }
+
+    _queue.add(_Event<T>(true,
+        errorAndStackTrace: _ErrorAndStackTrace(error, stackTrace)));
+  }
+
+  @override
+  List<T> get values => _queue
+      .where((event) => !event.isError)
+      .map((event) => event.event)
+      .toList(growable: false);
+
+  @override
+  List<Object> get errors => _queue
+      .where((event) => event.isError)
+      .map((event) => event.errorAndStackTrace.error)
+      .toList(growable: false);
+
+  @override
+  StreamController<T> createForwardingController({
+    void Function() onListen,
+    void Function() onCancel,
+    bool sync = false,
+  }) =>
+      ReplaySubject(
+          maxSize: _maxSize,
+          onCancel: onCancel,
+          onListen: onListen,
+          sync: sync);
+}
+
+class _Event<T> {
+  final bool isError;
+  final T event;
+  final _ErrorAndStackTrace errorAndStackTrace;
+
+  _Event(this.isError, {this.event, this.errorAndStackTrace});
+}
+
+class _ErrorAndStackTrace {
+  final Object error;
+  final StackTrace stackTrace;
+
+  _ErrorAndStackTrace(this.error, this.stackTrace);
 }

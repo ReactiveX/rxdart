@@ -1,5 +1,68 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
+  final Iterable<S> _startValues;
+  final EventSink<S> _outputSink;
+  EventSink<S> _sink;
+  var _isFirstEventAdded = false;
+
+  _StartWithManyStreamSink(this._outputSink, this._startValues);
+
+  @override
+  void add(S data) {
+    _safeAddFirstEvent();
+    _outputSink.add(data);
+  }
+
+  @override
+  void addError(e, [st]) {
+    _safeAddFirstEvent();
+    _outputSink.addError(e, st);
+  }
+
+  @override
+  void close() {
+    _safeAddFirstEvent();
+    _outputSink.close();
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {}
+
+  @override
+  void onListen(EventSink<S> sink) {
+    _sink = sink;
+
+    scheduleMicrotask(_safeAddFirstEvent);
+  }
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+
+  @override
+  void onResume(EventSink<S> sink) {}
+
+  // Immediately setting the starting value when onListen trigger can
+  // result in an Exception (might be a bug in dart:async?)
+  // Therefore, scheduleMicrotask is used after onListen.
+  // Because events could be added before scheduleMicrotask completes,
+  // this method is ran before any other events might be added.
+  // Once the first event(s) is/are successfully added, this method
+  // will not trigger again.
+  void _safeAddFirstEvent() {
+    if (!_isFirstEventAdded && _sink != null) {
+      _isFirstEventAdded = true;
+
+      for (var i = 0, len = _startValues.length; i < len; i++) {
+        _sink.add(_startValues.elementAt(i));
+      }
+    }
+  }
+}
+
 /// Prepends a sequence of values to the source Stream.
 ///
 /// ### Example
@@ -7,45 +70,26 @@ import 'dart:async';
 ///     Stream.fromIterable([3])
 ///       .transform(StartWithManyStreamTransformer([1, 2]))
 ///       .listen(print); // prints 1, 2, 3
-class StartWithManyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// The starting events of this [Stream]
+  final Iterable<S> startValues;
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
-  /// with all values from [startValues].
-  StartWithManyStreamTransformer(Iterable<T> startValues)
-      : _transformer = _buildTransformer(startValues);
-
-  @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(Iterable<T> startValues) {
+  /// with [startValue].
+  StartWithManyStreamTransformer(this.startValues) {
     if (startValues == null) {
       throw ArgumentError('startValues cannot be null');
     }
+  }
 
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+  @override
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            startValues.forEach(controller.add);
-
-            subscription = input.listen(
-              controller.add,
-              onError: controller.addError,
-              onDone: controller.close,
-              cancelOnError: cancelOnError,
-            );
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream
+            .connect(_StartWithManyStreamSink<S>(sink, startValues)));
   }
 }
 

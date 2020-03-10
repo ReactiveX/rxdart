@@ -77,4 +77,15 @@ void main() {
           ..pause()
           ..resume();
   });
+
+  test('Rx.materialize accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.materialize();
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

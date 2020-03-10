@@ -1,5 +1,34 @@
 import 'dart:async';
 
+class _SwitchIfEmptyStreamSink<S> implements EventSink<S> {
+  final Stream<S> _fallbackStream;
+  final EventSink<S> _outputSink;
+  var _isEmpty = true;
+
+  _SwitchIfEmptyStreamSink(this._outputSink, this._fallbackStream);
+
+  @override
+  void add(S data) {
+    _isEmpty = false;
+    _outputSink.add(data);
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    if (_isEmpty) {
+      _fallbackStream.listen(_outputSink.add, onError: _outputSink.addError,
+          onDone: () {
+        _outputSink.close();
+      });
+    } else {
+      _outputSink.close();
+    }
+  }
+}
+
 /// When the original stream emits no items, this operator subscribes to
 /// the given fallback stream and emits items from that stream instead.
 ///
@@ -24,72 +53,21 @@ import 'dart:async';
 ///     // Simple as that!
 ///     Stream<Data> getThatData =
 ///         memory.switchIfEmpty(disk).switchIfEmpty(network);
-class SwitchIfEmptyStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class SwitchIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// The [Stream] which will be used as fallback, if the source [Stream] is empty.
+  final Stream<S> fallbackStream;
 
   /// Constructs a [StreamTransformer] which, when the source [Stream] emits
   /// no events, switches over to [fallbackStream].
-  SwitchIfEmptyStreamTransformer(Stream<T> fallbackStream)
-      : _transformer = _buildTransformer(fallbackStream);
-
-  @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      Stream<T> fallbackStream) {
+  SwitchIfEmptyStreamTransformer(this.fallbackStream) {
     if (fallbackStream == null) {
       throw ArgumentError('fallbackStream cannot be null');
     }
-
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> defaultSubscription;
-      StreamSubscription<T> switchSubscription;
-      var hasEvent = false;
-
-      void onDone() {
-        if (controller.isClosed) return;
-
-        controller.close();
-        switchSubscription?.cancel();
-      }
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            defaultSubscription = input.listen(
-                (T value) {
-                  hasEvent = true;
-                  controller.add(value);
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (hasEvent) {
-                    controller.close();
-                  } else {
-                    switchSubscription = fallbackStream.listen(
-                      controller.add,
-                      onError: controller.addError,
-                      onDone: onDone,
-                      cancelOnError: cancelOnError,
-                    );
-                  }
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            defaultSubscription?.pause(resumeSignal);
-            switchSubscription?.pause(resumeSignal);
-          },
-          onResume: () {
-            defaultSubscription?.resume();
-            switchSubscription?.resume();
-          },
-          onCancel: () => defaultSubscription?.cancel());
-
-      return controller.stream.listen(null);
-    });
   }
+
+  @override
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _SwitchIfEmptyStreamSink<S>(sink, fallbackStream));
 }
 
 /// Extend the Stream class with the ability to return an alternative Stream

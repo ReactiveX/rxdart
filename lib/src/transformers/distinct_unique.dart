@@ -1,6 +1,31 @@
 import 'dart:async';
 import 'dart:collection';
 
+class _DistinctUniqueStreamSink<S> implements EventSink<S> {
+  final EventSink<S> _outputSink;
+  final HashSet<S> _collection;
+
+  _DistinctUniqueStreamSink(this._outputSink,
+      {bool Function(S e1, S e2) equals, int Function(S e) hashCodeMethod})
+      : _collection = HashSet<S>(equals: equals, hashCode: hashCodeMethod);
+
+  @override
+  void add(S data) {
+    if (_collection.add(data)) {
+      _outputSink.add(data);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _collection.clear();
+    _outputSink.close();
+  }
+}
+
 /// Create a [Stream] which implements a [HashSet] under the hood, using
 /// the provided `equals` as equality.
 ///
@@ -21,53 +46,24 @@ import 'dart:collection';
 /// If `equals` or `hashCode` are omitted, the set uses the elements' intrinsic
 /// `Object.==` and `Object.hashCode`. If you supply one of `equals` and
 /// `hashCode`, you should generally also to supply the other.
-class DistinctUniqueStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class DistinctUniqueStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// Optional method which determines equality between two events
+  final bool Function(S e1, S e2) equals;
+
+  /// Optional method which is used to create a hash from an event
+  final int Function(S e) hashCodeMethod;
 
   /// Constructs a [StreamTransformer] which emits events from the source
   /// [Stream] as if they were processed through a [HashSet].
   ///
   /// See [HashSet] for a more detailed explanation.
-  DistinctUniqueStreamTransformer(
-      {bool Function(T e1, T e2) equals, int Function(T e) hashCode})
-      : _transformer = _buildTransformer(equals, hashCode);
+  DistinctUniqueStreamTransformer({this.equals, this.hashCodeMethod});
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(
-      bool Function(T e1, T e2) equals, int Function(T e) hashCode) {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      var collection = HashSet<T>(equals: equals, hashCode: hashCode);
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen((T value) {
-              try {
-                if (collection.add(value)) controller.add(value);
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            },
-                onError: controller.addError,
-                onDone: controller.close,
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () {
-            collection.clear();
-            collection = null;
-            return subscription.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream,
+      (sink) => _DistinctUniqueStreamSink<S>(sink,
+          equals: equals, hashCodeMethod: hashCodeMethod));
 }
 
 /// Extends the Stream class with the ability to skip items that have previously
@@ -91,5 +87,5 @@ extension DistinctUniqueExtension<T> on Stream<T> {
     int Function(T e) hashCode,
   }) =>
       transform(DistinctUniqueStreamTransformer<T>(
-          equals: equals, hashCode: hashCode));
+          equals: equals, hashCodeMethod: hashCode));
 }

@@ -1,5 +1,60 @@
 import 'dart:async';
 
+import 'dart:collection';
+
+class _IntervalStreamSink<S> implements EventSink<S> {
+  final Duration _duration;
+  final EventSink<S> _outputSink;
+  final _queue = Queue<S>();
+  var _inputClosed = false;
+  var _openIntervals = 0;
+
+  bool get noOpenIntervals => _openIntervals == 0;
+
+  _IntervalStreamSink(this._outputSink, this._duration);
+
+  @override
+  void add(S data) {
+    _queue.add(data);
+
+    if (noOpenIntervals) {
+      _addNext();
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _inputClosed = true;
+
+    if (noOpenIntervals) {
+      _outputSink.close();
+    }
+  }
+
+  void _addNext() {
+    if (_queue.isNotEmpty) {
+      _addDelayed(_queue.removeFirst()).whenComplete(_addNext);
+    }
+  }
+
+  Future<void> _addDelayed(S data) {
+    _openIntervals++;
+
+    return Future.delayed(_duration, () => data)
+        .then(_outputSink.add)
+        .whenComplete(() {
+      _openIntervals--;
+
+      if (_inputClosed && _queue.isEmpty) {
+        _outputSink.close();
+      }
+    });
+  }
+}
+
 /// Creates a Stream that emits each item in the Stream after a given
 /// duration.
 ///
@@ -8,57 +63,17 @@ import 'dart:async';
 ///     Stream.fromIterable([1, 2, 3])
 ///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
 ///       .listen((i) => print('$i sec'); // prints 1 sec, 2 sec, 3 sec
-class IntervalStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class IntervalStreamTransformer<S> extends StreamTransformerBase<S, S> {
+  /// The interval after which incoming events need to be emitted.
+  final Duration duration;
 
   /// Constructs a [StreamTransformer] which emits each item from the source [Stream],
   /// after a given duration.
-  IntervalStreamTransformer(Duration duration)
-      : _transformer = _buildTransformer(duration);
+  IntervalStreamTransformer(this.duration);
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>(Duration duration) =>
-      StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-        StreamController<T> controller;
-        StreamSubscription<T> subscription;
-        Future<T> onInterval;
-
-        final combinedWait = (Future<dynamic> resumeSignal) =>
-            (resumeSignal != null && onInterval != null)
-                ? Future.wait<dynamic>([onInterval, resumeSignal])
-                : resumeSignal;
-
-        controller = StreamController<T>(
-            sync: true,
-            onListen: () {
-              subscription = input.listen((value) {
-                try {
-                  onInterval = Future.delayed(duration, () => value);
-
-                  // no need to call combinedWait here,
-                  // if the main subscription is paused, then
-                  // there can never be an event in that pause time frame
-                  subscription.pause(onInterval
-                      .then(controller.add)
-                      .whenComplete(() => onInterval = null));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              },
-                  onError: controller.addError,
-                  onDone: controller.close,
-                  cancelOnError: cancelOnError);
-            },
-            // await also onInterval, if it is active
-            onPause: ([Future<dynamic> resumeSignal]) =>
-                subscription.pause(combinedWait(resumeSignal)),
-            onResume: () => subscription.resume(),
-            onCancel: () => subscription.cancel());
-
-        return controller.stream.listen(null);
-      });
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _IntervalStreamSink<S>(sink, duration));
 }
 
 /// Extends the Stream class with the ability to emit each item after a given

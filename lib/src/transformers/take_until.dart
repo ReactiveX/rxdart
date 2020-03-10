@@ -1,5 +1,43 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _TakeUntilStreamSink<S, T> implements ForwardingSink<S> {
+  final Stream<T> _otherStream;
+  final EventSink<S> _outputSink;
+  StreamSubscription<T> _otherSubscription;
+
+  _TakeUntilStreamSink(this._outputSink, this._otherStream);
+
+  @override
+  void add(S data) => _outputSink.add(data);
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _otherSubscription?.cancel();
+    _outputSink.close();
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) => _otherSubscription?.cancel();
+
+  @override
+  void onListen(EventSink<S> sink) => _otherSubscription = _otherStream
+      .take(1)
+      .listen(null, onError: addError, onDone: _outputSink.close);
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _otherSubscription?.pause(resumeSignal);
+
+  @override
+  void onResume(EventSink<S> sink) => _otherSubscription?.resume();
+}
+
 /// Returns the values from the source stream sequence until the other
 /// stream sequence produces a value.
 ///
@@ -12,56 +50,26 @@ import 'dart:async';
 ///       .transform(TakeUntilStreamTransformer(
 ///         TimerStream(3, Duration(seconds: 10))))
 ///       .listen(print); // prints 1
-class TakeUntilStreamTransformer<T, S> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
+class TakeUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
+  /// The [Stream] which closes this [Stream] as soon as it emits an event.
+  final Stream<T> otherStream;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream],
   /// until [otherStream] fires.
-  TakeUntilStreamTransformer(Stream<S> otherStream)
-      : _transformer = _buildTransformer(otherStream);
+  TakeUntilStreamTransformer(this.otherStream) {
+    if (otherStream == null) {
+      throw ArgumentError('otherStream cannot be null');
+    }
+  }
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<S> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-  static StreamTransformer<T, T> _buildTransformer<T, S>(
-      Stream<S> otherStream) {
-    if (otherStream == null) {
-      throw ArgumentError('take until stream cannot be null');
-    }
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
-
-      void onDone() {
-        if (controller.isClosed) return;
-
-        controller.close();
-      }
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(controller.add,
-                onError: controller.addError,
-                onDone: onDone,
-                cancelOnError: cancelOnError);
-
-            otherSubscription = otherStream.listen((_) => onDone(),
-                onError: controller.addError,
-                cancelOnError: cancelOnError,
-                onDone: onDone);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () async {
-            await otherSubscription?.cancel();
-            await subscription?.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) => forwardedStream
+            .connect(_TakeUntilStreamSink<S, T>(sink, otherStream)));
   }
 }
 

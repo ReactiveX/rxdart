@@ -77,4 +77,15 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('Rx.takeWhileInclusive accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.takeWhileInclusive((_) => true);
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

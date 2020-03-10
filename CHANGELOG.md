@@ -1,3 +1,31 @@
+## 0.24.0-dev.1
+  * Breaking: as of this release, we've refactored the way Stream transformers are set up.
+  Previous releases had some incorrect behavior when using certain operators, for example:
+    - startWith (startWithMany, startWithError)
+    would incorrectly replay the starting event(s) when using a
+    broadcast Stream at subscription time.
+    - doOnX was not always producing the expected results:
+      * doOnData did not output correct sequences on streams that were transformed 
+      multiple times in sequence.
+      * doOnCancel now acts in the same manner onCancel works on 
+      regular subscriptions, i.e. it will now be called when all
+      active subscriptions on a Stream are cancelled.
+      * doOnListen will now call the first time the Stream is
+      subscribed to, and will only call again after all subscribers
+      have cancelled, before a new subscription starts.
+  
+      To properly fix this up, a new way of transforming Streams was introduced.    
+      Operators as of now use Stream.eventTransformed and we've refactored all
+      operators to implement Sink instead.
+  * Adds takeWileInclusive operator (thanks to [@hoc081098](https://github.com/hoc081098))
+  
+  We encourage everyone to give the dev release(s) a spin and report back if
+  anything breaks. If needed, a guide will be written to help migrate from
+  the old behavior to the new behavior in certain common use cases.
+  
+  Keep in mind that we tend to stick as close as we can to how normal
+  Dart Streams work!
+
 ## 0.23.1
 
   * Fix API doc links in README

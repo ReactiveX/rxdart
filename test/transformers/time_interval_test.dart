@@ -90,4 +90,15 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('Rx.timeInterval accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.timeInterval();
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

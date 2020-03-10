@@ -1,5 +1,24 @@
 import 'dart:async';
 
+class _WhereTypeStreamSink<S, T> implements EventSink<S> {
+  final EventSink<T> _outputSink;
+
+  _WhereTypeStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {
+    if (data is T) {
+      _outputSink.add(data);
+    }
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// This transformer is a shorthand for [Stream.where] followed by [Stream.cast].
 ///
 /// Events that do not match [T] are filtered out, the resulting
@@ -19,42 +38,12 @@ import 'dart:async';
 ///       .listen(print); // prints 1, 3
 ///
 class WhereTypeStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
-  final StreamTransformer<S, T> _transformer;
-
   /// Constructs a [StreamTransformer] which combines [Stream.where] followed by [Stream.cast].
-  WhereTypeStreamTransformer() : _transformer = _buildTransformer();
+  WhereTypeStreamTransformer();
 
   @override
-  Stream<T> bind(Stream<S> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<S, T> _buildTransformer<S, T>() =>
-      StreamTransformer<S, T>((Stream<S> input, bool cancelOnError) {
-        StreamController<T> controller;
-        StreamSubscription<S> subscription;
-
-        controller = StreamController<T>(
-            sync: true,
-            onListen: () {
-              subscription = input.listen((event) {
-                try {
-                  if (event is T) {
-                    controller.add(event);
-                  }
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              },
-                  onError: controller.addError,
-                  onDone: controller.close,
-                  cancelOnError: cancelOnError);
-            },
-            onPause: ([Future<dynamic> resumeSignal]) =>
-                subscription.pause(resumeSignal),
-            onResume: () => subscription.resume(),
-            onCancel: () => subscription.cancel());
-
-        return controller.stream.listen(null);
-      });
+  Stream<T> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _WhereTypeStreamSink<S, T>(sink));
 }
 
 /// Extends the Stream class with the ability to filter down events to only

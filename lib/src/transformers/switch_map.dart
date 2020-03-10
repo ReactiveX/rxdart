@@ -1,5 +1,56 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _SwitchMapStreamSink<S, T> implements ForwardingSink<S> {
+  final Stream<T> Function(S value) _mapper;
+  final EventSink<T> _outputSink;
+  StreamSubscription<T> _mapperSubscription;
+  bool _inputClosed = false;
+
+  _SwitchMapStreamSink(this._outputSink, this._mapper);
+
+  @override
+  void add(S data) {
+    final mappedStream = _mapper(data);
+
+    _mapperSubscription?.cancel();
+
+    _mapperSubscription =
+        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
+      if (_inputClosed) {
+        _outputSink.close();
+
+        _mapperSubscription = null;
+      }
+    });
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _inputClosed = true;
+
+    _mapperSubscription ?? _outputSink.close();
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _mapperSubscription?.pause(resumeSignal);
+
+  @override
+  void onResume(EventSink<S> sink) => _mapperSubscription?.resume();
+}
+
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be be listened to and begin
 /// emitting items, and any previously created Stream will stop emitting.
@@ -17,75 +68,23 @@ import 'dart:async';
 ///         Stream.fromFuture(
 ///           Future.delayed(Duration(minutes: i), () => i))
 ///       .listen(print); // prints 1
-class SwitchMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
+  /// Method which converts incoming events into a new [Stream]
+  final Stream<T> Function(S value) mapper;
 
   /// Constructs a [StreamTransformer] which maps each event from the source [Stream]
   /// using [mapper].
   ///
   /// The mapped [Stream] will be be listened to and begin
   /// emitting items, and any previously created mapper [Stream]s will stop emitting.
-  SwitchMapStreamTransformer(Stream<S> Function(T value) mapper)
-      : _transformer = _buildTransformer(mapper);
+  SwitchMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> Function(T value) mapper) {
-    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
-      StreamSubscription<S> otherSubscription;
-      var leftClosed = false, rightClosed = false, hasMainEvent = false;
-
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  try {
-                    otherSubscription?.cancel();
-
-                    // Since we start a new listener on mapper(value),
-                    // this state needs to be set to false again.
-                    rightClosed = false;
-                    hasMainEvent = true;
-
-                    otherSubscription = mapper(value).listen(controller.add,
-                        onError: controller.addError, onDone: () {
-                      rightClosed = true;
-
-                      if (leftClosed) controller.close();
-                    });
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  leftClosed = true;
-
-                  if (rightClosed || !hasMainEvent) controller.close();
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-            otherSubscription?.pause(resumeSignal);
-          },
-          onResume: () {
-            subscription.resume();
-            otherSubscription?.resume();
-          },
-          onCancel: () async {
-            await subscription.cancel();
-
-            if (hasMainEvent) await otherSubscription?.cancel();
-          });
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => _SwitchMapStreamSink<S, T>(sink, mapper));
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:test/test.dart';
 
 void main() {
@@ -9,5 +11,15 @@ void main() {
     stream.listen(expectAsync1((actual) {
       expect(actual, expected);
     }));
+  });
+  test('Rx.distinct accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.distinct();
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
   });
 }

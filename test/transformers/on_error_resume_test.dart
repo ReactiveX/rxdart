@@ -123,4 +123,27 @@ void main() {
           expect(result, expected[countB++]);
         }, count: expected.length));
   });
+
+  test('Rx.onErrorResume accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream =
+        controller.stream.onErrorResume((Object _) => Stream<int>.empty());
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
+
+  test('Rx.onErrorResumeNext accidental broadcast', () async {
+    final controller = StreamController<int>();
+
+    final stream = controller.stream.onErrorResumeNext(Stream<int>.empty());
+
+    stream.listen(null);
+    expect(() => stream.listen(null), throwsStateError);
+
+    controller.add(1);
+  });
 }

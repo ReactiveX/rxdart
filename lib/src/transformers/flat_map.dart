@@ -1,5 +1,65 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
+  final Stream<T> Function(S value) _mapper;
+  final EventSink<T> _outputSink;
+  final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
+  int _openSubscriptions = 0;
+  bool _inputClosed = false;
+
+  _FlatMapStreamSink(this._outputSink, this._mapper);
+
+  @override
+  void add(S data) {
+    final mappedStream = _mapper(data);
+
+    _openSubscriptions++;
+
+    StreamSubscription<T> subscription;
+
+    subscription =
+        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
+      _openSubscriptions--;
+      _subscriptions.remove(subscription);
+
+      if (_inputClosed && _openSubscriptions == 0) {
+        _outputSink.close();
+      }
+    });
+
+    _subscriptions.add(subscription);
+  }
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() {
+    _inputClosed = true;
+
+    if (_openSubscriptions == 0) {
+      _outputSink.close();
+    }
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) =>
+      Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _subscriptions.forEach((s) => s.pause(resumeSignal));
+
+  @override
+  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
+}
+
 /// Converts each emitted item into a new Stream using the given mapper
 /// function. The newly created Stream will be listened to and begin
 /// emitting items downstream.
@@ -15,87 +75,20 @@ import 'dart:async';
 ///           Stream.fromFuture(
 ///             Future.delayed(Duration(minutes: i), () => i))
 ///         .listen(print); // prints 1, 2, 3, 4
-class FlatMapStreamTransformer<T, S> extends StreamTransformerBase<T, S> {
-  final StreamTransformer<T, S> _transformer;
+class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
+  /// Method which converts incoming events into a new [Stream]
+  final Stream<T> Function(S value) mapper;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
   /// The mapped [Stream] will be listened to and begin emitting items downstream.
-  FlatMapStreamTransformer(Stream<S> Function(T value) mapper)
-      : _transformer = _buildTransformer(mapper);
+  FlatMapStreamTransformer(this.mapper);
 
   @override
-  Stream<S> bind(Stream<T> stream) => _transformer.bind(stream);
+  Stream<T> bind(Stream<S> stream) {
+    final forwardedStream = forwardStream<S>(stream);
 
-  static StreamTransformer<T, S> _buildTransformer<T, S>(
-      Stream<S> Function(T value) mapper) {
-    return StreamTransformer<T, S>((Stream<T> input, bool cancelOnError) {
-      final subscriptions = <StreamSubscription<S>>[];
-      StreamController<S> controller;
-      StreamSubscription<T> subscription;
-
-      var closeAfterNextEvent = false, hasMainEvent = false, openStreams = 0;
-
-      controller = StreamController<S>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(
-                (T value) {
-                  try {
-                    StreamSubscription<S> otherSubscription;
-                    var otherStream = mapper(value);
-
-                    hasMainEvent = true;
-
-                    openStreams++;
-
-                    otherSubscription = otherStream.listen(controller.add,
-                        onError: controller.addError, onDone: () {
-                      openStreams--;
-
-                      if (closeAfterNextEvent && openStreams == 0) {
-                        controller.close();
-                      }
-                    });
-
-                    subscriptions.add(otherSubscription);
-                  } catch (e, s) {
-                    controller.addError(e, s);
-                  }
-                },
-                onError: controller.addError,
-                onDone: () {
-                  if (!hasMainEvent || openStreams == 0) {
-                    controller.close();
-                  } else {
-                    closeAfterNextEvent = true;
-                  }
-                },
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) {
-            subscription.pause(resumeSignal);
-
-            subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
-                otherSubscription.pause(resumeSignal));
-          },
-          onResume: () {
-            subscription.resume();
-
-            subscriptions.forEach((StreamSubscription<S> otherSubscription) =>
-                otherSubscription.resume());
-          },
-          onCancel: () {
-            final list = List<StreamSubscription<dynamic>>.from(subscriptions)
-              ..add(subscription);
-
-            return Future.wait<dynamic>(list
-                .map((StreamSubscription<dynamic> subscription) =>
-                    subscription.cancel())
-                .where((Future<dynamic> cancelFuture) => cancelFuture != null));
-          });
-
-      return controller.stream.listen(null);
-    });
+    return Stream.eventTransformed(forwardedStream.stream,
+        (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
   }
 }
 

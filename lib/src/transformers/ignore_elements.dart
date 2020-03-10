@@ -1,5 +1,20 @@
 import 'dart:async';
 
+class _IgnoreElementsStreamSink<S> implements EventSink<S> {
+  final EventSink<S> _outputSink;
+
+  _IgnoreElementsStreamSink(this._outputSink);
+
+  @override
+  void add(S data) {}
+
+  @override
+  void addError(e, [st]) => _outputSink.addError(e, st);
+
+  @override
+  void close() => _outputSink.close();
+}
+
 /// Creates a [Stream] where all emitted items are ignored, only the
 /// error / completed notifications are passed
 ///
@@ -11,37 +26,14 @@ import 'dart:async';
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
 @Deprecated('Use the drain method from the Stream class instead')
-class IgnoreElementsStreamTransformer<T> extends StreamTransformerBase<T, T> {
-  final StreamTransformer<T, T> _transformer;
-
+class IgnoreElementsStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Constructs a [StreamTransformer] which simply ignores all events from
   /// the source [Stream], except for error or completed events.
-  IgnoreElementsStreamTransformer() : _transformer = _buildTransformer();
+  IgnoreElementsStreamTransformer();
 
   @override
-  Stream<T> bind(Stream<T> stream) => _transformer.bind(stream);
-
-  static StreamTransformer<T, T> _buildTransformer<T>() {
-    return StreamTransformer<T, T>((Stream<T> input, bool cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
-
-      controller = StreamController<T>(
-          sync: true,
-          onListen: () {
-            subscription = input.listen(null,
-                onError: controller.addError,
-                onDone: () => controller.close(),
-                cancelOnError: cancelOnError);
-          },
-          onPause: ([Future<dynamic> resumeSignal]) =>
-              subscription.pause(resumeSignal),
-          onResume: () => subscription.resume(),
-          onCancel: () => subscription.cancel());
-
-      return controller.stream.listen(null);
-    });
-  }
+  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+      stream, (sink) => _IgnoreElementsStreamSink<S>(sink));
 }
 
 /// Extends the Stream class with the ability to skip, or ignore, data events.
