@@ -61,7 +61,7 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
   }
 }
 
-/// Prepends an error to the source Stream.
+/// Prepends an error to the source [Stream].
 ///
 /// ### Example
 ///
