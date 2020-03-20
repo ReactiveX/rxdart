@@ -60,7 +60,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S> {
   }
 }
 
-/// Prepends a value to the source Stream.
+/// Prepends a value to the source [Stream].
 ///
 /// ### Example
 ///
@@ -86,10 +86,10 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 }
 
-/// Extends the Stream class with the ability to emit the given value as the
+/// Extends the [Stream] class with the ability to emit the given value as the
 /// first item.
 extension StartWithExtension<T> on Stream<T> {
-  /// Prepends a value to the source Stream.
+  /// Prepends a value to the source [Stream].
   ///
   /// ### Example
   ///

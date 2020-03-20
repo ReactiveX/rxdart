@@ -51,6 +51,8 @@ import 'transformers/dematerialize_test.dart' as dematerialize_test;
 import 'transformers/distinct_test.dart' as distinct_test;
 import 'transformers/distinct_unique_test.dart' as distinct_unique_test;
 import 'transformers/do_test.dart' as do_test;
+import 'transformers/end_with_test.dart' as end_with_test;
+import 'transformers/end_with_many_test.dart' as end_with_many_test;
 import 'transformers/exhaust_map_test.dart' as exhaust_map_test;
 import 'transformers/flat_map_iterable_test.dart' as flat_map_iterable_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
@@ -107,6 +109,8 @@ void main() {
   distinct_test.main();
   distinct_unique_test.main();
   do_test.main();
+  end_with_test.main();
+  end_with_many_test.main();
   exhaust_map_test.main();
   flat_map_test.main();
   flat_map_iterable_test.main();

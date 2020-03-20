@@ -63,7 +63,7 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
   }
 }
 
-/// Prepends a sequence of values to the source Stream.
+/// Prepends a sequence of values to the source [Stream].
 ///
 /// ### Example
 ///
@@ -75,7 +75,7 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   final Iterable<S> startValues;
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
-  /// with [startValue].
+  /// with [startValues].
   StartWithManyStreamTransformer(this.startValues) {
     if (startValues == null) {
       throw ArgumentError('startValues cannot be null');
@@ -93,10 +93,10 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 }
 
-/// Extends the Stream class with the ability to emit the given values as the
+/// Extends the [Stream] class with the ability to emit the given values as the
 /// first items.
 extension StartWithManyExtension<T> on Stream<T> {
-  /// Prepends a sequence of values to the source Stream.
+  /// Prepends a sequence of values to the source [Stream].
   ///
   /// ### Example
   ///

@@ -5,6 +5,8 @@ export 'src/transformers/delay.dart';
 export 'src/transformers/dematerialize.dart';
 export 'src/transformers/distinct_unique.dart';
 export 'src/transformers/do.dart';
+export 'src/transformers/end_with.dart';
+export 'src/transformers/end_with_many.dart';
 export 'src/transformers/exhaust_map.dart';
 export 'src/transformers/flat_map.dart';
 export 'src/transformers/group_by.dart';
