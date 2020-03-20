@@ -71,7 +71,9 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   void close() {
     // treat the final event as a Window that opens
     // and immediately closes again
-    if (queue.isNotEmpty) resolveWindowStart(queue.last);
+    if (_dispatchOnClose && queue.isNotEmpty) {
+      resolveWindowStart(queue.last);
+    }
 
     resolveWindowEnd(true);
 
