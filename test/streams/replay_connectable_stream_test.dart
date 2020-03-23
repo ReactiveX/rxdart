@@ -136,7 +136,7 @@ void main() {
           .publishReplay()
           .autoConnect(connection: (subscription) => subscription.cancel());
 
-      expect(stream, neverEmits(anything));
+      expect(await stream.isEmpty, true);
     });
   });
 }

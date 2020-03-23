@@ -45,8 +45,8 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [PublishSubject].
-  factory PublishConnectableStream(Stream<T> source) {
-    return PublishConnectableStream<T>._(source, PublishSubject<T>(sync: true));
+  factory PublishConnectableStream(Stream<T> source, {bool sync = false}) {
+    return PublishConnectableStream<T>._(source, PublishSubject<T>(sync: sync));
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
@@ -112,22 +112,20 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject].
-  factory ValueConnectableStream(Stream<T> source) =>
+  factory ValueConnectableStream(Stream<T> source, {bool sync = false}) =>
       ValueConnectableStream<T>._(
         source,
-        BehaviorSubject<T>(sync: true),
+        BehaviorSubject<T>(sync: sync),
       );
 
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
-  factory ValueConnectableStream.seeded(
-    Stream<T> source,
-    T seedValue,
-  ) =>
+  factory ValueConnectableStream.seeded(Stream<T> source, T seedValue,
+          {bool sync = false}) =>
       ValueConnectableStream<T>._(
         source,
-        BehaviorSubject<T>.seeded(seedValue, sync: true),
+        BehaviorSubject<T>.seeded(seedValue, sync: sync),
       );
 
   @override
@@ -189,10 +187,11 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
-  factory ReplayConnectableStream(Stream<T> stream, {int maxSize}) {
+  factory ReplayConnectableStream(Stream<T> stream,
+      {int maxSize, bool sync = false}) {
     return ReplayConnectableStream<T>._(
       stream,
-      ReplaySubject<T>(maxSize: maxSize, sync: true),
+      ReplaySubject<T>(maxSize: maxSize, sync: sync),
     );
   }
 
@@ -314,7 +313,8 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subject
   /// subscription.cancel();
   /// ```
-  ConnectableStream<T> publish() => PublishConnectableStream<T>(this);
+  ConnectableStream<T> publish() =>
+      PublishConnectableStream<T>(this, sync: true);
 
   /// Convert the current Stream into a [ValueConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
@@ -347,7 +347,8 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // BehaviorSubject
   /// subscription.cancel();
   /// ```
-  ValueConnectableStream<T> publishValue() => ValueConnectableStream<T>(this);
+  ValueConnectableStream<T> publishValue() =>
+      ValueConnectableStream<T>(this, sync: true);
 
   /// Convert the current Stream into a [ValueConnectableStream]
   /// that can be listened to multiple times, providing an initial seeded value.
@@ -417,7 +418,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// ```
   ReplayConnectableStream<T> publishReplay({int maxSize}) =>
-      ReplayConnectableStream<T>(this, maxSize: maxSize);
+      ReplayConnectableStream<T>(this, maxSize: maxSize, sync: true);
 
   /// Convert the current Stream into a new Stream that can be listened
   /// to multiple times. It will automatically begin emitting items when first
