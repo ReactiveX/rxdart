@@ -46,7 +46,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   /// the [connect] method is called, this [Stream] acts like a
   /// [PublishSubject].
   factory PublishConnectableStream(Stream<T> source) {
-    return PublishConnectableStream<T>._(source, PublishSubject<T>());
+    return PublishConnectableStream<T>._(source, PublishSubject<T>(sync: true));
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
@@ -115,7 +115,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   factory ValueConnectableStream(Stream<T> source) =>
       ValueConnectableStream<T>._(
         source,
-        BehaviorSubject<T>(),
+        BehaviorSubject<T>(sync: true),
       );
 
   /// Constructs a [Stream] which only begins emitting events when
@@ -127,7 +127,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   ) =>
       ValueConnectableStream<T>._(
         source,
-        BehaviorSubject<T>.seeded(seedValue),
+        BehaviorSubject<T>.seeded(seedValue, sync: true),
       );
 
   @override
@@ -192,7 +192,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   factory ReplayConnectableStream(Stream<T> stream, {int maxSize}) {
     return ReplayConnectableStream<T>._(
       stream,
-      ReplaySubject<T>(maxSize: maxSize),
+      ReplaySubject<T>(maxSize: maxSize, sync: true),
     );
   }
 
