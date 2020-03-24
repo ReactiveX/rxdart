@@ -15,6 +15,7 @@ List<Stream<int>> _createTestStreams() {
   final ticker =
       Stream<int>.periodic(const Duration(milliseconds: 1), (index) => index)
           .skip(1)
+          .take(300)
           .asBroadcastStream();
 
   return [
