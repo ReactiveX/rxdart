@@ -8,13 +8,6 @@ import 'package:test/test.dart';
 /// under the same Timer interval.
 /// before, tests could fail, since we created 5 separate Streams with each
 /// using their own Timer.
-///
-/// For testing, below is how they emit synchronously:
-/// s0[0]                s0[1]                  s0[2]                s0[3]
-///                               s1[0]                                     s1[1]
-///        s2[0]                                      s2[1]
-///               s3[0]                                     s3[1]
-///                                      s4[0]                                      s4[1]
 List<Stream<int>> _createTestStreams() {
   /// creates streams that emit after a certain amount of milliseconds,
   /// the List of intervals (in ms)
