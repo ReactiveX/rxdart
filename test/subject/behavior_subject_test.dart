@@ -530,5 +530,27 @@ void main() {
       await expectLater(subject,
           emitsInOrder(<StreamMatcher>[emitsError('error'), emitsDone]));
     });
+
+    test('issue/419: sync behavior', () async {
+      final subject = BehaviorSubject.seeded(1, sync: true);
+      final mappedStream = subject.map((event) => event).shareValue();
+
+      mappedStream.listen(null);
+
+      expect(mappedStream.value, equals(1));
+
+      await subject.close();
+    });
+
+    test('issue/419: async behavior', () async {
+      final subject = BehaviorSubject.seeded(1);
+      final mappedStream = subject.map((event) => event).shareValue();
+
+      mappedStream.listen(null);
+
+      expect(mappedStream.value, equals(isNull));
+
+      await subject.close();
+    });
   });
 }

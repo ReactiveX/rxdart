@@ -370,5 +370,27 @@ void main() {
       expect(subject.isBroadcast, isTrue);
       expect(stream.isBroadcast, isTrue);
     });
+
+    test('issue/419: sync behavior', () async {
+      final subject = ReplaySubject<int>(sync: true)..add(1);
+      final mappedStream = subject.map((event) => event).shareValue();
+
+      mappedStream.listen(null);
+
+      expect(mappedStream.value, equals(1));
+
+      await subject.close();
+    });
+
+    test('issue/419: async behavior', () async {
+      final subject = ReplaySubject<int>()..add(1);
+      final mappedStream = subject.map((event) => event).shareValue();
+
+      mappedStream.listen(null);
+
+      expect(mappedStream.value, equals(isNull));
+
+      await subject.close();
+    });
   });
 }

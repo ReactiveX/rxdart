@@ -79,8 +79,8 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
                 event.errorAndStackTrace.stackTrace,
                 sync));
           } else {
-            return stream.transform(
-                StartWithStreamTransformer(event.event, isSync: sync));
+            return stream
+                .transform(StartWithStreamTransformer(event.event, sync: sync));
           }
         }),
         reusable: true,
