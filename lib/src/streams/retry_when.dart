@@ -68,6 +68,7 @@ class RetryWhenStream<T> extends Stream<T> {
   final RetryWhenStreamFactory retryWhenFactory;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
+  StreamSubscription<void> _subSubscription;
   final _errors = <ErrorAndStackTrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
@@ -86,9 +87,18 @@ class RetryWhenStream<T> extends Stream<T> {
     _controller ??= StreamController<T>(
       sync: true,
       onListen: _retry,
-      onPause: () => _subscription.pause(),
-      onResume: () => _subscription.resume(),
-      onCancel: () => _subscription.cancel(),
+      onPause: () {
+        _subSubscription?.pause();
+        _subscription.pause();
+      },
+      onResume: () {
+        _subSubscription?.resume();
+        _subscription.resume();
+      },
+      onCancel: () {
+        _subSubscription?.cancel();
+        _subscription.cancel();
+      },
     );
 
     return _controller.stream.listen(
@@ -105,15 +115,14 @@ class RetryWhenStream<T> extends Stream<T> {
       onError: (Object e, [StackTrace s]) {
         _subscription.cancel();
 
-        StreamSubscription<void> sub;
-        sub = retryWhenFactory(e, s).listen(
+        _subSubscription = retryWhenFactory(e, s).listen(
           (event) {
-            sub.cancel();
+            _subSubscription.cancel();
             _errors.add(ErrorAndStackTrace(e, s));
             _retry();
           },
           onError: (Object e, [StackTrace s]) {
-            sub.cancel();
+            _subSubscription.cancel();
             _controller
               ..addError(RetryError.onReviveFailed(
                 _errors..add(ErrorAndStackTrace(e, s)),
