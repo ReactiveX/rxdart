@@ -86,22 +86,22 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 
 #### List of Classes / Static Factories
 
-- [ConcatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Rx.concat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/concat.html)
-- [ConcatEagerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Rx.concatEager](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/concatEager.html)
-- [DeferStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/DeferStream-class.html) / [Rx.defer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/defer.html)
-- [MergeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/MergeStream-class.html) / [Rx.merge](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/merge.html)
-- [NeverStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/NeverStream-class.html) / [Rx.never](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/never.html)
-- [RaceStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RaceStream-class.html) / [Rx.race](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/race.html)
-- [RepeatStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RepeatStream-class.html) / [Rx.repeat](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/repeat.html)
-- [RetryStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryStream-class.html) / [Rx.retry](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/retry.html)
-- [RetryWhenStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RetryWhenStream-class.html) / [Rx.retryWhen](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/retryWhen.html)
-- [SequenceEqualStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Rx.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Rx/sequenceEqual.html)
-- [SwitchLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Rx.switchLatest](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/switchLatest.html)
-- [TimerStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/timer.html)
-- [CombineLatestStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Rx.combineLatest2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/combineLatest2.html)...[Rx.combineLatest9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/combineLatest9.html) 
-- [ForkJoinStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/forkJoin2.html)...[Rx.forkJoin9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/forkJoin9.html)
-- [RangeStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/range.html)
-- [ZipStream](https://www.dartdocs.org/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx/zip9.html)
+- [ConcatStream](https://pub.dev/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Rx.concat](https://pub.dev/documentation/rxdart/latest/rx/Rx/concat.html)
+- [ConcatEagerStream](https://pub.dev/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Rx.concatEager](https://pub.dev/documentation/rxdart/latest/rx/Rx/concatEager.html)
+- [DeferStream](https://pub.dev/documentation/rxdart/latest/rx/DeferStream-class.html) / [Rx.defer](https://pub.dev/documentation/rxdart/latest/rx/Rx/defer.html)
+- [MergeStream](https://pub.dev/documentation/rxdart/latest/rx/MergeStream-class.html) / [Rx.merge](https://pub.dev/documentation/rxdart/latest/rx/Rx/merge.html)
+- [NeverStream](https://pub.dev/documentation/rxdart/latest/rx/NeverStream-class.html) / [Rx.never](https://pub.dev/documentation/rxdart/latest/rx/Rx/never.html)
+- [RaceStream](https://pub.dev/documentation/rxdart/latest/rx/RaceStream-class.html) / [Rx.race](https://pub.dev/documentation/rxdart/latest/rx/Rx/race.html)
+- [RepeatStream](https://pub.dev/documentation/rxdart/latest/rx/RepeatStream-class.html) / [Rx.repeat](https://pub.dev/documentation/rxdart/latest/rx/Rx/repeat.html)
+- [RetryStream](https://pub.dev/documentation/rxdart/latest/rx/RetryStream-class.html) / [Rx.retry](https://pub.dev/documentation/rxdart/latest/rx/Rx/retry.html)
+- [RetryWhenStream](https://pub.dev/documentation/rxdart/latest/rx/RetryWhenStream-class.html) / [Rx.retryWhen](https://pub.dev/documentation/rxdart/latest/rx/Rx/retryWhen.html)
+- [SequenceEqualStream](https://pub.dev/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Rx.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Rx/sequenceEqual.html)
+- [SwitchLatestStream](https://pub.dev/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Rx.switchLatest](https://pub.dev/documentation/rxdart/latest/rx/Rx/switchLatest.html)
+- [TimerStream](https://pub.dev/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://pub.dev/documentation/rxdart/latest/rx/Rx/timer.html)
+- [CombineLatestStream](https://pub.dev/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Rx.combineLatest2](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest2.html)...[Rx.combineLatest9](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest9.html) 
+- [ForkJoinStream](https://pub.dev/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin2.html)...[Rx.forkJoin9](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin9.html)
+- [RangeStream](https://pub.dev/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://pub.dev/documentation/rxdart/latest/rx/Rx/range.html)
+- [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
 
 ### Extension Methods
 
@@ -179,14 +179,14 @@ Stream.fromIterable([1, 2, 3])
 
 Dart provides the [StreamController](https://api.dart.dev/stable/dart-async/StreamController-class.html) class to create and manage a Stream. RxDart offers two additional StreamControllers with additional capabilities, known as Subjects:
  
-- [BehaviorSubject](https://www.dartdocs.org/documentation/rxdart/latest/rx/BehaviorSubject-class.html) - A broadcast StreamController that caches the latest added value or error. When a new listener subscribes to the Stream, the latest value or error will be emitted to the listener. Furthermore, you can synchronously read the last emitted value. 
-- [ReplaySubject](https://www.dartdocs.org/documentation/rxdart/latest/rx/ReplaySubject-class.html) - A broadcast StreamController that caches the added values. When a new listener subscribes to the Stream, the cached values will be emitted to the listener.
+- [BehaviorSubject](https://pub.dev/documentation/rxdart/latest/rx/BehaviorSubject-class.html) - A broadcast StreamController that caches the latest added value or error. When a new listener subscribes to the Stream, the latest value or error will be emitted to the listener. Furthermore, you can synchronously read the last emitted value. 
+- [ReplaySubject](https://pub.dev/documentation/rxdart/latest/rx/ReplaySubject-class.html) - A broadcast StreamController that caches the added values. When a new listener subscribes to the Stream, the cached values will be emitted to the listener.
 
 ## Rx Observables vs Dart Streams
 
 In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream api may surprise you. We've included a table below to help folks understand the differences. 
 
-Additional information about the following situations can be found by reading the [Rx class documentation](https://www.dartdocs.org/documentation/rxdart/latest/rx/Rx-class.html).
+Additional information about the following situations can be found by reading the [Rx class documentation](https://pub.dev/documentation/rxdart/latest/rx/Rx-class.html).
 
 | Situation | Rx Observables  | Dart Streams |
 | ------------- |------------- | ------------- |

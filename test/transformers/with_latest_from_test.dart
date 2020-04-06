@@ -4,21 +4,38 @@ import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/rx.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() =>
-    Stream.periodic(const Duration(milliseconds: 22), (count) => count).take(7);
+/// creates 5 Streams, deferred from a source Stream, so that they all emit
+/// under the same Timer interval.
+/// before, tests could fail, since we created 5 separate Streams with each
+/// using their own Timer.
+List<Stream<int>> _createTestStreams() {
+  /// creates streams that emit after a certain amount of milliseconds,
+  /// the List of intervals (in ms)
+  const intervals = [22, 50, 30, 40, 60];
+  final ticker =
+      Stream<int>.periodic(const Duration(milliseconds: 1), (index) => index)
+          .skip(1)
+          .take(300)
+          .asBroadcastStream();
 
-Stream<int> _getLatestFromStream() =>
-    Stream.periodic(const Duration(milliseconds: 50), (count) => count).take(4);
-
-Stream<int> _getLatestFromStream2() =>
-    Stream.periodic(const Duration(milliseconds: 30), (count) => count).take(5);
-
-Stream<int> _getLatestFromStream3() =>
-    Stream.periodic(const Duration(milliseconds: 40), (count) => count).take(2);
-
-Stream<int> _getLatestFromStream4() =>
-    Stream.periodic(const Duration(milliseconds: 60), (count) => count)
-        .take(10);
+  return [
+    ticker
+        .where((index) => index % intervals[0] == 0)
+        .map((index) => index ~/ intervals[0] - 1),
+    ticker
+        .where((index) => index % intervals[1] == 0)
+        .map((index) => index ~/ intervals[1] - 1),
+    ticker
+        .where((index) => index % intervals[2] == 0)
+        .map((index) => index ~/ intervals[2] - 1),
+    ticker
+        .where((index) => index % intervals[3] == 0)
+        .map((index) => index ~/ intervals[3] - 1),
+    ticker
+        .where((index) => index % intervals[4] == 0)
+        .map((index) => index ~/ intervals[4] - 1)
+  ];
+}
 
 void main() {
   test('Rx.withLatestFrom', () async {
@@ -29,19 +46,20 @@ void main() {
       Pair(5, 1),
       Pair(6, 2)
     ];
+    final streams = _createTestStreams();
 
     await expectLater(
-        _getStream()
-            .withLatestFrom(_getLatestFromStream(),
-                (first, int second) => Pair(first, second))
+        streams.first
+            .withLatestFrom(
+                streams[1], (first, int second) => Pair(first, second))
             .take(5),
         emitsInOrder(expectedOutput));
   });
 
   test('Rx.withLatestFrom.reusable', () async {
+    final streams = _createTestStreams();
     final transformer = WithLatestFromStreamTransformer.with1<int, int, Pair>(
-        _getLatestFromStream().asBroadcastStream(),
-        (first, second) => Pair(first, second));
+        streams[1], (first, second) => Pair(first, second));
     const expectedOutput = [
       Pair(2, 0),
       Pair(3, 0),
@@ -51,18 +69,19 @@ void main() {
     ];
     var countA = 0, countB = 0;
 
-    _getStream().transform(transformer).take(5).listen(expectAsync1((result) {
+    streams.first.transform(transformer).take(5).listen(expectAsync1((result) {
           expect(result, expectedOutput[countA++]);
         }, count: expectedOutput.length));
 
-    _getStream().transform(transformer).take(5).listen(expectAsync1((result) {
+    streams.first.transform(transformer).take(5).listen(expectAsync1((result) {
           expect(result, expectedOutput[countB++]);
         }, count: expectedOutput.length));
   });
 
   test('Rx.withLatestFrom.asBroadcastStream', () async {
-    final stream = _getStream().asBroadcastStream().withLatestFrom(
-        _getLatestFromStream().asBroadcastStream(), (first, int second) => 0);
+    final streams = _createTestStreams();
+    final stream =
+        streams.first.withLatestFrom(streams[1], (first, int second) => 0);
 
     // listen twice on same stream
     stream.listen(null);
@@ -72,8 +91,9 @@ void main() {
   });
 
   test('Rx.withLatestFrom.error.shouldThrowA', () async {
+    final streams = _createTestStreams();
     final streamWithError = Stream<int>.error(Exception())
-        .withLatestFrom(_getLatestFromStream(), (first, int second) => 'Hello');
+        .withLatestFrom(streams[1], (first, int second) => 'Hello');
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -89,20 +109,19 @@ void main() {
   });
 
   test('Rx.withLatestFrom.error.shouldThrowC', () {
-    expect(
-        () => _getStream()
-            .withLatestFrom<int, void>(_getLatestFromStream(), null),
+    final streams = _createTestStreams();
+    expect(() => streams.first.withLatestFrom<int, void>(streams[1], null),
         throwsArgumentError);
   });
 
   test('Rx.withLatestFrom.pause.resume', () async {
     StreamSubscription<Pair> subscription;
     const expectedOutput = [Pair(2, 0)];
+    final streams = _createTestStreams();
     var count = 0;
 
-    subscription = _getStream()
-        .withLatestFrom(
-            _getLatestFromStream(), (first, int second) => Pair(first, second))
+    subscription = streams.first
+        .withLatestFrom(streams[1], (first, int second) => Pair(first, second))
         .take(1)
         .listen(expectAsync1((result) {
           expect(result, expectedOutput[count++]);
@@ -155,12 +174,13 @@ void main() {
       _Tuple(5, 1, 3),
       _Tuple(6, 2, 4),
     ];
+    final streams = _createTestStreams();
     var count = 0;
 
-    _getStream()
+    streams.first
         .withLatestFrom2(
-          _getLatestFromStream(),
-          _getLatestFromStream2(),
+          streams[1],
+          streams[2],
           (item1, int item2, int item3) => _Tuple(item1, item2, item3),
         )
         .take(5)
@@ -177,16 +197,17 @@ void main() {
       _Tuple(2, 0, 1, 0),
       _Tuple(3, 0, 1, 1),
       _Tuple(4, 1, 2, 1),
-      _Tuple(5, 1, 3, 1),
-      _Tuple(6, 2, 4, 1),
+      _Tuple(5, 1, 3, 2),
+      _Tuple(6, 2, 4, 2),
     ];
+    final streams = _createTestStreams();
     var count = 0;
 
-    _getStream()
+    streams.first
         .withLatestFrom3(
-          _getLatestFromStream(),
-          _getLatestFromStream2(),
-          _getLatestFromStream3(),
+          streams[1],
+          streams[2],
+          streams[3],
           (item1, int item2, int item3, int item4) =>
               _Tuple(item1, item2, item3, item4),
         )
@@ -204,17 +225,18 @@ void main() {
       _Tuple(2, 0, 1, 0, 0),
       _Tuple(3, 0, 1, 1, 0),
       _Tuple(4, 1, 2, 1, 0),
-      _Tuple(5, 1, 3, 1, 1),
-      _Tuple(6, 2, 4, 1, 1),
+      _Tuple(5, 1, 3, 2, 1),
+      _Tuple(6, 2, 4, 2, 1),
     ];
+    final streams = _createTestStreams();
     var count = 0;
 
-    _getStream()
+    streams.first
         .withLatestFrom4(
-          _getLatestFromStream(),
-          _getLatestFromStream2(),
-          _getLatestFromStream3(),
-          _getLatestFromStream4(),
+          streams[1],
+          streams[2],
+          streams[3],
+          streams[4],
           (item1, int item2, int item3, int item4, int item5) =>
               _Tuple(item1, item2, item3, item4, item5),
         )
