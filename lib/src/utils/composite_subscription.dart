@@ -55,3 +55,10 @@ class CompositeSubscription {
     _isDisposed = true;
   }
 }
+
+/// Extends the [StreamSubscription] class with the ability to be added to [CompositeSubscription] container.
+extension AddToCompositeSubscriptionExtension<T> on StreamSubscription<T> {
+  /// Adds this subscription to composite container for subscriptions.
+  void addTo(CompositeSubscription compositeSubscription) =>
+      compositeSubscription.add(this);
+}
