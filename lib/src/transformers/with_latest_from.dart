@@ -37,9 +37,13 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
 
   @override
   FutureOr onCancel(EventSink<S> sink) {
+    Iterable<Future> futures = <Future>[];
+
     if (_subscriptions != null && _subscriptions.isNotEmpty) {
-      return Future.wait<dynamic>(_subscriptions.map((it) => it.cancel()));
+      futures = _subscriptions.map((it) => it.cancel()).whereType<Future>();
     }
+
+    return futures.isNotEmpty ? Future.wait<dynamic>(futures) : null;
   }
 
   @override
