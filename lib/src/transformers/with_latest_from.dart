@@ -10,8 +10,6 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   final List<bool> _hasValues;
   final List<T> _latestValues;
   List<StreamSubscription<T>> _subscriptions;
-  bool _isSourceClosed = false;
-  int _numCompleted = 0;
 
   _WithLatestFromStreamSink(
       this._outputSink, this._latestFromStreams, this._combiner)
@@ -30,9 +28,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
 
   @override
   void close() {
-    _isSourceClosed = true;
+    _subscriptions?.forEach((it) => it.cancel());
+    _subscriptions = null;
 
-    _maybeClose();
+    _outputSink.close();
   }
 
   @override
@@ -50,17 +49,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   void onListen(EventSink<S> sink) {
     var index = 0;
 
-    final mapper = (Stream<T> stream) => ((int i) => stream.listen(
-        (it) {
+    final mapper = (Stream<T> stream) => ((int i) => stream.listen((it) {
           _hasValues[i] = true;
           _latestValues[i] = it;
-        },
-        onError: addError,
-        onDone: () {
-          _numCompleted++;
-
-          _maybeClose();
-        }))(index++);
+        }, onError: addError))(index++);
 
     _subscriptions = _latestFromStreams.map(mapper).toList(growable: false);
   }
@@ -72,15 +64,6 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   @override
   void onResume(EventSink<S> sink) =>
       _subscriptions?.forEach((it) => it.resume());
-
-  void _maybeClose() {
-    if (_isSourceClosed && _numCompleted == _latestFromStreams.length) {
-      _subscriptions?.forEach((it) => it.cancel());
-      _subscriptions = null;
-
-      _outputSink.close();
-    }
-  }
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
