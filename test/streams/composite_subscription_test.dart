@@ -116,5 +116,23 @@ void main() {
       /// all subscriptions are removed, allPaused should yield false
       expect(composite.allPaused, isFalse);
     });
+    test('Rx.compositeSubscription.allPaused.indirectly', () {
+      final composite = CompositeSubscription();
+      final s1 = Stream.fromIterable(const [1, 2, 3]).listen(null),
+          s2 = Stream.fromIterable(const [4, 5, 6]).listen(null);
+
+      s1.pause();
+      s2.pause();
+
+      composite.add(s1);
+      composite.add(s2);
+
+      expect(composite.allPaused, isTrue);
+
+      s1.resume();
+      s2.resume();
+
+      expect(composite.allPaused, isFalse);
+    });
   });
 }
