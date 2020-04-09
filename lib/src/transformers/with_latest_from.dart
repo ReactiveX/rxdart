@@ -9,7 +9,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   final EventSink<R> _outputSink;
   final List<bool> _hasValues;
   final List<T> _latestValues;
-  StreamSubscription<T> _subscription;
+  List<StreamSubscription<T>> _subscriptions;
 
   _WithLatestFromStreamSink(
       this._outputSink, this._latestFromStreams, this._combiner)
@@ -18,7 +18,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
 
   @override
   void add(S data) {
-    if (_hasValues.every((hasValue) => hasValue)) {
+    if (_hasValues.every((value) => value)) {
       _outputSink.add(_combiner(data, List.unmodifiable(_latestValues)));
     }
   }
@@ -28,35 +28,42 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
 
   @override
   void close() {
-    _subscription?.cancel();
+    _subscriptions?.forEach((it) => it.cancel());
+    _subscriptions = null;
+
     _outputSink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _subscription?.cancel();
+  FutureOr onCancel(EventSink<S> sink) {
+    Iterable<Future> futures = <Future>[];
+
+    if (_subscriptions != null && _subscriptions.isNotEmpty) {
+      futures = _subscriptions.map((it) => it.cancel()).whereType<Future>();
+    }
+
+    return futures.isNotEmpty ? Future.wait<dynamic>(futures) : null;
+  }
 
   @override
   void onListen(EventSink<S> sink) {
     var index = 0;
 
-    for (final latestFromStream in _latestFromStreams) {
-      final currentIndex = index;
+    final mapper = (Stream<T> stream) => ((int i) => stream.listen((it) {
+          _hasValues[i] = true;
+          _latestValues[i] = it;
+        }, onError: addError))(index++);
 
-      _subscription = latestFromStream.listen((latest) {
-        _hasValues[currentIndex] = true;
-        _latestValues[currentIndex] = latest;
-      }, onError: addError);
-
-      index++;
-    }
+    _subscriptions = _latestFromStreams.map(mapper).toList(growable: false);
   }
 
   @override
   void onPause(EventSink<S> sink, [Future resumeSignal]) =>
-      _subscription?.pause(resumeSignal);
+      _subscriptions?.forEach((it) => it.pause(resumeSignal));
 
   @override
-  void onResume(EventSink<S> sink) => _subscription?.resume();
+  void onResume(EventSink<S> sink) =>
+      _subscriptions?.forEach((it) => it.resume());
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
