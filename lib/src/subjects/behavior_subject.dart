@@ -68,7 +68,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return BehaviorSubject<T>._(
         controller,
-        Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
+        Rx.defer<T>(_deferStream(wrapper, controller, sync), reusable: true),
         wrapper);
   }
 
@@ -95,20 +95,20 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return BehaviorSubject<T>._(
       controller,
-      Rx.defer<T>(_deferStream(wrapper, controller), reusable: true),
+      Rx.defer<T>(_deferStream(wrapper, controller, sync), reusable: true),
       wrapper,
     );
   }
 
   static Stream<T> Function() _deferStream<T>(
-          _Wrapper<T> wrapper, StreamController<T> controller) =>
+          _Wrapper<T> wrapper, StreamController<T> controller, bool sync) =>
       () {
         if (wrapper.latestIsError) {
           return controller.stream.transform(StartWithErrorStreamTransformer(
-              wrapper.latestError, wrapper.latestStackTrace));
+              wrapper.latestError, wrapper.latestStackTrace, sync));
         } else if (wrapper.latestIsValue) {
-          return controller.stream
-              .transform(StartWithStreamTransformer(wrapper.latestValue));
+          return controller.stream.transform(
+              StartWithStreamTransformer(wrapper.latestValue, sync: sync));
         }
 
         return controller.stream;
