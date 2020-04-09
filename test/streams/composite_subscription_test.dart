@@ -134,5 +134,28 @@ void main() {
 
       expect(composite.allPaused, isFalse);
     });
+    test('Rx.compositeSubscription.size', () {
+      final composite = CompositeSubscription();
+      final s1 = Stream.fromIterable(const [1, 2, 3]).listen(null),
+          s2 = Stream.fromIterable(const [4, 5, 6]).listen(null);
+
+      expect(composite.isEmpty, isTrue);
+      expect(composite.isNotEmpty, isFalse);
+      expect(composite.length, 0);
+
+      composite.add(s1);
+      composite.add(s2);
+
+      expect(composite.isEmpty, isFalse);
+      expect(composite.isNotEmpty, isTrue);
+      expect(composite.length, 2);
+
+      composite.remove(s1);
+      composite.remove(s2);
+
+      expect(composite.isEmpty, isTrue);
+      expect(composite.isNotEmpty, isFalse);
+      expect(composite.length, 0);
+    });
   });
 }

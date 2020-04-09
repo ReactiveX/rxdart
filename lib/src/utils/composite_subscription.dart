@@ -21,6 +21,15 @@ class CompositeSubscription {
   /// and will throw an error if you try to add more subscriptions to it.
   bool get isDisposed => _isDisposed;
 
+  /// Returns the total amount of currently added [StreamSubscription]s
+  int get length => _subscriptionsList.length;
+
+  /// Checks if there currently are no [StreamSubscription]s added
+  bool get isEmpty => _subscriptionsList.isEmpty;
+
+  /// Checks if there currently are [StreamSubscription]s added
+  bool get isNotEmpty => _subscriptionsList.isNotEmpty;
+
   /// Whether all managed [StreamSubscription]s are currently paused.
   bool get allPaused => _subscriptionsList.isNotEmpty
       ? _subscriptionsList.every((it) => it.isPaused)
