@@ -22,12 +22,15 @@ class CompositeSubscription {
   bool get isDisposed => _isDisposed;
 
   /// Whether all managed [StreamSubscription]s are currently paused.
-  bool get allPaused => _subscriptionsList.every((it) => it.isPaused);
+  bool get allPaused => _subscriptionsList.isNotEmpty
+      ? _subscriptionsList.every((it) => it.isPaused)
+      : false;
 
   /// Adds new subscription to this composite.
   ///
   /// Throws an exception if this composite was disposed
   StreamSubscription<T> add<T>(StreamSubscription<T> subscription) {
+    assert(subscription != null, 'Subscription cannot be null');
     if (isDisposed) {
       throw ('This composite was disposed, try to use new instance instead');
     }
