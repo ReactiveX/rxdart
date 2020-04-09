@@ -21,6 +21,9 @@ class CompositeSubscription {
   /// and will throw an error if you try to add more subscriptions to it.
   bool get isDisposed => _isDisposed;
 
+  /// Whether all managed [StreamSubscription]s are currently paused.
+  bool get allPaused => _subscriptionsList.every((it) => it.isPaused);
+
   /// Adds new subscription to this composite.
   ///
   /// Throws an exception if this composite was disposed
@@ -42,8 +45,7 @@ class CompositeSubscription {
   ///
   /// This composite can be reused after calling this method.
   void clear() {
-    _subscriptionsList.forEach(
-        (StreamSubscription<dynamic> subscription) => subscription.cancel());
+    _subscriptionsList.forEach((it) => it.cancel());
     _subscriptionsList.clear();
   }
 
@@ -54,6 +56,13 @@ class CompositeSubscription {
     clear();
     _isDisposed = true;
   }
+
+  /// Pauses all subscriptions added to this composite.
+  void pauseAll([Future resumeSignal]) =>
+      _subscriptionsList.forEach((it) => it.pause(resumeSignal));
+
+  /// Resumes all subscriptions added to this composite.
+  void resumeAll() => _subscriptionsList.forEach((it) => it.resume());
 }
 
 /// Extends the [StreamSubscription] class with the ability to be added to [CompositeSubscription] container.
