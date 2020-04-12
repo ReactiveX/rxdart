@@ -129,7 +129,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       .toList(growable: false);
 
   @override
-  StreamController<T> createForwardingController({
+  StreamController<R> createForwardingController<R>({
     void Function() onListen,
     void Function() onCancel,
     bool sync = false,

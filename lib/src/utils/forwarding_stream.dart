@@ -61,7 +61,13 @@ Stream<R> forwardStream<T, R>(
 
   // Create a new Controller, which will serve as a trampoline for
   // forwarded events.
-  if (stream.isBroadcast) {
+  if (stream is Subject<T>) {
+    controller = stream.createForwardingController<R>(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: true,
+    );
+  } else if (stream.isBroadcast) {
     controller = StreamController<R>.broadcast(
       onListen: onListen,
       onCancel: onCancel,

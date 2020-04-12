@@ -159,7 +159,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// Creates a trampoline StreamController, which can forward events
   /// in the same manner as the original [Subject] does.
   /// e.g. replay or startWith on subscribe.
-  StreamController<T> createForwardingController({
+  StreamController<R> createForwardingController<R>({
     void Function() onListen,
     void Function() onCancel,
     bool sync = false,
