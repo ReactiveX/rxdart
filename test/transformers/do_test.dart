@@ -264,22 +264,32 @@ void main() {
     test('should propagate errors', () {
       Stream.value(1)
           .doOnListen(() => throw Exception('catch me if you can! doOnListen'))
-          .listen(null,
-              onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException)));
+          .listen(
+            null,
+            onError: expectAsync2(
+              (Exception e, [StackTrace s]) => expect(e, isException),
+            ),
+          );
 
       Stream.value(1)
           .doOnData((_) => throw Exception('catch me if you can! doOnData'))
-          .listen(null,
-              onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException)));
+          .listen(
+            null,
+            onError: expectAsync2(
+              (Exception e, [StackTrace s]) => expect(e, isException),
+            ),
+          );
 
       Stream<void>.error(Exception('oh noes!'))
           .doOnError((dynamic _, dynamic __) =>
               throw Exception('catch me if you can! doOnError'))
-          .listen(null,
-              onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException)));
+          .listen(
+            null,
+            onError: expectAsync2(
+              (Exception e, [StackTrace s]) => expect(e, isException),
+              count: 2,
+            ),
+          );
 
       // a cancel() call may occur after the controller is already closed
       // in that case, the error is forwarded to the current [Zone]

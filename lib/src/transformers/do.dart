@@ -39,8 +39,16 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
       // call doOnData for this event again.
       _bindHandlerCounter.incrementOnData();
 
-      _onData?.call(data);
-      _onEach?.call(Notification.onData(data));
+      try {
+        _onData?.call(data);
+      } catch (e, s) {
+        sink.addError(e, s);
+      }
+      try {
+        _onEach?.call(Notification.onData(data));
+      } catch (e, s) {
+        sink.addError(e, s);
+      }
     }
 
     sink.add(data);
@@ -59,8 +67,16 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
       // call doOnError for this error again.
       _bindHandlerCounter.incrementOnError();
 
-      _onError?.call(e, st);
-      _onEach?.call(Notification.onError(e, st));
+      try {
+        _onError?.call(e, st);
+      } catch (e, s) {
+        sink.addError(e, s);
+      }
+      try {
+        _onEach?.call(Notification.onError(e, st));
+      } catch (e, s) {
+        sink.addError(e, s);
+      }
     }
 
     sink.addError(e, st);
@@ -70,8 +86,16 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 
   @override
   void close(EventSink<S> sink) {
-    _onDone?.call();
-    _onEach?.call(Notification.onDone());
+    try {
+      _onDone?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+    try {
+      _onEach?.call(Notification.onDone());
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
     sink.close();
   }
 
