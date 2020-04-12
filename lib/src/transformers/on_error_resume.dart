@@ -125,7 +125,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturn(T returnValue) =>
       transform(OnErrorResumeStreamTransformer<T>(
-          (dynamic e) => Stream<T>.fromIterable([returnValue])));
+          (dynamic e) => Stream.value(returnValue)));
 
   /// instructs a Stream to emit a particular item created by the
   /// [returnFn] when it encounters an error, and then terminate normally.
@@ -148,5 +148,5 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturnWith(T Function(dynamic error) returnFn) =>
       transform(OnErrorResumeStreamTransformer<T>(
-          (dynamic e) => Stream<T>.fromIterable([returnFn(e)])));
+          (dynamic e) => Stream.value(returnFn(e))));
 }

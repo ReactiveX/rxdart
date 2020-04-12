@@ -3,32 +3,30 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
-  final EventSink<S> _outputSink;
+class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
   final bool _sync;
   final Object _e;
   final StackTrace _st;
-  EventSink<S> _sink;
   var _isFirstEventAdded = false;
 
-  _StartWithErrorStreamSink(this._outputSink, this._sync, this._e, this._st);
+  _StartWithErrorStreamSink(this._sync, this._e, this._st);
 
   @override
-  void add(S data) {
-    _safeAddFirstEvent();
-    _outputSink.add(data);
+  void add(EventSink<S> sink, S data) {
+    _safeAddFirstEvent(sink);
+    sink.add(data);
   }
 
   @override
-  void addError(e, [st]) {
-    _safeAddFirstEvent();
-    _outputSink.addError(e, st);
+  void addError(EventSink<S> sink, dynamic e, [st]) {
+    _safeAddFirstEvent(sink);
+    sink.addError(e, st);
   }
 
   @override
-  void close() {
-    _safeAddFirstEvent();
-    _outputSink.close();
+  void close(EventSink<S> sink) {
+    _safeAddFirstEvent(sink);
+    sink.close();
   }
 
   @override
@@ -36,9 +34,9 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
 
   @override
   void onListen(EventSink<S> sink) {
-    _sink = sink;
-
-    _sync ? _safeAddFirstEvent() : scheduleMicrotask(_safeAddFirstEvent);
+    _sync
+        ? _safeAddFirstEvent(sink)
+        : scheduleMicrotask(() => _safeAddFirstEvent(sink));
   }
 
   @override
@@ -54,11 +52,10 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S> {
   // this method is ran before any other events might be added.
   // Once the first event(s) is/are successfully added, this method
   // will not trigger again.
-  void _safeAddFirstEvent() {
-    if (!_isFirstEventAdded && _sink != null) {
-      _isFirstEventAdded = true;
-      _sink.addError(_e, _st);
-    }
+  void _safeAddFirstEvent(EventSink<S> sink) {
+    if (_isFirstEventAdded) return;
+    sink.addError(_e, _st);
+    _isFirstEventAdded = true;
   }
 }
 
@@ -86,12 +83,6 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
       [this.stackTrace, this.sync = false]);
 
   @override
-  Stream<S> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(
-        forwardedStream.stream,
-        (sink) => forwardedStream.connect(
-            _StartWithErrorStreamSink<S>(sink, sync, error, stackTrace)));
-  }
+  Stream<S> bind(Stream<S> stream) =>
+      forwardStream(stream, _StartWithErrorStreamSink(sync, error, stackTrace));
 }

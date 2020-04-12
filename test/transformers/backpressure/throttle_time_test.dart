@@ -54,9 +54,11 @@ void main() {
   });
 
   test('Rx.throttleTime.error.shouldThrowB', () {
-    expect(() => Stream.value(1).throttleTime(null),
-        throwsA(const TypeMatcher<AssertionError>()));
-  }, skip: true);
+    expect(
+      () => Stream.value(1).throttleTime(null),
+      throwsArgumentError,
+    );
+  });
 
   test('Rx.throttleTime.pause.resume', () async {
     StreamSubscription<int> subscription;

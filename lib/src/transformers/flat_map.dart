@@ -3,61 +3,63 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
+class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
-  final EventSink<T> _outputSink;
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
   bool _inputClosed = false;
 
-  _FlatMapStreamSink(this._outputSink, this._mapper);
+  _FlatMapStreamSink(this._mapper);
 
   @override
-  void add(S data) {
+  void add(EventSink<T> sink, S data) {
     final mappedStream = _mapper(data);
 
     _openSubscriptions++;
 
     StreamSubscription<T> subscription;
 
-    subscription =
-        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
-      _openSubscriptions--;
-      _subscriptions.remove(subscription);
+    subscription = mappedStream.listen(
+      sink.add,
+      onError: sink.addError,
+      onDone: () {
+        _openSubscriptions--;
+        _subscriptions.remove(subscription);
 
-      if (_inputClosed && _openSubscriptions == 0) {
-        _outputSink.close();
-      }
-    });
+        if (_inputClosed && _openSubscriptions == 0) {
+          sink.close();
+        }
+      },
+    );
 
     _subscriptions.add(subscription);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
 
   @override
-  void close() {
+  void close(EventSink<T> sink) {
     _inputClosed = true;
 
     if (_openSubscriptions == 0) {
-      _outputSink.close();
+      sink.close();
     }
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) =>
+  FutureOr onCancel(EventSink<T> sink) =>
       Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
 
   @override
-  void onListen(EventSink<S> sink) {}
+  void onListen(EventSink<T> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<T> sink, [Future resumeSignal]) =>
       _subscriptions.forEach((s) => s.pause(resumeSignal));
 
   @override
-  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
+  void onResume(EventSink<T> sink) => _subscriptions.forEach((s) => s.resume());
 }
 
 /// Converts each emitted item into a new Stream using the given mapper
@@ -84,12 +86,8 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   FlatMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
-  }
+  Stream<T> bind(Stream<S> stream) =>
+      forwardStream(stream, _FlatMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into

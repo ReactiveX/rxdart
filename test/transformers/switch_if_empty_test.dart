@@ -4,6 +4,29 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('aaaaa', () async {
+    var s = Stream.periodic(Duration(milliseconds: 200), (i) => i).doOnData((d) => print('>>>>:$d'));
+
+    var sub = Stream<int>.empty()
+        .switchIfEmpty(s)
+        .listen(print);
+
+    await Future<void>.delayed(Duration(seconds: 1));
+    print('Start pause');
+    sub.pause();
+    await Future<void>.delayed(Duration(seconds: 1));
+    print('Start resume');
+    sub.resume();
+
+    await Future<void>.delayed(Duration(seconds: 3));
+
+    print('Cancel');
+    await sub.cancel();
+
+    await Future<void>.delayed(Duration(seconds: 3));
+    print('done2');
+  });
+
   test('Rx.switchIfEmpty.whenEmpty', () async {
     expect(
       Stream<int>.empty().switchIfEmpty(Stream.value(1)),

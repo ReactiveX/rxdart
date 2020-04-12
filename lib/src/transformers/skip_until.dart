@@ -3,28 +3,27 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
+class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   final Stream<T> _otherStream;
-  final EventSink<S> _outputSink;
   StreamSubscription<T> _otherSubscription;
   var _canAdd = false;
 
-  _SkipUntilStreamSink(this._outputSink, this._otherStream);
+  _SkipUntilStreamSink(this._otherStream);
 
   @override
-  void add(S data) {
+  void add(EventSink<S> sink, S data) {
     if (_canAdd) {
-      _outputSink.add(data);
+      sink.add(data);
     }
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<S> sink, dynamic e, [st]) => sink.addError(e, st);
 
   @override
-  void close() {
+  void close(EventSink<S> sink) {
     _otherSubscription?.cancel();
-    _outputSink.close();
+    sink.close();
   }
 
   @override
@@ -33,7 +32,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   @override
   void onListen(EventSink<S> sink) => _otherSubscription = _otherStream
       .take(1)
-      .listen(null, onError: addError, onDone: () => _canAdd = true);
+      .listen(null, onError: sink.addError, onDone: () => _canAdd = true);
 
   @override
   void onPause(EventSink<S> sink, [Future resumeSignal]) =>
@@ -66,14 +65,8 @@ class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(
-        forwardedStream.stream,
-        (sink) => forwardedStream
-            .connect(_SkipUntilStreamSink<S, T>(sink, otherStream)));
-  }
+  Stream<S> bind(Stream<S> stream) =>
+      forwardStream(stream, _SkipUntilStreamSink(otherStream));
 }
 
 /// Extends the Stream class with the ability to skip events until another

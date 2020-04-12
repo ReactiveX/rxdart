@@ -3,93 +3,79 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 
+import 'forwarding_sink.dart';
+
 /// @private
 /// Helper method which forwards the events from an incoming [Stream]
 /// to a new [StreamController].
 /// It captures events such as onListen, onPause, onResume and onCancel,
 /// which can be used in pair with a [ForwardingSink]
-_ForwardStream<T> forwardStream<T>(Stream<T> stream) {
-  StreamController<T> controller;
-  ForwardingSink<T> connectedSink;
+Stream<R> forwardStream<T, R>(
+  Stream<T> stream,
+  ForwardingSink<T, R> connectedSink,
+) {
+  ArgumentError.checkNotNull(stream, 'stream');
+  ArgumentError.checkNotNull(connectedSink, 'connectedSink');
+
+  StreamController<R> controller;
   StreamSubscription<T> subscription;
 
-  final onListen = () {
+  void runCatching(void Function() block) {
     try {
-      connectedSink?.onListen(controller.sink);
+      block();
     } catch (e, s) {
-      connectedSink.addError(e, s);
+      connectedSink.addError(controller, e, s);
     }
+  }
 
-    subscription = stream.listen(controller.add,
-        onError: controller.addError, onDone: controller.close);
+  final onListen = () {
+    runCatching(() => connectedSink.onListen(controller));
+
+    subscription = stream.listen(
+      (data) => runCatching(() => connectedSink.add(controller, data)),
+      onError: (dynamic e, StackTrace st) =>
+          connectedSink.addError(controller, e, st),
+      onDone: () => connectedSink.close(controller),
+    );
   };
 
   final onCancel = () {
-    if (connectedSink?.onCancel != null) {
-      final onCancelSelfFuture = subscription.cancel();
-      final onCancelConnectedFuture = connectedSink.onCancel(controller.sink);
-      final futures = <Future>[];
-
-      if (onCancelSelfFuture is Future) {
-        futures.add(onCancelSelfFuture);
-      }
-
-      if (onCancelConnectedFuture is Future) {
-        futures.add(onCancelConnectedFuture);
-      }
-
-      if (futures.isNotEmpty) {
-        return Future.wait<dynamic>(futures);
-      }
-    }
-
-    return subscription.cancel();
+    final onCancelSelfFuture = subscription.cancel();
+    final onCancelConnectedFuture = connectedSink.onCancel(controller);
+    final futures = <Future>[
+      if (onCancelSelfFuture is Future) onCancelSelfFuture,
+      if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
+    ];
+    return Future.wait<dynamic>(futures);
   };
 
   final onPause = ([Future resumeSignal]) {
     subscription.pause(resumeSignal);
-
-    try {
-      connectedSink?.onPause(controller.sink, resumeSignal);
-    } catch (e, s) {
-      connectedSink.addError(e, s);
-    }
+    runCatching(() => connectedSink.onPause(controller, resumeSignal));
   };
 
   final onResume = () {
     subscription.resume();
-
-    try {
-      connectedSink?.onResume(controller.sink);
-    } catch (e, s) {
-      connectedSink.addError(e, s);
-    }
+    runCatching(() => connectedSink.onResume(controller));
   };
 
   // Create a new Controller, which will serve as a trampoline for
   // forwarded events.
-  if (stream is Subject<T>) {
-    controller = stream.createForwardingController(
-        onListen: onListen, onCancel: onCancel, sync: true);
-  } else if (stream.isBroadcast) {
-    controller = StreamController<T>.broadcast(
-        onListen: onListen, onCancel: onCancel, sync: true);
+  if (stream.isBroadcast) {
+    controller = StreamController<R>.broadcast(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: true,
+    );
   } else {
-    controller = StreamController<T>(
-        onListen: onListen,
-        onPause: onPause,
-        onResume: onResume,
-        onCancel: onCancel,
-        sync: true);
+    controller = StreamController<R>(
+      onListen: onListen,
+      onPause: onPause,
+      onResume: onResume,
+      onCancel: onCancel,
+      sync: true,
+    );
   }
 
-  return _ForwardStream<T>(
-      controller.stream, (ForwardingSink<T> sink) => connectedSink = sink);
-}
-
-class _ForwardStream<T> {
-  final Stream<T> stream;
-  final ForwardingSink<T> Function(ForwardingSink<T> sink) connect;
-
-  _ForwardStream(this.stream, this.connect);
+  return controller.stream;
 }
