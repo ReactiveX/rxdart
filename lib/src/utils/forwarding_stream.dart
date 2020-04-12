@@ -34,8 +34,8 @@ Stream<R> forwardStream<T, R>(
     subscription = stream.listen(
       (data) => runCatching(() => connectedSink.add(controller, data)),
       onError: (dynamic e, StackTrace st) =>
-          connectedSink.addError(controller, e, st),
-      onDone: () => connectedSink.close(controller),
+          runCatching(() => connectedSink.addError(controller, e, st)),
+      onDone: () => runCatching(() => connectedSink.close(controller)),
     );
   };
 
