@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchMapStreamSink<S, T> implements ForwardingSink<S> {
+class _SwitchMapStreamSink<S, T> implements ForwardingSink<S>, SafeClose {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
   StreamSubscription<T> _mapperSubscription;

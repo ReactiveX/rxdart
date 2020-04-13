@@ -22,9 +22,6 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  Future safeClose() => null;
-
-  @override
   void close() {
     _otherSubscription?.cancel();
     _outputSink.close();

@@ -22,10 +22,15 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
 
     subscription =
         stream.listen(controller.add, onError: controller.addError, onDone: () {
-      final safeCloseFuture = connectedSink?.safeClose();
+      if (connectedSink is SafeClose) {
+        final sinkCast = connectedSink as SafeClose;
+        final safeCloseFuture = sinkCast.safeClose();
 
-      if (safeCloseFuture is Future) {
-        safeCloseFuture.whenComplete(controller.close);
+        if (safeCloseFuture is Future) {
+          safeCloseFuture.whenComplete(controller.close);
+        } else {
+          controller.close();
+        }
       } else {
         controller.close();
       }

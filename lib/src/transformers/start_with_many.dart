@@ -24,9 +24,6 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
-  Future safeClose() => null;
-
-  @override
   void close() {
     _safeAddFirstEvent();
     _outputSink.close();

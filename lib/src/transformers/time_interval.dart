@@ -23,9 +23,6 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  Future safeClose() => null;
-
-  @override
   void close() => _outputSink.close();
 
   @override

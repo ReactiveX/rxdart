@@ -68,9 +68,6 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  Future safeClose() => null;
-
-  @override
   void close() {
     // treat the final event as a Window that opens
     // and immediately closes again
