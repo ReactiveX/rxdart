@@ -83,8 +83,10 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   Stream<T> bind(Stream<S> stream) {
     final forwardedStream = forwardStream<S>(stream);
 
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _ExhaustMapStreamSink<S, T>(sink, mapper));
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_ExhaustMapStreamSink<S, T>(sink, mapper)));
   }
 }
 

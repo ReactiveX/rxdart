@@ -38,7 +38,10 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
+  FutureOr onCancel(EventSink<S> sink) {
+    print('onCancel called');
+    return _mapperSubscription?.cancel();
+  }
 
   @override
   void onListen(EventSink<S> sink) {}
@@ -84,7 +87,7 @@ class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
     final forwardedStream = forwardStream<S>(stream);
 
     return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _SwitchMapStreamSink<S, T>(sink, mapper));
+        (sink) => forwardedStream.connect(_SwitchMapStreamSink(sink, mapper)));
   }
 }
 

@@ -5,11 +5,12 @@ import 'package:test/test.dart';
 
 void main() {
   test('Rx.zipWith', () async {
-    Stream<int>.value(1)
-        .zipWith(Stream<int>.value(2), (int one, int two) => one + two)
-        .listen(expectAsync1((int result) {
-          expect(result, 3);
-        }, count: 1));
+    await expectLater(
+        Stream.fromIterable(const [1, 2, 3, 4]).zipWith(
+            Stream.fromIterable(const [2, 2, 2, 2])
+                .delay(const Duration(milliseconds: 20)),
+            (int one, int two) => one + two),
+        emitsInOrder(const <int>[3, 4, 5, 6]));
   });
   test('Rx.zipWith accidental broadcast', () async {
     final controller = StreamController<int>();

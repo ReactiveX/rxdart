@@ -21,3 +21,10 @@ abstract class ForwardingSink<T> implements EventSink<T> {
   /// Fires when a subscriber cancels.
   FutureOr onCancel(EventSink<T> sink);
 }
+
+/// A [ForwardingSink] which also has access to the source [Stream]'s
+/// [StreamSubscription].
+abstract class ForwardingWithSubscriptionSink<T> implements ForwardingSink<T> {
+  /// Fires when a listener subscribes on the underlying [Stream].
+  set sourceSubscription(StreamSubscription<T> subscription);
+}

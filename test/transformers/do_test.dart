@@ -149,7 +149,8 @@ void main() {
       final actual = <Notification<int>>[];
       final exception = Exception();
       final stream = Stream.value(1)
-          .concatWith(Stream<int>.error(exception)).doOnEach((notification) {
+          .concatWith(Stream<int>.error(exception))
+          .doOnEach((notification) {
         actual.add(notification);
 
         if (notification.isOnError) {

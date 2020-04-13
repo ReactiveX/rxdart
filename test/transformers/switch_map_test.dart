@@ -122,9 +122,11 @@ void main() {
     controller.add(1);
     await Future<void>.delayed(Duration(microseconds: 1));
     controller.add(2);
-
+    print('A');
     await controller.close();
+    print('B');
     expect(await list, [1, 1, 2, 2]);
+    print('C');
   });
 
   test('Rx.switchMap accidental broadcast', () async {

@@ -21,7 +21,13 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
     }
 
     subscription = stream.listen(controller.add,
-        onError: controller.addError, onDone: controller.close);
+        onError: controller.addError, onDone: connectedSink.close);
+
+    if (connectedSink is ForwardingWithSubscriptionSink<T>) {
+      final sinkCast = connectedSink as ForwardingWithSubscriptionSink<T>;
+
+      sinkCast.sourceSubscription = subscription;
+    }
   };
 
   final onCancel = () {
