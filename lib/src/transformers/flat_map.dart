@@ -9,6 +9,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
   bool _inputClosed = false;
+  Completer _canClose;
 
   _FlatMapStreamSink(this._outputSink, this._mapper);
 
@@ -22,11 +23,12 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
 
     subscription =
         mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
-      _openSubscriptions--;
+      _openSubscriptions--;print(_openSubscriptions);
       _subscriptions.remove(subscription);
 
       if (_inputClosed && _openSubscriptions == 0) {
         _outputSink.close();
+        _canClose.complete();
       }
     });
 
@@ -37,12 +39,21 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  void close() {
+  Future safeClose() {
     _inputClosed = true;
+    _canClose = Completer<void>();
 
     if (_openSubscriptions == 0) {
       _outputSink.close();
+      _canClose.complete();
     }
+
+    return _canClose.future;
+  }
+
+  @override
+  void close() {
+
   }
 
   @override
@@ -88,7 +99,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
     final forwardedStream = forwardStream<S>(stream);
 
     return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
+        (sink) => forwardedStream.connect(_FlatMapStreamSink<S, T>(sink, mapper)));
   }
 }
 

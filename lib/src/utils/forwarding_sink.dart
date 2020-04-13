@@ -20,4 +20,8 @@ abstract class ForwardingSink<T> implements EventSink<T> {
 
   /// Fires when a subscriber cancels.
   FutureOr onCancel(EventSink<T> sink);
+
+  /// Called before the actual [StreamController] close
+  /// allows actions to finalize before really closing.
+  Future safeClose();
 }

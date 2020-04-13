@@ -80,6 +80,9 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
   }
 
   @override
+  Future safeClose() => null;
+
+  @override
   void close() {
     if (_onDone != null) {
       _onDone();

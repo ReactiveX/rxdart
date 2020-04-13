@@ -3,22 +3,6 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
-
-Stream<int> _getOtherStream(int value) {
-  final controller = StreamController<int>();
-
-  Timer(
-      // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
-      // than they delay 3
-      Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
-    controller.add(value);
-    controller.close();
-  });
-
-  return controller.stream;
-}
-
 void main() {
   test('Rx.flatMap', () async {
     const expectedOutput = [3, 2, 1];
@@ -115,4 +99,20 @@ void main() {
 
     controller.add(1);
   });
+}
+
+Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
+
+Stream<int> _getOtherStream(int value) {
+  final controller = StreamController<int>();
+
+  Timer(
+      // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
+      // than they delay 3
+      Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
+    controller.add(value);
+    controller.close();
+  });
+
+  return controller.stream;
 }

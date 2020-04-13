@@ -27,6 +27,9 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
+  Future safeClose() => null;
+
+  @override
   void close() {
     _subscriptions?.forEach((it) => it.cancel());
     _subscriptions = null;

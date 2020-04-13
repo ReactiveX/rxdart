@@ -68,6 +68,9 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
+  Future safeClose() => null;
+
+  @override
   void close() {
     // treat the final event as a Window that opens
     // and immediately closes again
@@ -305,7 +308,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
     return Stream.eventTransformed(
         forwardedStream.stream,
-        (sink) => _BackpressureStreamSink<S, T>(
+        (sink) => forwardedStream.connect(_BackpressureStreamSink<S, T>(
             sink,
             strategy,
             windowStreamFactory,
@@ -314,6 +317,6 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             startBufferEvery,
             closeWindowWhen,
             ignoreEmptyWindows,
-            dispatchOnClose));
+            dispatchOnClose)));
   }
 }

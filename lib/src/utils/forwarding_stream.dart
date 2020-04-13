@@ -20,8 +20,16 @@ _ForwardStream<T> forwardStream<T>(Stream<T> stream) {
       connectedSink.addError(e, s);
     }
 
-    subscription = stream.listen(controller.add,
-        onError: controller.addError, onDone: controller.close);
+    subscription =
+        stream.listen(controller.add, onError: controller.addError, onDone: () {
+      final safeCloseFuture = connectedSink?.safeClose();
+
+      if (safeCloseFuture is Future) {
+        safeCloseFuture.whenComplete(controller.close);
+      } else {
+        controller.close();
+      }
+    });
   };
 
   final onCancel = () {
