@@ -23,7 +23,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
 
     subscription =
         mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
-      _openSubscriptions--;print(_openSubscriptions);
+      _openSubscriptions--;
       _subscriptions.remove(subscription);
 
       if (_inputClosed && _openSubscriptions == 0) {

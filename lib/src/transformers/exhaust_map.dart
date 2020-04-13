@@ -22,13 +22,13 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
 
     _mapperSubscription =
         mappedStream.listen((data) {
-          _outputSink.add(data);print('data: $data');
+          _outputSink.add(data);
         }, onError: addError, onDone: () {
-      _mapperSubscription = null;print('done...');
+      _mapperSubscription = null;
 
       if (_inputClosed) {
         _outputSink.close();
-        _canClose.complete();print('B');
+        _canClose.complete();
       }
     });
   }
@@ -38,13 +38,12 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
 
   @override
   Future safeClose() {
-    print('safe?');
     _inputClosed = true;
     _canClose = Completer<void>();
 
     if (_mapperSubscription == null) {
       _outputSink.close();
-      _canClose.complete();print('A');
+      _canClose.complete();
     }
 
     return _canClose.future;

@@ -458,7 +458,6 @@ void main() {
           .take(expectedOutput.length)
           .listen((value) {
         if (value % 5 == 0) {
-          print("P");
           subscription.pause(Future<void>.delayed(const Duration(seconds: 2)));
         }
       });
