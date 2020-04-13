@@ -15,6 +15,7 @@ export 'src/transformers/ignore_elements.dart';
 export 'src/transformers/interval.dart';
 export 'src/transformers/map_to.dart';
 export 'src/transformers/materialize.dart';
+export 'src/transformers/merge_with.dart';
 export 'src/transformers/on_error_resume.dart';
 export 'src/transformers/min.dart';
 export 'src/transformers/max.dart';
