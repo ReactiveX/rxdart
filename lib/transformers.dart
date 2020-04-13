@@ -1,5 +1,6 @@
 library rx_transformers;
 
+export 'src/transformers/concat_with.dart';
 export 'src/transformers/default_if_empty.dart';
 export 'src/transformers/delay.dart';
 export 'src/transformers/dematerialize.dart';

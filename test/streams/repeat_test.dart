@@ -96,5 +96,5 @@ Stream<String> Function(int) _getErroneusRepeatStream(String symbol) =>
     (int repeatIndex) {
       return Stream.value('A0')
           // Emit the error
-          .concatWith([Stream<String>.error(Error())]);
+          .concatWith(Stream<String>.error(Error()));
     };

@@ -11,7 +11,7 @@ void main() {
 
   test('Rx.mapTo.shouldThrow', () async {
     await expectLater(
-        Rx.range(1, 4).concatWith([Stream<int>.error(Error())]).mapTo(true),
+        Rx.range(1, 4).concatWith(Stream<int>.error(Error())).mapTo(true),
         emitsInOrder(<dynamic>[
           true,
           true,

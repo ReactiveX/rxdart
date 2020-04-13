@@ -126,9 +126,9 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
       // Emit first item
       return Stream.value(1)
           // Emit the error
-          .concatWith([Stream<int>.error(Error())])
+          .concatWith(Stream<int>.error(Error()))
           // Emit an extra item, testing that it is not included
-          .concatWith([Stream.value(1)]);
+          .concatWith(Stream.value(1));
     } else {
       return Stream.value(2);
     }

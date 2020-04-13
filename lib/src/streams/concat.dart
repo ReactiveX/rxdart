@@ -80,18 +80,3 @@ class ConcatStream<T> extends Stream<T> {
     return controller;
   }
 }
-
-/// Extends the Stream class with the ability to concatenate one stream with
-/// another.
-extension ConcatExtensions<T> on Stream<T> {
-  /// Returns a Stream that emits all items from the current Stream,
-  /// then emits all items from the given streams, one after the next.
-  ///
-  /// ### Example
-  ///
-  ///     TimerStream(1, Duration(seconds: 10))
-  ///         .concatWith([Stream.fromIterable([2])])
-  ///         .listen(print); // prints 1, 2
-  Stream<T> concatWith(Iterable<Stream<T>> other) =>
-      ConcatStream<T>([this, ...other]);
-}
