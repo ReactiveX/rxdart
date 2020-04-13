@@ -52,9 +52,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   }
 
   @override
-  void close() {
-
-  }
+  void close() {}
 
   @override
   FutureOr onCancel(EventSink<S> sink) =>
@@ -98,8 +96,10 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   Stream<T> bind(Stream<S> stream) {
     final forwardedStream = forwardStream<S>(stream);
 
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => forwardedStream.connect(_FlatMapStreamSink<S, T>(sink, mapper)));
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_FlatMapStreamSink<S, T>(sink, mapper)));
   }
 }
 

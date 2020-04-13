@@ -20,17 +20,19 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
 
     final mappedStream = _mapper(data);
 
-    _mapperSubscription =
-        mappedStream.listen((data) {
+    _mapperSubscription = mappedStream.listen(
+        (data) {
           _outputSink.add(data);
-        }, onError: addError, onDone: () {
-      _mapperSubscription = null;
+        },
+        onError: addError,
+        onDone: () {
+          _mapperSubscription = null;
 
-      if (_inputClosed) {
-        _outputSink.close();
-        _canClose.complete();
-      }
-    });
+          if (_inputClosed) {
+            _outputSink.close();
+            _canClose.complete();
+          }
+        });
   }
 
   @override
