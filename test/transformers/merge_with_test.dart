@@ -15,7 +15,7 @@ void main() {
     }, count: expected.length));
   });
 
-  test('Rx.flatMap accidental broadcast', () async {
+  test('Rx.mergeWith accidental broadcast', () async {
     final controller = StreamController<int>();
 
     final stream = controller.stream.mergeWith([Stream<int>.empty()]);
@@ -24,5 +24,28 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.mergeWith on single stream should stay single ', () async {
+    final delayedStream = Rx.timer(1, Duration(milliseconds: 10));
+    final immediateStream = Stream.value(2);
+    final expected = [2, 1, emitsDone];
+
+    final concatenatedStream = delayedStream.mergeWith([immediateStream]);
+
+    expect(concatenatedStream.isBroadcast, isFalse);
+    expect(concatenatedStream, emitsInOrder(expected));
+  });
+
+  test('Rx.mergeWith on broadcast stream should stay broadcast ', () async {
+    final delayedStream =
+        Rx.timer(1, Duration(milliseconds: 10)).asBroadcastStream();
+    final immediateStream = Stream.value(2);
+    final expected = [2, 1, emitsDone];
+
+    final concatenatedStream = delayedStream.mergeWith([immediateStream]);
+
+    expect(concatenatedStream.isBroadcast, isTrue);
+    expect(concatenatedStream, emitsInOrder(expected));
   });
 }
