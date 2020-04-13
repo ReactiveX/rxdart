@@ -48,4 +48,17 @@ void main() {
     expect(concatenatedStream.isBroadcast, isTrue);
     expect(concatenatedStream, emitsInOrder(expected));
   });
+
+  test('Rx.zipWith multiple subscriptions on single ', () async {
+    final delayedStream = Rx.timer(1, Duration(milliseconds: 10));
+    final immediateStream = Stream.value(2);
+    final expected = [3, emitsDone];
+
+    final concatenatedStream =
+        delayedStream.zipWith(immediateStream, (a, int b) => a + b);
+
+    expect(() => concatenatedStream.listen(null), returnsNormally);
+    expect(() => concatenatedStream.listen(null),
+        throwsA(TypeMatcher<StateError>()));
+  });
 }
