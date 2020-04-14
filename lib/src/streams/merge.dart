@@ -80,6 +80,9 @@ extension MergeExtension<T> on Stream<T> {
   ///     TimerStream(1, Duration(seconds: 10))
   ///         .mergeWith([Stream.fromIterable([2])])
   ///         .listen(print); // prints 2, 1
-  Stream<T> mergeWith(Iterable<Stream<T>> streams) =>
-      MergeStream<T>([this, ...streams]);
+  Stream<T> mergeWith(Iterable<Stream<T>> streams) {
+    final stream = MergeStream<T>([this, ...streams]);
+
+    return isBroadcast ? stream.asBroadcastStream() : stream;
+  }
 }
