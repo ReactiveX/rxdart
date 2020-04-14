@@ -1,3 +1,19 @@
+## 0.24.0
+  * Fix throttle no longer outputting the current buffer onDone
+  * Adds endWith and endWithMany
+  * Fix when using pipe and an Error, Subjects would throw an Exception that couldn't be caught using onError
+  * Updates links for docs (thanks [@renefloor](https://github.com/renefloor))
+  * Fix links to correct marbles diagram for debounceTime (thanks [@wheater](https://github.com/Wheater))
+  * Fix flakiness of withLatestFrom test Streams
+  * Update to docs ([@wheater](https://github.com/Wheater))
+  * Fix withLatestFrom not pause/resume/cancelling underlying Streams
+  * Support sync behavior for Subjects
+  * Add addTo extension for StreamSubscription, use it to easily add a subscription to a CompositeSubscription
+  * Fix mergeWith and zipWith will return a broadcast Stream, if the source Stream is also broadcast
+  * Fix concatWith will return a broadcast Stream, if the source Stream is also broadcast (thanks [@jarekb123](https://github.com/jarekb123))
+  * Adds pauseAll, resumeAll, ... to CompositeSubscription
+  * Additionally, fixes some issues introduced with 0.24.0-dev.1
+
 ## 0.24.0-dev.1
   * Breaking: as of this release, we've refactored the way Stream transformers are set up.
   Previous releases had some incorrect behavior when using certain operators, for example:
