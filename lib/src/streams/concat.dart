@@ -92,6 +92,9 @@ extension ConcatExtensions<T> on Stream<T> {
   ///     TimerStream(1, Duration(seconds: 10))
   ///         .concatWith([Stream.fromIterable([2])])
   ///         .listen(print); // prints 1, 2
-  Stream<T> concatWith(Iterable<Stream<T>> other) =>
-      ConcatStream<T>([this, ...other]);
+  Stream<T> concatWith(Iterable<Stream<T>> other) {
+    final concatStream = ConcatStream<T>([this, ...other]);
+
+    return isBroadcast ? concatStream.asBroadcastStream() : concatStream;
+  }
 }

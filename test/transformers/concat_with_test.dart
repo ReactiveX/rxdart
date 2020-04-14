@@ -24,4 +24,16 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.concatWith on broadcast stream should stay broadcast ', () async {
+    final delayedStream =
+        Rx.timer(1, Duration(milliseconds: 10)).asBroadcastStream();
+    final immediateStream = Stream.value(2);
+    final expected = [1, 2, emitsDone];
+
+    final concatenatedStream = delayedStream.concatWith([immediateStream]);
+
+    expect(concatenatedStream.isBroadcast, isTrue);
+    expect(concatenatedStream, emitsInOrder(expected));
+  });
 }
