@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
+class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S>, SafeClose {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
   StreamSubscription<T> _mapperSubscription;
   bool _inputClosed = false;
+  Completer _canClose;
 
   _ExhaustMapStreamSink(this._outputSink, this._mapper);
 
@@ -19,25 +20,39 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S> {
 
     final mappedStream = _mapper(data);
 
-    _mapperSubscription =
-        mappedStream.listen(_outputSink.add, onError: addError, onDone: () {
-      _mapperSubscription = null;
+    _mapperSubscription = mappedStream.listen(
+        (data) {
+          _outputSink.add(data);
+        },
+        onError: addError,
+        onDone: () {
+          _mapperSubscription = null;
 
-      if (_inputClosed) {
-        _outputSink.close();
-      }
-    });
+          if (_inputClosed) {
+            _outputSink.close();
+            _canClose.complete();
+          }
+        });
   }
 
   @override
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  void close() {
+  Future safeClose() {
     _inputClosed = true;
+    _canClose = Completer<void>();
 
-    _mapperSubscription ?? _outputSink.close();
+    if (_mapperSubscription == null) {
+      _outputSink.close();
+      _canClose.complete();
+    }
+
+    return _canClose.future;
   }
+
+  @override
+  void close() {}
 
   @override
   FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
@@ -83,8 +98,10 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   Stream<T> bind(Stream<S> stream) {
     final forwardedStream = forwardStream<S>(stream);
 
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _ExhaustMapStreamSink<S, T>(sink, mapper));
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_ExhaustMapStreamSink<S, T>(sink, mapper)));
   }
 }
 

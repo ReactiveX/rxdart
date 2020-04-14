@@ -305,7 +305,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
     return Stream.eventTransformed(
         forwardedStream.stream,
-        (sink) => _BackpressureStreamSink<S, T>(
+        (sink) => forwardedStream.connect(_BackpressureStreamSink<S, T>(
             sink,
             strategy,
             windowStreamFactory,
@@ -314,6 +314,6 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
             startBufferEvery,
             closeWindowWhen,
             ignoreEmptyWindows,
-            dispatchOnClose));
+            dispatchOnClose)));
   }
 }

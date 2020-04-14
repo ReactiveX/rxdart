@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
+class _FlatMapStreamSink<S, T> implements ForwardingSink<S>, SafeClose {
   final Stream<T> Function(S value) _mapper;
   final EventSink<T> _outputSink;
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
   bool _inputClosed = false;
+  Completer _canClose;
 
   _FlatMapStreamSink(this._outputSink, this._mapper);
 
@@ -27,6 +28,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
 
       if (_inputClosed && _openSubscriptions == 0) {
         _outputSink.close();
+        _canClose.complete();
       }
     });
 
@@ -37,13 +39,20 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S> {
   void addError(e, [st]) => _outputSink.addError(e, st);
 
   @override
-  void close() {
+  Future safeClose() {
     _inputClosed = true;
+    _canClose = Completer<void>();
 
     if (_openSubscriptions == 0) {
       _outputSink.close();
+      _canClose.complete();
     }
+
+    return _canClose.future;
   }
+
+  @override
+  void close() {}
 
   @override
   FutureOr onCancel(EventSink<S> sink) =>
@@ -87,8 +96,10 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   Stream<T> bind(Stream<S> stream) {
     final forwardedStream = forwardStream<S>(stream);
 
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => _FlatMapStreamSink<S, T>(sink, mapper));
+    return Stream.eventTransformed(
+        forwardedStream.stream,
+        (sink) =>
+            forwardedStream.connect(_FlatMapStreamSink<S, T>(sink, mapper)));
   }
 }
 
