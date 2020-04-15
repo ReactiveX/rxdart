@@ -286,6 +286,20 @@ void main() {
       await expectLater(seeded.stream, emits(3));
     });
 
+    test('replays the previously emitted errors from addStream', () async {
+      // ignore: close_sinks
+      final unseeded = BehaviorSubject<int>(),
+          // ignore: close_sinks
+          seeded = BehaviorSubject<int>.seeded(0);
+
+      await unseeded.addStream(Stream<int>.error('error'),
+          cancelOnError: false);
+      await seeded.addStream(Stream<int>.error('error'), cancelOnError: false);
+
+      await expectLater(unseeded.stream, emitsError('error'));
+      await expectLater(unseeded.stream, emitsError('error'));
+    });
+
     test('allows items to be added once addStream is complete', () async {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
