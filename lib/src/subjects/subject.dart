@@ -113,7 +113,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     source.listen((T event) {
       _add(event);
     }, onError: (dynamic e, StackTrace s) {
-      _controller.addError(e, s);
+      _addError(e, s);
 
       if (cancelOnError) {
         complete();
