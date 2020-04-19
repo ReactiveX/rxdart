@@ -1,7 +1,7 @@
 import 'dart:async';
 
 /// Acts as a container for multiple subscriptions that can be canceled at once
-/// e.g. view subcriptions in Flutter that need to be canceled on view disposal
+/// e.g. view subscriptions in Flutter that need to be canceled on view disposal
 ///
 /// Can be cleared or disposed. When disposed, cannot be used again.
 /// ### Example
@@ -47,7 +47,7 @@ class CompositeSubscription {
     return subscription;
   }
 
-  /// Cancels subscripiton and removes it from this composite.
+  /// Cancels subscriptions and removes it from this composite.
   void remove(StreamSubscription<dynamic> subscription) {
     subscription.cancel();
     _subscriptionsList.remove(subscription);
