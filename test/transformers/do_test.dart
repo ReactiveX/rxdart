@@ -130,17 +130,12 @@ void main() {
 
       await controller.close();
 
-      final stream =
-          controller.stream.transform(DoStreamTransformer(onData: actual.add));
-
-      await Future<void>.delayed(const Duration(milliseconds: 10));
-
-      await stream.listen(null);
+      controller.stream.doOnData(actual.add).listen(null);
       await expectLater(actual, const [1, 2]);
 
       actual.clear();
 
-      await stream.listen(null);
+      controller.stream.doOnData(actual.add).listen(null);
       await expectLater(actual, const [1, 2]);
     });
 
@@ -413,41 +408,41 @@ void main() {
         'B: 0',
         'pause',
         'A: 1',
-        'A: 2',
-        'A: 3',
-        'A: 4',
-        'A: 5',
-        'A: 6',
-        'A: 7',
-        'A: 8',
-        'A: 9',
-        'A: 10',
-        'A: 11',
-        'A: 12',
-        'A: 13',
-        'A: 14',
-        'A: 15',
-        'A: 16',
-        'A: 17',
-        'A: 18',
-        'A: 19',
         'B: 1',
+        'A: 2',
         'B: 2',
+        'A: 3',
         'B: 3',
+        'A: 4',
         'B: 4',
+        'A: 5',
         'B: 5',
         'pause',
-        'A: 20',
-        'A: 21',
-        'A: 22',
-        'A: 23',
-        'A: 24',
-        'A: 25',
-        'A: 26',
-        'A: 27',
-        'A: 28',
-        'A: 29',
-        'A: 30'
+        'A: 6',
+        'B: 6',
+        'A: 7',
+        'B: 7',
+        'A: 8',
+        'B: 8',
+        'A: 9',
+        'B: 9',
+        'A: 10',
+        'B: 10',
+        'pause',
+        'A: 11',
+        'B: 11',
+        'A: 12',
+        'B: 12',
+        'A: 13',
+        'B: 13',
+        'A: 14',
+        'B: 14',
+        'A: 15',
+        'B: 15',
+        'pause',
+        'A: 16',
+        'B: 16',
+        'A: 17',
       ];
       StreamSubscription<int> subscription;
 

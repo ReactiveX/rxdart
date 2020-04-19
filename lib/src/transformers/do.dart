@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
@@ -15,9 +14,6 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   final void Function(Future<dynamic> resumeSignal) _onPause;
   final void Function() _onResume;
 
-//  final _HandlerCounter _bindHandlerCounter;
-//  final _HandlerCounter _selfHandlerCounter = _HandlerCounter();
-
   _DoStreamSink(
     this._onCancel,
     this._onData,
@@ -27,22 +23,10 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
     this._onListen,
     this._onPause,
     this._onResume,
-//    this._bindHandlerCounter,
   );
 
   @override
   void add(EventSink<S> sink, S data) {
-    print('onData: $sink, $data');
-
-    // test is this event already invoked doOnData
-//    final canInvokeDoOnData =
-//        _selfHandlerCounter.isSameOnDataIndexAs(_bindHandlerCounter);
-//
-//    if (canInvokeDoOnData) {
-    // increment the bind-counter so that other potential sinks will not
-    // call doOnData for this event again.
-//      _bindHandlerCounter.incrementOnData();
-
     try {
       _onData?.call(data);
     } catch (e, s) {
@@ -53,24 +37,11 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
     } catch (e, s) {
       sink.addError(e, s);
     }
-//    }
-
     sink.add(data);
-    // increment the self-counter, readying it for the next event.
-//    _selfHandlerCounter.incrementOnData();
   }
 
   @override
   void addError(EventSink<S> sink, dynamic e, [st]) {
-    // test is this error already invoked doOnData
-//    final canInvokeDoOnError =
-//        _selfHandlerCounter.isSameOnErrorIndexAs(_bindHandlerCounter);
-
-//    if (canInvokeDoOnError) {
-    // increment the bind-counter so that other potential sinks will not
-    // call doOnError for this error again.
-//      _bindHandlerCounter.incrementOnError();
-
     try {
       _onError?.call(e, st);
     } catch (e, s) {
@@ -81,11 +52,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
     } catch (e, s) {
       sink.addError(e, s);
     }
-//    }
-
     sink.addError(e, st);
-    // increment the self-counter, readying it for the next error.
-//    _selfHandlerCounter.incrementOnError();
   }
 
   @override
@@ -104,15 +71,12 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
-//    _selfHandlerCounter.reset();
-//    _bindHandlerCounter.reset();
-//
-    return _onCancel?.call();
-  }
+  FutureOr onCancel(EventSink<S> sink) => _onCancel?.call();
 
   @override
-  void onListen(EventSink<S> sink) => _onListen?.call();
+  void onListen(EventSink<S> sink) {
+    _onListen?.call();
+  }
 
   @override
   void onPause(EventSink<S> sink, [Future resumeSignal]) =>
@@ -206,43 +170,20 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) {
-//    final handlerCounter = _HandlerCounter();
-    var sink = _DoStreamSink<S>(
-      onCancel,
-      onData,
-      onDone,
-      onEach,
-      onError,
-      onListen,
-      onPause,
-      onResume,
-//      handlerCounter,
-    );
-    return forwardStream(stream, sink);
-  }
+  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
+        stream,
+        _DoStreamSink<S>(
+          onCancel,
+          onData,
+          onDone,
+          onEach,
+          onError,
+          onListen,
+          onPause,
+          onResume,
+        ),
+      );
 }
-
-/// A utility class, used with doOnData and doOnError.
-/// The class simply holds counters, so that doOnData and doOnError handlers
-/// are only called once for multiple registered subscribers.
-//class _HandlerCounter {
-//  int _onDataCounter = 0, _onErrorCounter = 0;
-//
-//  void incrementOnData() => _onDataCounter++;
-//
-//  void incrementOnError() => _onErrorCounter++;
-//
-//  void reset() {
-//    _onDataCounter = _onErrorCounter = 0;
-//  }
-//
-//  bool isSameOnDataIndexAs(_HandlerCounter otherCounter) =>
-//      _onDataCounter == otherCounter._onDataCounter;
-//
-//  bool isSameOnErrorIndexAs(_HandlerCounter otherCounter) =>
-//      _onErrorCounter == otherCounter._onErrorCounter;
-//}
 
 /// Extends the Stream class with the ability to execute a callback function
 /// at different points in the Stream's lifecycle.

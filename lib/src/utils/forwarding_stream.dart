@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 
 import 'forwarding_sink.dart';
@@ -61,13 +60,7 @@ Stream<R> forwardStream<T, R>(
 
   // Create a new Controller, which will serve as a trampoline for
   // forwarded events.
-  if (stream is Subject<T>) {
-    controller = stream.createForwardingController<R>(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: true,
-    );
-  } else if (stream.isBroadcast) {
+  if (stream.isBroadcast) {
     controller = StreamController<R>.broadcast(
       onListen: onListen,
       onCancel: onCancel,
