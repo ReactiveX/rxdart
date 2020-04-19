@@ -1,35 +1,69 @@
 import 'dart:async';
 
-class _OnErrorResumeStreamSink<S> implements EventSink<S> {
-  final Stream<S> Function(Object error) _recoveryFn;
-  final EventSink<S> _outputSink;
-  var _inRecovery = false;
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-  _OnErrorResumeStreamSink(this._outputSink, this._recoveryFn);
+class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
+  final Stream<S> Function(Object error) _recoveryFn;
+  var _inRecovery = false;
+  final List<StreamSubscription<S>> _recoverySubscriptions = [];
+
+  _OnErrorResumeStreamSink(this._recoveryFn);
 
   @override
-  void add(S data) {
+  void add(EventSink<S> sink, S data) {
     if (!_inRecovery) {
-      _outputSink.add(data);
+      sink.add(data);
     }
   }
 
   @override
-  void addError(e, [st]) {
+  void addError(EventSink<S> sink, dynamic e, [st]) {
     _inRecovery = true;
 
     final recoveryStream = _recoveryFn(e);
 
-    recoveryStream.listen(_outputSink.add,
-        onError: _outputSink.addError, onDone: _outputSink.close);
+    StreamSubscription<S> subscription;
+    subscription = recoveryStream.listen(
+      sink.add,
+      onError: sink.addError,
+      onDone: () {
+        _recoverySubscriptions.remove(subscription);
+        sink.close();
+      },
+    );
+    _recoverySubscriptions.add(subscription);
   }
 
   @override
-  void close() {
+  void close(EventSink<S> sink) {
     if (!_inRecovery) {
-      _outputSink.close();
+      sink.close();
     }
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {
+    return _recoverySubscriptions.isEmpty
+        ? null
+        : Future.wait<dynamic>(
+            _recoverySubscriptions
+                .map((subscription) => subscription?.cancel())
+                .where((future) => future != null),
+          );
+  }
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _recoverySubscriptions
+          .forEach((subscription) => subscription.pause(resumeSignal));
+
+  @override
+  void onResume(EventSink<S> sink) =>
+      _recoverySubscriptions.forEach((subscription) => subscription.resume());
 }
 
 /// Intercepts error events and switches to a recovery stream created by the
@@ -59,8 +93,10 @@ class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   OnErrorResumeStreamTransformer(this.recoveryFn);
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _OnErrorResumeStreamSink<S>(sink, recoveryFn));
+  Stream<S> bind(Stream<S> stream) => forwardStream(
+        stream,
+        _OnErrorResumeStreamSink<S>(recoveryFn),
+      );
 }
 
 /// Extends the Stream class with the ability to recover from errors in various
