@@ -1,3 +1,5 @@
+import 'package:rxdart/src/utils/min_max.dart';
+
 /// Extends the Stream class with the ability to transform into a Future
 /// that completes with the smallest item emitted by the Stream.
 extension MinExtension<T> on Stream<T> {
@@ -19,6 +21,6 @@ extension MinExtension<T> on Stream<T> {
   ///     final min = await stream.min((a, b) => a.length - b.length);
   ///
   ///     print(min); // prints 'short'
-  Future<T> min([Comparator<T> comparator]) =>
-      toList().then((List<T> values) => (values..sort(comparator)).first);
+  Future<T> min([Comparator<T> comparator]) async =>
+      minMax<T>(await toList(), true, comparator);
 }

@@ -6,13 +6,46 @@ import 'package:test/test.dart';
 void main() {
   test('Rx.min', () async {
     await expectLater(_getStream().min(), completion(0));
+
+    expect(
+      await Stream.fromIterable(<num>[1, 2, 3, 3.5]).min(),
+      1,
+    );
   });
 
   test('Rx.min.with.comparator', () async {
     await expectLater(
-        Stream<String>.fromIterable(<String>['one', 'two', 'three'])
-            .min((String a, String b) => a.length - b.length),
-        completion('one'));
+      Stream.fromIterable(['one', 'two', 'three'])
+          .min((a, b) => a.length - b.length),
+      completion('one'),
+    );
+  });
+
+  test('Rx.min.without.comparator.Comparable', () async {
+    const expected = _Class2(-1);
+    expect(
+      await Stream.fromIterable(const [
+        _Class2(0),
+        _Class2(3),
+        _Class2(2),
+        expected,
+        _Class2(2),
+      ]).min(),
+      expected,
+    );
+  });
+
+  test('Rx.min.without.comparator.not.Comparable', () async {
+    expect(
+      () => Stream.fromIterable(const [
+        _Class1(0),
+        _Class1(3),
+        _Class1(2),
+        _Class1(3),
+        _Class1(2),
+      ]).min(),
+      throwsException,
+    );
   });
 }
 
@@ -25,3 +58,44 @@ class ErrorComparator implements Comparable<ErrorComparator> {
 
 Stream<int> _getStream() =>
     Stream<int>.fromIterable(const <int>[2, 3, 3, 5, 2, 9, 1, 2, 0]);
+
+class _Class1 {
+  final int value;
+
+  const _Class1(this.value);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _Class1 &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() => '_Class{value: $value}';
+}
+
+class _Class2 implements Comparable<_Class2> {
+  final int value;
+
+  const _Class2(this.value);
+
+  @override
+  String toString() => '_Class2{value: $value}';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _Class2 &&
+          runtimeType == other.runtimeType &&
+          value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  int compareTo(_Class2 other) => value.compareTo(other.value);
+}

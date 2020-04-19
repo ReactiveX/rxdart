@@ -1,3 +1,5 @@
+import 'package:rxdart/src/utils/min_max.dart';
+
 /// Extends the Stream class with the ability to transform into a Future
 /// that completes with the largest item emitted by the Stream.
 extension MaxExtension<T> on Stream<T> {
@@ -19,6 +21,6 @@ extension MaxExtension<T> on Stream<T> {
   ///     final max = await stream.max((a, b) => a.length - b.length);
   ///
   ///     print(max); // prints 'looooooong'
-  Future<T> max([Comparator<T> comparator]) =>
-      toList().then((List<T> values) => (values..sort(comparator)).last);
+  Future<T> max([Comparator<T> comparator]) async =>
+      minMax<T>(await toList(), false, comparator);
 }
