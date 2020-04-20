@@ -28,6 +28,6 @@ class RangeStream extends Stream<int> {
         ? startInclusive - index
         : startInclusive + index;
 
-    return Stream.fromIterable(List.generate(length, nextValue));
+    return Stream.fromIterable(Iterable.generate(length, nextValue));
   }
 }
