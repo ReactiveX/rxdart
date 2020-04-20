@@ -37,6 +37,13 @@ void main() {
     );
   });
 
+  test('Rx.max.errorComparator.shouldThrow', () {
+    expect(
+      () => _getStream().max((a, b) => throw Exception()),
+      throwsException,
+    );
+  });
+
   test('Rx.max.without.comparator.Comparable', () async {
     const expected = _Class2(3);
     expect(

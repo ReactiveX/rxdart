@@ -29,6 +29,13 @@ void main() {
     );
   });
 
+  test('Rx.min.errorComparator.shouldThrow', () {
+    expect(
+      () => _getStream().min((a, b) => throw Exception()),
+      throwsException,
+    );
+  });
+
   test('Rx.min.with.comparator', () async {
     await expectLater(
       Stream.fromIterable(['one', 'two', 'three'])
@@ -63,13 +70,6 @@ void main() {
       throwsStateError,
     );
   });
-}
-
-class ErrorComparator implements Comparable<ErrorComparator> {
-  @override
-  int compareTo(ErrorComparator other) {
-    throw Exception();
-  }
 }
 
 Stream<int> _getStream() =>
