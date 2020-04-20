@@ -13,6 +13,22 @@ void main() {
     );
   });
 
+  test('Rx.min.empty.shouldThrow', () {
+    expect(
+      () => Stream<int>.empty().min(),
+      throwsStateError,
+    );
+  });
+
+  test('Rx.min.error.shouldThrow', () {
+    expect(
+      () => Stream.value(1).concatWith(
+        [Stream.error(Exception('This is exception'))],
+      ).min(),
+      throwsException,
+    );
+  });
+
   test('Rx.min.with.comparator', () async {
     await expectLater(
       Stream.fromIterable(['one', 'two', 'three'])
@@ -44,7 +60,7 @@ void main() {
         _Class1(3),
         _Class1(2),
       ]).min(),
-      throwsException,
+      throwsStateError,
     );
   });
 }

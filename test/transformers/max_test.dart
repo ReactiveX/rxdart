@@ -13,6 +13,22 @@ void main() {
     );
   });
 
+  test('Rx.max.empty.shouldThrow', () {
+    expect(
+      () => Stream<int>.empty().max(),
+      throwsStateError,
+    );
+  });
+
+  test('Rx.max.error.shouldThrow', () {
+    expect(
+      () => Stream.value(1).concatWith(
+        [Stream.error(Exception('This is exception'))],
+      ).max(),
+      throwsException,
+    );
+  });
+
   test('Rx.max.with.comparator', () async {
     await expectLater(
       Stream.fromIterable(['one', 'two', 'three'])
@@ -44,7 +60,7 @@ void main() {
         _Class1(3),
         _Class1(2),
       ]).max(),
-      throwsException,
+      throwsStateError,
     );
   });
 }
