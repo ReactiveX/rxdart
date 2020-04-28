@@ -3,39 +3,43 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TimeIntervalStreamSink<S> implements ForwardingSink<S> {
-  final EventSink<TimeInterval<S>> _outputSink;
+class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
   final _stopwatch = Stopwatch();
 
-  _TimeIntervalStreamSink(this._outputSink);
-
   @override
-  void add(S data) {
+  void add(EventSink<TimeInterval<S>> sink, S data) {
     _stopwatch.stop();
-    _outputSink.add(TimeInterval<S>(
-        data, Duration(microseconds: _stopwatch.elapsedMicroseconds)));
+    sink.add(
+      TimeInterval<S>(
+        data,
+        Duration(
+          microseconds: _stopwatch.elapsedMicroseconds,
+        ),
+      ),
+    );
     _stopwatch
       ..reset()
       ..start();
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<TimeInterval<S>> sink, dynamic e, [st]) =>
+      sink.addError(e, st);
 
   @override
-  void close() => _outputSink.close();
+  void close(EventSink<TimeInterval<S>> sink) => sink.close();
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {}
+  FutureOr onCancel(EventSink<TimeInterval<S>> sink) {}
 
   @override
-  void onListen(EventSink<S> sink) => _stopwatch.start();
+  void onListen(EventSink<TimeInterval<S>> sink) => _stopwatch.start();
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<TimeInterval<S>> sink, [Future resumeSignal]) {}
 
   @override
-  void onResume(EventSink<S> sink) {}
+  void onResume(EventSink<TimeInterval<S>> sink) {}
 }
 
 /// Records the time interval between consecutive values in an stream
@@ -54,12 +58,8 @@ class TimeIntervalStreamTransformer<S>
   TimeIntervalStreamTransformer();
 
   @override
-  Stream<TimeInterval<S>> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(forwardedStream.stream,
-        (sink) => forwardedStream.connect(_TimeIntervalStreamSink<S>(sink)));
-  }
+  Stream<TimeInterval<S>> bind(Stream<S> stream) =>
+      forwardStream(stream, _TimeIntervalStreamSink());
 }
 
 /// A class that represents a snapshot of the current value emitted by a

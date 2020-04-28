@@ -4,7 +4,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
-class _DoStreamSink<S> implements ForwardingSink<S> {
+class _DoStreamSink<S> implements ForwardingSink<S, S> {
   final dynamic Function() _onCancel;
   final void Function(S event) _onData;
   final void Function() _onDone;
@@ -13,115 +13,77 @@ class _DoStreamSink<S> implements ForwardingSink<S> {
   final void Function() _onListen;
   final void Function(Future<dynamic> resumeSignal) _onPause;
   final void Function() _onResume;
-  final _HandlerCounter _bindHandlerCounter;
-  final EventSink<S> _outputSink;
-  final _HandlerCounter _selfHandlerCounter = _HandlerCounter();
 
   _DoStreamSink(
-      this._outputSink,
-      this._onCancel,
-      this._onData,
-      this._onDone,
-      this._onEach,
-      this._onError,
-      this._onListen,
-      this._onPause,
-      this._onResume,
-      this._bindHandlerCounter);
+    this._onCancel,
+    this._onData,
+    this._onDone,
+    this._onEach,
+    this._onError,
+    this._onListen,
+    this._onPause,
+    this._onResume,
+  );
 
   @override
-  void add(S data) {
-    // test is this event already invoked doOnData
-    final canInvokeDoOnData =
-        _selfHandlerCounter.isSameOnDataIndexAs(_bindHandlerCounter);
-
-    if (canInvokeDoOnData) {
-      // increment the bind-counter so that other potential sinks will not
-      // call doOnData for this event again.
-      _bindHandlerCounter.incrementOnData();
-
-      if (_onData != null) {
-        _onData(data);
-      }
-
-      if (_onEach != null) {
-        _onEach(Notification.onData(data));
-      }
+  void add(EventSink<S> sink, S data) {
+    try {
+      _onData?.call(data);
+    } catch (e, s) {
+      sink.addError(e, s);
     }
-
-    _outputSink.add(data);
-    // increment the self-counter, readying it for the next event.
-    _selfHandlerCounter.incrementOnData();
+    try {
+      _onEach?.call(Notification.onData(data));
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+    sink.add(data);
   }
 
   @override
-  void addError(e, [st]) {
-    // test is this error already invoked doOnData
-    final canInvokeDoOnError =
-        _selfHandlerCounter.isSameOnErrorIndexAs(_bindHandlerCounter);
-
-    if (canInvokeDoOnError) {
-      // increment the bind-counter so that other potential sinks will not
-      // call doOnError for this error again.
-      _bindHandlerCounter.incrementOnError();
-
-      if (_onError != null) {
-        _onError(e, st);
-      }
-
-      if (_onEach != null) {
-        _onEach(Notification.onError(e, st));
-      }
+  void addError(EventSink<S> sink, dynamic e, [st]) {
+    try {
+      _onError?.call(e, st);
+    } catch (e, s) {
+      sink.addError(e, s);
     }
-
-    _outputSink.addError(e, st);
-    // increment the self-counter, readying it for the next error.
-    _selfHandlerCounter.incrementOnError();
+    try {
+      _onEach?.call(Notification.onError(e, st));
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+    sink.addError(e, st);
   }
 
   @override
-  void close() {
-    if (_onDone != null) {
-      _onDone();
+  void close(EventSink<S> sink) {
+    try {
+      _onDone?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
     }
-
-    if (_onEach != null) {
-      _onEach(Notification.onDone());
+    try {
+      _onEach?.call(Notification.onDone());
+    } catch (e, s) {
+      sink.addError(e, s);
     }
-
-    _outputSink.close();
+    sink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
-    _selfHandlerCounter.reset();
-    _bindHandlerCounter.reset();
-
-    if (_onCancel != null) {
-      return _onCancel();
-    }
-  }
+  FutureOr onCancel(EventSink<S> sink) => _onCancel?.call();
 
   @override
   void onListen(EventSink<S> sink) {
-    if (_onListen != null) {
-      _onListen();
-    }
+    _onListen?.call();
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {
-    if (_onPause != null) {
-      _onPause(resumeSignal);
-    }
-  }
+  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+      _onPause?.call(resumeSignal);
 
   @override
-  void onResume(EventSink<S> sink) {
-    if (_onResume != null) {
-      _onResume();
-    }
-  }
+  void onResume(EventSink<S> sink) => _onResume?.call();
 }
 
 /// Invokes the given callback at the corresponding point the the stream
@@ -208,42 +170,19 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-    final handlerCounter = _HandlerCounter();
-
-    return Stream.eventTransformed(
-        forwardedStream.stream,
-        (sink) => forwardedStream.connect(_DoStreamSink<S>(
-            sink,
-            onCancel,
-            onData,
-            onDone,
-            onEach,
-            onError,
-            onListen,
-            onPause,
-            onResume,
-            handlerCounter)));
-  }
-}
-
-/// A utility class, used with doOnData and doOnError.
-/// The class simply holds counters, so that doOnData and doOnError handlers
-/// are only called once for multiple registered subscribers.
-class _HandlerCounter {
-  int _onDataCounter = 0, _onErrorCounter = 0;
-
-  void incrementOnData() => _onDataCounter++;
-  void incrementOnError() => _onErrorCounter++;
-  void reset() {
-    _onDataCounter = _onErrorCounter = 0;
-  }
-
-  bool isSameOnDataIndexAs(_HandlerCounter otherCounter) =>
-      _onDataCounter == otherCounter._onDataCounter;
-  bool isSameOnErrorIndexAs(_HandlerCounter otherCounter) =>
-      _onErrorCounter == otherCounter._onErrorCounter;
+  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
+        stream,
+        _DoStreamSink<S>(
+          onCancel,
+          onData,
+          onDone,
+          onEach,
+          onError,
+          onListen,
+          onPause,
+          onResume,
+        ),
+      );
 }
 
 /// Extends the Stream class with the ability to execute a callback function

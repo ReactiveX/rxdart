@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/forwarding_sink.dart';
-
-class _TakeWhileInclusiveStreamSink<S> implements ForwardingSink<S> {
+class _TakeWhileInclusiveStreamSink<S> implements EventSink<S> {
   final bool Function(S) _test;
   final EventSink<S> _outputSink;
 
@@ -34,18 +32,6 @@ class _TakeWhileInclusiveStreamSink<S> implements ForwardingSink<S> {
 
   @override
   void close() => _outputSink.close();
-
-  @override
-  FutureOr onCancel(EventSink<S> sink) {}
-
-  @override
-  void onListen(EventSink<S> sink) {}
-
-  @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
-
-  @override
-  void onResume(EventSink<S> sink) {}
 }
 
 /// Emits values emitted by the source Stream so long as each value

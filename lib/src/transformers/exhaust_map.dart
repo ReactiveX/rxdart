@@ -3,17 +3,15 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S>, SafeClose {
+class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
-  final EventSink<T> _outputSink;
   StreamSubscription<T> _mapperSubscription;
   bool _inputClosed = false;
-  Completer _canClose;
 
-  _ExhaustMapStreamSink(this._outputSink, this._mapper);
+  _ExhaustMapStreamSink(this._mapper);
 
   @override
-  void add(S data) {
+  void add(EventSink<T> sink, S data) {
     if (_mapperSubscription != null) {
       return;
     }
@@ -21,51 +19,40 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S>, SafeClose {
     final mappedStream = _mapper(data);
 
     _mapperSubscription = mappedStream.listen(
-        (data) {
-          _outputSink.add(data);
-        },
-        onError: addError,
-        onDone: () {
-          _mapperSubscription = null;
+      sink.add,
+      onError: sink.addError,
+      onDone: () {
+        _mapperSubscription = null;
 
-          if (_inputClosed) {
-            _outputSink.close();
-            _canClose.complete();
-          }
-        });
+        if (_inputClosed) {
+          sink.close();
+        }
+      },
+    );
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
 
   @override
-  Future safeClose() {
+  void close(EventSink<T> sink) {
     _inputClosed = true;
-    _canClose = Completer<void>();
 
-    if (_mapperSubscription == null) {
-      _outputSink.close();
-      _canClose.complete();
-    }
-
-    return _canClose.future;
+    _mapperSubscription ?? sink.close();
   }
 
   @override
-  void close() {}
+  FutureOr onCancel(EventSink<T> sink) => _mapperSubscription?.cancel();
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _mapperSubscription?.cancel();
+  void onListen(EventSink<T> sink) {}
 
   @override
-  void onListen(EventSink<S> sink) {}
-
-  @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
+  void onPause(EventSink<T> sink, [Future resumeSignal]) =>
       _mapperSubscription?.pause(resumeSignal);
 
   @override
-  void onResume(EventSink<S> sink) => _mapperSubscription?.resume();
+  void onResume(EventSink<T> sink) => _mapperSubscription?.resume();
 }
 
 /// Converts events from the source stream into a new Stream using a given
@@ -95,14 +82,8 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ExhaustMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(
-        forwardedStream.stream,
-        (sink) =>
-            forwardedStream.connect(_ExhaustMapStreamSink<S, T>(sink, mapper)));
-  }
+  Stream<T> bind(Stream<S> stream) =>
+      forwardStream(stream, _ExhaustMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to transform the Stream into

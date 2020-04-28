@@ -1,31 +1,56 @@
 import 'dart:async';
 
-class _SwitchIfEmptyStreamSink<S> implements EventSink<S> {
-  final Stream<S> _fallbackStream;
-  final EventSink<S> _outputSink;
-  var _isEmpty = true;
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-  _SwitchIfEmptyStreamSink(this._outputSink, this._fallbackStream);
+class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
+  final Stream<S> _fallbackStream;
+
+  var _isEmpty = true;
+  StreamSubscription<S> _fallbackSubscription;
+
+  _SwitchIfEmptyStreamSink(this._fallbackStream);
 
   @override
-  void add(S data) {
+  void add(EventSink<S> sink, S data) {
     _isEmpty = false;
-    _outputSink.add(data);
+    sink.add(data);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<S> sink, dynamic error, [StackTrace st]) {
+    sink.addError(error, st);
+  }
 
   @override
-  void close() {
+  void close(EventSink<S> sink) {
     if (_isEmpty) {
-      _fallbackStream.listen(_outputSink.add, onError: _outputSink.addError,
-          onDone: () {
-        _outputSink.close();
-      });
+      _fallbackSubscription = _fallbackStream.listen(
+        sink.add,
+        onError: sink.addError,
+        onDone: sink.close,
+      );
     } else {
-      _outputSink.close();
+      sink.close();
     }
+  }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {
+    return _fallbackSubscription?.cancel();
+  }
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink, [Future resumeSignal]) {
+    _fallbackSubscription?.pause(resumeSignal);
+  }
+
+  @override
+  void onResume(EventSink<S> sink) {
+    _fallbackSubscription?.resume();
   }
 }
 
@@ -66,8 +91,9 @@ class SwitchIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _SwitchIfEmptyStreamSink<S>(sink, fallbackStream));
+  Stream<S> bind(Stream<S> stream) {
+    return forwardStream(stream, _SwitchIfEmptyStreamSink(fallbackStream));
+  }
 }
 
 /// Extend the Stream class with the ability to return an alternative Stream

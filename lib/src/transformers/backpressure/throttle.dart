@@ -56,8 +56,13 @@ extension ThrottleExtensions<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1, 2, 3])
   ///       .throttleTime(Duration(seconds: 1))
-  Stream<T> throttleTime(Duration duration, {bool trailing = false}) =>
-      transform(ThrottleStreamTransformer<T>(
-          (_) => TimerStream<bool>(true, duration),
-          trailing: trailing));
+  Stream<T> throttleTime(Duration duration, {bool trailing = false}) {
+    ArgumentError.checkNotNull(duration, 'duration');
+    return transform(
+      ThrottleStreamTransformer<T>(
+        (_) => TimerStream<bool>(true, duration),
+        trailing: trailing,
+      ),
+    );
+  }
 }

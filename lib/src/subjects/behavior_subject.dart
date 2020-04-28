@@ -135,7 +135,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   set value(T newValue) => add(newValue);
 
   @override
-  StreamController<T> createForwardingController({
+  StreamController<R> createForwardingController<R>({
     void Function() onListen,
     void Function() onCancel,
     bool sync = false,

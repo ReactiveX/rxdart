@@ -3,30 +3,28 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
+class _StartWithManyStreamSink<S> implements ForwardingSink<S, S> {
   final Iterable<S> _startValues;
-  final EventSink<S> _outputSink;
-  EventSink<S> _sink;
   var _isFirstEventAdded = false;
 
-  _StartWithManyStreamSink(this._outputSink, this._startValues);
+  _StartWithManyStreamSink(this._startValues);
 
   @override
-  void add(S data) {
-    _safeAddFirstEvent();
-    _outputSink.add(data);
+  void add(EventSink<S> sink, S data) {
+    _safeAddFirstEvent(sink);
+    sink.add(data);
   }
 
   @override
-  void addError(e, [st]) {
-    _safeAddFirstEvent();
-    _outputSink.addError(e, st);
+  void addError(EventSink<S> sink, dynamic e, [st]) {
+    _safeAddFirstEvent(sink);
+    sink.addError(e, st);
   }
 
   @override
-  void close() {
-    _safeAddFirstEvent();
-    _outputSink.close();
+  void close(EventSink<S> sink) {
+    _safeAddFirstEvent(sink);
+    sink.close();
   }
 
   @override
@@ -34,9 +32,7 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
 
   @override
   void onListen(EventSink<S> sink) {
-    _sink = sink;
-
-    scheduleMicrotask(_safeAddFirstEvent);
+    scheduleMicrotask(() => _safeAddFirstEvent(sink));
   }
 
   @override
@@ -52,14 +48,10 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S> {
   // this method is ran before any other events might be added.
   // Once the first event(s) is/are successfully added, this method
   // will not trigger again.
-  void _safeAddFirstEvent() {
-    if (!_isFirstEventAdded && _sink != null) {
-      _isFirstEventAdded = true;
-
-      for (var i = 0, len = _startValues.length; i < len; i++) {
-        _sink.add(_startValues.elementAt(i));
-      }
-    }
+  void _safeAddFirstEvent(EventSink<S> sink) {
+    if (_isFirstEventAdded) return;
+    _startValues.forEach(sink.add);
+    _isFirstEventAdded = true;
   }
 }
 
@@ -83,14 +75,8 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) {
-    final forwardedStream = forwardStream<S>(stream);
-
-    return Stream.eventTransformed(
-        forwardedStream.stream,
-        (sink) => forwardedStream
-            .connect(_StartWithManyStreamSink<S>(sink, startValues)));
-  }
+  Stream<S> bind(Stream<S> stream) =>
+      forwardStream(stream, _StartWithManyStreamSink(startValues));
 }
 
 /// Extends the [Stream] class with the ability to emit the given values as the

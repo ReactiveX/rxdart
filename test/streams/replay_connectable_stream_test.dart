@@ -32,7 +32,7 @@ void main() {
       stream.listen(expectAsync1((int i) {
         expect(stream.values, items.sublist(0, i));
       }, count: items.length));
-    }, skip: true);
+    });
 
     test('stops emitting after the connection is cancelled', () async {
       final ConnectableStream<int> stream =

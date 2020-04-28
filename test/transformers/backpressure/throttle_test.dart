@@ -84,7 +84,7 @@ void main() {
   test('Rx.throttle.error.shouldThrowB', () {
     expect(() => Stream.value(1).throttle(null),
         throwsA(const TypeMatcher<AssertionError>()));
-  }, skip: true);
+  });
 
   test('Rx.throttle.pause.resume', () async {
     StreamSubscription<int> subscription;
