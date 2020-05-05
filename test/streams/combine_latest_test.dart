@@ -18,6 +18,11 @@ Stream<bool> get streamC {
 }
 
 void main() {
+  test('Rx.combineLatestList.isEmpty', () {
+    expect(Rx.combineLatestList<dynamic>([]),
+        emitsInOrder(<dynamic>[<dynamic>[]]));
+  });
+
   test('Rx.combineLatestList', () async {
     final combined = Rx.combineLatestList<int>([
       Stream.fromIterable([1, 2, 3]),

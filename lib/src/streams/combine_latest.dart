@@ -287,6 +287,11 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
+    if (streams.isEmpty) {
+      return StreamController()
+        ..add(combiner([]))
+        ..close();
+    }
     final len = streams.length;
     List<StreamSubscription<dynamic>> subscriptions;
     StreamController<R> controller;
