@@ -7,6 +7,9 @@ import 'dart:async';
 /// The Stream will not emit until all Streams have emitted at least one
 /// item.
 ///
+/// If the provided streams is empty, the resulting sequence completes immediately
+/// without emitting any items and without any calls to the combiner function.
+///
 /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
 ///
 /// ### Basic Example
@@ -287,6 +290,10 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
+    if (streams.isEmpty) {
+      return StreamController<R>()..close();
+    }
+
     final len = streams.length;
     List<StreamSubscription<dynamic>> subscriptions;
     StreamController<R> controller;

@@ -35,6 +35,11 @@ void main() {
     );
   });
 
+  test('Rx.combineLatestList.empty', () async {
+    final combined = Rx.combineLatestList<int>([]);
+    expect(combined, emitsDone);
+  });
+
   test('Rx.combineLatest', () async {
     final combined = Rx.combineLatest<int, int>(
       [

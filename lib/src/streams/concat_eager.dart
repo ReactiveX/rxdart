@@ -10,6 +10,9 @@ import 'package:rxdart/src/streams/concat.dart';
 /// captured and emitted at the correct time, after the previous stream has
 /// finished emitting items.
 ///
+/// If the provided streams is empty, the resulting sequence completes immediately
+/// without emitting any items.
+///
 /// [Interactive marble diagram](http://rxmarbles.com/#concat)
 ///
 /// ### Example
@@ -41,9 +44,11 @@ class ConcatEagerStream<T> extends Stream<T> {
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams == null) {
       throw ArgumentError('streams cannot be null');
-    } else if (streams.isEmpty) {
-      throw ArgumentError('at least 1 stream needs to be provided');
-    } else if (streams.any((Stream<T> stream) => stream == null)) {
+    }
+    if (streams.isEmpty) {
+      return StreamController<T>()..close();
+    }
+    if (streams.any((Stream<T> stream) => stream == null)) {
       throw ArgumentError('One of the provided streams is null');
     }
 
