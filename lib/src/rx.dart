@@ -107,7 +107,7 @@ abstract class Rx {
   /// streams have emitted at least one value.
   ///
   /// If the provided streams is empty, the resulting sequence completes immediately
-  /// without emitting any items and without any calls to the combiner function.
+  /// without emitting any items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#combineLatest)
   ///
@@ -482,7 +482,7 @@ abstract class Rx {
   /// forkJoin a dynamic number of Streams.
   ///
   /// If the provided streams is empty, the resulting sequence completes immediately
-  /// without emitting any items and without any calls to the combiner function.
+  /// without emitting any items.
   ///
   /// ### Example
   ///
@@ -739,6 +739,9 @@ abstract class Rx {
   /// Given two or more source [streams], emit all of the items from only
   /// the first of these [streams] to emit an item or notification.
   ///
+  /// If the provided streams is empty, the resulting sequence completes immediately
+  /// without emitting any items.
+  ///
   /// [Interactive marble diagram](http://rxmarbles.com/#amb)
   ///
   /// ### Example
@@ -952,6 +955,9 @@ abstract class Rx {
   /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
   ///
+  /// If the provided streams is empty, the resulting sequence completes immediately
+  /// without emitting any items and without any calls to the zipper function.
+  ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
   /// ### Example
@@ -980,6 +986,9 @@ abstract class Rx {
   /// second item emitted by Stream #2; and so forth. It will only emit as
   /// many items as the number of items emitted by the source Stream that
   /// emits the fewest items.
+  ///
+  /// If the provided streams is empty, the resulting sequence completes immediately
+  /// without emitting any items.
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#zip)
   ///
