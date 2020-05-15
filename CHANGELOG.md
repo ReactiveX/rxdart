@@ -1,3 +1,8 @@
+## 0.24.1
+  * Fix for BehaviorSubject, no longer emits null when using addStream and expecting an Error as first event (thanks [yuvalr1](https://github.com/yuvalr1))
+  * min/max have been optimised for performance
+  * Further refactors on our Transformers
+
 ## 0.24.0
   * Fix throttle no longer outputting the current buffer onDone
   * Adds endWith and endWithMany
