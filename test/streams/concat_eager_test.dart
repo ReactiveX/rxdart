@@ -106,10 +106,6 @@ void main() {
   });
 
   test('Rx.concatEager.error.shouldThrowC', () {
-    expect(() => Rx.concatEager<int>(const []), throwsArgumentError);
-  });
-
-  test('Rx.concatEager.error.shouldThrowD', () {
     expect(() => Rx.concatEager([Stream.value(1), null]), throwsArgumentError);
   });
 
@@ -131,5 +127,9 @@ void main() {
     }, count: 1));
 
     subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
+
+  test('Rx.concatEager.empty', () {
+    expect(Rx.concatEager<int>(const []), emitsDone);
   });
 }

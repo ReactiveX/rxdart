@@ -3,6 +3,9 @@ import 'dart:async';
 /// Given two or more source streams, emit all of the items from only
 /// the first of these streams to emit an item or notification.
 ///
+/// If the provided streams is empty, the resulting sequence completes immediately
+/// without emitting any items.
+///
 /// [Interactive marble diagram](http://rxmarbles.com/#amb)
 ///
 /// ### Example
@@ -32,8 +35,9 @@ class RaceStream<T> extends Stream<T> {
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams == null) {
       throw ArgumentError('streams cannot be null');
-    } else if (streams.isEmpty) {
-      throw ArgumentError('provide at least 1 stream');
+    }
+    if (streams.isEmpty) {
+      return StreamController<T>()..close();
     }
 
     List<StreamSubscription<T>> subscriptions;

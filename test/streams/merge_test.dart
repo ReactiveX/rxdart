@@ -50,10 +50,6 @@ void main() {
   });
 
   test('Rx.merge.error.shouldThrowC', () {
-    expect(() => Rx.merge<int>(const []), throwsArgumentError);
-  });
-
-  test('Rx.merge.error.shouldThrowD', () {
     expect(() => Rx.merge([Stream.value(1), null]), throwsArgumentError);
   });
 
@@ -74,5 +70,9 @@ void main() {
     }, count: 1));
 
     subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
+
+  test('Rx.merge.empty', () {
+    expect(Rx.merge<int>(const []), emitsDone);
   });
 }

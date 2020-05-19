@@ -20,6 +20,9 @@ import 'dart:async';
 ///
 /// In these cases you may better off with an operator like combineLatest or zip.
 ///
+/// If the provided streams is empty, the resulting sequence completes immediately
+/// without emitting any items and without any calls to the combiner function.
+///
 /// ### Basic Example
 ///
 /// This constructor takes in an `Iterable<Stream<T>>` and outputs a
@@ -67,7 +70,6 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     R Function(List<T> values) combiner,
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
-        assert(streams.isNotEmpty, 'provide at least 1 stream'),
         assert(combiner != null, 'must provide a combiner function'),
         super(_buildController(streams, combiner).stream);
 
@@ -300,6 +302,10 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
+    if (streams.isEmpty) {
+      return StreamController<R>()..close();
+    }
+
     StreamController<R> controller;
 
     controller = StreamController<R>(

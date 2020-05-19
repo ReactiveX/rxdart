@@ -14,6 +14,10 @@ void main() {
     );
   });
 
+  test('Rx.zip.empty', () {
+    expect(Rx.zipList<int>([]), emitsDone);
+  });
+
   test('Rx.zipList', () async {
     expect(
       Rx.zipList([

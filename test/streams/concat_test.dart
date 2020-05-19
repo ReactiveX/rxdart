@@ -106,15 +106,15 @@ void main() {
   });
 
   test('Rx.concat.error.shouldThrowC', () {
-    expect(() => Rx.concat<int>(const []), throwsArgumentError);
-  });
-
-  test('Rx.concat.error.shouldThrowD', () {
     expect(
         () => [
               Rx.concat([Stream.value(1), null]),
               null
             ],
         throwsArgumentError);
+  });
+
+  test('Rx.concat.empty', () {
+    expect(Rx.concat<int>(const []), emitsDone);
   });
 }

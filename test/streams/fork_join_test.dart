@@ -34,6 +34,10 @@ void main() {
     );
   });
 
+  test('Rx.forkJoin.empty', () {
+    expect(Rx.forkJoinList<int>([]), emitsDone);
+  });
+
   test('Rx.forkJoinList.singleStream', () async {
     final combined = Rx.forkJoinList<int>([
       Stream.fromIterable([1, 2, 3])

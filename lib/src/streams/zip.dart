@@ -13,6 +13,9 @@ import 'dart:async';
 /// many items as the number of items emitted by the source Stream that
 /// emits the fewest items.
 ///
+/// If the provided streams is empty, the resulting sequence completes immediately
+/// without emitting any items and without any calls to the zipper function.
+///
 /// [Interactive marble diagram](http://rxmarbles.com/#zip)
 ///
 /// ### Basic Example
@@ -275,73 +278,75 @@ class ZipStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) zipper,
   ) {
-    {
-      StreamController<R> controller;
-      final len = streams.length;
-      List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
-
-      controller = StreamController<R>(
-          sync: true,
-          onListen: () {
-            try {
-              Completer<void> completeCurrent;
-              final window = _Window<T>(len);
-              var index = 0;
-
-              // resets variables for the next zip window
-              final next = () {
-                completeCurrent?.complete();
-
-                completeCurrent = Completer<List<T>>();
-
-                pendingSubscriptions = subscriptions.toList();
-              };
-
-              final doUpdate = (int index) => (T value) {
-                    window.onValue(index, value);
-
-                    if (window.isComplete) {
-                      // all streams emitted for the current zip index
-                      // dispatch event and reset for next
-                      try {
-                        controller.add(zipper(window.flush()));
-                        // reset for next zip event
-                        next();
-                      } catch (e, s) {
-                        controller.addError(e, s);
-                      }
-                    } else {
-                      // other streams are still pending to get to the next
-                      // zip event index.
-                      // pause this subscription while we await the others
-                      //ignore: cancel_subscriptions
-                      final subscription = subscriptions[index]
-                        ..pause(completeCurrent.future);
-
-                      pendingSubscriptions.remove(subscription);
-                    }
-                  };
-
-              subscriptions = streams
-                  .map((stream) => stream.listen(doUpdate(index++),
-                      onError: controller.addError, onDone: controller.close))
-                  .toList(growable: false);
-
-              next();
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
-          },
-          onPause: ([Future<dynamic> resumeSignal]) => pendingSubscriptions
-              .forEach((subscription) => subscription.pause(resumeSignal)),
-          onResume: () => pendingSubscriptions
-              .forEach((subscription) => subscription.resume()),
-          onCancel: () => Future.wait<dynamic>(subscriptions
-              .map((subscription) => subscription.cancel())
-              .where((cancelFuture) => cancelFuture != null)));
-
-      return controller;
+    if (streams.isEmpty) {
+      return StreamController<R>()..close();
     }
+
+    StreamController<R> controller;
+    final len = streams.length;
+    List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
+
+    controller = StreamController<R>(
+        sync: true,
+        onListen: () {
+          try {
+            Completer<void> completeCurrent;
+            final window = _Window<T>(len);
+            var index = 0;
+
+            // resets variables for the next zip window
+            final next = () {
+              completeCurrent?.complete();
+
+              completeCurrent = Completer<List<T>>();
+
+              pendingSubscriptions = subscriptions.toList();
+            };
+
+            final doUpdate = (int index) => (T value) {
+                  window.onValue(index, value);
+
+                  if (window.isComplete) {
+                    // all streams emitted for the current zip index
+                    // dispatch event and reset for next
+                    try {
+                      controller.add(zipper(window.flush()));
+                      // reset for next zip event
+                      next();
+                    } catch (e, s) {
+                      controller.addError(e, s);
+                    }
+                  } else {
+                    // other streams are still pending to get to the next
+                    // zip event index.
+                    // pause this subscription while we await the others
+                    //ignore: cancel_subscriptions
+                    final subscription = subscriptions[index]
+                      ..pause(completeCurrent.future);
+
+                    pendingSubscriptions.remove(subscription);
+                  }
+                };
+
+            subscriptions = streams
+                .map((stream) => stream.listen(doUpdate(index++),
+                    onError: controller.addError, onDone: controller.close))
+                .toList(growable: false);
+
+            next();
+          } catch (e, s) {
+            controller.addError(e, s);
+          }
+        },
+        onPause: ([Future<dynamic> resumeSignal]) => pendingSubscriptions
+            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onResume: () => pendingSubscriptions
+            .forEach((subscription) => subscription.resume()),
+        onCancel: () => Future.wait<dynamic>(subscriptions
+            .map((subscription) => subscription.cancel())
+            .where((cancelFuture) => cancelFuture != null)));
+
+    return controller;
   }
 }
 

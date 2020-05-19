@@ -55,11 +55,7 @@ void main() {
     expect(() => Rx.race<Null>(null), throwsArgumentError);
   });
 
-  test('Rx.race.shouldThrowB', () {
-    expect(() => Rx.race<Null>(const []), throwsArgumentError);
-  });
-
-  test('Rx.race.shouldThrowC', () async {
+  test('Rx.race.shouldThrowB', () async {
     final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
@@ -82,5 +78,9 @@ void main() {
     }, count: 1));
 
     subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+  });
+
+  test('Rx.race.empty', () {
+    expect(Rx.race<int>(const []), emitsDone);
   });
 }
