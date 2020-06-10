@@ -24,6 +24,7 @@ class PairwiseStreamTransformer<T>
 /// as a pair
 extension PairwiseExtension<T> on Stream<T> {
   /// Emits the n-th and n-1th events as a pair.
+  /// The first event won't be emitted until the second one arrives.
   ///
   /// ### Example
   ///
