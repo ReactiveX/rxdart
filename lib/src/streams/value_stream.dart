@@ -6,4 +6,11 @@ abstract class ValueStream<T> implements Stream<T> {
 
   /// A flag that turns true as soon as at least one event has been emitted.
   bool get hasValue;
+
+  /// Last emitted error, or null if no error added or value exists.
+  /// See [hasError]
+  Object get error;
+
+  /// A flag that turns true as soon as at an error event has been emitted.
+  bool get hasError;
 }
