@@ -3,7 +3,7 @@ version: 0.24.1
 authors:
 - Frank Pepermans <frank@igindo.com>
 - Brian Egan <brian@brianegan.com>
-- Petrus Nguyễn Thái Học <hoc081098@gmail.com>
+- Petrus Nguyen Thái Hoc <hoc081098@gmail.com>
 description: >
   RxDart is an implementation of the popular reactiveX api for asynchronous
   programming, leveraging the native Dart Streams api.
