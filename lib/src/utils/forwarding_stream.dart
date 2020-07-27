@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/forwarding_sink.dart';
-
 import 'forwarding_sink.dart';
 
 /// @private
