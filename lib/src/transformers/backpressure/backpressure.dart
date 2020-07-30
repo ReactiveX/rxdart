@@ -107,9 +107,9 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
       case WindowStrategy.eventAfterLastWindow:
         if (_windowSubscription != null) return;
 
-        resolveWindowStart(event, sink);
-
         _windowSubscription = singleWindow(event, sink);
+
+        resolveWindowStart(event, sink);
 
         break;
       // for example scan
