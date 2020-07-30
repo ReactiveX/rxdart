@@ -21,7 +21,8 @@ void main() {
         _stream()
             .throttle(
                 (_) => Stream<void>.periodic(const Duration(milliseconds: 250)),
-                trailing: true)
+                trailing: true,
+                leading: false)
             .take(3),
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
@@ -43,7 +44,8 @@ void main() {
                 (value) => value == 1
                     ? Stream<void>.periodic(const Duration(milliseconds: 10))
                     : Stream<void>.periodic(const Duration(milliseconds: 250)),
-                trailing: true)
+                trailing: true,
+                leading: false)
             .take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
