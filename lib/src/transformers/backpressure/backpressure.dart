@@ -34,6 +34,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   final queue = <S>[];
   var skip = 0;
   var _hasData = false;
+  var _mainClosed = false;
   StreamSubscription<dynamic> _windowSubscription;
 
   _BackpressureStreamSink(
@@ -67,6 +68,12 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
   @override
   void close(EventSink<T> sink) {
+    _mainClosed = true;
+
+    if (_strategy == WindowStrategy.eventAfterLastWindow) {
+      return;
+    }
+
     // treat the final event as a Window that opens
     // and immediately closes again
     if (_dispatchOnClose && queue.isNotEmpty) {
@@ -100,9 +107,9 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
       case WindowStrategy.eventAfterLastWindow:
         if (_windowSubscription != null) return;
 
-        _windowSubscription = singleWindow(event, sink);
-
         resolveWindowStart(event, sink);
+
+        _windowSubscription = singleWindow(event, sink);
 
         break;
       // for example scan
@@ -139,7 +146,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
       buildStream(event, sink).take(1).listen(
             null,
             onError: sink.addError,
-            onDone: () => resolveWindowEnd(sink),
+            onDone: () => resolveWindowEnd(sink, _mainClosed),
           );
 
   // opens a new Window which is kept open until the main Stream
@@ -167,11 +174,31 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
   void resolveWindowStart(S event, EventSink<T> sink) {
     if (_onWindowStart != null) {
-      sink.add(_onWindowStart(event));
+      var startEvent = _onWindowStart(event);
+      if (startEvent != null) {
+        sink.add(startEvent);
+      }
     }
   }
 
   void resolveWindowEnd(EventSink<T> sink, [bool isControllerClosing = false]) {
+    if (isControllerClosing &&
+        _strategy == WindowStrategy.eventAfterLastWindow) {
+      if (_hasData && queue.length > 1 && _onWindowEnd != null) {
+        var endEvent = _onWindowEnd(List<S>.unmodifiable(queue));
+        if (endEvent != null) {
+          sink.add(endEvent);
+        }
+      }
+
+      queue.clear();
+      _windowSubscription?.cancel();
+      _windowSubscription = null;
+
+      sink.close();
+      return;
+    }
+
     if (isControllerClosing ||
         _strategy == WindowStrategy.eventAfterLastWindow ||
         _strategy == WindowStrategy.everyEvent) {
