@@ -4,7 +4,6 @@ import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/streams/connectable_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
-import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 
