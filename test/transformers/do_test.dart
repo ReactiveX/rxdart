@@ -130,13 +130,13 @@ void main() {
 
       await controller.close();
 
-      controller.stream.doOnData(actual.add).listen(null);
-      await expectLater(actual, const [1, 2]);
+      expect(await controller.stream.doOnData(actual.add).drain(actual),
+          const [1, 2]);
 
       actual.clear();
 
-      controller.stream.doOnData(actual.add).listen(null);
-      await expectLater(actual, const [1, 2]);
+      expect(await controller.stream.doOnData(actual.add).drain(actual),
+          const [1, 2]);
     });
 
     test('emits onEach Notifications for Data, Error, and Done', () async {

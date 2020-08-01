@@ -104,11 +104,19 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
           _Wrapper<T> wrapper, StreamController<T> controller, bool sync) =>
       () {
         if (wrapper.latestIsError) {
+          if (sync) {
+            wrapper.setError(wrapper.latestError, wrapper.latestStackTrace);
+          }
+
           return controller.stream.transform(StartWithErrorStreamTransformer(
-              wrapper.latestError, wrapper.latestStackTrace, sync));
+              wrapper.latestError, wrapper.latestStackTrace));
         } else if (wrapper.latestIsValue) {
-          return controller.stream.transform(
-              StartWithStreamTransformer(wrapper.latestValue, sync: sync));
+          if (sync) {
+            wrapper.setValue(wrapper.latestValue);
+          }
+
+          return controller.stream
+              .transform(StartWithStreamTransformer(wrapper.latestValue));
         }
 
         return controller.stream;
