@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/rx.dart';
+import 'package:rxdart/src/streams/connectable_stream.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';

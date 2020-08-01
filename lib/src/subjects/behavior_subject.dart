@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:rxdart/src/rx.dart';
+import 'package:rxdart/src/streams/connectable_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
+import 'package:rxdart/src/transformers/do.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 
@@ -148,6 +150,17 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   /// Get the latest error emitted by the Subject
   @override
   Object get error => _wrapper.latestError;
+
+  @override
+  Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) {
+    final transformed = super.transform(streamTransformer);
+
+    if (transformed is! ValueStream) {
+      return transformed.publishValue();
+    }
+
+    return transformed;
+  }
 }
 
 class _Wrapper<T> {
