@@ -68,14 +68,8 @@ Stream<R> forwardStream<T, R>(
         );
 
     if (inheritParentType) {
-      if (stream is BehaviorSubject) {
+      if (stream is ValueStream) {
         controller = BehaviorSubject<R>(
-          onListen: onListen,
-          onCancel: onCancel,
-          sync: true,
-        );
-      } else if (stream is ReplaySubject) {
-        controller = ReplaySubject<R>(
           onListen: onListen,
           onCancel: onCancel,
           sync: true,
