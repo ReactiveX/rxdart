@@ -1,3 +1,13 @@
+## 0.25.0-beta
+  * stream transformations on a ValueStream will also return a ValueStream, instead of 
+    a standard broadcast Stream
+  * throttle can now be both leading and trailing  
+  * better handling of empty Lists when using operators that accept a List as input
+  * error & hasError added to BehaviorSubject
+  * various docs updates
+  * note that this is a beta release, mainly because the behavior of transform has been adjusted (see first bullet)
+    if all goes well, we'll release a proper 0.25.0 release soon
+
 ## 0.24.1
   * Fix for BehaviorSubject, no longer emits null when using addStream and expecting an Error as first event (thanks [yuvalr1](https://github.com/yuvalr1))
   * min/max have been optimised for performance
