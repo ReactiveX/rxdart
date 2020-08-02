@@ -5,10 +5,9 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
   final S _startValue;
-  final bool _sync;
   var _isFirstEventAdded = false;
 
-  _StartWithStreamSink(this._sync, this._startValue);
+  _StartWithStreamSink(this._startValue);
 
   @override
   void add(EventSink<S> sink, S data) {
@@ -33,9 +32,7 @@ class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
 
   @override
   void onListen(EventSink<S> sink) {
-    _sync
-        ? _safeAddFirstEvent(sink)
-        : scheduleMicrotask(() => _safeAddFirstEvent(sink));
+    scheduleMicrotask(() => _safeAddFirstEvent(sink));
   }
 
   @override
@@ -70,17 +67,13 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// The starting event of this [Stream]
   final S startValue;
 
-  /// @internal
-  /// Forces startWith to happen either sync or async
-  final bool sync;
-
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
   /// with [startValue].
-  StartWithStreamTransformer(this.startValue, {this.sync = false});
+  StartWithStreamTransformer(this.startValue);
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithStreamSink(sync, startValue));
+      forwardStream(stream, _StartWithStreamSink(startValue));
 }
 
 /// Extends the [Stream] class with the ability to emit the given value as the

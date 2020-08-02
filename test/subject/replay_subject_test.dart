@@ -380,7 +380,7 @@ void main() {
       expect(mappedStream.value, equals(1));
 
       await subject.close();
-    });
+    }, skip: true);
 
     test('issue/419: sync throughput', () async {
       final subject = ReplaySubject<int>(sync: true)..add(1);

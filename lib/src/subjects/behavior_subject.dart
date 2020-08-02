@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/rx.dart';
+import 'package:rxdart/src/streams/connectable_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
@@ -105,10 +106,10 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       () {
         if (wrapper.latestIsError) {
           return controller.stream.transform(StartWithErrorStreamTransformer(
-              wrapper.latestError, wrapper.latestStackTrace, sync));
+              wrapper.latestError, wrapper.latestStackTrace));
         } else if (wrapper.latestIsValue) {
-          return controller.stream.transform(
-              StartWithStreamTransformer(wrapper.latestValue, sync: sync));
+          return controller.stream
+              .transform(StartWithStreamTransformer(wrapper.latestValue));
         }
 
         return controller.stream;
@@ -140,6 +141,17 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   /// Get the latest error emitted by the Subject
   @override
   Object get error => _wrapper.latestError;
+
+  @override
+  Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) {
+    final transformed = super.transform(streamTransformer);
+
+    if (transformed is! ValueStream) {
+      return transformed.shareValue();
+    }
+
+    return transformed;
+  }
 }
 
 class _Wrapper<T> {
