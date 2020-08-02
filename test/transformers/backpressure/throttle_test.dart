@@ -21,7 +21,8 @@ void main() {
         _stream()
             .throttle(
                 (_) => Stream<void>.periodic(const Duration(milliseconds: 250)),
-                trailing: true)
+                trailing: true,
+                leading: false)
             .take(3),
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
@@ -43,9 +44,55 @@ void main() {
                 (value) => value == 1
                     ? Stream<void>.periodic(const Duration(milliseconds: 10))
                     : Stream<void>.periodic(const Duration(milliseconds: 250)),
-                trailing: true)
+                trailing: true,
+                leading: false)
             .take(3),
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
+  });
+
+  test('Rx.throttle.leading.trailing.1', () async {
+    // --1--2--3--4--5--6--7--8--9--10--11|
+    // --1-----3--4-----6--7-----9--10-----11|
+    // --^--------^--------^---------^-----
+
+    final values = <int>[];
+
+    final stream = _stream()
+        .concatWith([Rx.timer(11, const Duration(milliseconds: 100))]).throttle(
+      (v) {
+        values.add(v);
+        return Stream<void>.periodic(const Duration(milliseconds: 250));
+      },
+      leading: true,
+      trailing: true,
+    );
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[1, 3, 4, 6, 7, 9, 10, 11, emitsDone]),
+    );
+    expect(values, [1, 4, 7, 10]);
+  });
+
+  test('Rx.throttle.leading.trailing.2', () async {
+    // --1--2--3--4--5--6--7--8--9--10--11|
+    // --1-----3--4-----6--7-----9--10-----11|
+    // --^--------^--------^---------^-----
+
+    final values = <int>[];
+
+    final stream = _stream().throttle(
+      (v) {
+        values.add(v);
+        return Stream<void>.periodic(const Duration(milliseconds: 250));
+      },
+      leading: true,
+      trailing: true,
+    );
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[1, 3, 4, 6, 7, 9, 10, emitsDone]),
+    );
+    expect(values, [1, 4, 7, 10]);
   });
 
   test('Rx.throttle.reusable', () async {

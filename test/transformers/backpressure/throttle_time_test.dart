@@ -16,7 +16,8 @@ void main() {
   test('Rx.throttleTime.trailing', () async {
     await expectLater(
         _stream()
-            .throttleTime(const Duration(milliseconds: 250), trailing: true)
+            .throttleTime(const Duration(milliseconds: 250),
+                trailing: true, leading: false)
             .take(3),
         emitsInOrder(<dynamic>[3, 6, 9, emitsDone]));
   });
@@ -85,7 +86,8 @@ void main() {
     await expectLater(
         Stream.fromIterable([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
             .interval(Duration(milliseconds: 25))
-            .throttleTime(Duration(milliseconds: 50), trailing: true),
+            .throttleTime(Duration(milliseconds: 50),
+                trailing: true, leading: false),
         emitsInOrder(<dynamic>[1, 3, 5, 7, 9, emitsDone]));
   });
 
