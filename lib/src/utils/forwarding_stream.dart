@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/src/subjects/behavior_subject.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
-
-import 'forwarding_sink.dart';
 
 /// @private
 /// Helper method which forwards the events from an incoming [Stream]
