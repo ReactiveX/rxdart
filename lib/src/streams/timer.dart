@@ -29,27 +29,45 @@ class TimerStream<T> extends Stream<T> {
       throw ArgumentError('duration cannot be null');
     }
 
-    StreamSubscription<T> subscription;
+    final watch = Stopwatch();
+    Timer timer;
     StreamController<T> controller;
+    var totalElapsed = Duration.zero;
+
+    void onResume() {
+      // Already cancelled or is not paused.
+      if (totalElapsed == null || timer != null) return;
+
+      totalElapsed = totalElapsed + watch.elapsed;
+      watch.start();
+
+      timer = Timer(duration - totalElapsed, () {
+        controller.add(value);
+        controller.close();
+      });
+    }
 
     controller = StreamController(
       sync: true,
       onListen: () {
-        subscription =
-            Stream.fromFuture(Future.delayed(duration, () => value)).listen(
-          controller.add,
-          onError: controller.addError,
-          onDone: () {
-            if (!controller.isClosed) {
-              controller.close();
-            }
-          },
-        );
+        watch.start();
+        timer = Timer(duration, () {
+          controller.add(value);
+          controller.close();
+        });
       },
-      onPause: ([Future<dynamic> resumeSignal]) =>
-          subscription.pause(resumeSignal),
-      onResume: () => subscription.resume(),
-      onCancel: () => subscription.cancel(),
+      onPause: ([Future<void> resumeSignal]) {
+        timer.cancel();
+        timer = null;
+        watch.stop();
+        resumeSignal?.whenComplete(onResume);
+      },
+      onResume: onResume,
+      onCancel: () {
+        timer?.cancel();
+        timer = null;
+        totalElapsed = null;
+      },
     );
     return controller;
   }
