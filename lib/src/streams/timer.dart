@@ -56,11 +56,10 @@ class TimerStream<T> extends Stream<T> {
           controller.close();
         });
       },
-      onPause: ([Future<void> resumeSignal]) {
+      onPause: () {
         timer.cancel();
         timer = null;
         watch.stop();
-        resumeSignal?.whenComplete(onResume);
       },
       onResume: onResume,
       onCancel: () {
