@@ -19,7 +19,7 @@ void main() {
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('TimerStream.pause.resumeA', () async {
+  test('TimerStream.pause.resume.A', () async {
     const value = 1;
     StreamSubscription<int> subscription;
 
@@ -35,7 +35,7 @@ void main() {
     subscription.resume();
   });
 
-  test('TimerStream.pause.resumeB', () async {
+  test('TimerStream.pause.resume.B', () async {
     const seconds = 2;
     const delay = 1;
 
@@ -57,7 +57,7 @@ void main() {
     subscription.resume();
   });
 
-  test('TimerStream.pause.resumeC', () async {
+  test('TimerStream.pause.resume.C', () async {
     const value = 1;
     StreamSubscription<int> subscription;
 
