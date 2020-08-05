@@ -96,8 +96,7 @@ class ConcatEagerStream<T> extends Stream<T> {
           // initially, the very first subscription is the active one
           activeSubscription = subscriptions.first;
         },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            activeSubscription.pause(resumeSignal),
+        onPause: () => activeSubscription.pause(),
         onResume: () => activeSubscription.resume(),
         onCancel: () => Future.wait<dynamic>(subscriptions
             .map((subscription) => subscription.cancel())

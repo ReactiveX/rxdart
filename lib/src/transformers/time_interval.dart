@@ -36,7 +36,7 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
   void onListen(EventSink<TimeInterval<S>> sink) => _stopwatch.start();
 
   @override
-  void onPause(EventSink<TimeInterval<S>> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<TimeInterval<S>> sink) {}
 
   @override
   void onResume(EventSink<TimeInterval<S>> sink) {}

@@ -223,7 +223,7 @@ void main() {
 
     test('calls onPause and onResume when the subscription is', () async {
       var onPauseCalled = false, onResumeCalled = false;
-      final stream = Stream.value(1).doOnPause((_) {
+      final stream = Stream.value(1).doOnPause(() {
         onPauseCalled = true;
       }).doOnResume(() {
         onResumeCalled = true;
@@ -326,7 +326,7 @@ void main() {
           );
 
       Stream.value(1)
-          .doOnPause((_) => throw Exception('catch me if you can! doOnPause'))
+          .doOnPause(() => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
                 (Exception e, [StackTrace s]) => expect(e, isException),
@@ -457,7 +457,7 @@ void main() {
 
       subscription = Stream.value(1)
           .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))
-          .doOnPause((_) => addToResult('pause'))
+          .doOnPause(() => addToResult('pause'))
           .doOnData((data) => addToResult('B: $data'))
           .take(expectedOutput.length)
           .listen((value) {

@@ -55,8 +55,7 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   void onListen(EventSink<T> sink) {}
 
   @override
-  void onPause(EventSink<T> sink, [Future resumeSignal]) =>
-      _subscriptions.forEach((s) => s.pause(resumeSignal));
+  void onPause(EventSink<T> sink) => _subscriptions.forEach((s) => s.pause());
 
   @override
   void onResume(EventSink<T> sink) => _subscriptions.forEach((s) => s.resume());

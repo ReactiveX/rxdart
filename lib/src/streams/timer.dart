@@ -46,8 +46,7 @@ class TimerStream<T> extends Stream<T> {
           },
         );
       },
-      onPause: ([Future<dynamic> resumeSignal]) =>
-          subscription.pause(resumeSignal),
+      onPause: () => subscription.pause(),
       onResume: () => subscription.resume(),
       onCancel: () => subscription.cancel(),
     );

@@ -70,7 +70,7 @@ class CompositeSubscription {
   }
 
   /// Pauses all subscriptions added to this composite.
-  void pauseAll([Future resumeSignal]) =>
+  void pauseAll([Future<void> resumeSignal]) =>
       _subscriptionsList.forEach((it) => it.pause(resumeSignal));
 
   /// Resumes all subscriptions added to this composite.

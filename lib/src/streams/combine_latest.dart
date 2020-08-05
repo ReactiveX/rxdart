@@ -337,8 +337,8 @@ class CombineLatestStream<T, R> extends StreamView<R> {
           );
         }).toList(growable: false);
       },
-      onPause: ([Future<dynamic> resumeSignal]) => subscriptions
-          .forEach((subscription) => subscription.pause(resumeSignal)),
+      onPause: () =>
+          subscriptions.forEach((subscription) => subscription.pause()),
       onResume: () =>
           subscriptions.forEach((subscription) => subscription.resume()),
       onCancel: () => Future.wait<dynamic>(subscriptions
