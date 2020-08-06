@@ -152,6 +152,18 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     return transformed;
   }
+
+  @override
+  BehaviorSubject<R> createForwardingSubject<R>({
+    void Function() onListen,
+    void Function() onCancel,
+    bool sync = false,
+  }) =>
+      BehaviorSubject(
+        onListen: onListen,
+        onCancel: onCancel,
+        sync: sync,
+      );
 }
 
 class _Wrapper<T> {

@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/value_stream.dart';
-import 'package:rxdart/src/subjects/behavior_subject.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/subjects.dart';
 
 /// @private
 /// Helper method which forwards the events from an incoming [Stream]
@@ -10,8 +9,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 /// It captures events such as onListen, onPause, onResume and onCancel,
 /// which can be used in pair with a [ForwardingSink]
 Stream<R> forwardStream<T, R>(
-    Stream<T> stream, ForwardingSink<T, R> connectedSink,
-    {bool inheritParentType = false}) {
+    Stream<T> stream, ForwardingSink<T, R> connectedSink) {
   ArgumentError.checkNotNull(stream, 'stream');
   ArgumentError.checkNotNull(connectedSink, 'connectedSink');
 
@@ -59,26 +57,18 @@ Stream<R> forwardStream<T, R>(
 
   // Create a new Controller, which will serve as a trampoline for
   // forwarded events.
-  if (stream.isBroadcast) {
-    final buildBroadcastType = () => controller = StreamController<R>.broadcast(
-          onListen: onListen,
-          onCancel: onCancel,
-          sync: true,
-        );
-
-    if (inheritParentType) {
-      if (stream is ValueStream) {
-        controller = BehaviorSubject<R>(
-          onListen: onListen,
-          onCancel: onCancel,
-          sync: true,
-        );
-      } else {
-        controller = buildBroadcastType();
-      }
-    } else {
-      controller = buildBroadcastType();
-    }
+  if (stream is Subject<T>) {
+    controller = stream.createForwardingSubject<R>(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: true,
+    );
+  } else if (stream.isBroadcast) {
+    controller = StreamController<R>.broadcast(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: true,
+    );
   } else {
     controller = StreamController<R>(
       onListen: onListen,
