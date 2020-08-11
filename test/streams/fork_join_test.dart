@@ -363,7 +363,6 @@ void main() {
             (index) => const [9, 10, 11, 12][index]).take(4);
 
     StreamSubscription<Iterable<num>> subscription;
-// ignore: deprecated_member_use
     subscription =
         Rx.forkJoin3(first, second, last, (int a, int b, int c) => [a, b, c])
             .listen(expectAsync1((value) {
@@ -374,6 +373,57 @@ void main() {
       subscription.cancel();
     }, count: 1));
 
-    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
+  });
+
+  test('Rx.forkJoin.completed', () async {
+    final stream = Rx.forkJoin2(
+      Stream<int>.empty(),
+      Stream.value(1),
+      (int a, int b) => a + b,
+    );
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[emitsDone]),
+    );
+  });
+
+  test('Rx.forkJoin.error.shouldThrowC', () async {
+    final stream = Rx.forkJoin2(
+      Stream.value(1),
+      Stream<int>.error(Exception()).concatWith([
+        Rx.timer(
+          2,
+          const Duration(milliseconds: 100),
+        )
+      ]),
+      (int a, int b) => a + b,
+    );
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[emitsError(isException), 3, emitsDone]),
+    );
+  });
+
+  test('Rx.forkJoin.error.shouldThrowD', () async {
+    final stream = Rx.forkJoin2(
+      Stream.value(1),
+      Stream<int>.error(Exception()).concatWith([
+        Rx.timer(
+          2,
+          const Duration(milliseconds: 100),
+        )
+      ]),
+      (int a, int b) => a + b,
+    );
+
+    stream.listen(
+      expectAsync1((value) {}, count: 0),
+      onError: expectAsync2(
+        (Object e, StackTrace s) => expect(e, isException),
+        count: 1,
+      ),
+      cancelOnError: true,
+    );
   });
 }

@@ -307,23 +307,59 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     }
 
     StreamController<R> controller;
+    List<StreamSubscription<T>> subscriptions;
+    final length = streams.length;
 
     controller = StreamController<R>(
-        sync: true,
-        onListen: () {
-          final onDone = (List<T> values) {
-            try {
-              controller.add(combiner(values));
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
+      sync: true,
+      onListen: () {
+        final values = List<T>.filled(length, null);
+        final hasValues = List.filled(length, false);
+        var completed = 0;
 
-            controller.close();
-          };
-          Future.wait(streams.map((stream) => stream.last),
-                  eagerError: true, cleanUp: (dynamic _) => controller.close())
-              .then(onDone, onError: controller.addError);
-        });
+        final onData = (int i) => (T value) {
+              hasValues[i] = true;
+              values[i] = value;
+            };
+
+        final onDone = (int i) => () {
+              if (!hasValues[i]) {
+                return controller.close();
+              }
+
+              if (++completed == length) {
+                R combined;
+
+                try {
+                  combined = combiner(values);
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+
+                if (combined != null) {
+                  controller.add(combined);
+                }
+
+                controller.close();
+              }
+            };
+
+        final listen = (Stream<T> stream, int i) => stream.listen(
+              onData(i),
+              onError: controller.addError,
+              onDone: onDone(i),
+            );
+
+        var i = 0;
+        subscriptions =
+            streams.map((s) => listen(s, i++)).toList(growable: false);
+      },
+      onPause: () => subscriptions.forEach((s) => s.pause()),
+      onResume: () => subscriptions.forEach((s) => s.resume()),
+      onCancel: () => Future.wait(subscriptions
+          .map((s) => s.cancel())
+          .where((future) => future != null)),
+    );
 
     return controller;
   }
