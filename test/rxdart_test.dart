@@ -21,6 +21,7 @@ import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
+import 'streams/using_test.dart' as using_test;
 import 'streams/value_connectable_stream_test.dart'
     as value_connectable_stream_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -51,8 +52,8 @@ import 'transformers/dematerialize_test.dart' as dematerialize_test;
 import 'transformers/distinct_test.dart' as distinct_test;
 import 'transformers/distinct_unique_test.dart' as distinct_unique_test;
 import 'transformers/do_test.dart' as do_test;
-import 'transformers/end_with_test.dart' as end_with_test;
 import 'transformers/end_with_many_test.dart' as end_with_many_test;
+import 'transformers/end_with_test.dart' as end_with_test;
 import 'transformers/exhaust_map_test.dart' as exhaust_map_test;
 import 'transformers/flat_map_iterable_test.dart' as flat_map_iterable_test;
 import 'transformers/flat_map_test.dart' as flat_map_test;
@@ -99,6 +100,7 @@ void main() {
   retry_when_test.main();
   sequence_equals_test.main();
   switch_latest_test.main();
+  using_test.main();
   zip_test.main();
 
   // StreamTransformers

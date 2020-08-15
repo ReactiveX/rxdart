@@ -916,6 +916,14 @@ abstract class Rx {
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
 
+  /// TODO: using
+  static Stream<T> using<T, R>(
+    R Function() resourceFactory,
+    Stream<T> Function(R) streamFactory,
+    FutureOr<void> Function(R) disposer,
+  ) =>
+      UsingStream(resourceFactory, streamFactory, disposer);
+
   /// Merges the specified streams into one stream sequence using the given
   /// zipper function whenever all of the stream sequences have produced
   /// an element at a corresponding index.
