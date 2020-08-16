@@ -450,13 +450,11 @@ abstract class Rx {
   /// and only want to take action when a response has been received for all.
   ///
   /// In this way it is similar to how you might use [Future].wait.
+  /// When any Stream does not emit any values, Stream will complete immediately
+  /// without emitting any items and without any calls to the combiner function.
+  /// When any Stream emits an error, listening still continues unless
+  /// you set cancelOnError to true.
   ///
-  /// Be aware that if any of the inner streams supplied to forkJoin error
-  /// you will lose the value of any other streams that would or have already
-  /// completed if you do not catch the error correctly on the inner stream.
-  ///
-  /// If you are only concerned with all inner streams completing
-  /// successfully you can catch the error on the outside.
   /// It's also worth noting that if you have an stream
   /// that emits more than one item, and you are concerned with the previous
   /// emissions forkJoin is not the correct choice.
