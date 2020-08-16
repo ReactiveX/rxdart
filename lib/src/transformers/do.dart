@@ -9,7 +9,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   final void Function(S event) _onData;
   final void Function() _onDone;
   final void Function(Notification<S> notification) _onEach;
-  final Function _onError;
+  final void Function(Object, StackTrace) _onError;
   final void Function() _onListen;
   final void Function(Future<dynamic> resumeSignal) _onPause;
   final void Function() _onResume;
@@ -135,7 +135,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   final void Function(Notification<S> notification) onEach;
 
   /// fires on errors
-  final Function onError;
+  final void Function(Object, StackTrace) onError;
 
   /// fires when a subscription first starts
   final void Function() onListen;
@@ -246,7 +246,7 @@ extension DoExtensions<T> on Stream<T> {
   ///     Stream.error(Exception())
   ///       .doOnError((error, stacktrace) => print('oh no'))
   ///       .listen(null); // prints 'Oh no'
-  Stream<T> doOnError(Function onError) =>
+  Stream<T> doOnError(void Function(Object, StackTrace) onError) =>
       transform(DoStreamTransformer<T>(onError: onError));
 
   /// Invokes the given callback function when the stream is first listened to.
