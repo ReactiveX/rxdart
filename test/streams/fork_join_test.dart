@@ -338,7 +338,7 @@ void main() {
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
-    }));
+    }), cancelOnError: true);
   });
 
   test('Rx.forkJoin.error.shouldThrowB', () async {
@@ -384,7 +384,7 @@ void main() {
     );
     await expectLater(
       stream,
-      emitsInOrder(<dynamic>[emitsDone]),
+      emitsInOrder(<dynamic>[emitsError(isStateError), emitsDone]),
     );
   });
 
