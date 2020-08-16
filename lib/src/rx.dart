@@ -916,7 +916,25 @@ abstract class Rx {
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
 
-  /// TODO: using
+  /// When listener listens to it, creates a resource object from resource factory function,
+  /// and creates a [Stream] from the given factory function and resource as argument.
+  /// Finally when the stream finishes emitting items or stream subscription
+  /// is cancelled (call [StreamSubscription.cancel] or `Stream.listen(cancelOnError: true)`),
+  /// call the disposer function on resource object.
+  ///
+  /// The [UsingStream] is a way you can instruct an Stream to create
+  /// a resource that exists only during the lifespan of the Stream
+  /// and is disposed of when the Stream terminates.
+  ///
+  /// [Marble diagram](http://reactivex.io/documentation/operators/images/using.c.png)
+  ///
+  /// ### Example
+  ///
+  ///     Rx.using<int, Queue<int>>(
+  ///       () => Queue.of([1, 2, 3]),
+  ///       (r) => Stream.fromIterable(r),
+  ///       (r) => r.clear(),
+  ///     ).listen(print); // prints 1, 2, 3
   static Stream<T> using<T, R>(
     R Function() resourceFactory,
     Stream<T> Function(R) streamFactory,

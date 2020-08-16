@@ -6,16 +6,23 @@ import 'dart:async';
 /// is cancelled (call [StreamSubscription.cancel] or `Stream.listen(cancelOnError: true)`),
 /// call the disposer function on resource object.
 ///
+/// The [UsingStream] is a way you can instruct an Stream to create
+/// a resource that exists only during the lifespan of the Stream
+/// and is disposed of when the Stream terminates.
+///
+/// [Marble diagram](http://reactivex.io/documentation/operators/images/using.c.png)
+///
 /// ### Example
 ///
-///     UsingStream(
-///       () => res,
-///       (res) => Stream.value(1),
-///       (res) => res.close(),
-///     ).listen(print); // prints 1
-/// TODO: using
+///     UsingStream<int, Queue<int>>(
+///       () => Queue.of([1, 2, 3]),
+///       (r) => Stream.fromIterable(r),
+///       (r) => r.clear(),
+///     ).listen(print); // prints 1, 2, 3
 class UsingStream<T, R> extends StreamView<T> {
-  /// TODO: using
+  /// Construct a [UsingStream] that creates a resource object from [resourceFactory],
+  /// and then creates a [Stream] from [streamFactory] and resource as argument.
+  /// When the Stream terminates, call [disposer] on resource object.
   UsingStream(
     R Function() resourceFactory,
     Stream<T> Function(R) streamFactory,
