@@ -71,7 +71,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
         assert(combiner != null, 'must provide a combiner function'),
-        super(_buildController(streams, combiner).stream);
+        super(_buildStream(streams, combiner));
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
@@ -298,12 +298,12 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
-  static StreamController<R> _buildController<T, R>(
+  static Stream<R> _buildStream<T, R>(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
     if (streams.isEmpty) {
-      return StreamController<R>()..close();
+      return (StreamController<R>()..close()).stream;
     }
 
     StreamController<R> controller;
@@ -314,41 +314,33 @@ class ForkJoinStream<T, R> extends StreamView<R> {
       sync: true,
       onListen: () {
         final values = List<T>.filled(length, null);
-        final hasValues = List.filled(length, false);
         var completed = 0;
 
-        final onData = (int i) => (T value) {
-              hasValues[i] = true;
-              values[i] = value;
-            };
+        final listen = (Stream<T> stream, int i) {
+          var hasValue = false;
 
-        final onDone = (int i) => () {
-              if (!hasValues[i]) {
+          return stream.listen(
+            (value) {
+              hasValue = true;
+              values[i] = value;
+            },
+            onError: controller.addError,
+            onDone: () {
+              if (!hasValue) {
                 return controller.close();
               }
 
               if (++completed == length) {
-                R combined;
-
                 try {
-                  combined = combiner(values);
+                  controller.add(combiner(values));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }
-
-                if (combined != null) {
-                  controller.add(combined);
-                }
-
                 controller.close();
               }
-            };
-
-        final listen = (Stream<T> stream, int i) => stream.listen(
-              onData(i),
-              onError: controller.addError,
-              onDone: onDone(i),
-            );
+            },
+          );
+        };
 
         var i = 0;
         subscriptions =
@@ -361,6 +353,6 @@ class ForkJoinStream<T, R> extends StreamView<R> {
           .where((future) => future != null)),
     );
 
-    return controller;
+    return controller.stream;
   }
 }
