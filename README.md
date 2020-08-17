@@ -102,6 +102,7 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 - [ForkJoinStream](https://pub.dev/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin2.html)...[Rx.forkJoin9](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin9.html)
 - [RangeStream](https://pub.dev/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://pub.dev/documentation/rxdart/latest/rx/Rx/range.html)
 - [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
+- [UsingStream](https://pub.dev/documentation/rxdart/latest/rx/UsingStream-class.html) / [Rx.using](https://pub.dev/documentation/rxdart/latest/rx/Rx/using.html)
 - ** If you're looking for an [Interval](http://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
 
 ### Extension Methods
