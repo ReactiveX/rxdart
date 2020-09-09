@@ -791,14 +791,13 @@ abstract class Rx {
   ///
   /// ### Example
   ///
-  ///     Rx.retry(() { Stream.value(1); })
-  ///         .listen((i) => print(i); // Prints 1
+  ///     Rx.retry(() => Stream.value(1))
+  ///         .listen((i) => print(i)); // Prints 1
   ///
-  ///     Rx
-  ///        .retry(() {
-  ///          Stream.value(1).concatWith([Stream.error(Error())]);
-  ///        }, 1)
-  ///        .listen(print, onError: (e, s) => print(e); // Prints 1, 1, RetryError
+  ///     Rx.retry(
+  ///       () => Stream.value(1).concatWith([Stream.error(Error())]),
+  ///       1,
+  ///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
   static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int count]) =>
       RetryStream<T>(streamFactory, count);
 
