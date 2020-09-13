@@ -57,9 +57,8 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) =>
-      _recoverySubscriptions
-          .forEach((subscription) => subscription.pause(resumeSignal));
+  void onPause(EventSink<S> sink) =>
+      _recoverySubscriptions.forEach((subscription) => subscription.pause());
 
   @override
   void onResume(EventSink<S> sink) =>

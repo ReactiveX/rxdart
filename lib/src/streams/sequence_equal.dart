@@ -65,8 +65,7 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
               .listen(emitAndClose,
                   onError: controller.addError, onDone: emitAndClose);
         },
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            subscription.pause(resumeSignal),
+        onPause: () => subscription.pause(),
         onResume: () => subscription.resume(),
         onCancel: () => subscription.cancel());
 

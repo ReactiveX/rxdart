@@ -84,9 +84,9 @@ class SwitchLatestStream<T> extends Stream<T> {
             }
           }, onError: controller.addError, onDone: closeLeft);
         },
-        onPause: ([Future<dynamic> resumeSignal]) {
-          subscription.pause(resumeSignal);
-          otherSubscription?.pause(resumeSignal);
+        onPause: () {
+          subscription.pause();
+          otherSubscription?.pause();
         },
         onResume: () {
           subscription.resume();

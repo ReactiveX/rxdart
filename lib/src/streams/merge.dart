@@ -62,8 +62,8 @@ class MergeStream<T> extends Stream<T> {
                 onError: controller.addError, onDone: onDone);
           }
         },
-        onPause: ([Future<dynamic> resumeSignal]) => subscriptions
-            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onPause: () =>
+            subscriptions.forEach((subscription) => subscription.pause()),
         onResume: () =>
             subscriptions.forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions

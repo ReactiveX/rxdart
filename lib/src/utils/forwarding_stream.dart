@@ -45,9 +45,9 @@ Stream<R> forwardStream<T, R>(
     return Future.wait<dynamic>(futures);
   };
 
-  final onPause = ([Future resumeSignal]) {
-    subscription.pause(resumeSignal);
-    runCatching(() => connectedSink.onPause(controller, resumeSignal));
+  final onPause = () {
+    subscription.pause();
+    runCatching(() => connectedSink.onPause(controller));
   };
 
   final onResume = () {

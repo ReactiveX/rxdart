@@ -36,22 +36,16 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
-    return _fallbackSubscription?.cancel();
-  }
+  FutureOr onCancel(EventSink<S> sink) => _fallbackSubscription?.cancel();
 
   @override
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {
-    _fallbackSubscription?.pause(resumeSignal);
-  }
+  void onPause(EventSink<S> sink) => _fallbackSubscription?.pause();
 
   @override
-  void onResume(EventSink<S> sink) {
-    _fallbackSubscription?.resume();
-  }
+  void onResume(EventSink<S> sink) => _fallbackSubscription?.resume();
 }
 
 /// When the original stream emits no items, this operator subscribes to

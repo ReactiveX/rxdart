@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'dart:collection';
 
 class _IntervalStreamSink<S> implements EventSink<S> {

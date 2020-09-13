@@ -45,8 +45,7 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   void onListen(EventSink<T> sink) {}
 
   @override
-  void onPause(EventSink<T> sink, [Future resumeSignal]) =>
-      _mapperSubscription?.pause(resumeSignal);
+  void onPause(EventSink<T> sink) => _mapperSubscription?.pause();
 
   @override
   void onResume(EventSink<T> sink) => _mapperSubscription?.resume();

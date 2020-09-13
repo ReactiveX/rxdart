@@ -338,8 +338,8 @@ class ZipStream<T, R> extends StreamView<R> {
             controller.addError(e, s);
           }
         },
-        onPause: ([Future<dynamic> resumeSignal]) => pendingSubscriptions
-            .forEach((subscription) => subscription.pause(resumeSignal)),
+        onPause: () => pendingSubscriptions
+            .forEach((subscription) => subscription.pause()),
         onResume: () => pendingSubscriptions
             .forEach((subscription) => subscription.resume()),
         onCancel: () => Future.wait<dynamic>(subscriptions

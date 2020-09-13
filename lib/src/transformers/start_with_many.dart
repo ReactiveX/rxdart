@@ -36,7 +36,7 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void onPause(EventSink<S> sink, [Future resumeSignal]) {}
+  void onPause(EventSink<S> sink) {}
 
   @override
   void onResume(EventSink<S> sink) {}
