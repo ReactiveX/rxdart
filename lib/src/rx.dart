@@ -27,7 +27,7 @@ import 'package:rxdart/streams.dart';
 /// RxDart is built.
 ///
 ///   - [Asynchronous Programming: Streams](https://www.dartlang.org/tutorials/language/streams)
-///   - [Single-Subscription vs. Broadcast Streams](https://www.dartcn.com/articles/libraries/broadcast-streams#:~:text=Single%2Dsubscription%20streams%20are%20designed,can%20be%20lost%20or%20ignored.)
+///   - [Single-Subscription vs. Broadcast Streams](https://www.dartcn.com/articles/libraries/broadcast-streams)
 ///   - [Creating Streams in Dart](https://www.dartlang.org/articles/libraries/creating-streams)
 ///   - [Testing Streams: Stream Matchers](https://pub.dartlang.org/packages/test#stream-matchers)
 ///
