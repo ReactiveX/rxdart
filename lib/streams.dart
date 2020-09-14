@@ -17,6 +17,7 @@ export 'src/streams/retry_when.dart';
 export 'src/streams/sequence_equal.dart';
 export 'src/streams/switch_latest.dart';
 export 'src/streams/timer.dart';
+export 'src/streams/using.dart';
 export 'src/streams/utils.dart';
 export 'src/streams/value_stream.dart';
 export 'src/streams/zip.dart';
