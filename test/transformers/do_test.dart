@@ -16,7 +16,7 @@ void main() {
     test('calls onError when an error is emitted', () async {
       var onErrorCalled = false;
       final stream = Stream<void>.error(Exception())
-          .doOnError((dynamic e, dynamic s) => onErrorCalled = true);
+          .doOnError((e, s) => onErrorCalled = true);
 
       await expectLater(stream, emitsError(isException));
       await expectLater(onErrorCalled, isTrue);
@@ -27,9 +27,7 @@ void main() {
         () async {
       var count = 0;
       final subject = BehaviorSubject<int>(sync: true);
-      final stream = subject.stream.doOnError(
-        (dynamic e, dynamic s) => count++,
-      );
+      final stream = subject.stream.doOnError((e, s) => count++);
 
       stream.listen(null, onError: (dynamic e, dynamic s) {});
       stream.listen(null, onError: (dynamic e, dynamic s) {});
@@ -223,7 +221,7 @@ void main() {
 
     test('calls onPause and onResume when the subscription is', () async {
       var onPauseCalled = false, onResumeCalled = false;
-      final stream = Stream.value(1).doOnPause((_) {
+      final stream = Stream.value(1).doOnPause(() {
         onPauseCalled = true;
       }).doOnResume(() {
         onResumeCalled = true;
@@ -276,8 +274,8 @@ void main() {
           );
 
       Stream<void>.error(Exception('oh noes!'))
-          .doOnError((dynamic _, dynamic __) =>
-              throw Exception('catch me if you can! doOnError'))
+          .doOnError(
+              (_, __) => throw Exception('catch me if you can! doOnError'))
           .listen(
             null,
             onError: expectAsync2(
@@ -326,7 +324,7 @@ void main() {
           );
 
       Stream.value(1)
-          .doOnPause((_) => throw Exception('catch me if you can! doOnPause'))
+          .doOnPause(() => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
                 (Exception e, [StackTrace s]) => expect(e, isException),
@@ -457,7 +455,7 @@ void main() {
 
       subscription = Stream.value(1)
           .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))
-          .doOnPause((_) => addToResult('pause'))
+          .doOnPause(() => addToResult('pause'))
           .doOnData((data) => addToResult('B: $data'))
           .take(expectedOutput.length)
           .listen((value) {

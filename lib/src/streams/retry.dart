@@ -13,14 +13,13 @@ import 'package:rxdart/src/streams/utils.dart';
 ///
 /// ### Example
 ///
-///     RetryStream(() { Stream.fromIterable([1]); })
+///     RetryStream(() => Stream.value(1))
 ///         .listen((i) => print(i)); // Prints 1
 ///
-///     RetryStream(() {
-///          Stream.fromIterable([1])
-///             .concatWith([ErrorStream(Error())]);
-///        }, 1)
-///        .listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
+///     RetryStream(
+///       () => Stream.value(1).concatWith([Stream.error(Error())]),
+///       1,
+///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
 class RetryStream<T> extends Stream<T> {
   /// The factory method used at subscription time
   final Stream<T> Function() streamFactory;
@@ -73,8 +72,7 @@ class RetryStream<T> extends Stream<T> {
     _controller ??= StreamController<T>(
         sync: true,
         onListen: retry,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            _subscription.pause(resumeSignal),
+        onPause: () => _subscription.pause(),
         onResume: () => _subscription.resume(),
         onCancel: () => _subscription.cancel());
 

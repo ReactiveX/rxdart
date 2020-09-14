@@ -286,7 +286,7 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   void onError(Function handleError) => _source.onError(handleError);
 
   @override
-  void pause([Future<dynamic> resumeSignal]) => _source.pause(resumeSignal);
+  void pause([Future<void> resumeSignal]) => _source.pause(resumeSignal);
 
   @override
   void resume() => _source.resume();

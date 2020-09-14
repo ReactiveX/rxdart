@@ -6,7 +6,7 @@ import 'dart:async';
 /// requests on page load (or some other event)
 /// and only want to take action when a response has been received for all.
 ///
-/// In this way it is similar to how you might use [Future].wait.
+/// In this way it is similar to how you might use [Future.wait].
 ///
 /// Be aware that if any of the inner streams supplied to forkJoin error
 /// you will lose the value of any other streams that would or have already
@@ -71,7 +71,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   )   : assert(streams != null && streams.every((s) => s != null),
             'streams cannot be null'),
         assert(combiner != null, 'must provide a combiner function'),
-        super(_buildController(streams, combiner).stream);
+        super(_buildStream(streams, combiner));
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
@@ -298,33 +298,63 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         },
       );
 
-  static StreamController<R> _buildController<T, R>(
+  static Stream<R> _buildStream<T, R>(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
     if (streams.isEmpty) {
-      return StreamController<R>()..close();
+      return (StreamController<R>()..close()).stream;
     }
 
     StreamController<R> controller;
+    List<StreamSubscription<T>> subscriptions;
+    final length = streams.length;
 
     controller = StreamController<R>(
-        sync: true,
-        onListen: () {
-          final onDone = (List<T> values) {
-            try {
-              controller.add(combiner(values));
-            } catch (e, s) {
-              controller.addError(e, s);
-            }
+      sync: true,
+      onListen: () {
+        final values = List<T>.filled(length, null);
+        var completed = 0;
 
-            controller.close();
-          };
-          Future.wait(streams.map((stream) => stream.last),
-                  eagerError: true, cleanUp: (dynamic _) => controller.close())
-              .then(onDone, onError: controller.addError);
-        });
+        final listen = (Stream<T> stream, int i) {
+          var hasValue = false;
 
-    return controller;
+          return stream.listen(
+            (value) {
+              hasValue = true;
+              values[i] = value;
+            },
+            onError: controller.addError,
+            onDone: () {
+              if (!hasValue) {
+                controller.addError(StateError('No element'));
+                controller.close();
+                return;
+              }
+
+              if (++completed == length) {
+                try {
+                  controller.add(combiner(values));
+                } catch (e, s) {
+                  controller.addError(e, s);
+                }
+                controller.close();
+              }
+            },
+          );
+        };
+
+        var i = 0;
+        subscriptions =
+            streams.map((s) => listen(s, i++)).toList(growable: false);
+      },
+      onPause: () => subscriptions.forEach((s) => s.pause()),
+      onResume: () => subscriptions.forEach((s) => s.resume()),
+      onCancel: () => Future.wait(subscriptions
+          .map((s) => s.cancel())
+          .where((future) => future != null)),
+    );
+
+    return controller.stream;
   }
 }

@@ -708,5 +708,29 @@ void main() {
 
       await subject.close();
     });
+
+    test('issue/477: get first after cancelled', () async {
+      final a = BehaviorSubject.seeded('a');
+      final bug = a.switchMap((v) => BehaviorSubject.seeded('b'));
+      await bug.listen(null).cancel();
+      expect(await bug.first, 'b');
+    });
+
+    test('issue/477: get first multiple times', () async {
+      final a = BehaviorSubject.seeded('a');
+      final bug = a.switchMap((_) => BehaviorSubject.seeded('b'));
+      bug.listen(null);
+      expect(await bug.first, 'b');
+      expect(await bug.first, 'b');
+    });
+
+    test('issue/478: get first multiple times', () async {
+      final a = BehaviorSubject.seeded('a');
+      final b = BehaviorSubject.seeded('b');
+      final bug =
+          Rx.combineLatest2(a, b, (String _a, String _b) => 'ab').shareValue();
+      expect(await bug.first, 'ab');
+      expect(await bug.first, 'ab');
+    });
   });
 }

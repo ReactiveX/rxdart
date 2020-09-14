@@ -33,7 +33,25 @@ class DeferStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(void Function(T event) onData,
-          {Function onError, void Function() onDone, bool cancelOnError}) =>
-      _factory().listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      {Function onError, void Function() onDone, bool cancelOnError}) {
+    Stream<T> stream;
+
+    try {
+      stream = _factory();
+    } catch (e, s) {
+      return Stream<T>.error(e, s).listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+    }
+
+    return stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
 }

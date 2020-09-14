@@ -125,6 +125,19 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       .where((event) => event.isError)
       .map((event) => event.errorAndStackTrace.error)
       .toList(growable: false);
+
+  @override
+  ReplaySubject<R> createForwardingSubject<R>({
+    void Function() onListen,
+    void Function() onCancel,
+    bool sync = false,
+  }) =>
+      ReplaySubject(
+        maxSize: _maxSize,
+        onCancel: onCancel,
+        onListen: onListen,
+        sync: sync,
+      );
 }
 
 class _Event<T> {

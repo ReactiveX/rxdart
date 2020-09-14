@@ -449,7 +449,7 @@ abstract class Rx {
   /// requests on page load (or some other event)
   /// and only want to take action when a response has been received for all.
   ///
-  /// In this way it is similar to how you might use [Future].wait.
+  /// In this way it is similar to how you might use [Future.wait].
   ///
   /// Be aware that if any of the inner streams supplied to forkJoin error
   /// you will lose the value of any other streams that would or have already
@@ -791,14 +791,13 @@ abstract class Rx {
   ///
   /// ### Example
   ///
-  ///     Rx.retry(() { Stream.value(1); })
-  ///         .listen((i) => print(i); // Prints 1
+  ///     Rx.retry(() => Stream.value(1))
+  ///         .listen((i) => print(i)); // Prints 1
   ///
-  ///     Rx
-  ///        .retry(() {
-  ///          Stream.value(1).concatWith([Stream.error(Error())]);
-  ///        }, 1)
-  ///        .listen(print, onError: (e, s) => print(e); // Prints 1, 1, RetryError
+  ///     Rx.retry(
+  ///       () => Stream.value(1).concatWith([Stream.error(Error())]),
+  ///       1,
+  ///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
   static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int count]) =>
       RetryStream<T>(streamFactory, count);
 
@@ -915,6 +914,32 @@ abstract class Rx {
   ///         .listen((i) => print(i); // print 'hi' after 1 minute
   static Stream<T> timer<T>(T value, Duration duration) =>
       (TimerStream<T>(value, duration));
+
+  /// When listener listens to it, creates a resource object from resource factory function,
+  /// and creates a [Stream] from the given factory function and resource as argument.
+  /// Finally when the stream finishes emitting items or stream subscription
+  /// is cancelled (call [StreamSubscription.cancel] or `Stream.listen(cancelOnError: true)`),
+  /// call the disposer function on resource object.
+  ///
+  /// The [UsingStream] is a way you can instruct an Stream to create
+  /// a resource that exists only during the lifespan of the Stream
+  /// and is disposed of when the Stream terminates.
+  ///
+  /// [Marble diagram](http://reactivex.io/documentation/operators/images/using.c.png)
+  ///
+  /// ### Example
+  ///
+  ///     Rx.using<int, Queue<int>>(
+  ///       () => Queue.of([1, 2, 3]),
+  ///       (r) => Stream.fromIterable(r),
+  ///       (r) => r.clear(),
+  ///     ).listen(print); // prints 1, 2, 3
+  static Stream<T> using<T, R>(
+    R Function() resourceFactory,
+    Stream<T> Function(R) streamFactory,
+    FutureOr<void> Function(R) disposer,
+  ) =>
+      UsingStream(resourceFactory, streamFactory, disposer);
 
   /// Merges the specified streams into one stream sequence using the given
   /// zipper function whenever all of the stream sequences have produced

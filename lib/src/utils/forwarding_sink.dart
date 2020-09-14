@@ -22,7 +22,7 @@ abstract class ForwardingSink<T, R> {
   void onListen(EventSink<R> sink);
 
   /// Fires when a subscriber pauses.
-  void onPause(EventSink<R> sink, [Future resumeSignal]);
+  void onPause(EventSink<R> sink);
 
   /// Fires when a subscriber resumes after a pause.
   void onResume(EventSink<R> sink);

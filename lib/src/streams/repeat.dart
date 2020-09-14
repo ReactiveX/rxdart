@@ -40,8 +40,7 @@ class RepeatStream<T> extends Stream<T> {
     _controller ??= StreamController<T>(
         sync: true,
         onListen: _maybeRepeatNext,
-        onPause: ([Future<dynamic> resumeSignal]) =>
-            _subscription.pause(resumeSignal),
+        onPause: () => _subscription.pause(),
         onResume: () => _subscription.resume(),
         onCancel: () => _subscription?.cancel());
 

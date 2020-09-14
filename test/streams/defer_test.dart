@@ -89,13 +89,27 @@ void main() {
     }
   });
 
-  test('Rx.defer.error.shouldThrow', () async {
+  test('Rx.defer.error.shouldThrow.A', () async {
     final streamWithError = Rx.defer(() => _getErroneousStream());
 
     streamWithError.listen(null,
         onError: expectAsync1((Exception e) {
           expect(e, isException);
         }, count: 1));
+  });
+
+  test('Rx.defer.error.shouldThrow.B', () {
+    final deferStream1 = Rx.defer<int>(() => throw Exception());
+    expect(
+      deferStream1,
+      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+    );
+
+    final deferStream2 = Rx.defer<int>(() => throw Exception(), reusable: true);
+    expect(
+      deferStream2,
+      emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
+    );
   });
 }
 
