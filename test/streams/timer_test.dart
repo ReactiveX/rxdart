@@ -19,7 +19,7 @@ void main() {
     await expectLater(() => stream.listen(null), throwsA(isStateError));
   });
 
-  test('TimerStream.pause.resume', () async {
+  test('TimerStream.pause.resume.A', () async {
     const value = 1;
     StreamSubscription<int> subscription;
 
@@ -33,6 +33,73 @@ void main() {
 
     subscription.pause();
     subscription.resume();
+  });
+
+  test('TimerStream.pause.resume.B', () async {
+    const seconds = 2;
+    const delay = 1;
+
+    var stream = Rx.timer(99, const Duration(seconds: seconds));
+    var stopwatch = Stopwatch()..start();
+    var subscription = stream.listen(expectAsync1((_) {
+      stopwatch.stop();
+      expect(stopwatch.elapsed.inSeconds, seconds + delay);
+    }));
+
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    subscription.pause();
+    subscription.pause();
+
+    await Future<void>.delayed(const Duration(seconds: delay));
+
+    subscription.resume();
+    subscription.resume();
+    subscription.resume();
+  });
+
+  test('TimerStream.pause.resume.C', () async {
+    const value = 1;
+    StreamSubscription<int> subscription;
+
+    final stream = TimerStream(value, const Duration(seconds: 1));
+
+    var firstElapses = Duration.zero;
+    final watch = Stopwatch()..start();
+
+    subscription = stream.listen(expectAsync1((actual) {
+      expect(actual, value);
+
+      final duration = (watch..stop()).elapsed + firstElapses;
+      expect(duration.inSeconds, 1);
+    }));
+
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    firstElapses = firstElapses + (watch..stop()).elapsed;
+    watch
+      ..reset()
+      ..start();
+
+    subscription.pause(
+      Future<void>.delayed(const Duration(milliseconds: 200)).whenComplete(() {
+        watch
+          ..reset()
+          ..start();
+      }),
+    );
+
+    firstElapses = firstElapses + (watch..stop()).elapsed;
+    watch
+      ..reset()
+      ..start();
+    subscription.pause();
+
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    subscription.resume();
+    watch
+      ..reset()
+      ..start();
   });
 
   test('TimerStream.single.subscription', () async {
