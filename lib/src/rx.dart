@@ -449,7 +449,7 @@ abstract class Rx {
   /// requests on page load (or some other event)
   /// and only want to take action when a response has been received for all.
   ///
-  /// In this way it is similar to how you might use [Future].wait.
+  /// In this way it is similar to how you might use [Future.wait].
   ///
   /// Be aware that if any of the inner streams supplied to forkJoin error
   /// you will lose the value of any other streams that would or have already
