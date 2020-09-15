@@ -52,7 +52,7 @@ void main() {
     const expectedOutput = [5, 1, 2, 3, 4];
     var count = 0;
 
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     subscription = _getStream().startWith(5).listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
 

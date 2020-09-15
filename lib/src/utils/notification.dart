@@ -21,13 +21,13 @@ class Notification<T> {
   final Kind kind;
 
   /// The wrapped value, if applicable
-  final T value;
+  final T? value;
 
   /// The wrapped error, if applicable
-  final dynamic error;
+  final Object? error;
 
   /// The wrapped stackTrace, if applicable
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   /// Constructs a [Notification] which, depending on the [kind], wraps either
   /// [value], or [error] and [stackTrace], or neither if it is just a
@@ -43,7 +43,7 @@ class Notification<T> {
       const Notification(Kind.OnDone, null, null, null);
 
   /// Constructs a [Notification] with [Kind.OnError] and wraps an [error] and [stackTrace]
-  factory Notification.onError(dynamic error, StackTrace stackTrace) =>
+  factory Notification.onError(dynamic error, StackTrace? stackTrace) =>
       Notification<T>(Kind.OnError, null, error, stackTrace);
 
   @override

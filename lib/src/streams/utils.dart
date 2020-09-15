@@ -1,7 +1,7 @@
 import 'dart:async';
 
 typedef RetryWhenStreamFactory = Stream<void> Function(
-    dynamic error, StackTrace stack);
+    dynamic error, StackTrace? stack);
 
 /// An [Error] which can be thrown by a retry [Stream].
 class RetryError extends Error {
@@ -34,7 +34,7 @@ class ErrorAndStacktrace {
   final dynamic error;
 
   /// A reference to the wrapped [StackTrace]
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   /// Constructs an object containing both an [error] and the
   /// corresponding [stackTrace].

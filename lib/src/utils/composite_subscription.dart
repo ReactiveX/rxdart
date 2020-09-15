@@ -39,7 +39,6 @@ class CompositeSubscription {
   ///
   /// Throws an exception if this composite was disposed
   StreamSubscription<T> add<T>(StreamSubscription<T> subscription) {
-    assert(subscription != null, 'Subscription cannot be null');
     if (isDisposed) {
       throw ('This composite was disposed, try to use new instance instead');
     }
@@ -70,7 +69,7 @@ class CompositeSubscription {
   }
 
   /// Pauses all subscriptions added to this composite.
-  void pauseAll([Future<void> resumeSignal]) =>
+  void pauseAll([Future<void>? resumeSignal]) =>
       _subscriptionsList.forEach((it) => it.pause(resumeSignal));
 
   /// Resumes all subscriptions added to this composite.

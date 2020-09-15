@@ -72,7 +72,7 @@ void main() {
   });
 
   test('Rx.timeInterval.pause.resume', () async {
-    StreamSubscription<TimeInterval<int>> subscription;
+    late StreamSubscription<TimeInterval<int>> subscription;
     const expectedOutput = [0, 1, 2];
     var count = 0;
 

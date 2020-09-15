@@ -52,12 +52,6 @@ void main() {
 
       expect(stream, neverEmits(anything));
     });
-    test('Rx.compositeSubscription.addNotNull', () {
-      final composite = CompositeSubscription();
-
-      expect(() => composite.add<void>(null),
-          throwsA(TypeMatcher<AssertionError>()));
-    });
     test('Rx.compositeSubscription.pauseAndResume', () {
       final composite = CompositeSubscription();
       final s1 = Stream.fromIterable(const [1, 2, 3]).listen(null),

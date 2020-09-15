@@ -91,12 +91,8 @@ void main() {
     }));
   });
 
-  test('Rx.skipUntil.error.shouldThrowC', () {
-    expect(() => Stream.value(1).skipUntil<void>(null), throwsArgumentError);
-  });
-
   test('Rx.skipUntil.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     const expectedOutput = [3, 4];
     var count = 0;
 

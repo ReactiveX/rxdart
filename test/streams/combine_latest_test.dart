@@ -357,7 +357,7 @@ void main() {
         last = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [9, 10, 11, 12][index]);
 
-    StreamSubscription<Iterable<num>> subscription;
+    late StreamSubscription<Iterable<num>> subscription;
     // ignore: deprecated_member_use
     subscription = Rx.combineLatest3(
             first, second, last, (int a, int b, int c) => [a, b, c])

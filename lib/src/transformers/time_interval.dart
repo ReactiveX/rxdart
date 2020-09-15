@@ -23,7 +23,7 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
   }
 
   @override
-  void addError(EventSink<TimeInterval<S>> sink, dynamic e, [st]) =>
+  void addError(EventSink<TimeInterval<S>> sink, Object e, [StackTrace? st]) =>
       sink.addError(e, st);
 
   @override

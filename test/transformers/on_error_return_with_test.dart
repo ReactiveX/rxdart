@@ -31,7 +31,7 @@ void main() {
   });
 
   test('Rx.onErrorReturnWith.pause.resume', () async {
-    StreamSubscription<num> subscription;
+    late StreamSubscription<num> subscription;
 
     subscription = Stream<num>.error(Exception())
         .onErrorReturnWith((dynamic e) => 0)

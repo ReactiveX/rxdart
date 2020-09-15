@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Rx.timeout', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final stream = Stream<int>.fromFuture(
             Future<int>.delayed(Duration(milliseconds: 30), () => 1))

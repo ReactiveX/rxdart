@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
-  StreamSubscription<T> _mapperSubscription;
+  StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
 
   _SwitchMapStreamSink(this._mapper);
@@ -29,7 +29,8 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, [StackTrace? st]) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {

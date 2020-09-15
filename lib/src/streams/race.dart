@@ -26,22 +26,19 @@ class RaceStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams == null) {
-      throw ArgumentError('streams cannot be null');
-    }
     if (streams.isEmpty) {
       return StreamController<T>()..close();
     }
 
-    List<StreamSubscription<T>> subscriptions;
-    StreamController<T> controller;
+    late List<StreamSubscription<T>> subscriptions;
+    late StreamController<T> controller;
 
     controller = StreamController<T>(
         sync: true,
@@ -76,10 +73,8 @@ class RaceStream<T> extends Stream<T> {
             subscriptions.forEach((subscription) => subscription.pause()),
         onResume: () =>
             subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(subscriptions
-            .where((subscription) => subscription != null)
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        onCancel: () => Future.wait<dynamic>(
+            subscriptions.map((subscription) => subscription.cancel())));
 
     return controller;
   }

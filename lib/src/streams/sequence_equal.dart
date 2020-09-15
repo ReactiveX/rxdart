@@ -24,28 +24,20 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
   /// This single value is emitted when both provided [Stream]s are complete.
   /// After this event, the [Stream] closes.
   SequenceEqualStream(Stream<S> stream, Stream<T> other,
-      {bool Function(S s, T t) equals})
+      {bool Function(S? s, T? t)? equals})
       : _controller = _buildController(stream, other, equals);
 
   @override
-  StreamSubscription<bool> listen(void Function(bool event) onData,
-          {Function onError, void Function() onDone, bool cancelOnError}) =>
+  StreamSubscription<bool> listen(void Function(bool event)? onData,
+          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<bool> _buildController<S, T>(
-      Stream<S> stream, Stream<T> other, bool Function(S s, T t) equals) {
-    if (stream == null) {
-      throw ArgumentError.notNull('stream');
-    }
-
-    if (other == null) {
-      throw ArgumentError.notNull('other');
-    }
-
-    final doCompare = equals ?? (S s, T t) => s == t;
-    StreamController<bool> controller;
-    StreamSubscription<bool> subscription;
+      Stream<S> stream, Stream<T> other, bool Function(S? s, T? t)? equals) {
+    final doCompare = equals ?? (S? s, T? t) => s == t;
+    late StreamController<bool> controller;
+    late StreamSubscription<bool> subscription;
 
     controller = StreamController<bool>(
         sync: true,

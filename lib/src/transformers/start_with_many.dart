@@ -16,7 +16,7 @@ class _StartWithManyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) {
     _safeAddFirstEvent(sink);
     sink.addError(e, st);
   }
@@ -68,11 +68,7 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   /// Constructs a [StreamTransformer] which prepends the source [Stream]
   /// with [startValues].
-  StartWithManyStreamTransformer(this.startValues) {
-    if (startValues == null) {
-      throw ArgumentError('startValues cannot be null');
-    }
-  }
+  StartWithManyStreamTransformer(this.startValues);
 
   @override
   Stream<S> bind(Stream<S> stream) =>

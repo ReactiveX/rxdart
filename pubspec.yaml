@@ -10,7 +10,7 @@ description: >
 homepage: https://github.com/ReactiveX/rxdart
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.10.0-56.0.dev <2.11.0'
 
 dev_dependencies:
   build_runner: ">=1.7.0 <2.0.0"

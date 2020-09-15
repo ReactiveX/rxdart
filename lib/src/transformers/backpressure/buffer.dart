@@ -21,9 +21,7 @@ class BufferStreamTransformer<T>
   /// The [List] is cleared upon every [window] event.
   BufferStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
-            onWindowEnd: (List<T> queue) => queue, ignoreEmptyWindows: false) {
-    if (window == null) throw ArgumentError.notNull('window');
-  }
+            onWindowEnd: (List<T> queue) => queue, ignoreEmptyWindows: false);
 }
 
 /// Buffers a number of values from the source Stream by count then
@@ -63,10 +61,6 @@ class BufferCountStreamTransformer<T>
             onWindowEnd: (List<T> queue) => queue,
             startBufferEvery: startBufferEvery,
             closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
-    if (count == null) throw ArgumentError.notNull('count');
-    if (startBufferEvery == null) {
-      throw ArgumentError.notNull('startBufferEvery');
-    }
     if (count < 1) throw ArgumentError.value(count, 'count');
     if (startBufferEvery < 0) {
       throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
@@ -89,9 +83,7 @@ class BufferTestStreamTransformer<T>
   BufferTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => queue,
-            closeWindowWhen: (Iterable<T> queue) => test(queue.last)) {
-    if (test == null) throw ArgumentError.notNull('test');
-  }
+            closeWindowWhen: (Iterable<T> queue) => test(queue.last));
 }
 
 /// Extends the Stream class with the ability to buffer events in various ways
@@ -152,9 +144,6 @@ extension BufferExtensions<T> on Stream<T> {
   ///     Stream.periodic(Duration(milliseconds: 100), (int i) => i)
   ///       .bufferTime(Duration(milliseconds: 220))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Stream<List<T>> bufferTime(Duration duration) {
-    if (duration == null) throw ArgumentError.notNull('duration');
-
-    return buffer(Stream<void>.periodic(duration));
-  }
+  Stream<List<T>> bufferTime(Duration duration) =>
+      buffer(Stream<void>.periodic(duration));
 }

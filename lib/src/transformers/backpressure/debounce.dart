@@ -31,9 +31,7 @@ class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// emits an event.
   DebounceStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.everyEvent, window,
-            onWindowEnd: (Iterable<T> queue) => queue.last) {
-    assert(window != null, 'window stream factory cannot be null');
-  }
+            onWindowEnd: (Iterable<T> queue) => queue.last);
 }
 
 /// Extends the Stream class with the ability to debounce events in various ways

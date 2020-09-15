@@ -85,7 +85,7 @@ void main() {
   });
 
   test('Rx.delay.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream =
         Stream.fromIterable(const [1, 2, 3]).delay(Duration(milliseconds: 1));
 
@@ -102,7 +102,7 @@ void main() {
   test(
     'Rx.delay.cancel.emits.nothing',
     () async {
-      StreamSubscription<int> subscription;
+      late StreamSubscription<int> subscription;
       final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).delay(Duration(seconds: 10));

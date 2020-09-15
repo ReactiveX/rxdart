@@ -104,9 +104,9 @@ void main() {
           ValueConnectableStream.seeded(StreamController<int>().stream, null)
               .autoConnect();
 
-      expect(stream, emitsInOrder(const <int>[null]));
-      expect(stream, emitsInOrder(const <int>[null]));
-      expect(stream, emitsInOrder(const <int>[null]));
+      expect(stream, emitsInOrder(const <int?>[null]));
+      expect(stream, emitsInOrder(const <int?>[null]));
+      expect(stream, emitsInOrder(const <int?>[null]));
 
       await Future<Null>.delayed(Duration(milliseconds: 200));
 

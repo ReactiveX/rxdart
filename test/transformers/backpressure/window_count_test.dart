@@ -109,11 +109,6 @@ void main() {
     },
   );
 
-  test('Rx.windowCount.shouldThrow.invalidCount.isNull', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(null),
-        throwsArgumentError);
-  });
-
   test('Rx.windowCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
       () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(2, -1),

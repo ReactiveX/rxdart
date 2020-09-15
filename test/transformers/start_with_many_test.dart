@@ -49,15 +49,11 @@ void main() {
     }));
   });
 
-  test('Rx.startWithMany.error.shouldThrowA', () {
-    expect(() => Stream.value(1).startWithMany(null), throwsArgumentError);
-  });
-
   test('Rx.startWithMany.pause.resume', () async {
     const expectedOutput = [5, 6, 1, 2, 3, 4];
     var count = 0;
 
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     subscription =
         _getStream().startWithMany(const [5, 6]).listen(expectAsync1((result) {
       expect(expectedOutput[count++], result);

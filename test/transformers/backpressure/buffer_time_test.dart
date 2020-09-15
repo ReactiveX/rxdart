@@ -81,9 +81,4 @@ void main() {
             .bufferTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
-
-  test('Rx.bufferTime.error.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferTime(null),
-        throwsArgumentError);
-  });
 }

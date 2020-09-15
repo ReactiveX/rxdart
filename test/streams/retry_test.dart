@@ -92,7 +92,7 @@ void main() {
   });
 
   test('RetryStream.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     const retries = 3;
 
     subscription = RetryStream(_getRetryStream(retries), retries)

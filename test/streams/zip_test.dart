@@ -327,7 +327,7 @@ void main() {
   });*/
 
   test('Rx.zip.pause.resume.A', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream =
         Rx.zip2(Stream.value(1), Stream.value(2), (int a, int b) => a + b);
 
@@ -349,7 +349,7 @@ void main() {
         last = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [9, 10, 11, 12][index]);
 
-    StreamSubscription<Iterable<num>> subscription;
+    late StreamSubscription<Iterable<num>> subscription;
     subscription =
         Rx.zip3(first, second, last, (num a, num b, num c) => [a, b, c])
             .listen(expectAsync1((value) {

@@ -74,7 +74,7 @@ void main() {
 
   test('Rx.sampleTime.pause.resume', () async {
     final controller = StreamController<int>();
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = _getStream()
         .sampleTime(const Duration(milliseconds: 35))

@@ -5,17 +5,13 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
-  StreamSubscription<T> _mapperSubscription;
+  StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
 
   _ExhaustMapStreamSink(this._mapper);
 
   @override
   void add(EventSink<T> sink, S data) {
-    if (_mapperSubscription != null) {
-      return;
-    }
-
     final mappedStream = _mapper(data);
 
     _mapperSubscription = mappedStream.listen(
@@ -32,7 +28,8 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, [StackTrace? st]) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {

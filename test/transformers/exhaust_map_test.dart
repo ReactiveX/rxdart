@@ -75,7 +75,7 @@ void main() {
     });
 
     test('can be paused and resumed', () async {
-      StreamSubscription<int> subscription;
+      late StreamSubscription<int> subscription;
       final stream = Rx.range(0, 9)
           .exhaustMap((i) => Rx.timer(i, Duration(milliseconds: 20)));
 

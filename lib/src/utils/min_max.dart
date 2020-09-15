@@ -11,17 +11,16 @@ import 'dart:async';
 /// If the stream emits an error, or the call to [comparator] throws,
 /// the returned future is completed with that error,
 /// and processing is stopped.
-Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T> comparator) {
+Future<T> minMax<T>(
+    Stream<T> stream, bool findMin, Comparator<T?>? comparator) {
   var completer = Completer<T>();
   var seenFirst = false;
-  StreamSubscription<T> subscription;
-  T accumulator;
+  late StreamSubscription<T> subscription;
+  T? accumulator;
 
-  final cancelAndCompleteError = (dynamic e, StackTrace st) async {
-    final cancelFuture = subscription.cancel();
-    if (cancelFuture != null) {
-      await cancelFuture;
-    }
+  final cancelAndCompleteError = (Object e, StackTrace? st) async {
+    await subscription.cancel();
+
     completer.completeError(e, st);
   };
 
@@ -29,8 +28,8 @@ Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T> comparator) {
     if (seenFirst) {
       try {
         accumulator = findMin
-            ? (comparator(element, accumulator) < 0 ? element : accumulator)
-            : (comparator(element, accumulator) > 0 ? element : accumulator);
+            ? (comparator!(element, accumulator) < 0 ? element : accumulator)
+            : (comparator!(element, accumulator) > 0 ? element : accumulator);
       } catch (e, st) {
         await cancelAndCompleteError(e, st);
       }
@@ -42,7 +41,7 @@ Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T> comparator) {
     try {
       comparator ??= () {
         if (element is Comparable) {
-          return Comparable.compare as Comparator<T>;
+          return Comparable.compare as Comparator<T?>;
         } else {
           throw StateError(
               'Please provide a comparator for type $T, because it is not comparable');

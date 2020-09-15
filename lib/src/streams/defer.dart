@@ -27,13 +27,13 @@ class DeferStream<T> extends Stream<T> {
         _factory = reusable
             ? streamFactory
             : (() {
-                Stream<T> stream;
+                Stream<T>? stream;
                 return () => stream ??= streamFactory();
               }());
 
   @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     Stream<T> stream;
 
     try {

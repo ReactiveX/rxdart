@@ -33,7 +33,7 @@ void main() {
   });
 
   test('Rx.mapTo.pause.resume', () async {
-    StreamSubscription<bool> subscription;
+    late StreamSubscription<bool> subscription;
     final stream = Stream.value(1).mapTo(true);
 
     subscription = stream.listen(expectAsync1((value) {

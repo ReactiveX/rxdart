@@ -67,21 +67,18 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// After this event, the [Stream] closes.
   ForkJoinStream(
     Iterable<Stream<T>> streams,
-    R Function(List<T> values) combiner,
-  )   : assert(streams != null && streams.every((s) => s != null),
-            'streams cannot be null'),
-        assert(combiner != null, 'must provide a combiner function'),
-        super(_buildStream(streams, combiner));
+    R Function(List<T?> values) combiner,
+  ) : super(_buildStream(streams, combiner));
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<T, List<T>> list<T>(
+  static ForkJoinStream<T, List<T?>> list<T>(
     Iterable<Stream<T>> streams,
   ) =>
-      ForkJoinStream<T, List<T>>(
+      ForkJoinStream<T, List<T?>>(
         streams,
-        (List<T> values) => values,
+        (List<T?> values) => values,
       );
 
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
@@ -300,20 +297,20 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
   static Stream<R> _buildStream<T, R>(
     Iterable<Stream<T>> streams,
-    R Function(List<T> values) combiner,
+    R Function(List<T?> values) combiner,
   ) {
     if (streams.isEmpty) {
       return (StreamController<R>()..close()).stream;
     }
 
-    StreamController<R> controller;
-    List<StreamSubscription<T>> subscriptions;
+    late StreamController<R> controller;
+    late List<StreamSubscription<T>> subscriptions;
     final length = streams.length;
 
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>.filled(length, null);
+        final values = List<T?>.filled(length, null);
         var completed = 0;
 
         final listen = (Stream<T> stream, int i) {
@@ -350,9 +347,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
       },
       onPause: () => subscriptions.forEach((s) => s.pause()),
       onResume: () => subscriptions.forEach((s) => s.resume()),
-      onCancel: () => Future.wait(subscriptions
-          .map((s) => s.cancel())
-          .where((future) => future != null)),
+      onCancel: () => Future.wait(subscriptions.map((s) => s.cancel())),
     );
 
     return controller.stream;

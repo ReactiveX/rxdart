@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
-  final EventSink<S> _outputSink;
+  final EventSink<S?> _outputSink;
 
   _DematerializeStreamSink(this._outputSink);
 
@@ -14,7 +14,7 @@ class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
     } else if (data.isOnDone) {
       _outputSink.close();
     } else if (data.isOnError) {
-      _outputSink.addError(data.error, data.stackTrace);
+      _outputSink.addError(data.error!, data.stackTrace);
     }
   }
 

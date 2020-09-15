@@ -109,11 +109,6 @@ void main() {
     },
   );
 
-  test('Rx.bufferCount.shouldThrow.invalidCount.isNull', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(null),
-        throwsArgumentError);
-  });
-
   test('Rx.bufferCount.startBufferEvery.shouldThrow.invalidStartBufferEvery',
       () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(2, -1),

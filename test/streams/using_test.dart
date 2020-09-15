@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/using.dart';
 import 'package:test/test.dart';
 
 class MockResource extends Mock {
@@ -12,8 +11,8 @@ class MockResource extends Mock {
 }
 
 Future<void> main() async {
-  MockResource Function() resourceFactory;
-  MockResource resource;
+  late MockResource Function() resourceFactory;
+  late MockResource resource;
 
   setUp(() {
     resourceFactory = () {
@@ -142,23 +141,6 @@ Future<void> main() async {
     verifyNever(resource.close());
   });
 
-  test('Rx.using.errors.shouldThrows', () {
-    expect(
-      () => UsingStream<int, int>(null, (_) => Stream.value(1), (_) {}),
-      throwsArgumentError,
-    );
-
-    expect(
-      () => UsingStream<int, int>(() => 1, null, (_) {}),
-      throwsArgumentError,
-    );
-
-    expect(
-      () => UsingStream<int, int>(() => 1, (_) => Stream.value(1), null),
-      throwsArgumentError,
-    );
-  });
-
   test('Rx.using.errors.cancelOnError', () async {
     Rx.using<int, MockResource>(
       resourceFactory,
@@ -226,7 +208,7 @@ Future<void> main() async {
   });
 
   test('Rx.using.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = Rx.using<int, MockResource>(
       resourceFactory,

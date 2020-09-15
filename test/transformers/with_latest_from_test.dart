@@ -101,21 +101,8 @@ void main() {
     }));
   });
 
-  test('Rx.withLatestFrom.error.shouldThrowB', () {
-    expect(
-        () => Stream.value(1)
-            .withLatestFrom(null, (first, int second) => 'Hello'),
-        throwsArgumentError);
-  });
-
-  test('Rx.withLatestFrom.error.shouldThrowC', () {
-    final streams = _createTestStreams();
-    expect(() => streams.first.withLatestFrom<int, void>(streams[1], null),
-        throwsArgumentError);
-  });
-
   test('Rx.withLatestFrom.pause.resume', () async {
-    StreamSubscription<Pair> subscription;
+    late StreamSubscription<Pair> subscription;
     const expectedOutput = [Pair(2, 0)];
     final streams = _createTestStreams();
     var count = 0;
@@ -141,8 +128,8 @@ void main() {
       1,
       const Duration(microseconds: 100),
     ).withLatestFrom(
-      Stream<int>.value(null),
-      (a, int b) => Pair(a, b),
+      Stream<int?>.value(null),
+      (a, int? b) => Pair(a, b),
     );
 
     await expectLater(
@@ -416,8 +403,8 @@ void main() {
 }
 
 class Pair {
-  final int first;
-  final int second;
+  final int? first;
+  final int? second;
 
   const Pair(this.first, this.second);
 
@@ -441,16 +428,16 @@ class Pair {
 }
 
 class _Tuple {
-  final int item1;
-  final int item2;
-  final int item3;
-  final int item4;
-  final int item5;
-  final int item6;
-  final int item7;
-  final int item8;
-  final int item9;
-  final int item10;
+  final int? item1;
+  final int? item2;
+  final int? item3;
+  final int? item4;
+  final int? item5;
+  final int? item6;
+  final int? item7;
+  final int? item8;
+  final int? item9;
+  final int? item10;
 
   const _Tuple([
     this.item1,

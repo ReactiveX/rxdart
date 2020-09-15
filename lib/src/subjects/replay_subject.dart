@@ -54,9 +54,9 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   ///
   /// See also [StreamController.broadcast]
   factory ReplaySubject({
-    int maxSize,
-    void Function() onListen,
-    void Function() onCancel,
+    int maxSize = 0,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -75,10 +75,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
             (stream, event) {
           if (event.isError) {
             return stream.transform(StartWithErrorStreamTransformer(
-                event.errorAndStackTrace.error,
-                event.errorAndStackTrace.stackTrace));
+                event.errorAndStackTrace!.error,
+                event.errorAndStackTrace!.stackTrace));
           } else {
-            return stream.transform(StartWithStreamTransformer(event.event));
+            return stream.transform(StartWithStreamTransformer(event.event!));
           }
         }),
         reusable: true,
@@ -96,7 +96,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   ) : super(controller, stream);
 
   @override
-  void onAdd(T event) {
+  void onAdd(T? event) {
     if (_queue.length == _maxSize) {
       _queue.removeFirst();
     }
@@ -105,7 +105,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   }
 
   @override
-  void onAddError(Object error, [StackTrace stackTrace]) {
+  void onAddError(Object error, [StackTrace? stackTrace]) {
     if (_queue.length == _maxSize) {
       _queue.removeFirst();
     }
@@ -115,7 +115,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   }
 
   @override
-  List<T> get values => _queue
+  List<T?> get values => _queue
       .where((event) => !event.isError)
       .map((event) => event.event)
       .toList(growable: false);
@@ -123,13 +123,13 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
   @override
   List<Object> get errors => _queue
       .where((event) => event.isError)
-      .map((event) => event.errorAndStackTrace.error)
+      .map((event) => event.errorAndStackTrace!.error)
       .toList(growable: false);
 
   @override
   ReplaySubject<R> createForwardingSubject<R>({
-    void Function() onListen,
-    void Function() onCancel,
+    required void Function() onListen,
+    required void Function() onCancel,
     bool sync = false,
   }) =>
       ReplaySubject(
@@ -142,15 +142,15 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
 class _Event<T> {
   final bool isError;
-  final T event;
-  final _ErrorAndStackTrace errorAndStackTrace;
+  final T? event;
+  final _ErrorAndStackTrace? errorAndStackTrace;
 
   _Event(this.isError, {this.event, this.errorAndStackTrace});
 }
 
 class _ErrorAndStackTrace {
   final Object error;
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   _ErrorAndStackTrace(this.error, this.stackTrace);
 }

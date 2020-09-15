@@ -128,13 +128,8 @@ void main() {
     }));
   });
 
-  test('Rx.throttle.error.shouldThrowB', () {
-    expect(() => Stream.value(1).throttle(null),
-        throwsA(const TypeMatcher<AssertionError>()));
-  });
-
   test('Rx.throttle.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
 

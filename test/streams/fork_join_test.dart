@@ -59,7 +59,7 @@ void main() {
         Stream.value(2),
         Stream.value(3),
       ],
-      (values) => values.fold(0, (acc, val) => acc + val),
+      (values) => values.fold(0, (acc, val) => acc + val!),
     );
 
     await expectLater(
@@ -362,7 +362,7 @@ void main() {
         last = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [9, 10, 11, 12][index]).take(4);
 
-    StreamSubscription<Iterable<num>> subscription;
+    late StreamSubscription<Iterable<num>> subscription;
     subscription =
         Rx.forkJoin3(first, second, last, (int a, int b, int c) => [a, b, c])
             .listen(expectAsync1((value) {

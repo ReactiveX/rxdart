@@ -39,7 +39,7 @@ void main() {
   test('Rx.min.with.comparator', () async {
     await expectLater(
       Stream.fromIterable(['one', 'two', 'three'])
-          .min((a, b) => a.length - b.length),
+          .min((a, b) => a!.length - b!.length),
       completion('one'),
     );
   });

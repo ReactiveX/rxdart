@@ -14,8 +14,8 @@ class TimerStream<T> extends Stream<T> {
       : _controller = _buildController(value, duration);
 
   @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(
       onData,
       onError: onError,
@@ -25,23 +25,19 @@ class TimerStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(T value, Duration duration) {
-    if (duration == null) {
-      throw ArgumentError('duration cannot be null');
-    }
-
     final watch = Stopwatch();
-    Timer timer;
-    StreamController<T> controller;
-    var totalElapsed = Duration.zero;
+    Timer? timer;
+    late StreamController<T> controller;
+    Duration? totalElapsed = Duration.zero;
 
     void onResume() {
       // Already cancelled or is not paused.
       if (totalElapsed == null || timer != null) return;
 
-      totalElapsed = totalElapsed + watch.elapsed;
+      totalElapsed = totalElapsed! + watch.elapsed;
       watch.start();
 
-      timer = Timer(duration - totalElapsed, () {
+      timer = Timer(duration - totalElapsed!, () {
         controller.add(value);
         controller.close();
       });
@@ -57,7 +53,7 @@ class TimerStream<T> extends Stream<T> {
         });
       },
       onPause: () {
-        timer.cancel();
+        timer?.cancel();
         timer = null;
         watch.stop();
       },
