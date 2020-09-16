@@ -7,10 +7,10 @@ with_content_shell: false
 script:
   - pub global activate coverage
   - dartfmt -n ./lib --set-exit-if-changed
-  - dartanalyzer --fatal-infos --fatal-warnings ./
+  - dartanalyzer --enable-experiment=non-nullable --fatal-infos --fatal-warnings ./
   - pub run --enable-experiment=non-nullable test test/rxdart_test.dart
   - dart --disable-service-auth-codes --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart &
-  - nohup pub global run coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
-  - pub global run coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
+  - nohup pub global run --enable-experiment=non-nullable coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
+  - pub global run --enable-experiment=non-nullable coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
 after_success:
   - bash <(curl -s https://codecov.io/bash)
