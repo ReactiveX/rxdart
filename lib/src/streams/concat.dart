@@ -35,10 +35,7 @@ class ConcatStream<T> extends Stream<T> {
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
-  static StreamController<T> _buildController<T>(Iterable<Stream<T>>? streams) {
-    if (streams == null) {
-      throw ArgumentError('Streams cannot be null');
-    }
+  static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     if (streams.isEmpty) {
       return StreamController<T>()..close();
     }
