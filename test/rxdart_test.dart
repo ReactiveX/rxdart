@@ -21,8 +21,7 @@ import 'streams/retry_when_test.dart' as retry_when_test;
 import 'streams/sequence_equals_test.dart' as sequence_equals_test;
 import 'streams/switch_latest_test.dart' as switch_latest_test;
 import 'streams/timer_test.dart' as timer_test;
-// TODO(nnbd): Mokito
-import 'streams/using_test.dart' as using_test; // ignore: unused_import
+import 'streams/using_test.dart' as using_test;
 import 'streams/value_connectable_stream_test.dart'
     as value_connectable_stream_test;
 import 'streams/zip_test.dart' as zip_test;
@@ -101,8 +100,7 @@ void main() {
   retry_when_test.main();
   sequence_equals_test.main();
   switch_latest_test.main();
-  // TODO(nnbd): Mokito
-  // using_test.main();
+  using_test.main();
   zip_test.main();
 
   // StreamTransformers

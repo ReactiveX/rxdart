@@ -1,29 +1,37 @@
 import 'dart:async';
 
-// TODO(nnbd): Mockito
-// import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-// TODO(nnbd): Mockito
-// class MockStream<T> extends Mock implements Stream<T> {}
+class MockStream<T> extends Stream<T> {
+  final Stream<T> stream;
+  var listenCount = 0;
+
+  MockStream(this.stream);
+
+  @override
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    ++listenCount;
+    return stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
+}
 
 void main() {
   group('PublishConnectableStream', () {
-    // TODO(nnbd): Mockito
-    /*test('should not emit before connecting', () {
-      final stream = MockStream<int>();
+    test('should not emit before connecting', () {
+      final stream = MockStream(Stream.fromIterable(const [1, 2, 3]));
       final connectableStream = PublishConnectableStream(stream);
 
-      when(stream.listen(any, onError: anyNamed('onError')))
-          .thenReturn(Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
-
-      verifyNever(stream.listen(any, onError: anyNamed('onError')));
-
+      expect(stream.listenCount, 0);
       connectableStream.connect();
-
-      verify(stream.listen(any, onError: anyNamed('onError')));
-    });*/
+      expect(stream.listenCount, 1);
+    });
 
     test('should begin emitting items after connection', () {
       final ConnectableStream<int> stream = PublishConnectableStream<int>(
