@@ -78,7 +78,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
   @override
   Stream<T> refCount() {
-    ConnectableStreamSubscription<T>? subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -88,7 +88,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
     };
 
     _subject.onCancel = () {
-      subscription!.cancel();
+      subscription.cancel();
     };
 
     return _subject;
@@ -151,7 +151,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ValueStream<T> refCount() {
-    ConnectableStreamSubscription<T>? subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -161,7 +161,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
     };
 
     _subject.onCancel = () {
-      subscription!.cancel();
+      subscription.cancel();
     };
 
     return _subject;
@@ -228,7 +228,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ReplayStream<T> refCount() {
-    ConnectableStreamSubscription<T>? subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () {
       subscription = ConnectableStreamSubscription<T>(
@@ -238,7 +238,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
     };
 
     _subject.onCancel = () {
-      subscription!.cancel();
+      subscription.cancel();
     };
 
     return _subject;
