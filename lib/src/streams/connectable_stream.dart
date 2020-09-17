@@ -192,7 +192,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
   factory ReplayConnectableStream(Stream<T> stream,
-      {int maxSize = 0, bool sync = false}) {
+      {int? maxSize, bool sync = false}) {
     return ReplayConnectableStream<T>._(
       stream,
       ReplaySubject<T>(maxSize: maxSize, sync: sync),
@@ -245,7 +245,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   }
 
   @override
-  List<T?> get values => _subject.values;
+  List<T> get values => _subject.values;
 
   @override
   List<Object> get errors => _subject.errors;
@@ -420,7 +420,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // ReplaySubject
   /// subscription.cancel();
   /// ```
-  ReplayConnectableStream<T> publishReplay({int maxSize = 0}) =>
+  ReplayConnectableStream<T> publishReplay({int? maxSize}) =>
       ReplayConnectableStream<T>(this, maxSize: maxSize, sync: true);
 
   /// Convert the current Stream into a new Stream that can be listened
@@ -549,6 +549,6 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ReplayStream<T> shareReplay({int maxSize = 0}) =>
+  ReplayStream<T> shareReplay({int? maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
 }

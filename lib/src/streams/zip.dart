@@ -287,15 +287,15 @@ class ZipStream<T, R> extends StreamView<R> {
         sync: true,
         onListen: () {
           try {
-            Completer<void>? completeCurrent;
+            Completer<List<T>?>? completeCurrent;
             final window = _Window<T>(len);
             var index = 0;
 
             // resets variables for the next zip window
             final next = () {
-              completeCurrent?.complete();
+              completeCurrent?.complete(null);
 
-              completeCurrent = Completer<List<T>>();
+              completeCurrent = Completer<List<T>?>();
 
               pendingSubscriptions = subscriptions.toList();
             };
@@ -356,7 +356,7 @@ class _Window<T> {
 
   bool get isComplete => _valuesReceived == size;
 
-  _Window(this.size) : _values = List<T?>.generate(size, (_) => null);
+  _Window(this.size) : _values = List<T?>.filled(size, null);
 
   void onValue(int index, T value) {
     _values[index] = value;
@@ -367,7 +367,7 @@ class _Window<T> {
   List<T> flush() {
     _valuesReceived = 0;
 
-    return List.unmodifiable(_values);
+    return List<T>.unmodifiable(_values);
   }
 }
 

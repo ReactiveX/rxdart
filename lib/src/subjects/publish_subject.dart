@@ -51,8 +51,8 @@ class PublishSubject<T> extends Subject<T> {
 
   @override
   PublishSubject<R> createForwardingSubject<R>({
-    required void Function() onListen,
-    required void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) =>
       PublishSubject(

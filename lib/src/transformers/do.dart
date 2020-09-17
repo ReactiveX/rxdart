@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DoStreamSink<S> implements ForwardingSink<S, S> {
-  final dynamic Function()? _onCancel;
+  final FutureOr<void> Function()? _onCancel;
   final void Function(S event)? _onData;
   final void Function()? _onDone;
   final void Function(Notification<S> notification)? _onEach;
@@ -122,7 +122,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 ///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// fires when all subscriptions have cancelled.
-  final dynamic Function()? onCancel;
+  final FutureOr<void> Function()? onCancel;
 
   /// fires when data is emitted
   final void Function(S event)? onData;
@@ -198,7 +198,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .listen(null);
   ///
   ///     subscription.cancel(); // prints 'hi'
-  Stream<T> doOnCancel(void Function() onCancel) =>
+  Stream<T> doOnCancel(FutureOr<void> Function() onCancel) =>
       transform(DoStreamTransformer<T>(onCancel: onCancel));
 
   /// Invokes the given callback function when the stream emits an item. In

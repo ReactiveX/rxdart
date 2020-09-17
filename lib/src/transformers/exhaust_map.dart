@@ -12,6 +12,10 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
 
   @override
   void add(EventSink<T> sink, S data) {
+    if (_mapperSubscription != null) {
+      return;
+    }
+
     final mappedStream = _mapper(data);
 
     _mapperSubscription = mappedStream.listen(

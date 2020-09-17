@@ -12,13 +12,12 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
 
   _WithLatestFromStreamSink(this._latestFromStreams, this._combiner)
       : _hasValues = List.filled(_latestFromStreams.length, false),
-        _latestValues =
-            List<T?>.generate(_latestFromStreams.length, (_) => null);
+        _latestValues = List<T?>.filled(_latestFromStreams.length, null);
 
   @override
   void add(EventSink<R> sink, S data) {
     if (_hasValues.every((value) => value)) {
-      sink.add(_combiner(data, List.unmodifiable(_latestValues)));
+      sink.add(_combiner(data, List<T>.unmodifiable(_latestValues)));
     }
   }
 
@@ -38,10 +37,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
     Iterable<Future> futures = <Future>[];
 
     if (_subscriptions != null && _subscriptions!.isNotEmpty) {
-      futures = _subscriptions!.map((it) => it.cancel()).whereType<Future>();
+      futures = _subscriptions!.map((it) => it.cancel());
     }
 
-    return futures.isNotEmpty ? Future.wait<dynamic>(futures) : null;
+    return futures.isNotEmpty ? Future.wait<void>(futures) : null;
   }
 
   @override

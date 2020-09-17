@@ -35,8 +35,7 @@ class MergeStream<T> extends Stream<T> {
     }
 
     final len = streams.length;
-    final subscriptions =
-        List<StreamSubscription<T>?>.generate(len, (_) => null);
+    late List<StreamSubscription<T>> subscriptions;
     late StreamController<T> controller;
 
     controller = StreamController<T>(
@@ -50,21 +49,17 @@ class MergeStream<T> extends Stream<T> {
             if (completed == len) controller.close();
           };
 
-          for (var i = 0; i < len; i++) {
-            var stream = streams.elementAt(i);
-
-            subscriptions[i] = stream.listen(controller.add,
-                onError: controller.addError, onDone: onDone);
-          }
+          subscriptions = streams
+              .map((s) => s.listen(controller.add,
+                  onError: controller.addError, onDone: onDone))
+              .toList(growable: false);
         },
         onPause: () =>
-            subscriptions.forEach((subscription) => subscription?.pause()),
+            subscriptions.forEach((subscription) => subscription.pause()),
         onResume: () =>
-            subscriptions.forEach((subscription) => subscription?.resume()),
-        onCancel: () => Future.wait<dynamic>(subscriptions
-            .where((subscription) => subscription != null)
-            .cast<StreamSubscription<T>>()
-            .map((subscription) => subscription.cancel())));
+            subscriptions.forEach((subscription) => subscription.resume()),
+        onCancel: () => Future.wait(
+            subscriptions.map((subscription) => subscription.cancel())));
 
     return controller;
   }

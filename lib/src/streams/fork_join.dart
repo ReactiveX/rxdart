@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 /// This operator is best used when you have a group of streams
 /// and only care about the final emitted value of each.
@@ -67,18 +68,18 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   /// After this event, the [Stream] closes.
   ForkJoinStream(
     Iterable<Stream<T>> streams,
-    R Function(List<T?> values) combiner,
+    R Function(List<T> values) combiner,
   ) : super(_buildStream(streams, combiner));
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
   /// After this event, the [Stream] closes.
-  static ForkJoinStream<T, List<T?>> list<T>(
+  static ForkJoinStream<T, List<T>> list<T>(
     Iterable<Stream<T>> streams,
   ) =>
-      ForkJoinStream<T, List<T?>>(
+      ForkJoinStream<T, List<T>>(
         streams,
-        (List<T?> values) => values,
+        (values) => values,
       );
 
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
@@ -297,7 +298,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
   static Stream<R> _buildStream<T, R>(
     Iterable<Stream<T>> streams,
-    R Function(List<T?> values) combiner,
+    R Function(List<T> values) combiner,
   ) {
     if (streams.isEmpty) {
       return (StreamController<R>()..close()).stream;
@@ -331,7 +332,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
               if (++completed == length) {
                 try {
-                  controller.add(combiner(values));
+                  final copiedValues =
+                      UnmodifiableListView(values.map((e) => e!));
+                  controller.add(combiner(copiedValues));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }

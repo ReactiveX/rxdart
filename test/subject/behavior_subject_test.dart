@@ -34,9 +34,9 @@ void main() {
     test('emits the most recently emitted null item to every subscriber',
         () async {
       // ignore: close_sinks
-      final unseeded = BehaviorSubject<int>(),
+      final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
-          seeded = BehaviorSubject<int>.seeded(0);
+          seeded = BehaviorSubject<int?>.seeded(0);
 
       unseeded.add(1);
       unseeded.add(2);
@@ -132,9 +132,9 @@ void main() {
 
     test('emits errors to every subscriber, ensures value is null', () async {
       // ignore: close_sinks
-      final unseeded = BehaviorSubject<int>(),
+      final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
-          seeded = BehaviorSubject<int>.seeded(0);
+          seeded = BehaviorSubject<int?>.seeded(0);
 
       unseeded.add(1);
       unseeded.add(2);
@@ -176,9 +176,9 @@ void main() {
 
     test('can synchronously get the latest null value', () async {
       // ignore: close_sinks
-      final unseeded = BehaviorSubject<int>(),
+      final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
-          seeded = BehaviorSubject<int>.seeded(0);
+          seeded = BehaviorSubject<int?>.seeded(0);
 
       unseeded.add(1);
       unseeded.add(2);

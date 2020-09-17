@@ -2,18 +2,15 @@ import 'dart:async';
 
 class _ScanStreamSink<S, T> implements EventSink<S> {
   final T Function(T? accumulated, S value, int index) _accumulator;
-  final EventSink<T?> _outputSink;
+  final EventSink<T> _outputSink;
   T? _acc;
   var _index = 0;
 
   _ScanStreamSink(this._outputSink, this._accumulator, [T? seed]) : _acc = seed;
 
   @override
-  void add(S data) {
-    _acc = _accumulator(_acc, data, _index++);
-
-    _outputSink.add(_acc);
-  }
+  void add(S data) =>
+      _outputSink.add(_acc = _accumulator(_acc, data, _index++));
 
   @override
   void addError(e, [st]) => _outputSink.addError(e, st);

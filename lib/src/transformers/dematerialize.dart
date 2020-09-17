@@ -3,18 +3,22 @@ import 'dart:async';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
-  final EventSink<S?> _outputSink;
+  final EventSink<S> _outputSink;
 
   _DematerializeStreamSink(this._outputSink);
 
   @override
   void add(Notification<S> data) {
     if (data.isOnData) {
-      _outputSink.add(data.value);
+      _outputSink.add(data.value!);
     } else if (data.isOnDone) {
       _outputSink.close();
     } else if (data.isOnError) {
-      _outputSink.addError(data.error!, data.stackTrace);
+      final errorAndStackTrace = data.errorAndStackTrace!;
+      _outputSink.addError(
+        errorAndStackTrace.error,
+        errorAndStackTrace.stackTrace,
+      );
     }
   }
 
@@ -80,7 +84,5 @@ extension DematerializeExtension<T> on Stream<Notification<T>> {
   ///         .fromIterable([Notification.onError(Exception(), null)])
   ///         .dematerialize()
   ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
-  Stream<T> dematerialize() {
-    return transform(DematerializeStreamTransformer<T>());
-  }
+  Stream<T> dematerialize() => transform(DematerializeStreamTransformer<T>());
 }

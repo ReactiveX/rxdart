@@ -11,7 +11,7 @@ import 'dart:async';
 /// extend from this class, or `BehaviorSubject` for a slightly more
 /// complex example.
 abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
-  final StreamController<T?> _controller;
+  final StreamController<T> _controller;
 
   bool _isAddingStreamItems = false;
 
@@ -93,13 +93,13 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   void onAddError(Object error, [StackTrace? stackTrace]) {}
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool? cancelOnError = true}) {
+  Future<void> addStream(Stream<T> source, {bool? cancelOnError}) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add items while items are being added from addStream');
     }
 
-    final completer = Completer<T>();
+    final completer = Completer<void>();
     var isOnDoneCalled = false;
     final complete = () {
       if (!isOnDoneCalled) {
@@ -115,7 +115,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     }, onError: (Object e, StackTrace? s) {
       _addError(e, s);
 
-      if (cancelOnError!) {
+      if (identical(cancelOnError, true)) {
         complete();
       }
     }, onDone: () {
@@ -126,7 +126,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 
   @override
-  void add(T? event) {
+  void add(T event) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add items while items are being added from addStream');
@@ -135,7 +135,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     _add(event);
   }
 
-  void _add(T? event) {
+  void _add(T event) {
     onAdd(event);
 
     _controller.add(event);
@@ -144,7 +144,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// An extension point for sub-classes. Perform any side-effect / state
   /// management you need to here, rather than overriding the `add` method
   /// directly.
-  void onAdd(T? event) {}
+  void onAdd(T event) {}
 
   @override
   Future<dynamic> close() {
@@ -160,8 +160,8 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// in the same manner as the original [Subject] does.
   /// e.g. replay or behavior on subscribe.
   Subject<R> createForwardingSubject<R>({
-    required void Function() onListen,
-    required void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   });
 }

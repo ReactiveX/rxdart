@@ -9,8 +9,25 @@ script:
   - dartfmt -n ./lib --set-exit-if-changed
   - dartanalyzer --enable-experiment=non-nullable --fatal-infos --fatal-warnings ./
   - pub run --enable-experiment=non-nullable test test/rxdart_test.dart
-  - dart --disable-service-auth-codes --enable-vm-service=8111 --pause-isolates-on-exit test/rxdart_test.dart &
-  - nohup pub global run --enable-experiment=non-nullable coverage:collect_coverage --port=8111 --out=coverage.json --wait-paused --resume-isolates
-  - pub global run --enable-experiment=non-nullable coverage:format_coverage --lcov --in=coverage.json --out=lcov.info --packages=.packages --report-on=lib
+  - dart
+    --disable-service-auth-codes
+    --enable-vm-service=8111
+    --pause-isolates-on-exit
+    --enable-asserts
+    --enable-experiment=non-nullable
+    test/rxdart_test.dart &
+  - nohup pub global run coverage:collect_coverage
+    --port=8111
+    --out=coverage.json
+    --wait-paused
+    --resume-isolates
+    --enable-experiment=non-nullable
+  - pub global run coverage:format_coverage
+    --lcov
+    --in=coverage.json
+    --out=lcov.info
+    --packages=.packages
+    --report-on=lib
+    --enable-experiment=non-nullable
 after_success:
   - bash <(curl -s https://codecov.io/bash)

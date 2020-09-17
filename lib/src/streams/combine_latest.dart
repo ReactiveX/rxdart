@@ -298,7 +298,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T?>.generate(len, (_) => null);
+        final values = List<T?>.filled(len, null);
         var triggered = 0, completed = 0, index = 0;
 
         final allHaveEvent = () => triggered == len;
@@ -323,7 +323,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
 
               if (allHaveEvent()) {
                 try {
-                  controller.add(combiner(List.unmodifiable(values)));
+                  controller.add(combiner(List<T>.unmodifiable(values)));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }

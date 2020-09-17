@@ -17,10 +17,10 @@ class RepeatStream<T> extends Stream<T> {
 
   /// The amount of repeat attempts that will be made
   /// If 0, then an indefinite amount of attempts will be made.
-  final int count;
+  final int? count;
   int _repeatStep = 0;
   StreamController<T>? _controller;
-  late StreamSubscription<T> _subscription;
+  StreamSubscription<T>? _subscription;
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created with the provided factory method).
@@ -28,7 +28,7 @@ class RepeatStream<T> extends Stream<T> {
   /// until this [Stream] terminates successfully.
   /// If the count parameter is not specified, then this [Stream] will repeat
   /// indefinitely.
-  RepeatStream(this.streamFactory, [this.count = 0]);
+  RepeatStream(this.streamFactory, [this.count]);
 
   @override
   StreamSubscription<T> listen(void Function(T event)? onData,
@@ -36,9 +36,9 @@ class RepeatStream<T> extends Stream<T> {
     _controller ??= StreamController<T>(
         sync: true,
         onListen: _maybeRepeatNext,
-        onPause: () => _subscription.pause(),
-        onResume: () => _subscription.resume(),
-        onCancel: () => _subscription.cancel());
+        onPause: () => _subscription?.pause(),
+        onResume: () => _subscription?.resume(),
+        onCancel: () => _subscription?.cancel());
 
     return _controller!.stream.listen(
       onData,
@@ -50,16 +50,21 @@ class RepeatStream<T> extends Stream<T> {
 
   void _repeatNext() {
     void onDone() {
-      _subscription.cancel();
+      _subscription?.cancel();
 
       _maybeRepeatNext();
     }
 
+    final controller = _controller!;
     try {
-      _subscription = streamFactory(_repeatStep++).listen(_controller!.add,
-          onError: _controller!.addError, onDone: onDone, cancelOnError: false);
+      _subscription = streamFactory(_repeatStep++).listen(
+        controller.add,
+        onError: controller.addError,
+        onDone: onDone,
+        cancelOnError: false,
+      );
     } catch (e, s) {
-      _controller!.addError(e, s);
+      controller.addError(e, s);
     }
   }
 

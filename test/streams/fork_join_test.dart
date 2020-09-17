@@ -59,7 +59,7 @@ void main() {
         Stream.value(2),
         Stream.value(3),
       ],
-      (values) => values.fold(0, (acc, val) => acc + val!),
+      (values) => values.fold(0, (acc, val) => acc + val),
     );
 
     await expectLater(
