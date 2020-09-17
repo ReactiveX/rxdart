@@ -81,8 +81,7 @@ void main() {
           emitsError(
             predicate<RetryError>((a) {
               return a.errors.length == 1 &&
-                  a.errors
-                      .every((es) => es.error != null && es.stackTrace != null);
+                  a.errors.every((es) => es.stackTrace != null);
             }),
           ),
           emitsDone,

@@ -32,7 +32,7 @@ void main() {
   test('Rx.max.with.comparator', () async {
     await expectLater(
       Stream.fromIterable(['one', 'two', 'three'])
-          .max((a, b) => a!.length - b!.length),
+          .max((a, b) => a.length - b.length),
       completion('three'),
     );
   });

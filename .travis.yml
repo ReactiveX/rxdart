@@ -21,13 +21,11 @@ script:
     --out=coverage.json
     --wait-paused
     --resume-isolates
-    --enable-experiment=non-nullable
   - pub global run coverage:format_coverage
     --lcov
     --in=coverage.json
     --out=lcov.info
     --packages=.packages
     --report-on=lib
-    --enable-experiment=non-nullable
 after_success:
   - bash <(curl -s https://codecov.io/bash)
