@@ -1,3 +1,14 @@
+## 0.25.0-beta2
+  * Internal refactoring Stream Transformers.
+  * Fixed `RetryStream` example documentation.
+  * Error thrown from `DeferStream` factory will now be caught and converted to `Stream.error`.
+  * `doOnError` now have strong type signature: `Stream<T> doOnError(void Function(Object, StackTrace) onError)`.
+  * Updated `ForkJoinStream`:
+    * When any Stream emits an error, listening still continues unless `cancelOnError: true` on the downstream.
+    * Pause and resume Streams properly.
+  * Added `UsingStream`.
+  * Updated `TimerStream`: Pause and resume Timer when pausing and resuming StreamSubscription.
+
 ## 0.25.0-beta
   * stream transformations on a ValueStream will also return a ValueStream, instead of 
     a standard broadcast Stream
