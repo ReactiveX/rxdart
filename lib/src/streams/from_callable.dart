@@ -8,7 +8,8 @@ import 'dart:async';
 ///   data or error, and then close with a done-event.
 /// - Is a [T]: this stream emits a single data event and then completes with a done event.
 ///
-/// A [FromCallableStream] is always a single-subscription Stream.
+/// By default, a [FromCallableStream] is a single-subscription Stream. However, it's possible
+/// to make them reusable.
 /// This Stream is effectively equivalent to one created by
 /// `(() async* { yield await callable() }())` or `(() async* { yield callable(); }())`.
 ///
@@ -27,13 +28,16 @@ class FromCallableStream<T> extends Stream<T> {
 
   /// A function will be called at subscription time.
   final FutureOr<T> Function() callable;
+  final bool _isReusable;
 
   /// Construct a Stream that, when listening to it, calls a function you specify
   /// and then emits the value returned from that function.
-  FromCallableStream(this.callable);
+  /// [isReusable] indicates whether this Stream can be listened to multiple times or not.
+  FromCallableStream(this.callable, {bool isReusable = false})
+      : _isReusable = isReusable;
 
   @override
-  bool get isBroadcast => false;
+  bool get isBroadcast => _isReusable;
 
   @override
   StreamSubscription<T> listen(
@@ -42,7 +46,7 @@ class FromCallableStream<T> extends Stream<T> {
     void Function() onDone,
     bool cancelOnError,
   }) {
-    if (_stream == null) {
+    if (_isReusable || _stream == null) {
       try {
         final value = callable();
 

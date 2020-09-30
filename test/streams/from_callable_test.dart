@@ -29,11 +29,22 @@ void main() {
     expect(called, true);
   });
 
+  test('Rx.fromCallable.reusable', () {
+    var stream = Rx.fromCallable(() => 2, isReusable: true);
+    expect(stream.isBroadcast, isTrue);
+
+    stream.listen(null);
+    stream.listen(null);
+
+    expect(true, true);
+  });
+
   test('Rx.fromCallable.singleSubscription', () {
     {
       var stream = Rx.fromCallable(() =>
           Future.delayed(const Duration(milliseconds: 10), () => 'Value'));
 
+      expect(stream.isBroadcast, isFalse);
       stream.listen(null);
       expect(() => stream.listen(null), throwsStateError);
     }
@@ -41,6 +52,7 @@ void main() {
     {
       var stream = Rx.fromCallable(() => Future<String>.error(Exception()));
 
+      expect(stream.isBroadcast, isFalse);
       stream.listen(null, onError: (Object e) {});
       expect(
           () => stream.listen(null, onError: (Object e) {}), throwsStateError);

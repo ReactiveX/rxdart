@@ -714,7 +714,8 @@ abstract class Rx {
   ///   data or error, and then close with a done-event.
   /// - Is a [T]: this stream emits a single data event and then completes with a done event.
   ///
-  /// A [FromCallableStream] is always a single-subscription Stream.
+  /// By default, a [FromCallableStream] is a single-subscription Stream. However, it's possible
+  /// to make them reusable.
   /// This Stream is effectively equivalent to one created by
   /// `(() async* { yield await callable() }())` or `(() async* { yield callable(); }())`.
   ///
@@ -728,8 +729,9 @@ abstract class Rx {
   ///       await Future<void>.delayed(const Duration(seconds: 1));
   ///       return 'Value';
   ///     }).listen(print); // prints Value
-  static Stream<T> fromCallable<T>(FutureOr<T> Function() callable) =>
-      FromCallableStream(callable);
+  static Stream<T> fromCallable<T>(FutureOr<T> Function() callable,
+          {bool isReusable = false}) =>
+      FromCallableStream(callable, isReusable: isReusable);
 
   /// Flattens the items emitted by the given [streams] into a single Stream
   /// sequence.
