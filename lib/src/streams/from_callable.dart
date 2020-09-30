@@ -32,9 +32,9 @@ class FromCallableStream<T> extends Stream<T> {
 
   /// Construct a Stream that, when listening to it, calls a function you specify
   /// and then emits the value returned from that function.
-  /// [isReusable] indicates whether this Stream can be listened to multiple times or not.
-  FromCallableStream(this.callable, {bool isReusable = false})
-      : _isReusable = isReusable;
+  /// [reusable] indicates whether this Stream can be listened to multiple times or not.
+  FromCallableStream(this.callable, {bool reusable = false})
+      : _isReusable = reusable;
 
   @override
   bool get isBroadcast => _isReusable;

@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Rx.fromCallable.reusable', () {
-    var stream = Rx.fromCallable(() => 2, isReusable: true);
+    var stream = Rx.fromCallable(() => 2, reusable: true);
     expect(stream.isBroadcast, isTrue);
 
     stream.listen(null);

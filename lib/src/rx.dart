@@ -730,8 +730,8 @@ abstract class Rx {
   ///       return 'Value';
   ///     }).listen(print); // prints Value
   static Stream<T> fromCallable<T>(FutureOr<T> Function() callable,
-          {bool isReusable = false}) =>
-      FromCallableStream(callable, isReusable: isReusable);
+          {bool reusable = false}) =>
+      FromCallableStream(callable, reusable: reusable);
 
   /// Flattens the items emitted by the given [streams] into a single Stream
   /// sequence.
