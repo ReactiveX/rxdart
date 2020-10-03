@@ -178,7 +178,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _forwardBehaviorSubject<T>((s) => s.handleError(onError, test: test));
 
   @override
-  Stream<S> expand<S>(Iterable<S> Function(T element) convert) =>
+  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
       _forwardBehaviorSubject<S>((s) => s.expand(convert));
 
   @override
@@ -186,28 +186,30 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _forwardBehaviorSubject<S>((s) => s.transform(streamTransformer));
 
   @override
-  Stream<R> cast<R>() => _forwardBehaviorSubject<R>((s) => s.cast<R>());
+  ValueStream<R> cast<R>() => _forwardBehaviorSubject<R>((s) => s.cast<R>());
 
   @override
-  Stream<T> take(int count) => _forwardBehaviorSubject<T>((s) => s.take(count));
+  ValueStream<T> take(int count) =>
+      _forwardBehaviorSubject<T>((s) => s.take(count));
 
   @override
-  Stream<T> takeWhile(bool Function(T element) test) =>
+  ValueStream<T> takeWhile(bool Function(T element) test) =>
       _forwardBehaviorSubject<T>((s) => s.takeWhile(test));
 
   @override
-  Stream<T> skip(int count) => _forwardBehaviorSubject<T>((s) => s.skip(count));
+  ValueStream<T> skip(int count) =>
+      _forwardBehaviorSubject<T>((s) => s.skip(count));
 
   @override
-  Stream<T> skipWhile(bool Function(T element) test) =>
+  ValueStream<T> skipWhile(bool Function(T element) test) =>
       _forwardBehaviorSubject<T>((s) => s.skipWhile(test));
 
   @override
-  Stream<T> distinct([bool Function(T previous, T next) equals]) =>
+  ValueStream<T> distinct([bool Function(T previous, T next) equals]) =>
       _forwardBehaviorSubject<T>((s) => s.distinct(equals));
 
   @override
-  Stream<T> timeout(Duration timeLimit,
+  ValueStream<T> timeout(Duration timeLimit,
           {void Function(EventSink<T> sink) onTimeout}) =>
       _forwardBehaviorSubject<T>(
           (s) => s.timeout(timeLimit, onTimeout: onTimeout));
