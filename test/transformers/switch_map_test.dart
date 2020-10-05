@@ -137,4 +137,18 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.switchMap closes after the last inner Stream closed - issue/511',
+      () async {
+    final outer = StreamController<bool>();
+    final inner = BehaviorSubject.seeded(false);
+    final stream = outer.stream.switchMap((_) => inner.stream);
+
+    expect(stream, emitsThrough(emitsDone));
+
+    outer.add(true);
+    await Future<void>.delayed(Duration.zero);
+    await inner.close();
+    await outer.close();
+  });
 }
