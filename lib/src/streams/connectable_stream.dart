@@ -50,8 +50,9 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
 
   @override
@@ -65,12 +66,15 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
         connect();
       }
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
+    _subject.onListen = _subject.onCancel = null;
+
     return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
@@ -88,9 +92,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
       );
     };
 
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }
@@ -105,8 +107,9 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final BehaviorSubject<T> _subject;
 
   ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
@@ -139,12 +142,15 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
         connect();
       }
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
+    _subject.onListen = _subject.onCancel = null;
+
     return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
@@ -162,9 +168,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
       );
     };
 
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }
@@ -202,8 +206,9 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   }
 
   ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
 
   @override
@@ -217,12 +222,15 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
         connect();
       }
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
+    _subject.onListen = _subject.onCancel = null;
+
     return ConnectableStreamSubscription<T>(
       _source.listen(_subject.add, onError: _subject.addError),
       _subject,
@@ -240,9 +248,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
       );
     };
 
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }

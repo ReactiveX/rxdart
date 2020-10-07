@@ -169,5 +169,36 @@ void main() {
 
       expect(await stream.isEmpty, true);
     });
+
+    test('refcount cancels source subscription when no listeners remain',
+        () async {
+      {
+        var isCanceled = false;
+
+        final controller =
+            StreamController<void>(onCancel: () => isCanceled = true);
+        final stream = controller.stream.shareValue();
+
+        StreamSubscription subscription;
+        subscription = stream.listen(null);
+
+        await subscription.cancel();
+        expect(isCanceled, true);
+      }
+
+      {
+        var isCanceled = false;
+
+        final controller =
+            StreamController<void>(onCancel: () => isCanceled = true);
+        final stream = controller.stream.shareValueSeeded(null);
+
+        StreamSubscription subscription;
+        subscription = stream.listen(null);
+
+        await subscription.cancel();
+        expect(isCanceled, true);
+      }
+    });
   });
 }
