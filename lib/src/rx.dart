@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/streams/from_callable.dart';
 import 'package:rxdart/streams.dart';
 
 /// A utility class that provides static methods to create the various Streams
@@ -704,6 +705,33 @@ abstract class Rx {
         streamI,
         combiner,
       );
+
+  /// Returns a Stream that, when listening to it, calls a function you specify
+  /// and then emits the value returned from that function.
+  ///
+  /// If result from invoking [callable] function:
+  /// - Is a [Future]: when the future completes, this stream will fire one event, either
+  ///   data or error, and then close with a done-event.
+  /// - Is a [T]: this stream emits a single data event and then completes with a done event.
+  ///
+  /// By default, a [FromCallableStream] is a single-subscription Stream. However, it's possible
+  /// to make them reusable.
+  /// This Stream is effectively equivalent to one created by
+  /// `(() async* { yield await callable() }())` or `(() async* { yield callable(); }())`.
+  ///
+  /// [ReactiveX doc](http://reactivex.io/documentation/operators/from.html)
+  ///
+  /// ### Example
+  ///
+  ///     Rx.fromCallable(() => 'Value').listen(print); // prints Value
+  ///
+  ///     Rx.fromCallable(() async {
+  ///       await Future<void>.delayed(const Duration(seconds: 1));
+  ///       return 'Value';
+  ///     }).listen(print); // prints Value
+  static Stream<T> fromCallable<T>(FutureOr<T> Function() callable,
+          {bool reusable = false}) =>
+      FromCallableStream(callable, reusable: reusable);
 
   /// Flattens the items emitted by the given [streams] into a single Stream
   /// sequence.

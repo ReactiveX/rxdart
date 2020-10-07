@@ -7,6 +7,7 @@ import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
 import 'streams/defer_test.dart' as defer_test;
 import 'streams/fork_join_test.dart' as fork_join_test;
+import 'streams/from_callable_test.dart' as from_callable_test;
 import 'streams/merge_test.dart' as merge_test;
 import 'streams/never_test.dart' as never_test;
 import 'streams/publish_connectable_stream_test.dart'
@@ -91,6 +92,7 @@ void main() {
   concat_test.main();
   defer_test.main();
   fork_join_test.main();
+  from_callable_test.main();
   merge_test.main();
   never_test.main();
   range_test.main();
