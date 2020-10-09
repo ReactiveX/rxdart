@@ -1,5 +1,6 @@
 import 'dart:async';
 
+/// The function used to create the [Stream] which triggers a re-listen.
 typedef RetryWhenStreamFactory = Stream<void> Function(
     dynamic error, StackTrace stack);
 
