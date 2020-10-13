@@ -15,11 +15,13 @@ void main() {
       when(stream.listen(any, onError: anyNamed('onError')))
           .thenReturn(Stream<int>.fromIterable(const [1, 2, 3]).listen(null));
 
-      verifyNever(stream.listen(any, onError: anyNamed('onError')));
+      verifyNever(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
 
       connectableStream.connect();
 
-      verify(stream.listen(any, onError: anyNamed('onError')));
+      verify(stream.listen(any,
+          onError: anyNamed('onError'), onDone: anyNamed('onDone')));
     });
 
     test('should begin emitting items after connection', () {
@@ -74,6 +76,37 @@ void main() {
           .autoConnect(connection: (subscription) => subscription.cancel());
 
       expect(await stream.isEmpty, true);
+    });
+
+    test('refCount cancels source subscription when no listeners remain',
+        () async {
+      var isCanceled = false;
+
+      final controller =
+          StreamController<void>(onCancel: () => isCanceled = true);
+      final stream = controller.stream.share();
+
+      StreamSubscription subscription;
+      subscription = stream.listen(null);
+
+      await subscription.cancel();
+      expect(isCanceled, true);
+    });
+
+    test('can close share() stream', () async {
+      final isCanceled = Completer<void>();
+
+      final controller = StreamController<bool>();
+      controller.stream
+          .share()
+          .doOnCancel(() => isCanceled.complete())
+          .listen(null);
+
+      controller.add(true);
+      await Future<void>.delayed(Duration.zero);
+      await controller.close();
+
+      expect(isCanceled.future, completes);
     });
   });
 }

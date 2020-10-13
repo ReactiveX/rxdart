@@ -50,47 +50,46 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
+
+  ConnectableStreamSubscription<T> _connect() =>
+      ConnectableStreamSubscription<T>(
+        _source.listen(
+          _subject.add,
+          onError: _subject.addError,
+          onDone: _subject.close,
+        ),
+        _subject,
+      );
 
   @override
   Stream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
-      if (connection != null) {
-        connection(connect());
-      } else {
-        connect();
-      }
+      final subscription = _connect();
+      connection?.call(subscription);
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
-      _subject,
-    );
+    _subject.onListen = _subject.onCancel = null;
+    return _connect();
   }
 
   @override
   Stream<T> refCount() {
     ConnectableStreamSubscription<T> subscription;
 
-    _subject.onListen = () {
-      subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
-        _subject,
-      );
-    };
-
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onListen = () => subscription = _connect();
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }
@@ -105,8 +104,9 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final BehaviorSubject<T> _subject;
 
   ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
@@ -128,43 +128,41 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
         BehaviorSubject<T>.seeded(seedValue, sync: sync),
       );
 
+  ConnectableStreamSubscription<T> _connect() =>
+      ConnectableStreamSubscription<T>(
+        _source.listen(
+          _subject.add,
+          onError: _subject.addError,
+          onDone: _subject.close,
+        ),
+        _subject,
+      );
+
   @override
   ValueStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
-      if (connection != null) {
-        connection(connect());
-      } else {
-        connect();
-      }
+      final subscription = _connect();
+      connection?.call(subscription);
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
-      _subject,
-    );
+    _subject.onListen = _subject.onCancel = null;
+    return _connect();
   }
 
   @override
   ValueStream<T> refCount() {
     ConnectableStreamSubscription<T> subscription;
 
-    _subject.onListen = () {
-      subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
-        _subject,
-      );
-    };
-
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onListen = () => subscription = _connect();
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }
@@ -202,47 +200,46 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   }
 
   ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source =
-            source.isBroadcast ?? true ? source : source.asBroadcastStream(),
+      : _source = source.isBroadcast ?? true
+            ? source
+            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
+
+  ConnectableStreamSubscription<T> _connect() =>
+      ConnectableStreamSubscription<T>(
+        _source.listen(
+          _subject.add,
+          onError: _subject.addError,
+          onDone: _subject.close,
+        ),
+        _subject,
+      );
 
   @override
   ReplayStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription) connection,
   }) {
     _subject.onListen = () {
-      if (connection != null) {
-        connection(connect());
-      } else {
-        connect();
-      }
+      final subscription = _connect();
+      connection?.call(subscription);
     };
+    _subject.onCancel = null;
 
     return _subject;
   }
 
   @override
   StreamSubscription<T> connect() {
-    return ConnectableStreamSubscription<T>(
-      _source.listen(_subject.add, onError: _subject.addError),
-      _subject,
-    );
+    _subject.onListen = _subject.onCancel = null;
+    return _connect();
   }
 
   @override
   ReplayStream<T> refCount() {
     ConnectableStreamSubscription<T> subscription;
 
-    _subject.onListen = () {
-      subscription = ConnectableStreamSubscription<T>(
-        _source.listen(_subject.add, onError: _subject.addError),
-        _subject,
-      );
-    };
-
-    _subject.onCancel = () {
-      subscription.cancel();
-    };
+    _subject.onListen = () => subscription = _connect();
+    _subject.onCancel = () => subscription.cancel();
 
     return _subject;
   }
@@ -265,10 +262,8 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   ConnectableStreamSubscription(this._source, this._subject);
 
   @override
-  Future<dynamic> cancel() {
-    _subject.close();
-    return _source.cancel();
-  }
+  Future<dynamic> cancel() =>
+      _source.cancel().then<void>((_) => _subject.close());
 
   @override
   Future<E> asFuture<E>([E futureValue]) => _source.asFuture(futureValue);
