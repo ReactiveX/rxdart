@@ -15,7 +15,7 @@ class SearchErrorWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 16.0),
             child: Text(
-              "Rate limit exceeded",
+              'Rate limit exceeded',
               style: TextStyle(
                 color: Colors.red[300],
               ),

@@ -12,9 +12,9 @@ class GithubApi {
   GithubApi({
     HttpClient client,
     Map<String, SearchResult> cache,
-    this.baseUrl = "https://api.github.com/search/repositories?q=",
-  })  : this.client = client ?? http.Client(),
-        this.cache = cache ?? <String, SearchResult>{};
+    this.baseUrl = 'https://api.github.com/search/repositories?q=',
+  })  : client = client ?? http.Client(),
+        cache = cache ?? <String, SearchResult>{};
 
   /// Search Github for repositories using the given term
   Future<SearchResult> search(String term) async {
@@ -30,7 +30,7 @@ class GithubApi {
   }
 
   Future<SearchResult> _fetchResults(String term) async {
-    final response = await client.get(Uri.parse("$baseUrl$term"));
+    final response = await client.get(Uri.parse('$baseUrl$term'));
     final results = json.decode(response.body);
 
     return SearchResult.fromJson(results['items']);
@@ -67,8 +67,8 @@ class SearchResultItem {
   factory SearchResultItem.fromJson(Map<String, Object> json) {
     return SearchResultItem(
       json['full_name'] as String,
-      json["html_url"] as String,
-      (json["owner"] as Map<String, Object>)["avatar_url"] as String,
+      json['html_url'] as String,
+      (json['owner'] as Map<String, Object>)['avatar_url'] as String,
     );
   }
 }

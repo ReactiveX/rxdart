@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:github_search/github_api.dart';
 import 'package:github_search/search_bloc.dart';
 import 'package:github_search/search_state.dart';
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' show TypeMatcher;
 
 class MockGithubApi extends Mock implements GithubApi {}
 
