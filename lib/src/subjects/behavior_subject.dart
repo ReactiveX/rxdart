@@ -142,6 +142,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   @override
   Object get error => _wrapper.latestError;
 
+  /// Get the stack trace for latest error emitted by the Subject
+  StackTrace get errorStackTrace => _wrapper.latestStackTrace;
+
   @override
   BehaviorSubject<R> createForwardingSubject<R>({
     void Function() onListen,

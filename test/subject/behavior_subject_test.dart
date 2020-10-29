@@ -583,6 +583,7 @@ void main() {
       final subject = BehaviorSubject<int>();
 
       expect(subject.error, isNull);
+      expect(subject.errorStackTrace, isNull);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
@@ -590,6 +591,7 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.error, isNull);
+      expect(subject.errorStackTrace, isNull);
     });
 
     test('error returns null for a seeded subject with null seed', () {
@@ -597,6 +599,7 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(null);
 
       expect(subject.error, isNull);
+      expect(subject.errorStackTrace, isNull);
     });
 
     test('can synchronously get the latest error', () async {
@@ -609,8 +612,10 @@ void main() {
       unseeded.add(2);
       unseeded.add(3);
       expect(unseeded.error, isNull);
+      expect(unseeded.errorStackTrace, isNull);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.error, isException);
+      expect(unseeded.errorStackTrace, isNull);
 
       seeded.add(1);
       seeded.add(2);
@@ -618,6 +623,7 @@ void main() {
       expect(seeded.error, isNull);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.error, isException);
+      expect(seeded.errorStackTrace, isNull);
     });
 
     test('emits event after error to every subscriber, ensures error is null',
@@ -631,15 +637,21 @@ void main() {
       unseeded.add(2);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.error, isException);
+      expect(unseeded.errorStackTrace, isNull);
+
       unseeded.add(3);
       expect(unseeded.error, isNull);
+      expect(unseeded.errorStackTrace, isNull);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.error, isException);
+      expect(seeded.errorStackTrace, isNull);
+
       seeded.add(3);
       expect(seeded.error, isNull);
+      expect(seeded.errorStackTrace, isNull);
     });
 
     test(
