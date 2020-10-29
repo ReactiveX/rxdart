@@ -59,7 +59,8 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
                   other.transform(MaterializeStreamTransformer()),
                   (Notification<S> s, Notification<T> t) =>
                       s.kind == t.kind &&
-                      s.error?.toString() == t.error?.toString() &&
+                      s.errorAndStackTrace?.error?.toString() ==
+                          t.errorAndStackTrace?.error?.toString() &&
                       doCompare(s.value, t.value))
               .where((isEqual) => !isEqual)
               .listen(emitAndClose,

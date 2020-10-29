@@ -158,7 +158,7 @@ void main() {
         onError: (Object error) {
           expect(stream.value, isNull);
           expect(stream.hasValue, isFalse);
-          expect(stream.error, error);
+          expect(stream.errorAndStackTrace.error, error);
           expect(stream.hasError, isTrue);
         },
       );

@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
 /// can be listened to multiple times and does not begin emitting items when
@@ -174,7 +175,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   bool get hasValue => _subject.hasValue;
 
   @override
-  Object get error => _subject.error;
+  ErrorAndStackTrace get errorAndStackTrace => _subject.errorAndStackTrace;
 
   @override
   bool get hasError => _subject.hasError;
@@ -248,7 +249,8 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   List<T> get values => _subject.values;
 
   @override
-  List<Object> get errors => _subject.errors;
+  List<ErrorAndStackTrace> get errorAndStackTraces =>
+      _subject.errorAndStackTraces;
 }
 
 /// A special [StreamSubscription] that not only cancels the connection to
