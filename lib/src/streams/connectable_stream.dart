@@ -384,7 +384,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// ```
   ValueConnectableStream<T> publishValueSeeded(T seedValue) =>
-      ValueConnectableStream<T>.seeded(this, seedValue);
+      ValueConnectableStream<T>.seeded(this, seedValue, sync: true);
 
   /// Convert the current Stream into a [ReplayConnectableStream]
   /// that can be listened to multiple times. It will not begin emitting items
