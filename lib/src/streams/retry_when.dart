@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/streams/utils.dart';
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
 /// Creates a Stream that will recreate and re-listen to the source
 /// Stream when the notifier emits a new value. If the source Stream
@@ -67,7 +68,7 @@ class RetryWhenStream<T> extends Stream<T> {
   final RetryWhenStreamFactory retryWhenFactory;
   StreamController<T> _controller;
   StreamSubscription<T> _subscription;
-  final _errors = <ErrorAndStacktrace>[];
+  final _errors = <ErrorAndStackTrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created by the provided factory method).
@@ -108,14 +109,14 @@ class RetryWhenStream<T> extends Stream<T> {
         sub = retryWhenFactory(e, s).listen(
           (event) {
             sub.cancel();
-            _errors.add(ErrorAndStacktrace(e, s));
+            _errors.add(ErrorAndStackTrace(e, s));
             _retry();
           },
           onError: (Object e, [StackTrace s]) {
             sub.cancel();
             _controller
               ..addError(RetryError.onReviveFailed(
-                _errors..add(ErrorAndStacktrace(e, s)),
+                _errors..add(ErrorAndStackTrace(e, s)),
               ))
               ..close();
           },

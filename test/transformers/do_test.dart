@@ -146,7 +146,7 @@ void main() {
         actual.add(notification);
 
         if (notification.isOnError) {
-          stacktrace = notification.stackTrace;
+          stacktrace = notification.errorAndStackTrace?.stackTrace;
         }
       });
 
@@ -155,8 +155,8 @@ void main() {
 
       await expectLater(actual, [
         Notification.onData(1),
-        Notification<void>.onError(exception, stacktrace),
-        Notification<void>.onDone()
+        Notification<int>.onError(exception, stacktrace),
+        Notification<int>.onDone(),
       ]);
     });
 
