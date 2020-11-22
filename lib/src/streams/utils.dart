@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
+/// Function signature for the factory method used to create the [Stream] which triggers a re-listen.
 typedef RetryWhenStreamFactory = Stream<void> Function(
   Object error,
   StackTrace? stackTrace,
