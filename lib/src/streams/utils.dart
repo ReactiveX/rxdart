@@ -2,11 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
-typedef RetryWhenStreamFactory = Stream<void> Function(
-  Object error,
-  StackTrace? stackTrace,
-);
-
 /// An [Error] which can be thrown by a retry [Stream].
 class RetryError extends Error {
   /// Message describing the retry error.

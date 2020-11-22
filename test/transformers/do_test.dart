@@ -286,7 +286,7 @@ void main() {
 
       // a cancel() call may occur after the controller is already closed
       // in that case, the error is forwarded to the current [Zone]
-      runZoned(
+      runZonedGuarded(
         () {
           Stream.value(1)
               .doOnCancel(() =>
@@ -299,8 +299,7 @@ void main() {
               .listen(null)
                 ..cancel();
         },
-        onError: expectAsync2(
-            (Exception e, [StackTrace? s]) => expect(e, isException),
+        expectAsync2((Object e, [StackTrace? s]) => expect(e, isException),
             count: 2),
       );
 

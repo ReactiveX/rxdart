@@ -65,7 +65,10 @@ class RetryWhenStream<T> extends Stream<T> {
   final Stream<T> Function() streamFactory;
 
   /// The factory method used to create the [Stream] which triggers a re-listen
-  final RetryWhenStreamFactory retryWhenFactory;
+  final Stream<void> Function(
+    Object error,
+    StackTrace? stackTrace,
+  ) retryWhenFactory;
   StreamController<T>? _controller;
   late StreamSubscription<T> _subscription;
   final _errors = <ErrorAndStackTrace>[];
