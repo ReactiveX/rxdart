@@ -89,6 +89,8 @@ extension ConcatExtensions<T> on Stream<T> {
   Stream<T> concatWith(Iterable<Stream<T>> other) {
     final concatStream = ConcatStream<T>([this, ...other]);
 
-    return isBroadcast ? concatStream.asBroadcastStream() : concatStream;
+    return isBroadcast
+        ? concatStream.asBroadcastStream(onCancel: (s) => s.cancel())
+        : concatStream;
   }
 }

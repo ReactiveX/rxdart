@@ -1,4 +1,5 @@
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/src/utils/optional.dart';
 
 /// The type of event used in [Notification]
 enum Kind {
@@ -23,7 +24,7 @@ class Notification<T> {
   final Kind kind;
 
   /// The wrapped value, if applicable
-  final T? value;
+  final Optional<T>? _value;
 
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace? errorAndStackTrace;
@@ -31,11 +32,11 @@ class Notification<T> {
   /// Constructs a [Notification] which, depending on the [kind], wraps either
   /// [value], or [errorAndStackTrace], or neither if it is just a
   /// [Kind.OnData] event.
-  const Notification(this.kind, this.value, this.errorAndStackTrace);
+  const Notification(this.kind, this._value, this.errorAndStackTrace);
 
   /// Constructs a [Notification] with [Kind.OnData] and wraps a [value]
   factory Notification.onData(T value) =>
-      Notification<T>(Kind.OnData, value, null);
+      Notification<T>(Kind.OnData, Optional(value), null);
 
   /// Constructs a [Notification] with [Kind.OnDone]
   factory Notification.onDone() => const Notification(Kind.OnDone, null, null);
@@ -51,16 +52,16 @@ class Notification<T> {
       other is Notification &&
           runtimeType == other.runtimeType &&
           kind == other.kind &&
-          value == other.value &&
+          _value == other._value &&
           errorAndStackTrace == other.errorAndStackTrace;
 
   @override
   int get hashCode =>
-      kind.hashCode ^ value.hashCode ^ errorAndStackTrace.hashCode;
+      kind.hashCode ^ _value.hashCode ^ errorAndStackTrace.hashCode;
 
   @override
   String toString() =>
-      'Notification{kind: $kind, value: $value, errorAndStackTrace: $errorAndStackTrace}';
+      'Notification{kind: $kind, value: ${_value?.value}, errorAndStackTrace: $errorAndStackTrace}';
 
   /// A test to determine if this [Notification] wraps an onData event
   bool get isOnData => kind == Kind.OnData;
@@ -70,4 +71,7 @@ class Notification<T> {
 
   /// A test to determine if this [Notification] wraps an error event
   bool get isOnError => kind == Kind.OnError;
+
+  /// Return data if [kind] is [Kind.OnData].
+  T get requiredData => _value!.value;
 }

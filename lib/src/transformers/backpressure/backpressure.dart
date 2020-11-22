@@ -31,21 +31,24 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   final bool Function(List<S> queue)? _closeWindowWhen;
   final bool _ignoreEmptyWindows;
   final bool _dispatchOnClose;
-  final queue = <S>[];
+  final Queue<S> queue = DoubleLinkedQueue<S>();
+  final int? maxLengthQueue;
   var skip = 0;
   var _hasData = false;
   var _mainClosed = false;
   StreamSubscription<dynamic>? _windowSubscription;
 
   _BackpressureStreamSink(
-      this._strategy,
-      this._windowStreamFactory,
-      this._onWindowStart,
-      this._onWindowEnd,
-      this._startBufferEvery,
-      this._closeWindowWhen,
-      this._ignoreEmptyWindows,
-      this._dispatchOnClose);
+    this._strategy,
+    this._windowStreamFactory,
+    this._onWindowStart,
+    this._onWindowEnd,
+    this._startBufferEvery,
+    this._closeWindowWhen,
+    this._ignoreEmptyWindows,
+    this._dispatchOnClose,
+    this.maxLengthQueue,
+  );
 
   @override
   void add(EventSink<T> sink, S data) {
@@ -54,6 +57,10 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
     if (skip == 0) {
       queue.add(data);
+
+      if (maxLengthQueue != null && queue.length > maxLengthQueue!) {
+        queue.removeFirstElements(queue.length - maxLengthQueue!);
+      }
     }
 
     if (skip > 0) {
@@ -136,8 +143,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   void maybeCloseWindow(EventSink<T> sink) {
-    if (_closeWindowWhen != null &&
-        _closeWindowWhen!(UnmodifiableListView(queue))) {
+    if (_closeWindowWhen != null && _closeWindowWhen!(unmodifiableQueue)) {
       resolveWindowEnd(sink);
     }
   }
@@ -170,10 +176,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
   void resolveWindowStart(S event, EventSink<T> sink) {
     if (_onWindowStart != null) {
-      var startEvent = _onWindowStart!(event);
-      if (startEvent != null) {
-        sink.add(startEvent);
-      }
+      sink.add(_onWindowStart!(event));
     }
   }
 
@@ -181,10 +184,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
     if (isControllerClosing &&
         _strategy == WindowStrategy.eventAfterLastWindow) {
       if (_hasData && queue.length > 1 && _onWindowEnd != null) {
-        var endEvent = _onWindowEnd!(List<S>.unmodifiable(queue));
-        if (endEvent != null) {
-          sink.add(endEvent);
-        }
+        sink.add(_onWindowEnd!(unmodifiableQueue));
       }
 
       queue.clear();
@@ -208,12 +208,16 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
     if (_hasData && (queue.isNotEmpty || !_ignoreEmptyWindows)) {
       if (_onWindowEnd != null) {
-        sink.add(_onWindowEnd!(List<S>.unmodifiable(queue)));
+        sink.add(_onWindowEnd!(unmodifiableQueue));
       }
 
       // prepare the buffer for the next window.
       // by default, this is just a cleared buffer
       if (!isControllerClosing && _startBufferEvery > 0) {
+        skip = _startBufferEvery > queue.length
+            ? _startBufferEvery - queue.length
+            : 0;
+
         // ...unless startBufferEvery is provided.
         // here we backtrack to the first event of the last buffer
         // and count forward using startBufferEvery until we reach
@@ -243,22 +247,18 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
         // skip becomes 1
         // event 2 is skipped, skip becomes 0
         // event 3 is now added to the buffer
-        final startWith = (_startBufferEvery < queue.length)
-            ? queue.sublist(_startBufferEvery)
-            : <S>[];
-
-        skip = _startBufferEvery > queue.length
-            ? _startBufferEvery - queue.length
-            : 0;
-
-        queue
-          ..clear()
-          ..addAll(startWith);
+        if (_startBufferEvery < queue.length) {
+          queue.removeFirstElements(_startBufferEvery);
+        } else {
+          queue.clear();
+        }
       } else {
         queue.clear();
       }
     }
   }
+
+  List<S> get unmodifiableQueue => List<S>.unmodifiable(queue);
 }
 
 /// A highly customizable [StreamTransformer] which can be configured
@@ -297,6 +297,11 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   /// Handler which fires when the window closes
   final T Function(List<S> queue)? onWindowEnd;
 
+  /// Maximum length of the buffer.
+  /// Specify this value to avoid running out of memory when adding too many events to the buffer.
+  /// If it's `null`, maximum length of the buffer is unlimited.
+  final int? maxLengthQueue;
+
   /// Used to skip an amount of events
   final int startBufferEvery;
 
@@ -319,17 +324,21 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ///
   /// For more info on the parameters, see [BackpressureStreamTransformer],
   /// or see the various back pressure [StreamTransformer]s for examples.
-  BackpressureStreamTransformer(this.strategy, this.windowStreamFactory,
-      {this.onWindowStart,
-      this.onWindowEnd,
-      this.startBufferEvery = 0,
-      this.closeWindowWhen,
-      this.ignoreEmptyWindows = true,
-      this.dispatchOnClose = true});
+  BackpressureStreamTransformer(
+    this.strategy,
+    this.windowStreamFactory, {
+    this.onWindowStart,
+    this.onWindowEnd,
+    this.startBufferEvery = 0,
+    this.closeWindowWhen,
+    this.ignoreEmptyWindows = true,
+    this.dispatchOnClose = true,
+    this.maxLengthQueue,
+  });
 
   @override
   Stream<T> bind(Stream<S> stream) {
-    var sink = _BackpressureStreamSink(
+    final sink = _BackpressureStreamSink(
       strategy,
       windowStreamFactory,
       onWindowStart,
@@ -338,7 +347,17 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       closeWindowWhen,
       ignoreEmptyWindows,
       dispatchOnClose,
+      maxLengthQueue,
     );
     return forwardStream(stream, sink);
+  }
+}
+
+extension _RemoveFirstNQueueExtension<T> on Queue<T> {
+  /// Removes the first [count] elements of this queue.
+  void removeFirstElements(int count) {
+    for (var i = 0; i < count; i++) {
+      removeFirst();
+    }
   }
 }

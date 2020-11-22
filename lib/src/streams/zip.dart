@@ -384,6 +384,8 @@ extension ZipWithExtension<T> on Stream<T> {
   Stream<R> zipWith<S, R>(Stream<S> other, R Function(T t, S s) zipper) {
     final stream = ZipStream.zip2(this, other, zipper);
 
-    return isBroadcast ? stream.asBroadcastStream() : stream;
+    return isBroadcast
+        ? stream.asBroadcastStream(onCancel: (s) => s.cancel())
+        : stream;
   }
 }

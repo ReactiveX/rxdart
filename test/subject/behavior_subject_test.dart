@@ -582,21 +582,21 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(subject.error, isNull);
+      expect(subject.errorAndStackTrace?.error, isNull);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>.seeded(1);
 
-      expect(subject.error, isNull);
+      expect(subject.errorAndStackTrace?.error, isNull);
     });
 
     test('error returns null for a seeded subject with null seed', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int?>.seeded(null);
 
-      expect(subject.error, isNull);
+      expect(subject.errorAndStackTrace?.error, isNull);
     });
 
     test('can synchronously get the latest error', () async {
@@ -608,16 +608,16 @@ void main() {
       unseeded.add(1);
       unseeded.add(2);
       unseeded.add(3);
-      expect(unseeded.error, isNull);
+      expect(unseeded.errorAndStackTrace?.error, isNull);
       unseeded.addError(Exception('oh noes!'));
-      expect(unseeded.error, isException);
+      expect(unseeded.errorAndStackTrace?.error, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
-      expect(seeded.error, isNull);
+      expect(seeded.errorAndStackTrace?.error, isNull);
       seeded.addError(Exception('oh noes!'));
-      expect(seeded.error, isException);
+      expect(seeded.errorAndStackTrace?.error, isException);
     });
 
     test('emits event after error to every subscriber, ensures error is null',
@@ -630,16 +630,16 @@ void main() {
       unseeded.add(1);
       unseeded.add(2);
       unseeded.addError(Exception('oh noes!'));
-      expect(unseeded.error, isException);
+      expect(unseeded.errorAndStackTrace?.error, isException);
       unseeded.add(3);
-      expect(unseeded.error, isNull);
+      expect(unseeded.errorAndStackTrace?.error, isNull);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
-      expect(seeded.error, isException);
+      expect(seeded.errorAndStackTrace?.error, isException);
       seeded.add(3);
-      expect(seeded.error, isNull);
+      expect(seeded.errorAndStackTrace?.error, isNull);
     });
 
     test(
@@ -731,6 +731,385 @@ void main() {
           Rx.combineLatest2(a, b, (String _a, String _b) => 'ab').shareValue();
       expect(await bug.first, 'ab');
       expect(await bug.first, 'ab');
+    });
+
+    test('rxdart #477/#500 - a', () async {
+      final a = BehaviorSubject.seeded('a')
+          .switchMap((_) => BehaviorSubject.seeded('a'))
+            ..listen(print);
+      await pumpEventQueue();
+      expect(await a.first, 'a');
+    });
+
+    test('rxdart #477/#500 - b', () async {
+      final b = BehaviorSubject.seeded('b')
+          .map((_) => 'b')
+          .switchMap((_) => BehaviorSubject.seeded('b'))
+            ..listen(print);
+      await pumpEventQueue();
+      expect(await b.first, 'b');
+    });
+
+    group('override built-in', () {
+      test('where', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.where((event) => event.isOdd);
+          expect(stream, emitsInOrder(<int>[1, 3]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.where((event) => event.isOdd);
+          expect(stream, emitsInOrder(<int>[1, 3]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+      });
+
+      test('map', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var mapped = behaviorSubject.map((event) => event + 1);
+          expect(mapped, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var mapped = behaviorSubject.map((event) => event + 1);
+          expect(mapped, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('asyncMap', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var mapped =
+              behaviorSubject.asyncMap((event) => Future.value(event + 1));
+          expect(mapped, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var mapped =
+              behaviorSubject.asyncMap((event) => Future.value(event + 1));
+          expect(mapped, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('asyncExpand', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream =
+              behaviorSubject.asyncExpand((event) => Stream.value(event + 1));
+          expect(stream, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream =
+              behaviorSubject.asyncExpand((event) => Stream.value(event + 1));
+          expect(stream, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('handleError', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.handleError(
+            expectAsync1<void, dynamic>(
+              (dynamic e) => expect(e, isException),
+              count: 1,
+            ),
+          );
+
+          expect(
+            stream,
+            emitsInOrder(<int>[1, 2]),
+          );
+
+          behaviorSubject.addError(Exception());
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.handleError(
+            expectAsync1<void, dynamic>(
+              (dynamic e) => expect(e, isException),
+              count: 1,
+            ),
+          );
+
+          expect(
+            stream,
+            emitsInOrder(<int>[1, 2]),
+          );
+
+          behaviorSubject.add(1);
+          behaviorSubject.addError(Exception());
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('expand', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.expand((event) => [event + 1]);
+          expect(stream, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.expand((event) => [event + 1]);
+          expect(stream, emitsInOrder(<int>[2, 3]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('transform', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.transform(
+              IntervalStreamTransformer(const Duration(milliseconds: 100)));
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.transform(
+              IntervalStreamTransformer(const Duration(milliseconds: 100)));
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('cast', () {
+        {
+          var behaviorSubject = BehaviorSubject<Object>.seeded(1);
+
+          var stream = behaviorSubject.cast<int>();
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<Object>();
+
+          var stream = behaviorSubject.cast<int>();
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('take', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.take(2);
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.take(2);
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+      });
+
+      test('takeWhile', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.takeWhile((element) => element <= 2);
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.takeWhile((element) => element <= 2);
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+        }
+      });
+
+      test('skip', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.skip(2);
+          expect(stream, emitsInOrder(<int>[3, 4]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.skip(2);
+          expect(stream, emitsInOrder(<int>[3, 4]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+      });
+
+      test('skipWhile', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.skipWhile((element) => element < 3);
+          expect(stream, emitsInOrder(<int>[3, 4]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.skipWhile((element) => element < 3);
+          expect(stream, emitsInOrder(<int>[3, 4]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+      });
+
+      test('distinct', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject.distinct();
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(2);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject.distinct();
+          expect(stream, emitsInOrder(<int>[1, 2]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(2);
+        }
+      });
+
+      test('timeout', () {
+        {
+          var behaviorSubject = BehaviorSubject.seeded(1);
+
+          var stream = behaviorSubject
+              .interval(const Duration(milliseconds: 100))
+              .timeout(
+                const Duration(milliseconds: 70),
+                onTimeout: expectAsync1(
+                  (EventSink<int> sink) {},
+                  count: 4,
+                ),
+              );
+
+          expect(stream, emitsInOrder(<int>[1, 2, 3, 4]));
+
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+
+        {
+          var behaviorSubject = BehaviorSubject<int>();
+
+          var stream = behaviorSubject
+              .interval(const Duration(milliseconds: 100))
+              .timeout(
+                const Duration(milliseconds: 70),
+                onTimeout: expectAsync1(
+                  (EventSink<int> sink) {},
+                  count: 4,
+                ),
+              );
+
+          expect(stream, emitsInOrder(<int>[1, 2, 3, 4]));
+
+          behaviorSubject.add(1);
+          behaviorSubject.add(2);
+          behaviorSubject.add(3);
+          behaviorSubject.add(4);
+        }
+      });
     });
   });
 }

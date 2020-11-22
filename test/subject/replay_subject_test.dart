@@ -125,7 +125,9 @@ void main() {
       subject.addError(e3);
 
       await expectLater(
-          subject.errors, containsAllInOrder(<Exception>[e1, e2, e3]));
+        subject.errorAndStackTraces.map((es) => es.error),
+        containsAllInOrder(<Exception>[e1, e2, e3]),
+      );
     });
 
     test('replays the most recently emitted items up to a max size', () async {

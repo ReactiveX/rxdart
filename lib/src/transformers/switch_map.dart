@@ -20,9 +20,10 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
       sink.add,
       onError: sink.addError,
       onDone: () {
+        _mapperSubscription = null;
+
         if (_inputClosed) {
           sink.close();
-          _mapperSubscription = null;
         }
       },
     );

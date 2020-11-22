@@ -146,7 +146,7 @@ void main() {
         actual.add(notification);
 
         if (notification.isOnError) {
-          stacktrace = notification.errorAndStackTrace!.stackTrace;
+          stacktrace = notification.errorAndStackTrace?.stackTrace;
         }
       });
 
@@ -299,8 +299,10 @@ void main() {
               .listen(null)
                 ..cancel();
         },
-        expectAsync2((Object e, [StackTrace? s]) => expect(e, isException),
-            count: 2),
+        expectAsync2(
+          (Object e, StackTrace s) => expect(e, isException),
+          count: 2,
+        ),
       );
 
       Stream.value(1)

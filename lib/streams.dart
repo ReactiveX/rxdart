@@ -6,6 +6,7 @@ export 'src/streams/concat_eager.dart';
 export 'src/streams/connectable_stream.dart';
 export 'src/streams/defer.dart';
 export 'src/streams/fork_join.dart';
+export 'src/streams/from_callable.dart';
 export 'src/streams/merge.dart';
 export 'src/streams/never.dart';
 export 'src/streams/race.dart';

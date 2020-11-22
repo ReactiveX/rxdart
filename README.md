@@ -86,23 +86,24 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 
 #### List of Classes / Static Factories
 
+- [CombineLatestStream](https://pub.dev/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Rx.combineLatest2](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest2.html)...[Rx.combineLatest9](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest9.html)
 - [ConcatStream](https://pub.dev/documentation/rxdart/latest/rx/ConcatStream-class.html) / [Rx.concat](https://pub.dev/documentation/rxdart/latest/rx/Rx/concat.html)
 - [ConcatEagerStream](https://pub.dev/documentation/rxdart/latest/rx/ConcatEagerStream-class.html) / [Rx.concatEager](https://pub.dev/documentation/rxdart/latest/rx/Rx/concatEager.html)
 - [DeferStream](https://pub.dev/documentation/rxdart/latest/rx/DeferStream-class.html) / [Rx.defer](https://pub.dev/documentation/rxdart/latest/rx/Rx/defer.html)
+- [ForkJoinStream](https://pub.dev/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin2.html)...[Rx.forkJoin9](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin9.html)
+- [FromCallableStream](https://pub.dev/documentation/rxdart/latest/rx/FromCallableStream-class.html) / [Rx.fromCallable](https://pub.dev/documentation/rxdart/latest/rx/Rx/fromCallable.html)
 - [MergeStream](https://pub.dev/documentation/rxdart/latest/rx/MergeStream-class.html) / [Rx.merge](https://pub.dev/documentation/rxdart/latest/rx/Rx/merge.html)
 - [NeverStream](https://pub.dev/documentation/rxdart/latest/rx/NeverStream-class.html) / [Rx.never](https://pub.dev/documentation/rxdart/latest/rx/Rx/never.html)
 - [RaceStream](https://pub.dev/documentation/rxdart/latest/rx/RaceStream-class.html) / [Rx.race](https://pub.dev/documentation/rxdart/latest/rx/Rx/race.html)
+- [RangeStream](https://pub.dev/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://pub.dev/documentation/rxdart/latest/rx/Rx/range.html)
 - [RepeatStream](https://pub.dev/documentation/rxdart/latest/rx/RepeatStream-class.html) / [Rx.repeat](https://pub.dev/documentation/rxdart/latest/rx/Rx/repeat.html)
 - [RetryStream](https://pub.dev/documentation/rxdart/latest/rx/RetryStream-class.html) / [Rx.retry](https://pub.dev/documentation/rxdart/latest/rx/Rx/retry.html)
 - [RetryWhenStream](https://pub.dev/documentation/rxdart/latest/rx/RetryWhenStream-class.html) / [Rx.retryWhen](https://pub.dev/documentation/rxdart/latest/rx/Rx/retryWhen.html)
 - [SequenceEqualStream](https://pub.dev/documentation/rxdart/latest/rx/SequenceEqualStream-class.html) / [Rx.sequenceEqual](https://pub.dev/documentation/rxdart/latest/rx/Rx/sequenceEqual.html)
 - [SwitchLatestStream](https://pub.dev/documentation/rxdart/latest/rx/SwitchLatestStream-class.html) / [Rx.switchLatest](https://pub.dev/documentation/rxdart/latest/rx/Rx/switchLatest.html)
 - [TimerStream](https://pub.dev/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://pub.dev/documentation/rxdart/latest/rx/Rx/timer.html)
-- [CombineLatestStream](https://pub.dev/documentation/rxdart/latest/rx/CombineLatestStream-class.html) (combine2, combine3... combine9) / [Rx.combineLatest2](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest2.html)...[Rx.combineLatest9](https://pub.dev/documentation/rxdart/latest/rx/Rx/combineLatest9.html) 
-- [ForkJoinStream](https://pub.dev/documentation/rxdart/latest/rx/ForkJoinStream-class.html) (join2, join3... join9) / [Rx.forkJoin2](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin2.html)...[Rx.forkJoin9](https://pub.dev/documentation/rxdart/latest/rx/Rx/forkJoin9.html)
-- [RangeStream](https://pub.dev/documentation/rxdart/latest/rx/RangeStream-class.html) / [Rx.range](https://pub.dev/documentation/rxdart/latest/rx/Rx/range.html)
-- [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
 - [UsingStream](https://pub.dev/documentation/rxdart/latest/rx/UsingStream-class.html) / [Rx.using](https://pub.dev/documentation/rxdart/latest/rx/Rx/using.html)
+- [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
 - ** If you're looking for an [Interval](http://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
 
 ### Extension Methods

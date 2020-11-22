@@ -79,6 +79,8 @@ extension MergeExtension<T> on Stream<T> {
   Stream<T> mergeWith(Iterable<Stream<T>> streams) {
     final stream = MergeStream<T>([this, ...streams]);
 
-    return isBroadcast ? stream.asBroadcastStream() : stream;
+    return isBroadcast
+        ? stream.asBroadcastStream(onCancel: (s) => s.cancel())
+        : stream;
   }
 }

@@ -1,3 +1,22 @@
+## 0.25.0-beta3
+  * Bugfix: `switchMap` doesn't close after the last inner Stream closes.
+  * Docs: updated URL for "Single-Subscription vs. Broadcast Streams" doc (thanks [Aman Gupta](https://github.com/Aman9026)).
+  * Add `FromCallableStream`/`Rx.fromCallable`: allows you to create a `Stream` from a callable function.
+  * Override `BehaviorSubject`'s built-in operators to correct replaying the latest value of `BehaviorSubject`.
+  * Bugfix: Source `StreamSubscription` doesn't cancel when cancelling `refCount`, `zip`, `merge`, `concat` StreamSubscription.
+  * Forward done event of upstream to `ConnectableStream`.
+
+## 0.25.0-beta2
+  * Internal refactoring Stream Transformers.
+  * Fixed `RetryStream` example documentation.
+  * Error thrown from `DeferStream` factory will now be caught and converted to `Stream.error`.
+  * `doOnError` now have strong type signature: `Stream<T> doOnError(void Function(Object, StackTrace) onError)`.
+  * Updated `ForkJoinStream`:
+    * When any Stream emits an error, listening still continues unless `cancelOnError: true` on the downstream.
+    * Pause and resume Streams properly.
+  * Added `UsingStream`.
+  * Updated `TimerStream`: Pause and resume Timer when pausing and resuming StreamSubscription.
+
 ## 0.25.0-beta
   * stream transformations on a ValueStream will also return a ValueStream, instead of 
     a standard broadcast Stream

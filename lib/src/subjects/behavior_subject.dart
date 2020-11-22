@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:rxdart/src/rx.dart';
-import 'package:rxdart/src/streams/connectable_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/src/utils/optional.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -43,12 +43,13 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 ///     subject.stream.listen(print); // prints 1
 class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   final _Wrapper<T> _wrapper;
+  final Stream<T> _stream;
 
   BehaviorSubject._(
     StreamController<T> controller,
-    Stream<T> stream,
+    this._stream,
     this._wrapper,
-  ) : super(controller, stream);
+  ) : super(controller, _stream);
 
   /// Constructs a [BehaviorSubject], optionally pass handlers for
   /// [onListen], [onCancel] and a flag to handle events [sync].
@@ -144,20 +145,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   @override
   bool get hasError => _wrapper.latestIsError;
 
-  /// Get the latest error emitted by the Subject
   @override
-  Object? get error => _wrapper.latestErrorAndStackTrace?.error;
-
-  @override
-  Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) {
-    final transformed = super.transform(streamTransformer);
-
-    if (transformed is! ValueStream) {
-      return transformed.shareValue();
-    }
-
-    return transformed;
-  }
+  ErrorAndStackTrace? get errorAndStackTrace =>
+      _wrapper.latestErrorAndStackTrace;
 
   @override
   BehaviorSubject<R> createForwardingSubject<R>({
@@ -170,16 +160,90 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
         onCancel: onCancel,
         sync: sync,
       );
-}
 
-class _Optional<T> {
-  T value;
+  // Override built-in operators.
 
-  _Optional(this.value);
+  @override
+  ValueStream<T> where(bool Function(T event) test) =>
+      _forwardBehaviorSubject<T>((s) => s.where(test));
+
+  @override
+  ValueStream<S> map<S>(S Function(T event) convert) =>
+      _forwardBehaviorSubject<S>((s) => s.map(convert));
+
+  @override
+  ValueStream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) =>
+      _forwardBehaviorSubject<E>((s) => s.asyncMap(convert));
+
+  @override
+  ValueStream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) =>
+      _forwardBehaviorSubject<E>((s) => s.asyncExpand(convert));
+
+  @override
+  ValueStream<T> handleError(Function onError,
+          {bool Function(dynamic error)? test}) =>
+      _forwardBehaviorSubject<T>((s) => s.handleError(onError, test: test));
+
+  @override
+  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
+      _forwardBehaviorSubject<S>((s) => s.expand(convert));
+
+  @override
+  ValueStream<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>
+      _forwardBehaviorSubject<S>((s) => s.transform(streamTransformer));
+
+  @override
+  ValueStream<R> cast<R>() => _forwardBehaviorSubject<R>((s) => s.cast<R>());
+
+  @override
+  ValueStream<T> take(int count) =>
+      _forwardBehaviorSubject<T>((s) => s.take(count));
+
+  @override
+  ValueStream<T> takeWhile(bool Function(T element) test) =>
+      _forwardBehaviorSubject<T>((s) => s.takeWhile(test));
+
+  @override
+  ValueStream<T> skip(int count) =>
+      _forwardBehaviorSubject<T>((s) => s.skip(count));
+
+  @override
+  ValueStream<T> skipWhile(bool Function(T element) test) =>
+      _forwardBehaviorSubject<T>((s) => s.skipWhile(test));
+
+  @override
+  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) =>
+      _forwardBehaviorSubject<T>((s) => s.distinct(equals));
+
+  @override
+  ValueStream<T> timeout(Duration timeLimit,
+          {void Function(EventSink<T> sink)? onTimeout}) =>
+      _forwardBehaviorSubject<T>(
+          (s) => s.timeout(timeLimit, onTimeout: onTimeout));
+
+  ValueStream<R> _forwardBehaviorSubject<R>(
+      Stream<R> Function(Stream<T> s) transformerStream) {
+    late BehaviorSubject<R> subject;
+    late StreamSubscription<R> subscription;
+
+    final onListen = () => subscription = transformerStream(_stream).listen(
+          subject.add,
+          onError: subject.addError,
+          onDone: subject.close,
+        );
+
+    final onCancel = () => subscription.cancel();
+
+    return subject = createForwardingSubject(
+      onListen: onListen,
+      onCancel: onCancel,
+      sync: true,
+    );
+  }
 }
 
 class _Wrapper<T> {
-  _Optional<T>? latestValue;
+  Optional<T>? latestValue;
   ErrorAndStackTrace? latestErrorAndStackTrace;
 
   bool latestIsValue = false, latestIsError = false;
@@ -188,14 +252,14 @@ class _Wrapper<T> {
   _Wrapper();
 
   _Wrapper.seeded(T value)
-      : latestValue = _Optional(value),
+      : latestValue = Optional(value),
         latestIsValue = true;
 
   void setValue(T event) {
     latestIsValue = true;
     latestIsError = false;
 
-    latestValue = _Optional(event);
+    latestValue = Optional(event);
 
     latestErrorAndStackTrace = null;
   }

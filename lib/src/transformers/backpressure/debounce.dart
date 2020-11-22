@@ -30,8 +30,12 @@ class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// The [window] is reset whenever the [Stream] that is being transformed
   /// emits an event.
   DebounceStreamTransformer(Stream Function(T event) window)
-      : super(WindowStrategy.everyEvent, window,
-            onWindowEnd: (Iterable<T> queue) => queue.last);
+      : super(
+          WindowStrategy.everyEvent,
+          window,
+          onWindowEnd: (Iterable<T> queue) => queue.last,
+          maxLengthQueue: 1,
+        );
 }
 
 /// Extends the Stream class with the ability to debounce events in various ways
@@ -76,5 +80,5 @@ extension DebounceExtensions<T> on Stream<T> {
   ///       .debounceTime(Duration(seconds: 1))
   ///       .listen(print); // prints 4
   Stream<T> debounceTime(Duration duration) => transform(
-      DebounceStreamTransformer<T>((_) => TimerStream<bool>(true, duration)));
+      DebounceStreamTransformer<T>((_) => TimerStream<void>(null, duration)));
 }
