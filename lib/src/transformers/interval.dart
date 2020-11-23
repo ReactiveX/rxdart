@@ -61,7 +61,7 @@ class _IntervalStreamSink<S> implements EventSink<S> {
 ///
 ///     Stream.fromIterable([1, 2, 3])
 ///       .transform(IntervalStreamTransformer(Duration(seconds: 1)))
-///       .listen((i) => print('$i sec'); // prints 1 sec, 2 sec, 3 sec
+///       .listen((i) => print('$i sec')); // prints 1 sec, 2 sec, 3 sec
 class IntervalStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// The interval after which incoming events need to be emitted.
   final Duration duration;

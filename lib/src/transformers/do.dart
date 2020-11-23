@@ -194,7 +194,7 @@ extension DoExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     final subscription = TimerStream(1, Duration(minutes: 1))
-  ///       .doOnCancel(() => print('hi'));
+  ///       .doOnCancel(() => print('hi'))
   ///       .listen(null);
   ///
   ///     subscription.cancel(); // prints 'hi'

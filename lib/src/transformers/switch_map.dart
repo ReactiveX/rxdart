@@ -103,7 +103,7 @@ extension SwitchMapExtension<T> on Stream<T> {
   ///
   ///     RangeStream(4, 1)
   ///       .switchMap((i) =>
-  ///         TimerStream(i, Duration(minutes: i))
+  ///         TimerStream(i, Duration(minutes: i)))
   ///       .listen(print); // prints 1
   Stream<S> switchMap<S>(Stream<S> Function(T value) mapper) =>
       transform(SwitchMapStreamTransformer<T, S>(mapper));
