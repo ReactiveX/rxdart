@@ -50,9 +50,8 @@ class FromCallableStream<T> extends Stream<T> {
       try {
         final value = callable();
 
-        _stream = value is Future<T>
-            ? Stream.fromFuture(value)
-            : Stream.value(value);
+        _stream =
+            value is Future<T> ? Stream.fromFuture(value) : Stream.value(value);
       } catch (e, s) {
         _stream = Stream.error(e, s);
       }
@@ -66,4 +65,3 @@ class FromCallableStream<T> extends Stream<T> {
     );
   }
 }
-
