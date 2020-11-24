@@ -1,3 +1,7 @@
+## 0.26.0-nullsafety.0
+  * Migrate this package to null safety.
+  * Sdk constraints: `>=2.12.0-0 <3.0.0` based on beta release guidelines.
+  
 ## 0.25.0-beta3
   * Bugfix: `switchMap` doesn't close after the last inner Stream closes.
   * Docs: updated URL for "Single-Subscription vs. Broadcast Streams" doc (thanks [Aman Gupta](https://github.com/Aman9026)).
