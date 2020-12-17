@@ -41,7 +41,7 @@ class MergeStream<T> extends Stream<T> {
     }
 
     final len = streams.length;
-    final subscriptions = List<StreamSubscription<T>>(len);
+    final subscriptions = List<StreamSubscription<T>>.filled(len, null);
     StreamController<T> controller;
 
     controller = StreamController<T>(
