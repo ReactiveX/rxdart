@@ -186,7 +186,10 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   void resolveWindowEnd(EventSink<T> sink, [bool isControllerClosing = false]) {
     if (isControllerClosing &&
         _strategy == WindowStrategy.eventAfterLastWindow) {
-      if (_hasData && queue.length > 1 && _onWindowEnd != null) {
+      if (_dispatchOnClose &&
+          _hasData &&
+          queue.length > 1 &&
+          _onWindowEnd != null) {
         sink.add(_onWindowEnd(unmodifiableQueue));
       }
 

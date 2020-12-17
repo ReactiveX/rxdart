@@ -26,10 +26,14 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
     Stream Function(T event) window, {
     bool trailing = false,
     bool leading = true,
-  }) : super(WindowStrategy.eventAfterLastWindow, window,
-            onWindowStart: leading ? (event) => event : null,
-            onWindowEnd: trailing ? (Iterable<T> queue) => queue.last : null,
-            dispatchOnClose: trailing) {
+  }) : super(
+          WindowStrategy.eventAfterLastWindow,
+          window,
+          onWindowStart: leading ? (event) => event : null,
+          onWindowEnd: trailing ? (queue) => queue.last : null,
+          dispatchOnClose: trailing,
+          maxLengthQueue: trailing ? 2 : 0,
+        ) {
     assert(window != null, 'window stream factory cannot be null');
   }
 }
