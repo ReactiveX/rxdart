@@ -7,7 +7,7 @@ import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/optional.dart';
+import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -149,12 +149,13 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
 class _Event<T> {
   final bool isError;
-  final Optional<T>? data;
+  final ValueWrapper<T>? data;
   final ErrorAndStackTrace? errorAndStackTrace;
 
   _Event._({required this.isError, this.data, this.errorAndStackTrace});
 
-  factory _Event.data(T data) => _Event._(isError: false, data: Optional(data));
+  factory _Event.data(T data) =>
+      _Event._(isError: false, data: ValueWrapper(data));
 
   factory _Event.error(ErrorAndStackTrace e) =>
       _Event._(isError: true, errorAndStackTrace: e);

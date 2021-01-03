@@ -1,3 +1,8 @@
+## 0.26.0-nullsafety.1
+  * Breaking change: `ValueStream`
+    - Add `valueWrapper` to `ValueStream`.
+    - Change `value`, `hasValue` and `hasError` to extension getters.
+
 ## 0.26.0-nullsafety.0
   * Migrate this package to null safety.
   * Sdk constraints: `>=2.12.0-0 <3.0.0` based on beta release guidelines.

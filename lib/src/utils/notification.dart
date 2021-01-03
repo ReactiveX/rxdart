@@ -1,5 +1,5 @@
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/optional.dart';
+import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// The type of event used in [Notification]
 enum Kind {
@@ -24,7 +24,7 @@ class Notification<T> {
   final Kind kind;
 
   /// The wrapped value, if applicable
-  final Optional<T>? _value;
+  final ValueWrapper<T>? _value;
 
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace? errorAndStackTrace;
@@ -36,7 +36,7 @@ class Notification<T> {
 
   /// Constructs a [Notification] with [Kind.OnData] and wraps a [value]
   factory Notification.onData(T value) =>
-      Notification<T>(Kind.OnData, Optional(value), null);
+      Notification<T>(Kind.OnData, ValueWrapper(value), null);
 
   /// Constructs a [Notification] with [Kind.OnDone]
   factory Notification.onDone() => const Notification(Kind.OnDone, null, null);
@@ -72,6 +72,6 @@ class Notification<T> {
   /// A test to determine if this [Notification] wraps an error event
   bool get isOnError => kind == Kind.OnError;
 
-  /// Return data if [kind] is [Kind.OnData].
-  T get requiredData => _value!.value;
+  /// Returns data if [kind] is [Kind.OnData], otherwise throws `"Null check operator used on a null value"` error.
+  T get requireData => _value!.value;
 }
