@@ -1,4 +1,4 @@
-name: Dart
+name: Dart CI
 
 on:
   push:
@@ -8,34 +8,51 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
-    # Note that this workflow uses the latest stable version of the Dart SDK.
-    # Docker images for other release channels - like dev and beta - are also
-    # available. See https://hub.docker.com/r/google/dart/ for the available
-    # images.
     container:
       image:  google/dart:latest
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Print Dart SDK version
-        run: dart --version
+    - name: Install dependencies
+      run: pub get
 
-      - name: Install dependencies
-        run: dart pub get
+    - name: Analyze
+      run: dartanalyzer --fatal-infos --fatal-warnings ./lib
 
-      # Uncomment this step to verify the use of 'dart format' on each commit.
-      # - name: Verify formatting
-      #   run: dart format --output=none --set-exit-if-changed .
+    - name: Format code
+      run: dartfmt -n ./lib --set-exit-if-changed
 
-      # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: dart analyze
+    - name: Active coverage
+      run: pub global activate coverage
 
-      # Your project will need to have tests in test/ and a dependency on
-      # package:test for this step to succeed. Note that Flutter projects will
-      # want to change this to 'flutter test'.
-      - name: Run tests
-        run: dart test
+    - name: Run tests
+      run: pub run test test/rxdart_test.dart
+
+    - name: Start VM
+      run: dart \
+         --disable-service-auth-codes \
+         --enable-vm-service=8111 \
+         --pause-isolates-on-exit \
+         --enable-asserts \
+         test/rxdart_test.dart &
+
+    - name: Collect coverage
+      run: nohup pub global run coverage:collect_coverage \
+        --port=8111 \
+        --out=coverage.json \
+        --wait-paused \
+        --resume-isolates
+
+    - name: Format coverage
+      run: pub global run coverage:format_coverage \
+        --lcov \
+        --in=coverage.json \
+        --out=lcov.info \
+        --packages=.packages \
+        --report-on=lib
+
+    - uses: codecov/codecov-action@v1
