@@ -2,9 +2,7 @@ name: Dart CI
 
 on:
   push:
-    branches:
-      - master
-      - hoc081098-workflows
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -34,7 +32,7 @@ jobs:
     - name: Run tests
       run: pub run test test/rxdart_test.dart
 
-    - name: Start VM
+    - name: Start Observatory
       run: dart
          --disable-service-auth-codes
          --enable-vm-service=8111
