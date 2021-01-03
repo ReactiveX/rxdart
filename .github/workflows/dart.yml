@@ -2,7 +2,9 @@ name: Dart CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - hoc081098-workflows
   pull_request:
     branches: [ master ]
 
