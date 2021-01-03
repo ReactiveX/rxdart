@@ -35,26 +35,29 @@ jobs:
       run: pub run test test/rxdart_test.dart
 
     - name: Start VM
-      run: dart \
-         --disable-service-auth-codes \
-         --enable-vm-service=8111 \
-         --pause-isolates-on-exit \
-         --enable-asserts \
+      run: |
+         dart
+         --disable-service-auth-codes
+         --enable-vm-service=8111
+         --pause-isolates-on-exit
+         --enable-asserts
          test/rxdart_test.dart &
 
     - name: Collect coverage
-      run: nohup pub global run coverage:collect_coverage \
-        --port=8111 \
-        --out=coverage.json \
-        --wait-paused \
+      run: |
+        nohup pub global run coverage:collect_coverage
+        --port=8111
+        --out=coverage.json
+        --wait-paused
         --resume-isolates
 
     - name: Format coverage
-      run: pub global run coverage:format_coverage \
-        --lcov \
-        --in=coverage.json \
-        --out=lcov.info \
-        --packages=.packages \
+      run: |
+        pub global run coverage:format_coverage
+        --lcov
+        --in=coverage.json
+        --out=lcov.info
+        --packages=.packages
         --report-on=lib
 
     - uses: codecov/codecov-action@v1
