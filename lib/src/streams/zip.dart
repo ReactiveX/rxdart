@@ -360,7 +360,7 @@ class _Window<T> {
 
   bool get isComplete => _valuesReceived == size;
 
-  _Window(this.size) : _values = List<T>(size);
+  _Window(this.size) : _values = List<T>.filled(size, null);
 
   void onValue(int index, T value) {
     _values[index] = value;

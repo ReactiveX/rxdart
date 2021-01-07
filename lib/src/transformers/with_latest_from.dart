@@ -12,7 +12,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
 
   _WithLatestFromStreamSink(this._latestFromStreams, this._combiner)
       : _hasValues = List.filled(_latestFromStreams.length, false),
-        _latestValues = List<T>(_latestFromStreams.length);
+        _latestValues = List<T>.filled(_latestFromStreams.length, null);
 
   @override
   void add(EventSink<R> sink, S data) {
