@@ -138,7 +138,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///
   ///     ErrorStream(Exception())
   ///       .onErrorResume((dynamic e) =>
-  ///           Stream.fromIterable([e is StateError ? 1 : 0])
+  ///           Stream.fromIterable([e is StateError ? 1 : 0]))
   ///       .listen(print); // prints 0
   Stream<T> onErrorResume(Stream<T> Function(dynamic error) recoveryFn) =>
       transform(OnErrorResumeStreamTransformer<T>(recoveryFn));

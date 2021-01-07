@@ -52,7 +52,7 @@ extension ThrottleExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     Stream.fromIterable([1, 2, 3])
-  ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)))
+  ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)));
   Stream<T> throttle(Stream Function(T event) window,
           {bool trailing = false, bool leading = true}) =>
       transform(
@@ -72,7 +72,7 @@ extension ThrottleExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     Stream.fromIterable([1, 2, 3])
-  ///       .throttleTime(Duration(seconds: 1))
+  ///       .throttleTime(Duration(seconds: 1));
   Stream<T> throttleTime(Duration duration,
       {bool trailing = false, bool leading = true}) {
     ArgumentError.checkNotNull(duration, 'duration');
