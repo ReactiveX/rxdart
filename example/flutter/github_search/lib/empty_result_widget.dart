@@ -18,7 +18,7 @@ class EmptyWidget extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 16.0),
             child: Text(
-              "No results",
+              'No results',
               style: TextStyle(color: Colors.yellow[100]),
             ),
           )
