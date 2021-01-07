@@ -6,7 +6,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/optional.dart';
+import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -106,7 +106,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   static Stream<T> Function() _deferStream<T>(
           _Wrapper<T> wrapper, StreamController<T> controller, bool sync) =>
       () {
-        if (wrapper.latestIsError) {
+        if (wrapper.latestErrorAndStackTrace != null) {
           final errorAndStackTrace = wrapper.latestErrorAndStackTrace!;
 
           return controller.stream.transform(
@@ -117,7 +117,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
           );
         }
 
-        if (wrapper.latestIsValue) {
+        if (wrapper.latestValue != null) {
           return controller.stream.transform(
               StartWithStreamTransformer(wrapper.latestValue!.value));
         }
@@ -136,14 +136,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper.latestIsValue;
-
-  /// Get the latest value emitted by the Subject
-  @override
-  T? get value => _wrapper.latestValue?.value;
-
-  @override
-  bool get hasError => _wrapper.latestIsError;
+  ValueWrapper<T>? get valueWrapper => _wrapper.latestValue;
 
   @override
   ErrorAndStackTrace? get errorAndStackTrace =>
@@ -243,33 +236,21 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 }
 
 class _Wrapper<T> {
-  Optional<T>? latestValue;
+  ValueWrapper<T>? latestValue;
   ErrorAndStackTrace? latestErrorAndStackTrace;
-
-  bool latestIsValue = false, latestIsError = false;
 
   /// Non-seeded constructor
   _Wrapper();
 
-  _Wrapper.seeded(T value)
-      : latestValue = Optional(value),
-        latestIsValue = true;
+  _Wrapper.seeded(T value) : latestValue = ValueWrapper(value);
 
   void setValue(T event) {
-    latestIsValue = true;
-    latestIsError = false;
-
-    latestValue = Optional(event);
-
+    latestValue = ValueWrapper(event);
     latestErrorAndStackTrace = null;
   }
 
   void setError(Object error, [StackTrace? stackTrace]) {
-    latestIsValue = false;
-    latestIsError = true;
-
     latestValue = null;
-
     latestErrorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
   }
 }

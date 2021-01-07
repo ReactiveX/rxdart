@@ -10,7 +10,7 @@ class _DematerializeStreamSink<S> implements EventSink<Notification<S>> {
   @override
   void add(Notification<S> data) {
     if (data.isOnData) {
-      _outputSink.add(data.requiredData);
+      _outputSink.add(data.requireData);
     } else if (data.isOnDone) {
       _outputSink.close();
     } else if (data.isOnError) {
