@@ -1,4 +1,4 @@
-import 'package:github_search/github_api.dart';
+import 'github_api.dart';
 
 // The State represents the data the View requires. The View consumes a Stream
 // of States. The view rebuilds every time the Stream emits a new State!

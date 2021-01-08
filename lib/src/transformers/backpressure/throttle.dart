@@ -26,10 +26,14 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
     Stream Function(T event) window, {
     bool trailing = false,
     bool leading = true,
-  }) : super(WindowStrategy.eventAfterLastWindow, window,
-            onWindowStart: leading ? (event) => event : null,
-            onWindowEnd: trailing ? (Iterable<T> queue) => queue.last : null,
-            dispatchOnClose: trailing);
+  }) : super(
+          WindowStrategy.eventAfterLastWindow,
+          window,
+          onWindowStart: leading ? (event) => event : null,
+          onWindowEnd: trailing ? (queue) => queue.last : null,
+          dispatchOnClose: trailing,
+          maxLengthQueue: trailing ? 2 : 0,
+        );
 }
 
 /// Extends the Stream class with the ability to throttle events in various ways
@@ -46,7 +50,7 @@ extension ThrottleExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     Stream.fromIterable([1, 2, 3])
-  ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)))
+  ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)));
   Stream<T> throttle(Stream Function(T event) window,
           {bool trailing = false, bool leading = true}) =>
       transform(
@@ -66,7 +70,7 @@ extension ThrottleExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     Stream.fromIterable([1, 2, 3])
-  ///       .throttleTime(Duration(seconds: 1))
+  ///       .throttleTime(Duration(seconds: 1));
   Stream<T> throttleTime(Duration duration,
       {bool trailing = false, bool leading = true}) {
     ArgumentError.checkNotNull(duration, 'duration');

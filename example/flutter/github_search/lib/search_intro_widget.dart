@@ -14,7 +14,7 @@ class SearchIntro extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 16.0),
             child: Text(
-              "Enter a search term to begin",
+              'Enter a search term to begin',
               style: TextStyle(
                 color: Colors.green[100],
               ),

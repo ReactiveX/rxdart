@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:github_search/empty_result_widget.dart';
-import 'package:github_search/github_api.dart';
-import 'package:github_search/search_bloc.dart';
-import 'package:github_search/search_error_widget.dart';
-import 'package:github_search/search_intro_widget.dart';
-import 'package:github_search/search_loading_widget.dart';
-import 'package:github_search/search_result_widget.dart';
-import 'package:github_search/search_state.dart';
+
+import 'empty_result_widget.dart';
+import 'github_api.dart';
+import 'search_bloc.dart';
+import 'search_error_widget.dart';
+import 'search_intro_widget.dart';
+import 'search_loading_widget.dart';
+import 'search_result_widget.dart';
+import 'search_state.dart';
 
 // The View in a Stream-based architecture takes two arguments: The State Stream
 // and the onTextChanged callback. In our case, the onTextChanged callback will
@@ -62,7 +63,7 @@ class SearchScreenState extends State<SearchScreen> {
                     ),
                     style: TextStyle(
                       fontSize: 36.0,
-                      fontFamily: "Hind",
+                      fontFamily: 'Hind',
                       decoration: TextDecoration.none,
                     ),
                     onChanged: bloc.onTextChanged.add,

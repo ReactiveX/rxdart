@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:github_search/github_api.dart';
+
+import 'github_api.dart';
 
 class SearchResultWidget extends StatelessWidget {
   final List<SearchResultItem> items;
@@ -44,11 +45,11 @@ class SearchResultWidget extends StatelessWidget {
                           bottom: 4.0,
                         ),
                         child: Text(
-                          "${item.fullName}",
+                          '${item.fullName}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontFamily: "Montserrat",
+                            fontFamily: 'Montserrat',
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
@@ -56,9 +57,9 @@ class SearchResultWidget extends StatelessWidget {
                       ),
                       Container(
                         child: Text(
-                          "${item.url}",
+                          '${item.url}',
                           style: TextStyle(
-                            fontFamily: "Hind",
+                            fontFamily: 'Hind',
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

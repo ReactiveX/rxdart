@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:github_search/github_api.dart';
-import 'package:github_search/search_widget.dart';
+
+import 'github_api.dart';
+import 'search_widget.dart';
 
 void main() {
   runApp(SearchApp(api: GithubApi()));

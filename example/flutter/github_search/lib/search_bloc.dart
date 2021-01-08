@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:github_search/github_api.dart';
-import 'package:github_search/search_state.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'github_api.dart';
+import 'search_state.dart';
 
 class SearchBloc {
   final Sink<String> onTextChanged;
@@ -33,23 +34,11 @@ class SearchBloc {
     onTextChanged.close();
   }
 
-  static Stream<SearchState> _search(String term, GithubApi api) async* {
-    if (term.isEmpty) {
-      yield SearchNoTerm();
-    } else {
-      yield SearchLoading();
-
-      try {
-        final result = await api.search(term);
-
-        if (result.isEmpty) {
-          yield SearchEmpty();
-        } else {
-          yield SearchPopulated(result);
-        }
-      } catch (e) {
-        yield SearchError();
-      }
-    }
-  }
+  static Stream<SearchState> _search(String term, GithubApi api) => term.isEmpty
+      ? Stream.value(SearchNoTerm())
+      : Rx.fromCallable(() => api.search(term))
+          .map((result) =>
+              result.isEmpty ? SearchEmpty() : SearchPopulated(result))
+          .startWith(SearchLoading())
+          .onErrorReturn(SearchError());
 }
