@@ -28,4 +28,10 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
 
   /// A flag that turns true as soon as at an error event has been emitted.
   bool get hasError => errorAndStackTrace != null;
+
+  /// Last emitted error, or null if no error added or value exists.
+  Object? get error => errorAndStackTrace?.error;
+
+  /// Last emitted error, or throws `"Null check operator used on a null value"` error if no error added or value exists.
+  Object get requireError => errorAndStackTrace!.error;
 }
