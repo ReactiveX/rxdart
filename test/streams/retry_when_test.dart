@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -67,25 +66,28 @@ void main() {
     final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
-        streamWithError,
-        emitsInOrder(
-            <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
+      streamWithError,
+      emitsInOrder(
+        <dynamic>[
+          emitsError(0),
+          emitsError(isA<Error>()),
+          emitsDone,
+        ],
+      ),
+    );
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
     final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
-        streamWithError,
-        emitsInOrder(<dynamic>[
-          emitsError(
-            predicate<RetryError>((a) {
-              return a.errors.length == 1 &&
-                  a.errors.every((es) => es.stackTrace != null);
-            }),
-          ),
-          emitsDone,
-        ]));
+      streamWithError,
+      emitsInOrder(<dynamic>[
+        emitsError(0),
+        emitsError(isA<Error>()),
+        emitsDone,
+      ]),
+    );
   });
 
   test('RetryWhenStream.pause.resume', () async {
