@@ -813,9 +813,8 @@ abstract class Rx {
   /// successfully.
   ///
   /// If the retry count is not specified, it retries indefinitely. If the retry
-  /// count is met, but the Stream has not terminated successfully, a
-  /// [RetryError] will be thrown. The RetryError will contain all of the Errors
-  /// and StackTraces that caused the failure.
+  /// count is met, but the Stream has not terminated successfully, all of the errors
+  /// and StackTraces that caused the failure will be emitted.
   ///
   /// ### Example
   ///
@@ -825,7 +824,7 @@ abstract class Rx {
   ///     Rx.retry(
   ///       () => Stream.value(1).concatWith([Stream.error(Error())]),
   ///       1,
-  ///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
+  ///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, Instance of 'Error', Instance of 'Error'
   static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int? count]) =>
       RetryStream<T>(streamFactory, count);
 
@@ -887,7 +886,8 @@ abstract class Rx {
   /// ```
   static Stream<T> retryWhen<T>(
     Stream<T> Function() streamFactory,
-    Stream<void> Function(Object error, StackTrace? stackTrace) retryWhenFactory,
+    Stream<void> Function(Object error, StackTrace? stackTrace)
+        retryWhenFactory,
   ) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 

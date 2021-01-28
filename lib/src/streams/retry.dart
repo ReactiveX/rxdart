@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
 /// Creates a [Stream] that will recreate and re-listen to the source
@@ -7,9 +8,8 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 /// successfully.
 ///
 /// If the retry count is not specified, it retries indefinitely. If the retry
-/// count is met, but the Stream has not terminated successfully, a
-/// [RetryError] will be thrown. The RetryError will contain all of the Errors
-/// and StackTraces that caused the failure.
+/// count is met, but the Stream has not terminated successfully, all of the errors
+/// and StackTraces that caused the failure will be emitted.
 ///
 /// ### Example
 ///
@@ -19,7 +19,7 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 ///     RetryStream(
 ///       () => Stream.value(1).concatWith([Stream.error(Error())]),
 ///       1,
-///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
+///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, Instance of 'Error', Instance of 'Error'
 class RetryStream<T> extends Stream<T> {
   /// The factory method used at subscription time
   final Stream<T> Function() streamFactory;
