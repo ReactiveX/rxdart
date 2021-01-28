@@ -103,6 +103,38 @@ void main() {
     subscription.pause();
     subscription.resume();
   });
+
+  test('RetryWhenStream.retryStream.throws.originError', () {
+    final error = 1;
+    final stream = Rx.retryWhen<int>(
+      _sourceStream(3, error),
+      (error, stackTrace) => Stream.error(error),
+    );
+    expect(
+      stream,
+      emitsInOrder(<Object>[
+        0,
+        emitsError(error),
+        emitsDone,
+      ]),
+    );
+  });
+
+  test('RetryWhenStream.streamFactory.throws.originError', () {
+    final error = 1;
+    final stream = Rx.retryWhen<int>(
+      _sourceStream(3, error),
+      (error, stackTrace) => throw error,
+    );
+    expect(
+      stream,
+      emitsInOrder(<Object>[
+        0,
+        emitsError(error),
+        emitsDone,
+      ]),
+    );
+  });
 }
 
 Stream<int> Function() _sourceStream(int i, [int? throwAt]) {

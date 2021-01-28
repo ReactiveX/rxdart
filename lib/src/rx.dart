@@ -887,7 +887,7 @@ abstract class Rx {
   /// ```
   static Stream<T> retryWhen<T>(
     Stream<T> Function() streamFactory,
-    Stream<void> Function(Object error, StackTrace? stack) retryWhenFactory,
+    Stream<void> Function(Object error, StackTrace? stackTrace) retryWhenFactory,
   ) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 
