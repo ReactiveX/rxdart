@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/utils.dart';
-
 /// Creates a Stream that will recreate and re-listen to the source
 /// Stream when the notifier emits a new value. If the source Stream
 /// emits an error or it completes, the Stream terminates.

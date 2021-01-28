@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/utils.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
 /// Creates a [Stream] that will recreate and re-listen to the source
@@ -28,10 +27,20 @@ class RetryStream<T> extends Stream<T> {
   /// The amount of retry attempts that will be made
   /// If null, then an indefinite amount of attempts will be made.
   final int? count;
-  int _retryStep = 0;
-  StreamController<T>? _controller;
-  late StreamSubscription<T> _subscription;
+
+  var _retryStep = 0;
   final _errors = <ErrorAndStackTrace>[];
+  late final StreamController<T> _controller = StreamController<T>(
+    sync: true,
+    onListen: _retry,
+    onPause: () => _subscription.pause(),
+    onResume: () => _subscription.resume(),
+    onCancel: () {
+      _errors.clear();
+      return _subscription.cancel();
+    },
+  );
+  late StreamSubscription<void> _subscription;
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created by the provided factory method) the specified number
@@ -42,14 +51,7 @@ class RetryStream<T> extends Stream<T> {
   @override
   StreamSubscription<T> listen(void Function(T event)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    _controller ??= StreamController<T>(
-        sync: true,
-        onListen: _retry,
-        onPause: () => _subscription.pause(),
-        onResume: () => _subscription.resume(),
-        onCancel: () => _subscription.cancel());
-
-    return _controller!.stream.listen(
+    return _controller.stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -58,25 +60,25 @@ class RetryStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    final controller = _controller!;
+    final onError = (Object e, StackTrace s) {
+      _subscription.cancel();
+
+      _errors.add(ErrorAndStackTrace(e, s));
+
+      if (count == _retryStep) {
+        _errors.forEach((e) => _controller.addError(e.error, e.stackTrace));
+        _errors.clear();
+        _controller.close();
+      } else {
+        ++_retryStep;
+        _retry();
+      }
+    };
 
     _subscription = streamFactory().listen(
-      controller.add,
-      onError: (Object e, StackTrace s) {
-        _subscription.cancel();
-
-        _errors.add(ErrorAndStackTrace(e, s));
-
-        if (count == _retryStep) {
-          controller
-            ..addError(RetryError.withCount(count!, _errors))
-            ..close();
-        } else {
-          ++_retryStep;
-          _retry();
-        }
-      },
-      onDone: controller.close,
+      _controller.add,
+      onError: onError,
+      onDone: _controller.close,
       cancelOnError: false,
     );
   }
