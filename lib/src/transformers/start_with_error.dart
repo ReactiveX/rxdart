@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
   final Object _e;
-  final StackTrace _st;
+  final StackTrace? _st;
   var _isFirstEventAdded = false;
 
   _StartWithErrorStreamSink(this._e, this._st);
@@ -17,7 +17,7 @@ class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) {
     _safeAddFirstEvent(sink);
     sink.addError(e, st);
   }
@@ -68,7 +68,7 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
   final Object error;
 
   /// The starting stackTrace of this [Stream]
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   /// Constructs a [StreamTransformer] which starts with the provided [error]
   /// and then outputs all events from the source [Stream].

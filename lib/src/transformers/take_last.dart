@@ -22,7 +22,7 @@ class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, [st]) => sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {
@@ -56,7 +56,6 @@ class TakeLastStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// Constructs a [StreamTransformer] which emits only the final [count]
   /// events from the source [Stream].
   TakeLastStreamTransformer(this.count) {
-    if (count == null) throw ArgumentError.notNull('count');
     if (count < 0) throw ArgumentError.value(count, 'count');
   }
 

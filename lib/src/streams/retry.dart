@@ -27,10 +27,10 @@ class RetryStream<T> extends Stream<T> {
 
   /// The amount of retry attempts that will be made
   /// If null, then an indefinite amount of attempts will be made.
-  int count;
+  final int? count;
   int _retryStep = 0;
-  StreamController<T> _controller;
-  StreamSubscription<T> _subscription;
+  StreamController<T>? _controller;
+  late StreamSubscription<T> _subscription;
   final _errors = <ErrorAndStackTrace>[];
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
@@ -40,48 +40,44 @@ class RetryStream<T> extends Stream<T> {
   RetryStream(this.streamFactory, [this.count]);
 
   @override
-  StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
-  }) {
-    void Function([int]) retry;
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    _controller ??= StreamController<T>(
+        sync: true,
+        onListen: _retry,
+        onPause: () => _subscription.pause(),
+        onResume: () => _subscription.resume(),
+        onCancel: () => _subscription.cancel());
 
-    final combinedErrors = () => RetryError.withCount(
-          count,
-          _errors,
-        );
+    return _controller!.stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
 
-    retry = ([_]) {
-      _subscription = streamFactory().listen(_controller.add,
-          onError: (dynamic e, StackTrace s) {
+  void _retry() {
+    final controller = _controller!;
+
+    _subscription = streamFactory().listen(
+      controller.add,
+      onError: (Object e, StackTrace s) {
         _subscription.cancel();
 
         _errors.add(ErrorAndStackTrace(e, s));
 
         if (count == _retryStep) {
-          _controller
-            ..addError(combinedErrors())
+          controller
+            ..addError(RetryError.withCount(count!, _errors))
             ..close();
         } else {
-          retry(++_retryStep);
+          ++_retryStep;
+          _retry();
         }
-      }, onDone: _controller.close, cancelOnError: false);
-    };
-
-    _controller ??= StreamController<T>(
-        sync: true,
-        onListen: retry,
-        onPause: () => _subscription.pause(),
-        onResume: () => _subscription.resume(),
-        onCancel: () => _subscription.cancel());
-
-    return _controller.stream.listen(
-      onData,
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
+      },
+      onDone: controller.close,
+      cancelOnError: false,
     );
   }
 }

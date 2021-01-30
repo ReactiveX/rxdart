@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<Object> _getStream() {
-  final controller = StreamController<dynamic>();
+  final controller = StreamController<Object>();
 
   Timer(const Duration(milliseconds: 100), () => controller.add(1));
   Timer(const Duration(milliseconds: 200), () => controller.add('2'));
@@ -60,7 +60,7 @@ void main() {
   });
 
   test('Rx.whereType.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream.value(1).whereType<int>();
 
     subscription = stream.listen(expectAsync1((value) {

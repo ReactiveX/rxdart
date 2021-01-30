@@ -54,15 +54,8 @@ void main() {
     }));
   });
 
-  test('Rx.throttleTime.error.shouldThrowB', () {
-    expect(
-      () => Stream.value(1).throttleTime(null),
-      throwsArgumentError,
-    );
-  });
-
   test('Rx.throttleTime.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final controller = StreamController<int>();
 

@@ -70,7 +70,7 @@ void main() {
     final stream = Stream.fromIterable(const [1, 2, 3])
         .transform(TimestampStreamTransformer());
     const expected = [1, 2, 3];
-    StreamSubscription<Timestamped<int>> subscription;
+    late StreamSubscription<Timestamped<int>> subscription;
     var count = 0;
 
     subscription = stream.listen(expectAsync1((result) {

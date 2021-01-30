@@ -21,7 +21,7 @@ void main() {
 
   test('TimerStream.pause.resume.A', () async {
     const value = 1;
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     final stream = TimerStream(value, Duration(milliseconds: 1));
 

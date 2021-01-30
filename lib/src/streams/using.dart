@@ -38,10 +38,10 @@ class UsingStream<T, R> extends StreamView<T> {
     ArgumentError.checkNotNull(streamFactory, 'streamFactory');
     ArgumentError.checkNotNull(disposer, 'disposer');
 
-    StreamController<T> controller;
+    late StreamController<T> controller;
     var resourceCreated = false;
-    R resource;
-    StreamSubscription<T> subscription;
+    late R resource;
+    StreamSubscription<T>? subscription;
 
     controller = StreamController<T>(
       sync: true,
@@ -70,8 +70,8 @@ class UsingStream<T, R> extends StreamView<T> {
           onDone: controller.close,
         );
       },
-      onPause: () => subscription.pause(),
-      onResume: () => subscription.resume(),
+      onPause: () => subscription!.pause(),
+      onResume: () => subscription!.resume(),
       onCancel: () async {
         final futureOr = resourceCreated ? disposer(resource) : null;
         final cancelFuture = subscription?.cancel();

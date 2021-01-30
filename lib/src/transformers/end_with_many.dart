@@ -32,11 +32,7 @@ class EndWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   /// Constructs a [StreamTransformer] which appends the source [Stream]
   /// with [endValues] before closing.
-  EndWithManyStreamTransformer(this.endValues) {
-    if (endValues == null) {
-      throw ArgumentError('startValues cannot be null');
-    }
-  }
+  EndWithManyStreamTransformer(this.endValues);
 
   @override
   Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(

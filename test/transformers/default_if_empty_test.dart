@@ -55,7 +55,7 @@ void main() {
   });
 
   test('Rx.defaultIfEmpty.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream.fromIterable(const <int>[]).defaultIfEmpty(1);
 
     subscription = stream.listen(expectAsync1((value) {

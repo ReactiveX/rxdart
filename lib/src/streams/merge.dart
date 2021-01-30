@@ -24,25 +24,19 @@ class MergeStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-          {Function onError, void Function() onDone, bool cancelOnError}) =>
+  StreamSubscription<T> listen(void Function(T event)? onData,
+          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams == null) {
-      throw ArgumentError('streams cannot be null');
-    }
     if (streams.isEmpty) {
       return StreamController<T>()..close();
     }
-    if (streams.any((Stream<T> stream) => stream == null)) {
-      throw ArgumentError('One of the provided streams is null');
-    }
 
     final len = streams.length;
-    final subscriptions = List<StreamSubscription<T>>.filled(len, null);
-    StreamController<T> controller;
+    late List<StreamSubscription<T>> subscriptions;
+    late StreamController<T> controller;
 
     controller = StreamController<T>(
         sync: true,
@@ -55,20 +49,17 @@ class MergeStream<T> extends Stream<T> {
             if (completed == len) controller.close();
           };
 
-          for (var i = 0; i < len; i++) {
-            var stream = streams.elementAt(i);
-
-            subscriptions[i] = stream.listen(controller.add,
-                onError: controller.addError, onDone: onDone);
-          }
+          subscriptions = streams
+              .map((s) => s.listen(controller.add,
+                  onError: controller.addError, onDone: onDone))
+              .toList(growable: false);
         },
         onPause: () =>
             subscriptions.forEach((subscription) => subscription.pause()),
         onResume: () =>
             subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        onCancel: () => Future.wait(
+            subscriptions.map((subscription) => subscription.cancel())));
 
     return controller;
   }

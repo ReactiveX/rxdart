@@ -44,7 +44,7 @@ void main() {
             .map((stream) async => await stream.fold(
                 {stream.key: <int>[]},
                 (Map<String, List<int>> previous, element) =>
-                    previous..[stream.key].add(element))),
+                    previous..[stream.key]?.add(element))),
         emitsInOrder(<dynamic>[
           {
             'odd': [1, 3]
@@ -79,7 +79,7 @@ void main() {
 
   test('Rx.groupBy.pause.resume', () async {
     var count = 0;
-    StreamSubscription subscription;
+    late StreamSubscription subscription;
 
     subscription = Stream.fromIterable([1, 2, 3, 4])
         .groupBy((value) => value)

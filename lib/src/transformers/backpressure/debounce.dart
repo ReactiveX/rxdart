@@ -30,8 +30,7 @@ class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// The [window] is reset whenever the [Stream] that is being transformed
   /// emits an event.
   DebounceStreamTransformer(Stream Function(T event) window)
-      : assert(window != null, 'window stream factory cannot be null'),
-        super(
+      : super(
           WindowStrategy.everyEvent,
           window,
           onWindowEnd: (Iterable<T> queue) => queue.last,

@@ -83,7 +83,7 @@ void main() {
 
   test('Rx.sample.pause.resume', () async {
     final controller = StreamController<int>();
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = _getStream()
         .sample(_getSampleStream())

@@ -84,9 +84,4 @@ void main() {
             .windowTime(const Duration(milliseconds: 160)),
         emitsError(isException));
   });
-
-  test('Rx.windowTime.error.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTime(null),
-        throwsArgumentError);
-  });
 }

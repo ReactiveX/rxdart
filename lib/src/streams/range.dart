@@ -17,8 +17,8 @@ class RangeStream extends Stream<int> {
       : _stream = _buildStream(startInclusive, endInclusive);
 
   @override
-  StreamSubscription<int> listen(void Function(int event) onData,
-          {Function onError, void Function() onDone, bool cancelOnError}) =>
+  StreamSubscription<int> listen(void Function(int event)? onData,
+          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
       _stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 

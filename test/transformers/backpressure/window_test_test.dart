@@ -56,9 +56,4 @@ void main() {
         Stream<int>.error(Exception()).windowTest((i) => i % 2 == 0),
         emitsError(isException));
   });
-
-  test('Rx.windowTest.skip.shouldThrowB', () {
-    expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowTest(null),
-        throwsArgumentError);
-  });
 }

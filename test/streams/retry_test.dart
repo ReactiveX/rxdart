@@ -83,8 +83,7 @@ void main() {
           emitsError(
             predicate<RetryError>((a) {
               return a.errors.length == 3 &&
-                  a.errors
-                      .every((es) => es.error != null && es.stackTrace != null);
+                  a.errors.every((es) => es.stackTrace != null);
             }),
           ),
           emitsDone,
@@ -92,7 +91,7 @@ void main() {
   });
 
   test('RetryStream.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     const retries = 3;
 
     subscription = RetryStream(_getRetryStream(retries), retries)

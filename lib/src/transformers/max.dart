@@ -21,5 +21,5 @@ extension MaxExtension<T> on Stream<T> {
   ///     final max = await stream.max((a, b) => a.length - b.length);
   ///
   ///     print(max); // prints 'looooooong'
-  Future<T> max([Comparator<T> comparator]) => minMax(this, false, comparator);
+  Future<T> max([Comparator<T>? comparator]) => minMax(this, false, comparator);
 }

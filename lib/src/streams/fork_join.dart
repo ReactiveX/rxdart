@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 /// This operator is best used when you have a group of streams
 /// and only care about the final emitted value of each.
@@ -68,10 +69,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   ForkJoinStream(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
-  )   : assert(streams != null && streams.every((s) => s != null),
-            'streams cannot be null'),
-        assert(combiner != null, 'must provide a combiner function'),
-        super(_buildStream(streams, combiner));
+  ) : super(_buildStream(streams, combiner));
 
   /// Constructs a [Stream] that awaits the last values of the [Stream]s
   /// in [streams] and then emits these values as a [List].
@@ -81,7 +79,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
   ) =>
       ForkJoinStream<T, List<T>>(
         streams,
-        (List<T> values) => values,
+        (values) => values,
       );
 
   /// Constructs a [Stream] that awaits the last values the provided [Stream]s,
@@ -306,14 +304,14 @@ class ForkJoinStream<T, R> extends StreamView<R> {
       return (StreamController<R>()..close()).stream;
     }
 
-    StreamController<R> controller;
-    List<StreamSubscription<T>> subscriptions;
+    late StreamController<R> controller;
+    late List<StreamSubscription<T>> subscriptions;
     final length = streams.length;
 
     controller = StreamController<R>(
       sync: true,
       onListen: () {
-        final values = List<T>.filled(length, null);
+        final values = List<T?>.filled(length, null);
         var completed = 0;
 
         final listen = (Stream<T> stream, int i) {
@@ -334,7 +332,9 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
               if (++completed == length) {
                 try {
-                  controller.add(combiner(values));
+                  final copiedValues =
+                      UnmodifiableListView(values.map((e) => e!));
+                  controller.add(combiner(copiedValues));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }
@@ -350,9 +350,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
       },
       onPause: () => subscriptions.forEach((s) => s.pause()),
       onResume: () => subscriptions.forEach((s) => s.resume()),
-      onCancel: () => Future.wait(subscriptions
-          .map((s) => s.cancel())
-          .where((future) => future != null)),
+      onCancel: () => Future.wait(subscriptions.map((s) => s.cancel())),
     );
 
     return controller.stream;

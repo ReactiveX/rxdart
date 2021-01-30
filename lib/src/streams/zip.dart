@@ -47,10 +47,7 @@ class ZipStream<T, R> extends StreamView<R> {
   ZipStream(
     Iterable<Stream<T>> streams,
     R Function(List<T> values) zipper,
-  )   : assert(streams != null && streams.every((s) => s != null),
-            'streams cannot be null'),
-        assert(zipper != null, 'must provide a zipper function'),
-        super(_buildController(streams, zipper).stream);
+  ) : super(_buildController(streams, zipper).stream);
 
   /// Constructs a [Stream] which merges the specified [streams] into a [List],
   /// containing values that were produced by the [streams] at a corresponding index.
@@ -282,23 +279,23 @@ class ZipStream<T, R> extends StreamView<R> {
       return StreamController<R>()..close();
     }
 
-    StreamController<R> controller;
+    late StreamController<R> controller;
     final len = streams.length;
-    List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
+    late List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
 
     controller = StreamController<R>(
         sync: true,
         onListen: () {
           try {
-            Completer<void> completeCurrent;
+            Completer<List<T>?>? completeCurrent;
             final window = _Window<T>(len);
             var index = 0;
 
             // resets variables for the next zip window
             final next = () {
-              completeCurrent?.complete();
+              completeCurrent?.complete(null);
 
-              completeCurrent = Completer<List<T>>();
+              completeCurrent = Completer<List<T>?>();
 
               pendingSubscriptions = subscriptions.toList();
             };
@@ -322,7 +319,7 @@ class ZipStream<T, R> extends StreamView<R> {
                     // pause this subscription while we await the others
                     //ignore: cancel_subscriptions
                     final subscription = subscriptions[index]
-                      ..pause(completeCurrent.future);
+                      ..pause(completeCurrent!.future);
 
                     pendingSubscriptions.remove(subscription);
                   }
@@ -342,9 +339,8 @@ class ZipStream<T, R> extends StreamView<R> {
             .forEach((subscription) => subscription.pause()),
         onResume: () => pendingSubscriptions
             .forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        onCancel: () => Future.wait<dynamic>(
+            subscriptions.map((subscription) => subscription.cancel())));
 
     return controller;
   }
@@ -354,13 +350,13 @@ class ZipStream<T, R> extends StreamView<R> {
 /// zipped Streams.
 class _Window<T> {
   final int size;
-  final List<T> _values;
+  final List<T?> _values;
 
   int _valuesReceived = 0;
 
   bool get isComplete => _valuesReceived == size;
 
-  _Window(this.size) : _values = List<T>.filled(size, null);
+  _Window(this.size) : _values = List<T?>.filled(size, null);
 
   void onValue(int index, T value) {
     _values[index] = value;
@@ -371,7 +367,7 @@ class _Window<T> {
   List<T> flush() {
     _valuesReceived = 0;
 
-    return List.unmodifiable(_values);
+    return List<T>.unmodifiable(_values);
   }
 }
 

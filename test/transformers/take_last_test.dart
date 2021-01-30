@@ -29,11 +29,6 @@ void main() {
     await expectLater(stream, emitsError(isException));
   });
 
-  test('Rx.takeLast.countCantBeNull', () async {
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(null);
-    expect(stream, throwsA(isArgumentError));
-  });
-
   test('Rx.takeLast.countCantBeNegative', () async {
     final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(-1);
     expect(stream, throwsA(isArgumentError));
@@ -66,7 +61,7 @@ void main() {
   });
 
   test('Rx.takeLast.pause.resume', () async {
-    StreamSubscription<num> subscription;
+    late StreamSubscription<num> subscription;
 
     subscription = Stream.fromIterable([1, 2, 3, 4, 5])
         .takeLast(3)

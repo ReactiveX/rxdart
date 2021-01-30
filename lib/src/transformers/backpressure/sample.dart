@@ -19,9 +19,7 @@ class SampleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// the sample [Stream].
   SampleStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
-            onWindowEnd: (Iterable<T> queue) => queue.last) {
-    assert(window != null, 'window stream factory cannot be null');
-  }
+            onWindowEnd: (Iterable<T> queue) => queue.last);
 }
 
 /// Extends the Stream class with the ability to sample events from the Stream

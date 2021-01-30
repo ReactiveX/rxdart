@@ -18,6 +18,16 @@ void main() {
     }));
   });
 
+  test('Rx.dematerialize.nullable.happyPath', () async {
+    const elements = <int?>[1, 2, null, 3, 4, null];
+    final stream = Stream.fromIterable(elements).materialize();
+
+    expect(
+      stream.dematerialize(),
+      emitsInOrder(elements),
+    );
+  });
+
   test('Rx.dematerialize.reusable', () async {
     final transformer = DematerializeStreamTransformer<int>();
     const expectedValue = 1;

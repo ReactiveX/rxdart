@@ -6,7 +6,7 @@ class _DistinctUniqueStreamSink<S> implements EventSink<S> {
   final HashSet<S> _collection;
 
   _DistinctUniqueStreamSink(this._outputSink,
-      {bool Function(S e1, S e2) equals, int Function(S e) hashCodeMethod})
+      {bool Function(S e1, S e2)? equals, int Function(S e)? hashCodeMethod})
       : _collection = HashSet<S>(equals: equals, hashCode: hashCodeMethod);
 
   @override
@@ -48,10 +48,10 @@ class _DistinctUniqueStreamSink<S> implements EventSink<S> {
 /// `hashCode`, you should generally also to supply the other.
 class DistinctUniqueStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// Optional method which determines equality between two events
-  final bool Function(S e1, S e2) equals;
+  final bool Function(S e1, S e2)? equals;
 
   /// Optional method which is used to create a hash from an event
-  final int Function(S e) hashCodeMethod;
+  final int Function(S e)? hashCodeMethod;
 
   /// Constructs a [StreamTransformer] which emits events from the source
   /// [Stream] as if they were processed through a [HashSet].
@@ -83,8 +83,8 @@ extension DistinctUniqueExtension<T> on Stream<T> {
   ///
   /// [Interactive marble diagram](http://rxmarbles.com/#distinct)
   Stream<T> distinctUnique({
-    bool Function(T e1, T e2) equals,
-    int Function(T e) hashCode,
+    bool Function(T e1, T e2)? equals,
+    int Function(T e)? hashCode,
   }) =>
       transform(DistinctUniqueStreamTransformer<T>(
           equals: equals, hashCodeMethod: hashCode));

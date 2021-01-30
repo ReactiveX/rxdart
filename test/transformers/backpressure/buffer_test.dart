@@ -103,9 +103,4 @@ void main() {
             .buffer(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
-
-  test('Rx.buffer.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).buffer(null),
-        emitsError(isArgumentError));
-  });
 }

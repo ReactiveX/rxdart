@@ -108,9 +108,4 @@ void main() {
             .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
-
-  test('Rx.window.error.shouldThrowB', () async {
-    await expectLater(Stream.fromIterable(const [1, 2, 3, 4]).window(null),
-        emitsError(isArgumentError));
-  });
 }

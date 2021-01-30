@@ -71,7 +71,7 @@ void main() {
   });
 
   test('RepeatStream.pause.resume', () async {
-    StreamSubscription<String> subscription;
+    late StreamSubscription<String> subscription;
     const retries = 3;
 
     subscription = RepeatStream(_getRepeatStream('A'), retries)

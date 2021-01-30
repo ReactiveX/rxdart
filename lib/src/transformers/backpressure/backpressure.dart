@@ -24,19 +24,19 @@ enum WindowStrategy {
 
 class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   final WindowStrategy _strategy;
-  final Stream<dynamic> Function(S event) _windowStreamFactory;
-  final T Function(S event) _onWindowStart;
-  final T Function(List<S> queue) _onWindowEnd;
+  final Stream<dynamic> Function(S event)? _windowStreamFactory;
+  final T Function(S event)? _onWindowStart;
+  final T Function(List<S> queue)? _onWindowEnd;
   final int _startBufferEvery;
-  final bool Function(List<S> queue) _closeWindowWhen;
+  final bool Function(List<S> queue)? _closeWindowWhen;
   final bool _ignoreEmptyWindows;
   final bool _dispatchOnClose;
   final Queue<S> queue = DoubleLinkedQueue<S>();
-  final int maxLengthQueue;
+  final int? maxLengthQueue;
   var skip = 0;
   var _hasData = false;
   var _mainClosed = false;
-  StreamSubscription<dynamic> _windowSubscription;
+  StreamSubscription<dynamic>? _windowSubscription;
 
   _BackpressureStreamSink(
     this._strategy,
@@ -58,8 +58,8 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
     if (skip == 0) {
       queue.add(data);
 
-      if (maxLengthQueue != null && queue.length > maxLengthQueue) {
-        queue.removeFirstElements(queue.length - maxLengthQueue);
+      if (maxLengthQueue != null && queue.length > maxLengthQueue!) {
+        queue.removeFirstElements(queue.length - maxLengthQueue!);
       }
     }
 
@@ -71,7 +71,8 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, [StackTrace? st]) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {
@@ -142,7 +143,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   void maybeCloseWindow(EventSink<T> sink) {
-    if (_closeWindowWhen != null && _closeWindowWhen(unmodifiableQueue)) {
+    if (_closeWindowWhen != null && _closeWindowWhen!(unmodifiableQueue)) {
       resolveWindowEnd(sink);
     }
   }
@@ -168,18 +169,14 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
     _windowSubscription?.cancel();
 
-    stream = _windowStreamFactory(event);
-
-    if (stream == null) {
-      sink.addError(ArgumentError.notNull('windowStreamFactory'));
-    }
+    stream = _windowStreamFactory!(event);
 
     return stream;
   }
 
   void resolveWindowStart(S event, EventSink<T> sink) {
     if (_onWindowStart != null) {
-      sink.add(_onWindowStart(event));
+      sink.add(_onWindowStart!(event));
     }
   }
 
@@ -190,7 +187,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
           _hasData &&
           queue.length > 1 &&
           _onWindowEnd != null) {
-        sink.add(_onWindowEnd(unmodifiableQueue));
+        sink.add(_onWindowEnd!(unmodifiableQueue));
       }
 
       queue.clear();
@@ -214,7 +211,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
 
     if (_hasData && (queue.isNotEmpty || !_ignoreEmptyWindows)) {
       if (_onWindowEnd != null) {
-        sink.add(_onWindowEnd(unmodifiableQueue));
+        sink.add(_onWindowEnd!(unmodifiableQueue));
       }
 
       // prepare the buffer for the next window.
@@ -295,24 +292,24 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final WindowStrategy strategy;
 
   /// Factory method used to create the [Stream] which will be buffered
-  final Stream<dynamic> Function(S event) windowStreamFactory;
+  final Stream<dynamic> Function(S event)? windowStreamFactory;
 
   /// Handler which fires when the window opens
-  final T Function(S event) onWindowStart;
+  final T Function(S event)? onWindowStart;
 
   /// Handler which fires when the window closes
-  final T Function(List<S> queue) onWindowEnd;
+  final T Function(List<S> queue)? onWindowEnd;
 
   /// Maximum length of the buffer.
   /// Specify this value to avoid running out of memory when adding too many events to the buffer.
   /// If it's `null`, maximum length of the buffer is unlimited.
-  final int maxLengthQueue;
+  final int? maxLengthQueue;
 
   /// Used to skip an amount of events
   final int startBufferEvery;
 
   /// Predicate which determines when the current window should close
-  final bool Function(List<S> queue) closeWindowWhen;
+  final bool Function(List<S> queue)? closeWindowWhen;
 
   /// Toggle to prevent, or allow windows that contain
   /// no events to be dispatched

@@ -138,7 +138,7 @@ void main() {
     });
 
     test('emits onEach Notifications for Data, Error, and Done', () async {
-      StackTrace stacktrace;
+      StackTrace? stacktrace;
       final actual = <Notification<int>>[];
       final exception = Exception();
       final stream = Stream.value(1)
@@ -156,7 +156,7 @@ void main() {
       await expectLater(actual, [
         Notification.onData(1),
         Notification<int>.onError(exception, stacktrace),
-        Notification<int>.onDone(),
+        Notification<int>.onDone()
       ]);
     });
 
@@ -260,7 +260,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace s]) => expect(e, isException),
+              (Exception e, [StackTrace? s]) => expect(e, isException),
             ),
           );
 
@@ -269,7 +269,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace s]) => expect(e, isException),
+              (Exception e, [StackTrace? s]) => expect(e, isException),
             ),
           );
 
@@ -279,7 +279,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace s]) => expect(e, isException),
+              (Exception e, [StackTrace? s]) => expect(e, isException),
               count: 2,
             ),
           );
@@ -310,7 +310,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace s]) => expect(e, isException),
+              (Exception e, [StackTrace? s]) => expect(e, isException),
             ),
           );
 
@@ -319,7 +319,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace s]) => expect(e, isException),
+              (Exception e, [StackTrace? s]) => expect(e, isException),
               count: 2,
             ),
           );
@@ -328,7 +328,7 @@ void main() {
           .doOnPause(() => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
-                (Exception e, [StackTrace s]) => expect(e, isException),
+                (Exception e, [StackTrace? s]) => expect(e, isException),
               ))
             ..pause()
             ..resume();
@@ -337,7 +337,7 @@ void main() {
           .doOnResume(() => throw Exception('catch me if you can! doOnResume'))
           .listen(null,
               onError: expectAsync2(
-                  (Exception e, [StackTrace s]) => expect(e, isException)))
+                  (Exception e, [StackTrace? s]) => expect(e, isException)))
             ..pause()
             ..resume();
     });
@@ -443,7 +443,7 @@ void main() {
         'B: 16',
         'A: 17',
       ];
-      StreamSubscription<int> subscription;
+      late StreamSubscription<int> subscription;
 
       final addToResult = (String value) {
         result.add(value);

@@ -6,6 +6,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -55,8 +56,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ///
   /// See also [StreamController.broadcast]
   factory BehaviorSubject({
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -82,8 +83,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   /// See also [StreamController.broadcast]
   factory BehaviorSubject.seeded(
     T seedValue, {
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) {
     // ignore: close_sinks
@@ -105,8 +106,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   static Stream<T> Function() _deferStream<T>(
           _Wrapper<T> wrapper, StreamController<T> controller, bool sync) =>
       () {
-        if (wrapper.latestIsError) {
-          final errorAndStackTrace = wrapper.latestErrorAndStackTrace;
+        if (wrapper.latestErrorAndStackTrace != null) {
+          final errorAndStackTrace = wrapper.latestErrorAndStackTrace!;
 
           return controller.stream.transform(
             StartWithErrorStreamTransformer(
@@ -114,9 +115,11 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
               errorAndStackTrace.stackTrace,
             ),
           );
-        } else if (wrapper.latestIsValue) {
-          return controller.stream
-              .transform(StartWithStreamTransformer(wrapper.latestValue));
+        }
+
+        if (wrapper.latestValue != null) {
+          return controller.stream.transform(
+              StartWithStreamTransformer(wrapper.latestValue!.value));
         }
 
         return controller.stream;
@@ -126,33 +129,23 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   void onAdd(T event) => _wrapper.setValue(event);
 
   @override
-  void onAddError(Object error, [StackTrace stackTrace]) =>
+  void onAddError(Object error, [StackTrace? stackTrace]) =>
       _wrapper.setError(error, stackTrace);
 
   @override
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper.latestIsValue;
-
-  /// Get the latest value emitted by the Subject
-  @override
-  T get value => _wrapper.latestValue;
-
-  /// Set and emit the new value
-  set value(T newValue) => add(newValue);
+  ValueWrapper<T>? get valueWrapper => _wrapper.latestValue;
 
   @override
-  bool get hasError => _wrapper.latestIsError;
-
-  @override
-  ErrorAndStackTrace get errorAndStackTrace =>
+  ErrorAndStackTrace? get errorAndStackTrace =>
       _wrapper.latestErrorAndStackTrace;
 
   @override
   BehaviorSubject<R> createForwardingSubject<R>({
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   }) =>
       BehaviorSubject(
@@ -176,12 +169,12 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _forwardBehaviorSubject<E>((s) => s.asyncMap(convert));
 
   @override
-  ValueStream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
+  ValueStream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) =>
       _forwardBehaviorSubject<E>((s) => s.asyncExpand(convert));
 
   @override
   ValueStream<T> handleError(Function onError,
-          {bool Function(Object error) test}) =>
+          {bool Function(dynamic error)? test}) =>
       _forwardBehaviorSubject<T>((s) => s.handleError(onError, test: test));
 
   @override
@@ -212,21 +205,19 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _forwardBehaviorSubject<T>((s) => s.skipWhile(test));
 
   @override
-  ValueStream<T> distinct([bool Function(T previous, T next) equals]) =>
+  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) =>
       _forwardBehaviorSubject<T>((s) => s.distinct(equals));
 
   @override
   ValueStream<T> timeout(Duration timeLimit,
-          {void Function(EventSink<T> sink) onTimeout}) =>
+          {void Function(EventSink<T> sink)? onTimeout}) =>
       _forwardBehaviorSubject<T>(
           (s) => s.timeout(timeLimit, onTimeout: onTimeout));
 
   ValueStream<R> _forwardBehaviorSubject<R>(
       Stream<R> Function(Stream<T> s) transformerStream) {
-    ArgumentError.checkNotNull(transformerStream, 'transformerStream');
-
-    BehaviorSubject<R> subject;
-    StreamSubscription<R> subscription;
+    late BehaviorSubject<R> subject;
+    late StreamSubscription<R> subscription;
 
     final onListen = () => subscription = transformerStream(_stream).listen(
           subject.add,
@@ -245,31 +236,21 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 }
 
 class _Wrapper<T> {
-  T latestValue;
-  ErrorAndStackTrace latestErrorAndStackTrace;
-
-  bool latestIsValue = false, latestIsError = false;
+  ValueWrapper<T>? latestValue;
+  ErrorAndStackTrace? latestErrorAndStackTrace;
 
   /// Non-seeded constructor
   _Wrapper();
 
-  _Wrapper.seeded(this.latestValue) : latestIsValue = true;
+  _Wrapper.seeded(T value) : latestValue = ValueWrapper(value);
 
   void setValue(T event) {
-    latestIsValue = true;
-    latestIsError = false;
-
-    latestValue = event;
-
+    latestValue = ValueWrapper(event);
     latestErrorAndStackTrace = null;
   }
 
-  void setError(Object error, [StackTrace stackTrace]) {
-    latestIsValue = false;
-    latestIsError = true;
-
+  void setError(Object error, [StackTrace? stackTrace]) {
     latestValue = null;
-
     latestErrorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
   }
 }

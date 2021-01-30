@@ -68,7 +68,7 @@ void main() {
   });
 
   test('Rx.flatMap.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream.value(0).flatMap((_) => Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {
@@ -109,7 +109,12 @@ Stream<int> _getOtherStream(int value) {
   Timer(
       // Reverses the order of 1, 2, 3 to 3, 2, 1 by delaying 1, and 2 longer
       // than they delay 3
-      Duration(milliseconds: value == 1 ? 15 : value == 2 ? 10 : 5), () {
+      Duration(
+          milliseconds: value == 1
+              ? 15
+              : value == 2
+                  ? 10
+                  : 5), () {
     controller.add(value);
     controller.close();
   });

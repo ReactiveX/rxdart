@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:rxdart/src/streams/from_callable.dart';
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 import 'package:rxdart/streams.dart';
 
 /// A utility class that provides static methods to create the various Streams
@@ -805,7 +805,7 @@ abstract class Rx {
   ///       Stream.value('repeat index: $repeatCount'), 3)
   ///         .listen((i) => print(i); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
   static Stream<T> repeat<T>(Stream<T> Function(int repeatIndex) streamFactory,
-          [int count]) =>
+          [int? count]) =>
       RepeatStream<T>(streamFactory, count);
 
   /// Creates a [Stream] that will recreate and re-listen to the source
@@ -826,7 +826,7 @@ abstract class Rx {
   ///       () => Stream.value(1).concatWith([Stream.error(Error())]),
   ///       1,
   ///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, RetryError
-  static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int count]) =>
+  static Stream<T> retry<T>(Stream<T> Function() streamFactory, [int? count]) =>
       RetryStream<T>(streamFactory, count);
 
   /// Creates a Stream that will recreate and re-listen to the source
@@ -887,7 +887,7 @@ abstract class Rx {
   /// ```
   static Stream<T> retryWhen<T>(
     Stream<T> Function() streamFactory,
-    Stream<void> Function(dynamic error, StackTrace stack) retryWhenFactory,
+    Stream<void> Function(Object error, StackTrace? stack) retryWhenFactory,
   ) =>
       RetryWhenStream<T>(streamFactory, retryWhenFactory);
 
@@ -903,9 +903,18 @@ abstract class Rx {
   ///       Stream.fromIterable([1, 2, 3, 4, 5])
   ///     ])
   ///     .listen(print); // prints true
-  static Stream<bool> sequenceEqual<A, B>(Stream<A> stream, Stream<B> other,
-          {bool Function(A a, B b) equals}) =>
-      SequenceEqualStream<A, B>(stream, other, equals: equals);
+  static Stream<bool> sequenceEqual<A, B>(
+    Stream<A> stream,
+    Stream<B> other, {
+    bool Function(A a, B b)? equals,
+    bool Function(ErrorAndStackTrace, ErrorAndStackTrace)? errorEquals,
+  }) =>
+      SequenceEqualStream<A, B>(
+        stream,
+        other,
+        dataEquals: equals,
+        errorEquals: errorEquals,
+      );
 
   /// Convert a Stream that emits Streams (aka a 'Higher Order Stream') into a
   /// single Stream that emits the items emitted by the most-recently-emitted of

@@ -5,7 +5,7 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   final Stream<T> _otherStream;
-  StreamSubscription<T> _otherSubscription;
+  StreamSubscription<T>? _otherSubscription;
   var _canAdd = false;
 
   _SkipUntilStreamSink(this._otherStream);
@@ -18,7 +18,8 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) => sink.addError(e, st);
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<S> sink) {
@@ -57,11 +58,7 @@ class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
 
   /// Constructs a [StreamTransformer] which starts emitting events
   /// only after [otherStream] emits an event.
-  SkipUntilStreamTransformer(this.otherStream) {
-    if (otherStream == null) {
-      throw ArgumentError('otherStream cannot be null');
-    }
-  }
+  SkipUntilStreamTransformer(this.otherStream);
 
   @override
   Stream<S> bind(Stream<S> stream) =>

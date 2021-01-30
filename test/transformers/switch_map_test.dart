@@ -100,7 +100,7 @@ void main() {
   });
 
   test('Rx.switchMap.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream.value(0).switchMap((_) => Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {

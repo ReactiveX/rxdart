@@ -35,29 +35,23 @@ class ConcatEagerStream<T> extends Stream<T> {
       : _controller = _buildController(streams);
 
   @override
-  StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) {
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams == null) {
-      throw ArgumentError('streams cannot be null');
-    }
     if (streams.isEmpty) {
       return StreamController<T>()..close();
-    }
-    if (streams.any((Stream<T> stream) => stream == null)) {
-      throw ArgumentError('One of the provided streams is null');
     }
 
     final len = streams.length;
     final completeEvents = List.generate(len, (_) => Completer<dynamic>());
-    List<StreamSubscription<T>> subscriptions;
-    StreamController<T> controller;
+    late List<StreamSubscription<T>> subscriptions;
+    late StreamController<T> controller;
     //ignore: cancel_subscriptions
-    StreamSubscription<T> activeSubscription;
+    late StreamSubscription<T> activeSubscription;
 
     controller = StreamController<T>(
         sync: true,
@@ -98,9 +92,8 @@ class ConcatEagerStream<T> extends Stream<T> {
         },
         onPause: () => activeSubscription.pause(),
         onResume: () => activeSubscription.resume(),
-        onCancel: () => Future.wait<dynamic>(subscriptions
-            .map((subscription) => subscription.cancel())
-            .where((cancelFuture) => cancelFuture != null)));
+        onCancel: () => Future.wait<dynamic>(
+            subscriptions.map((subscription) => subscription.cancel())));
 
     return controller;
   }

@@ -23,7 +23,7 @@ void main() {
   test('Rx.sequenceEqual.equals.customCompare.equals', () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 1, 1, 1, 1]),
         Stream.fromIterable(const [2, 2, 2, 2, 2]),
-        equals: (int a, int b) => true);
+        equals: (int? a, int? b) => true);
 
     await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
   });
@@ -47,7 +47,7 @@ void main() {
   test('Rx.sequenceEqual.equals.customCompare.notEquals', () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 1, 1, 1, 1]),
         Stream.fromIterable(const [1, 1, 1, 1, 1]),
-        equals: (int a, int b) => false);
+        equals: (int? a, int? b) => false);
 
     await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
   });
@@ -63,7 +63,7 @@ void main() {
       () async {
     final stream = Rx.sequenceEqual(Stream.fromIterable(const [1, 2, 3, 4, 5]),
         Stream.fromIterable(const [1, 2, 3, 4, 5, 6]),
-        equals: (int a, int b) => true);
+        equals: (int? a, int? b) => true);
 
     // expect false,
     // even if the equals handler always returns true,
@@ -73,16 +73,20 @@ void main() {
 
   test('Rx.sequenceEqual.equals.errors', () async {
     final stream = Rx.sequenceEqual(
-        Stream<void>.error(ArgumentError('error A')),
-        Stream<void>.error(ArgumentError('error A')));
+      Stream<void>.error(ArgumentError('error A')),
+      Stream<void>.error(ArgumentError('error A')),
+      errorEquals: (e1, e2) => e1.error.toString() == e2.error.toString(),
+    );
 
     await expectLater(stream, emitsInOrder(<dynamic>[true, emitsDone]));
   });
 
   test('Rx.sequenceEqual.notEquals.errors', () async {
     final stream = Rx.sequenceEqual(
-        Stream<void>.error(ArgumentError('error A')),
-        Stream<void>.error(ArgumentError('error B')));
+      Stream<void>.error(ArgumentError('error A')),
+      Stream<void>.error(ArgumentError('error B')),
+      errorEquals: (e1, e2) => e1.error.toString() == e2.error.toString(),
+    );
 
     await expectLater(stream, emitsInOrder(<dynamic>[false, emitsDone]));
   });
@@ -104,19 +108,5 @@ void main() {
     // listen twice on same stream
     await expectLater(future, completes);
     await expectLater(future, completes);
-  });
-
-  test('Rx.sequenceEqual.error.shouldThrowA', () {
-    expect(
-        () => Rx.sequenceEqual<int, void>(
-            Stream.fromIterable(const [1, 2, 3, 4, 5]), null),
-        throwsArgumentError);
-  });
-
-  test('Rx.sequenceEqual.error.shouldThrowB', () {
-    expect(
-        () => Rx.sequenceEqual<void, int>(
-            null, Stream.fromIterable(const [1, 2, 3, 4, 5])),
-        throwsArgumentError);
   });
 }

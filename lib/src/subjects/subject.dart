@@ -25,10 +25,10 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   StreamSink<T> get sink => _StreamSinkWrapper<T>(this);
 
   @override
-  ControllerCallback get onListen => _controller.onListen;
+  ControllerCallback? get onListen => _controller.onListen;
 
   @override
-  set onListen(void Function() onListenHandler) {
+  set onListen(void Function()? onListenHandler) {
     _controller.onListen = onListenHandler;
   }
 
@@ -40,7 +40,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
       throw UnsupportedError('Subjects do not support pause callbacks');
 
   @override
-  set onPause(void Function() onPauseHandler) =>
+  set onPause(void Function()? onPauseHandler) =>
       throw UnsupportedError('Subjects do not support pause callbacks');
 
   @override
@@ -48,14 +48,14 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
       throw UnsupportedError('Subjects do not support resume callbacks');
 
   @override
-  set onResume(void Function() onResumeHandler) =>
+  set onResume(void Function()? onResumeHandler) =>
       throw UnsupportedError('Subjects do not support resume callbacks');
 
   @override
-  ControllerCancelCallback get onCancel => _controller.onCancel;
+  ControllerCancelCallback? get onCancel => _controller.onCancel;
 
   @override
-  set onCancel(void Function() onCancelHandler) {
+  set onCancel(void Function()? onCancelHandler) {
     _controller.onCancel = onCancelHandler;
   }
 
@@ -72,7 +72,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   Future<dynamic> get done => _controller.done;
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add an error while items are being added from addStream');
@@ -81,7 +81,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     _addError(error, stackTrace);
   }
 
-  void _addError(Object error, [StackTrace stackTrace]) {
+  void _addError(Object error, [StackTrace? stackTrace]) {
     onAddError(error, stackTrace);
 
     _controller.addError(error, stackTrace);
@@ -90,16 +90,16 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// An extension point for sub-classes. Perform any side-effect / state
   /// management you need to here, rather than overriding the `add` method
   /// directly.
-  void onAddError(Object error, [StackTrace stackTrace]) {}
+  void onAddError(Object error, [StackTrace? stackTrace]) {}
 
   @override
-  Future<dynamic> addStream(Stream<T> source, {bool cancelOnError = true}) {
+  Future<void> addStream(Stream<T> source, {bool? cancelOnError}) {
     if (_isAddingStreamItems) {
       throw StateError(
           'You cannot add items while items are being added from addStream');
     }
 
-    final completer = Completer<T>();
+    final completer = Completer<void>();
     var isOnDoneCalled = false;
     final complete = () {
       if (!isOnDoneCalled) {
@@ -112,10 +112,10 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
     source.listen((T event) {
       _add(event);
-    }, onError: (dynamic e, StackTrace s) {
+    }, onError: (Object e, StackTrace? s) {
       _addError(e, s);
 
-      if (cancelOnError) {
+      if (identical(cancelOnError, true)) {
         complete();
       }
     }, onDone: () {
@@ -160,8 +160,8 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   /// in the same manner as the original [Subject] does.
   /// e.g. replay or behavior on subscribe.
   Subject<R> createForwardingSubject<R>({
-    void Function() onListen,
-    void Function() onCancel,
+    void Function()? onListen,
+    void Function()? onCancel,
     bool sync = false,
   });
 }
@@ -177,7 +177,7 @@ class _StreamSinkWrapper<T> implements StreamSink<T> {
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     _target.addError(error, stackTrace);
   }
 

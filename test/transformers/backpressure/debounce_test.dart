@@ -69,7 +69,7 @@ void main() {
 
   test('Rx.debounce.pause.resume', () async {
     final controller = StreamController<int>();
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = Stream.fromIterable([1, 2, 3])
         .debounce((_) => Stream<void>.fromFuture(
@@ -90,7 +90,7 @@ void main() {
     final stream = Stream.fromIterable(const [1, 2, 3]).debounce((_) =>
         Stream<void>.fromFuture(
             Future<void>.delayed(const Duration(milliseconds: 200))));
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     stopwatch.start();
 
@@ -114,7 +114,7 @@ void main() {
   test(
     'Rx.debounce.cancel.emits.nothing',
     () async {
-      StreamSubscription<int> subscription;
+      late StreamSubscription<int> subscription;
       final stream = Stream.fromIterable(const [1, 2, 3]).doOnDone(() {
         subscription.cancel();
       }).debounce((_) => Stream<void>.fromFuture(

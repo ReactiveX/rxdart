@@ -55,7 +55,7 @@ void main() {
     const expectedOutput = [1, 2, 3, 4];
     var count = 0;
 
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     subscription = _getStream().transform(transformer).listen(
         expectAsync1((result) {
           expect(expectedOutput[count++], result);
@@ -64,7 +64,7 @@ void main() {
             subscription.cancel();
           }
         }, count: expectedOutput.length),
-        onError: (Object e, [StackTrace s]) => expect(e, isException));
+        onError: (Object e, [StackTrace? s]) => expect(e, isException));
 
     subscription.pause();
     subscription.resume();
@@ -77,8 +77,8 @@ void main() {
 
     final stream = controller.stream.transform(transformer);
 
-    stream.listen(null, onError: (Object e, [StackTrace s]) {});
-    expect(() => stream.listen(null, onError: (Object e, [StackTrace s]) {}),
+    stream.listen(null, onError: (Object e, [StackTrace? s]) {});
+    expect(() => stream.listen(null, onError: (Object e, [StackTrace? s]) {}),
         throwsStateError);
 
     controller.add(1);

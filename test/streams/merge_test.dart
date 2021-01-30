@@ -45,14 +45,6 @@ void main() {
     }));
   });
 
-  test('Rx.merge.error.shouldThrowB', () {
-    expect(() => Rx.merge<int>(null), throwsArgumentError);
-  });
-
-  test('Rx.merge.error.shouldThrowC', () {
-    expect(() => Rx.merge([Stream.value(1), null]), throwsArgumentError);
-  });
-
   test('Rx.merge.pause.resume', () async {
     final first = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [1, 2, 3, 4][index]),
@@ -61,7 +53,7 @@ void main() {
         last = Stream.periodic(const Duration(milliseconds: 10),
             (index) => const [9, 10, 11, 12][index]);
 
-    StreamSubscription<num> subscription;
+    late StreamSubscription<num> subscription;
     // ignore: deprecated_member_use
     subscription = Rx.merge([first, second, last]).listen(expectAsync1((value) {
       expect(value, 1);

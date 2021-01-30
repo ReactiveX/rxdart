@@ -61,12 +61,8 @@ void main() {
     }));
   });
 
-  test('Rx.switchIfEmpty.error.shouldThrowB', () {
-    expect(() => Stream<void>.empty().switchIfEmpty(null), throwsArgumentError);
-  });
-
   test('Rx.switchIfEmpty.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
     final stream = Stream<int>.empty().switchIfEmpty(Stream.value(1));
 
     subscription = stream.listen(expectAsync1((value) {

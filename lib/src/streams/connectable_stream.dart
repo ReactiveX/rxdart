@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/src/utils/value_wrapper.dart';
 import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
@@ -51,7 +52,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   }
 
   PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast ?? true
+      : _source = source.isBroadcast
             ? source
             : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
@@ -68,7 +69,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
   @override
   Stream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       final subscription = _connect();
@@ -87,7 +88,7 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
 
   @override
   Stream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () => subscription = _connect();
     _subject.onCancel = () => subscription.cancel();
@@ -105,7 +106,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final BehaviorSubject<T> _subject;
 
   ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast ?? true
+      : _source = source.isBroadcast
             ? source
             : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
@@ -141,7 +142,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ValueStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       final subscription = _connect();
@@ -160,7 +161,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ValueStream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () => subscription = _connect();
     _subject.onCancel = () => subscription.cancel();
@@ -169,16 +170,10 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   }
 
   @override
-  T get value => _subject.value;
+  ErrorAndStackTrace? get errorAndStackTrace => _subject.errorAndStackTrace;
 
   @override
-  bool get hasValue => _subject.hasValue;
-
-  @override
-  ErrorAndStackTrace get errorAndStackTrace => _subject.errorAndStackTrace;
-
-  @override
-  bool get hasError => _subject.hasError;
+  ValueWrapper<T>? get valueWrapper => _subject.valueWrapper;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
@@ -193,7 +188,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
   factory ReplayConnectableStream(Stream<T> stream,
-      {int maxSize, bool sync = false}) {
+      {int? maxSize, bool sync = false}) {
     return ReplayConnectableStream<T>._(
       stream,
       ReplaySubject<T>(maxSize: maxSize, sync: sync),
@@ -201,7 +196,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   }
 
   ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast ?? true
+      : _source = source.isBroadcast
             ? source
             : source.asBroadcastStream(onCancel: (s) => s.cancel()),
         super(_subject);
@@ -218,7 +213,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ReplayStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription) connection,
+    void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
       final subscription = _connect();
@@ -237,7 +232,7 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
 
   @override
   ReplayStream<T> refCount() {
-    ConnectableStreamSubscription<T> subscription;
+    late ConnectableStreamSubscription<T> subscription;
 
     _subject.onListen = () => subscription = _connect();
     _subject.onCancel = () => subscription.cancel();
@@ -268,22 +263,22 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
       _source.cancel().then<void>((_) => _subject.close());
 
   @override
-  Future<E> asFuture<E>([E futureValue]) => _source.asFuture(futureValue);
+  Future<E> asFuture<E>([E? futureValue]) => _source.asFuture(futureValue);
 
   @override
   bool get isPaused => _source.isPaused;
 
   @override
-  void onData(void Function(T data) handleData) => _source.onData(handleData);
+  void onData(void Function(T data)? handleData) => _source.onData(handleData);
 
   @override
-  void onDone(void Function() handleDone) => _source.onDone(handleDone);
+  void onDone(void Function()? handleDone) => _source.onDone(handleDone);
 
   @override
-  void onError(Function handleError) => _source.onError(handleError);
+  void onError(Function? handleError) => _source.onError(handleError);
 
   @override
-  void pause([Future<void> resumeSignal]) => _source.pause(resumeSignal);
+  void pause([Future<void>? resumeSignal]) => _source.pause(resumeSignal);
 
   @override
   void resume() => _source.resume();
@@ -420,7 +415,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // ReplaySubject
   /// subscription.cancel();
   /// ```
-  ReplayConnectableStream<T> publishReplay({int maxSize}) =>
+  ReplayConnectableStream<T> publishReplay({int? maxSize}) =>
       ReplayConnectableStream<T>(this, maxSize: maxSize, sync: true);
 
   /// Convert the current Stream into a new Stream that can be listened
@@ -549,6 +544,6 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// subscription.cancel();
   /// subscription2.cancel();
   /// ```
-  ReplayStream<T> shareReplay({int maxSize}) =>
+  ReplayStream<T> shareReplay({int? maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
 }

@@ -68,7 +68,7 @@ void main() {
     final transformer =
         OnErrorResumeStreamTransformer<int>((Object _) => _getStream());
     final exp = const [50] + expected;
-    StreamSubscription<num> subscription;
+    late StreamSubscription<num> subscription;
     var count = 0;
 
     subscription = Rx.merge([

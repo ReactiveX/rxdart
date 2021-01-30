@@ -50,11 +50,7 @@ class TakeWhileInclusiveStreamTransformer<S>
 
   /// Constructs a [StreamTransformer] which forwards data events while [test]
   /// is successful, and includes last event that caused [test] to return false.
-  TakeWhileInclusiveStreamTransformer(this.test) {
-    if (test == null) {
-      throw ArgumentError.notNull('test');
-    }
-  }
+  TakeWhileInclusiveStreamTransformer(this.test);
 
   @override
   Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(

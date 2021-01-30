@@ -23,9 +23,7 @@ class WindowStreamTransformer<T>
   WindowStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
-            ignoreEmptyWindows: false) {
-    if (window == null) throw ArgumentError.notNull('window');
-  }
+            ignoreEmptyWindows: false);
 }
 
 /// Buffers a number of values from the source Stream by count then emits the
@@ -66,10 +64,6 @@ class WindowCountStreamTransformer<T>
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
             startBufferEvery: startBufferEvery,
             closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
-    if (count == null) throw ArgumentError.notNull('count');
-    if (startBufferEvery == null) {
-      throw ArgumentError.notNull('startBufferEvery');
-    }
     if (count < 1) throw ArgumentError.value(count, 'count');
     if (startBufferEvery < 0) {
       throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
@@ -93,9 +87,7 @@ class WindowTestStreamTransformer<T>
   WindowTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
             onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
-            closeWindowWhen: (Iterable<T> queue) => test(queue.last)) {
-    if (test == null) throw ArgumentError.notNull('test');
-  }
+            closeWindowWhen: (Iterable<T> queue) => test(queue.last));
 }
 
 /// Extends the Stream class with the ability to window
@@ -161,9 +153,6 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .doOnData((_) => print('next window'))
   ///       .flatMap((s) => s)
   ///       .listen(print); // prints next window 0, 1, next window 2, 3, ...
-  Stream<Stream<T>> windowTime(Duration duration) {
-    if (duration == null) throw ArgumentError.notNull('duration');
-
-    return window(Stream<void>.periodic(duration));
-  }
+  Stream<Stream<T>> windowTime(Duration duration) =>
+      window(Stream<void>.periodic(duration));
 }

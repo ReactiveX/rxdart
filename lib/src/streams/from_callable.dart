@@ -24,7 +24,7 @@ import 'dart:async';
 ///       return 'Value';
 ///     }).listen(print); // prints Value
 class FromCallableStream<T> extends Stream<T> {
-  Stream<T> _stream;
+  Stream<T>? _stream;
 
   /// A function will be called at subscription time.
   final FutureOr<T> Function() callable;
@@ -41,24 +41,23 @@ class FromCallableStream<T> extends Stream<T> {
 
   @override
   StreamSubscription<T> listen(
-    void Function(T event) onData, {
-    Function onError,
-    void Function() onDone,
-    bool cancelOnError,
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
   }) {
     if (_isReusable || _stream == null) {
       try {
         final value = callable();
 
-        _stream = value is Future<T>
-            ? Stream.fromFuture(value)
-            : Stream.value(value as T);
+        _stream =
+            value is Future<T> ? Stream.fromFuture(value) : Stream.value(value);
       } catch (e, s) {
         _stream = Stream.error(e, s);
       }
     }
 
-    return _stream.listen(
+    return _stream!.listen(
       onData,
       onError: onError,
       onDone: onDone,

@@ -5,14 +5,14 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DoStreamSink<S> implements ForwardingSink<S, S> {
-  final dynamic Function() _onCancel;
-  final void Function(S event) _onData;
-  final void Function() _onDone;
-  final void Function(Notification<S> notification) _onEach;
-  final void Function(Object, StackTrace) _onError;
-  final void Function() _onListen;
-  final void Function() _onPause;
-  final void Function() _onResume;
+  final FutureOr<void> Function()? _onCancel;
+  final void Function(S event)? _onData;
+  final void Function()? _onDone;
+  final void Function(Notification<S> notification)? _onEach;
+  final void Function(Object, StackTrace?)? _onError;
+  final void Function()? _onListen;
+  final void Function()? _onPause;
+  final void Function()? _onResume;
 
   _DoStreamSink(
     this._onCancel,
@@ -41,7 +41,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, dynamic e, [st]) {
+  void addError(EventSink<S> sink, Object e, [StackTrace? st]) {
     try {
       _onError?.call(e, st);
     } catch (e, s) {
@@ -122,28 +122,28 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 ///         .listen(null); // Prints: 1, 'Done'
 class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   /// fires when all subscriptions have cancelled.
-  final dynamic Function() onCancel;
+  final FutureOr<void> Function()? onCancel;
 
   /// fires when data is emitted
-  final void Function(S event) onData;
+  final void Function(S event)? onData;
 
   /// fires on close
-  final void Function() onDone;
+  final void Function()? onDone;
 
   /// fires on data, close and error
-  final void Function(Notification<S> notification) onEach;
+  final void Function(Notification<S> notification)? onEach;
 
   /// fires on errors
-  final void Function(Object, StackTrace) onError;
+  final void Function(Object, StackTrace?)? onError;
 
   /// fires when a subscription first starts
-  final void Function() onListen;
+  final void Function()? onListen;
 
   /// fires when the subscription pauses
-  final void Function() onPause;
+  final void Function()? onPause;
 
   /// fires when the subscription resumes
-  final void Function() onResume;
+  final void Function()? onResume;
 
   /// Constructs a [StreamTransformer] which will trigger any of the provided
   /// handlers as they occur.
@@ -198,7 +198,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .listen(null);
   ///
   ///     subscription.cancel(); // prints 'hi'
-  Stream<T> doOnCancel(void Function() onCancel) =>
+  Stream<T> doOnCancel(FutureOr<void> Function() onCancel) =>
       transform(DoStreamTransformer<T>(onCancel: onCancel));
 
   /// Invokes the given callback function when the stream emits an item. In
@@ -245,7 +245,7 @@ extension DoExtensions<T> on Stream<T> {
   ///     Stream.error(Exception())
   ///       .doOnError((error, stacktrace) => print('oh no'))
   ///       .listen(null); // prints 'Oh no'
-  Stream<T> doOnError(void Function(Object, StackTrace) onError) =>
+  Stream<T> doOnError(void Function(Object, StackTrace?) onError) =>
       transform(DoStreamTransformer<T>(onError: onError));
 
   /// Invokes the given callback function when the stream is first listened to.

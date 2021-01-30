@@ -33,9 +33,7 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
           onWindowEnd: trailing ? (queue) => queue.last : null,
           dispatchOnClose: trailing,
           maxLengthQueue: trailing ? 2 : 0,
-        ) {
-    assert(window != null, 'window stream factory cannot be null');
-  }
+        );
 }
 
 /// Extends the Stream class with the ability to throttle events in various ways

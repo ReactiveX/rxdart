@@ -81,8 +81,7 @@ void main() {
           emitsError(
             predicate<RetryError>((a) {
               return a.errors.length == 1 &&
-                  a.errors
-                      .every((es) => es.error != null && es.stackTrace != null);
+                  a.errors.every((es) => es.stackTrace != null);
             }),
           ),
           emitsDone,
@@ -90,7 +89,7 @@ void main() {
   });
 
   test('RetryWhenStream.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = RetryWhenStream(_sourceStream(3), _neverThrow)
         .listen(expectAsync1((result) {
@@ -104,17 +103,17 @@ void main() {
   });
 }
 
-Stream<int> Function() _sourceStream(int i, [int throwAt]) {
+Stream<int> Function() _sourceStream(int i, [int? throwAt]) {
   return throwAt == null
       ? () => Stream.fromIterable(range(i))
       : () =>
           Stream.fromIterable(range(i)).map((i) => i == throwAt ? throw i : i);
 }
 
-Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
+Stream<void> _alwaysThrow(dynamic e, StackTrace? s) =>
     Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
+Stream<void> _neverThrow(dynamic e, StackTrace? s) => Stream.value('');
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;
@@ -146,7 +145,7 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
 /// if provided. [step] can be negative, in which case the sequence counts down
 /// from the starting point and [stop] must be less than the starting point so
 /// that it becomes the lower bound.
-Iterable<int> range(int start_or_stop, [int stop, int step]) sync* {
+Iterable<int> range(int start_or_stop, [int? stop, int? step]) sync* {
   final start = stop == null ? 0 : start_or_stop;
   stop ??= start_or_stop;
   step ??= 1;

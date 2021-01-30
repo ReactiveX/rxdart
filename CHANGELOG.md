@@ -1,3 +1,15 @@
+## 0.26.0-nullsafety.1
+  * Breaking change: `ValueStream`
+    - Add `valueWrapper` to `ValueStream`.
+    - Change `value`, `hasValue`, `error` and `hasError` to extension getters.
+  * Fixed some API example documentation (thanks [@HannibalKcc](https://github.com/HannibalKcc)).
+  * `throttle`/`throttleTime` have been optimised for performance.
+  * Updated Flutter example to work with the latest Flutter stable.
+
+## 0.26.0-nullsafety.0
+  * Migrate this package to null safety.
+  * Sdk constraints: `>=2.12.0-0 <3.0.0` based on beta release guidelines.
+  
 ## 0.25.0
   * Sync behavior when using `publishValueSeeded`.
   * `ValueStream`, `ReplayStream`: exposes `stackTrace` along with the `error`:

@@ -48,13 +48,6 @@ void main() {
     await expectLater(true, true);
   });
 
-  test('Rx.takeWhileInclusive.shouldThrowA', () async {
-    expect(
-      () => Stream.value(42).takeWhileInclusive(null),
-      throwsArgumentError,
-    );
-  });
-
   test('Rx.takeWhileInclusive.shouldThrowB', () async {
     final stream =
         Stream<void>.error(Exception()).takeWhileInclusive((_) => true);
@@ -65,7 +58,7 @@ void main() {
   });
 
   test('Rx.takeWhileInclusive.pause.resume', () async {
-    StreamSubscription<num> subscription;
+    late StreamSubscription<num> subscription;
 
     subscription = Stream.fromIterable([2, 3, 4, 5, 6])
         .takeWhileInclusive((i) => i < 4)

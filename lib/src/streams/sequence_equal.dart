@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/zip.dart';
 import 'package:rxdart/src/transformers/materialize.dart';
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 /// Determine whether two Streams emit the same sequence of items.
@@ -23,29 +24,30 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
   /// equality between the provided [Stream]s.
   /// This single value is emitted when both provided [Stream]s are complete.
   /// After this event, the [Stream] closes.
-  SequenceEqualStream(Stream<S> stream, Stream<T> other,
-      {bool Function(S s, T t) equals})
-      : _controller = _buildController(stream, other, equals);
+  SequenceEqualStream(
+    Stream<S> stream,
+    Stream<T> other, {
+    bool Function(S s, T t)? dataEquals,
+    bool Function(ErrorAndStackTrace, ErrorAndStackTrace)? errorEquals,
+  }) : _controller = _buildController(stream, other, dataEquals, errorEquals);
 
   @override
-  StreamSubscription<bool> listen(void Function(bool event) onData,
-          {Function onError, void Function() onDone, bool cancelOnError}) =>
+  StreamSubscription<bool> listen(void Function(bool event)? onData,
+          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
       _controller.stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static StreamController<bool> _buildController<S, T>(
-      Stream<S> stream, Stream<T> other, bool Function(S s, T t) equals) {
-    if (stream == null) {
-      throw ArgumentError.notNull('stream');
-    }
+    Stream<S> stream,
+    Stream<T> other,
+    bool Function(S s, T t)? dataEquals,
+    bool Function(ErrorAndStackTrace, ErrorAndStackTrace)? errorEquals,
+  ) {
+    dataEquals = dataEquals ?? (s, t) => s == t;
+    errorEquals = errorEquals ?? (e1, e2) => e1 == e2;
 
-    if (other == null) {
-      throw ArgumentError.notNull('other');
-    }
-
-    final doCompare = equals ?? (S s, T t) => s == t;
-    StreamController<bool> controller;
-    StreamSubscription<bool> subscription;
+    late StreamController<bool> controller;
+    late StreamSubscription<bool> subscription;
 
     controller = StreamController<bool>(
         sync: true,
@@ -54,17 +56,34 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
             ..add(value)
             ..close();
 
-          subscription = ZipStream.zip2(
-                  stream.transform(MaterializeStreamTransformer()),
-                  other.transform(MaterializeStreamTransformer()),
-                  (Notification<S> s, Notification<T> t) =>
-                      s.kind == t.kind &&
-                      s.errorAndStackTrace?.error?.toString() ==
-                          t.errorAndStackTrace?.error?.toString() &&
-                      doCompare(s.value, t.value))
-              .where((isEqual) => !isEqual)
-              .listen(emitAndClose,
-                  onError: controller.addError, onDone: emitAndClose);
+          final compare = (Notification<S> s, Notification<T> t) {
+            if (s.kind != t.kind) {
+              return false;
+            }
+            switch (s.kind) {
+              case Kind.OnData:
+                return dataEquals!(
+                  s.requireData,
+                  t.requireData,
+                );
+              case Kind.OnDone:
+                return true;
+              case Kind.OnError:
+                return errorEquals!(
+                  s.errorAndStackTrace!,
+                  t.errorAndStackTrace!,
+                );
+            }
+          };
+
+          subscription =
+              ZipStream.zip2(stream.materialize(), other.materialize(), compare)
+                  .where((isEqual) => !isEqual)
+                  .listen(
+                    emitAndClose,
+                    onError: controller.addError,
+                    onDone: emitAndClose,
+                  );
         },
         onPause: () => subscription.pause(),
         onResume: () => subscription.resume(),

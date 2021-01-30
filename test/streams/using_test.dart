@@ -1,25 +1,31 @@
 import 'dart:async';
 
-import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/using.dart';
 import 'package:test/test.dart';
 
-class MockResource extends Mock {
-  Future<void> close();
+class MockResource {
+  final Future<void> Function() closeFunction;
+  var closeCount = 0;
+  var closeSyncCount = 0;
 
-  void closeSync();
+  MockResource(this.closeFunction);
+
+  Future<void> close() {
+    ++closeCount;
+    return closeFunction();
+  }
+
+  void closeSync() => ++closeSyncCount;
 }
 
 Future<void> main() async {
-  MockResource Function() resourceFactory;
-  MockResource resource;
+  late MockResource Function() resourceFactory;
+  late MockResource resource;
 
   setUp(() {
     resourceFactory = () {
-      resource = MockResource();
-      when(resource.close())
-          .thenAnswer((_) => Future.delayed(const Duration(milliseconds: 10)));
+      resource =
+          MockResource(() => Future.delayed(const Duration(milliseconds: 10)));
       return resource;
     };
   });
@@ -39,7 +45,7 @@ Future<void> main() async {
       ]),
     );
 
-    verify(resource.close()).called(1);
+    expect(resource.closeCount, 1);
   });
 
   test('Rx.using.resourceFactory.throws', () async {
@@ -79,7 +85,7 @@ Future<void> main() async {
       emitsInOrder(<dynamic>[emitsError(isException), emitsDone]),
     );
 
-    verify(resource.close()).called(1);
+    expect(resource.closeCount, 1);
   });
 
   test('Rx.using.cancel.A', () async {
@@ -99,7 +105,7 @@ Future<void> main() async {
 
     await Future<void>.delayed(const Duration(seconds: 1));
     await subscription.cancel();
-    verify(resource.close()).called(1);
+    expect(resource.closeCount, 1);
   });
 
   test('Rx.using.cancel.B', () async {
@@ -139,24 +145,7 @@ Future<void> main() async {
     );
 
     await Future<void>.delayed(const Duration(seconds: 1));
-    verifyNever(resource.close());
-  });
-
-  test('Rx.using.errors.shouldThrows', () {
-    expect(
-      () => UsingStream<int, int>(null, (_) => Stream.value(1), (_) {}),
-      throwsArgumentError,
-    );
-
-    expect(
-      () => UsingStream<int, int>(() => 1, null, (_) {}),
-      throwsArgumentError,
-    );
-
-    expect(
-      () => UsingStream<int, int>(() => 1, (_) => Stream.value(1), null),
-      throwsArgumentError,
-    );
+    expect(resource.closeCount, 0);
   });
 
   test('Rx.using.errors.cancelOnError', () async {
@@ -175,7 +164,7 @@ Future<void> main() async {
     );
 
     await Future<void>.delayed(const Duration(seconds: 1));
-    verify(resource.close()).called(1);
+    expect(resource.closeCount, 1);
   });
 
   test('Rx.using.disposer.sync', () async {
@@ -190,7 +179,7 @@ Future<void> main() async {
       emitsInOrder(<dynamic>[0, 1, 2, 3, emitsDone]),
     );
 
-    verify(resource.closeSync()).called(1);
+    expect(resource.closeSyncCount, 1);
   });
 
   test('Rx.using.single.subscription', () async {
@@ -222,11 +211,11 @@ Future<void> main() async {
     await s1.cancel();
     await s2.cancel();
 
-    verify(resource.close()).called(1);
+    expect(resource.closeCount, 1);
   });
 
   test('Rx.using.pause.resume', () async {
-    StreamSubscription<int> subscription;
+    late StreamSubscription<int> subscription;
 
     subscription = Rx.using<int, MockResource>(
       resourceFactory,

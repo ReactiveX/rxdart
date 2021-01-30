@@ -9,7 +9,7 @@ void main() {
     var count = 0;
 
     Stream.fromIterable(const [1, 2, 3, 4])
-        .scan((int acc, int value, int index) => (acc ?? 0) + value)
+        .scan((int? acc, int value, int index) => (acc ?? 0) + value)
         .listen(expectAsync1((result) {
           expect(expectedOutput[count++], result);
         }, count: expectedOutput.length));
@@ -17,7 +17,7 @@ void main() {
 
   test('Rx.scan.reusable', () async {
     final transformer = ScanStreamTransformer<int, int>(
-        (int acc, int value, int index) => (acc ?? 0) + value);
+        (int? acc, int value, int index) => (acc ?? 0) + value);
     const expectedOutput = [1, 3, 6, 10];
     var countA = 0, countB = 0;
 
@@ -37,7 +37,7 @@ void main() {
   test('Rx.scan.asBroadcastStream', () async {
     final stream = Stream.fromIterable(const [1, 2, 3, 4])
         .asBroadcastStream()
-        .scan((int acc, int value, int index) => (acc ?? 0) + value, 0);
+        .scan((int? acc, int value, int index) => (acc ?? 0) + value, 0);
 
     // listen twice on same stream
     stream.listen(null);
@@ -48,7 +48,7 @@ void main() {
 
   test('Rx.scan.error.shouldThrow', () async {
     final streamWithError = Stream.fromIterable(const [1, 2, 3, 4])
-        .scan((num acc, num value, int index) {
+        .scan((num? acc, num value, int index) {
       throw StateError('oh noes!');
     });
 
@@ -62,7 +62,7 @@ void main() {
     final controller = StreamController<int>();
 
     final stream = controller.stream
-        .scan((int acc, int value, int index) => (acc ?? 0) + value);
+        .scan((int? acc, int value, int index) => (acc ?? 0) + value);
 
     stream.listen(null);
     expect(() => stream.listen(null), throwsStateError);

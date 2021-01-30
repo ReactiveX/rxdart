@@ -13,8 +13,8 @@ Stream<R> forwardStream<T, R>(
   ArgumentError.checkNotNull(stream, 'stream');
   ArgumentError.checkNotNull(connectedSink, 'connectedSink');
 
-  StreamController<R> controller;
-  StreamSubscription<T> subscription;
+  late StreamController<R> controller;
+  late StreamSubscription<T> subscription;
 
   void runCatching(void Function() block) {
     try {
@@ -29,7 +29,7 @@ Stream<R> forwardStream<T, R>(
 
     subscription = stream.listen(
       (data) => runCatching(() => connectedSink.add(controller, data)),
-      onError: (dynamic e, StackTrace st) =>
+      onError: (Object e, StackTrace? st) =>
           runCatching(() => connectedSink.addError(controller, e, st)),
       onDone: () => runCatching(() => connectedSink.close(controller)),
     );

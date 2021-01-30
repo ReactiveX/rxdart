@@ -5,7 +5,7 @@ class ErrorAndStackTrace {
   final Object error;
 
   /// A reference to the wrapped [StackTrace]
-  final StackTrace stackTrace;
+  final StackTrace? stackTrace;
 
   /// Constructs an object containing both an [error] and the
   /// corresponding [stackTrace].
@@ -13,7 +13,7 @@ class ErrorAndStackTrace {
 
   @override
   String toString() =>
-      'ErrorAndStackTrace{error: $error, stackTrace: $stackTrace}';
+      'ErrorAndStackTrace{error: $error, stacktrace: $stackTrace}';
 
   @override
   bool operator ==(Object other) =>
