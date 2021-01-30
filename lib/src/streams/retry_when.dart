@@ -96,33 +96,17 @@ class RetryWhenStream<T> extends Stream<T> {
       try {
         retryStream = retryWhenFactory(originalError, originalStacktrace);
       } catch (e, s) {
-        if (identical(originalError, e)) {
-          _controller.addError(originalError, originalStacktrace);
-        } else {
-          _controller.addError(originalError, originalStacktrace);
-          _controller.addError(e, s);
-        }
-        _controller.close();
-        return;
+        return _addErrorAndClose(originalError, originalStacktrace, e, s);
       }
 
       _subscription = retryStream.listen(
         (_) {
           _cancelSubscription();
-
           _retry();
         },
         onError: (Object e, StackTrace s) {
           _cancelSubscription();
-
-          if (identical(originalError, e)) {
-            _controller.addError(originalError, originalStacktrace);
-          } else {
-            _controller.addError(originalError, originalStacktrace);
-            _controller.addError(e, s);
-          }
-
-          _controller.close();
+          _addErrorAndClose(originalError, originalStacktrace, e, s);
         },
         cancelOnError: false,
       );
@@ -134,6 +118,21 @@ class RetryWhenStream<T> extends Stream<T> {
       onDone: _controller.close,
       cancelOnError: false,
     );
+  }
+
+  void _addErrorAndClose(
+    Object originalError,
+    StackTrace originalStacktrace,
+    Object e,
+    StackTrace s,
+  ) {
+    if (identical(originalError, e)) {
+      _controller.addError(originalError, originalStacktrace);
+    } else {
+      _controller.addError(originalError, originalStacktrace);
+      _controller.addError(e, s);
+    }
+    _controller.close();
   }
 
   void _cancelSubscription() {
