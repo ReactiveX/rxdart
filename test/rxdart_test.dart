@@ -75,6 +75,7 @@ import 'transformers/start_with_many_test.dart' as start_with_many_test;
 import 'transformers/start_with_test.dart' as start_with_test;
 import 'transformers/switch_if_empty_test.dart' as switch_if_empty_test;
 import 'transformers/switch_map_test.dart' as switch_map_test;
+import 'transformers/take_last_test.dart' as take_last_test;
 import 'transformers/take_until_test.dart' as take_until_test;
 import 'transformers/take_while_inclusive_test.dart'
     as take_while_inclusive_test;
@@ -134,6 +135,7 @@ void main() {
   start_with_test.main();
   switch_if_empty_test.main();
   switch_map_test.main();
+  take_last_test.main();
   take_until_test.main();
   take_while_inclusive_test.main();
   time_interval_test.main();

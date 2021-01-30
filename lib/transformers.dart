@@ -29,6 +29,7 @@ export 'src/transformers/start_with.dart';
 export 'src/transformers/start_with_many.dart';
 export 'src/transformers/switch_if_empty.dart';
 export 'src/transformers/switch_map.dart';
+export 'src/transformers/take_last.dart';
 export 'src/transformers/take_until.dart';
 export 'src/transformers/take_while_inclusive.dart';
 export 'src/transformers/time_interval.dart';
