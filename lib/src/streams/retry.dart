@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
 /// Creates a [Stream] that will recreate and re-listen to the source
