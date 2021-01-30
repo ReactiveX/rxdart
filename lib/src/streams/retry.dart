@@ -33,14 +33,14 @@ class RetryStream<T> extends Stream<T> {
   late final StreamController<T> _controller = StreamController<T>(
     sync: true,
     onListen: _retry,
-    onPause: () => _subscription.pause(),
-    onResume: () => _subscription.resume(),
+    onPause: () => _subscription!.pause(),
+    onResume: () => _subscription!.resume(),
     onCancel: () {
       _errors.clear();
-      return _subscription.cancel();
+      return _subscription?.cancel();
     },
   );
-  late StreamSubscription<void> _subscription;
+  StreamSubscription<void>? _subscription;
 
   /// Constructs a [Stream] that will recreate and re-listen to the source
   /// [Stream] (created by the provided factory method) the specified number
@@ -61,7 +61,8 @@ class RetryStream<T> extends Stream<T> {
 
   void _retry() {
     final onError = (Object e, StackTrace s) {
-      _subscription.cancel();
+      _subscription!.cancel();
+      _subscription = null;
 
       _errors.add(ErrorAndStackTrace(e, s));
 
