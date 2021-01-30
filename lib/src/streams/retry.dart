@@ -70,7 +70,6 @@ class RetryStream<T> extends Stream<T> {
 
       if (count == _retryStep) {
         _errors.forEach((e) => _controller.addError(e.error, e.stackTrace));
-        _errors.clear();
         _controller.close();
       } else {
         ++_retryStep;
