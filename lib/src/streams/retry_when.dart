@@ -5,7 +5,8 @@ import 'dart:async';
 /// emits an error or it completes, the Stream terminates.
 ///
 /// If the [retryWhenFactory] throws an error or returns a Stream that emits an error,
-/// origin error and that error will be emitted (if it is not identical with origin error).
+/// original error will be emitted. And then, the error from [retryWhenFactory] will be emitted
+/// if it is not identical with original error.
 ///
 /// ### Basic Example
 ///
@@ -31,7 +32,7 @@ import 'dart:async';
 ///
 /// ```dart
 ///     var errorHappened = false;
-///     RetryWhenStream(
+///     RetryWhenStream<int>(
 ///       () => Stream.periodic(const Duration(seconds: 1), (i) => i).map((i) {
 ///         if (i == 3 && !errorHappened) {
 ///           throw 'We can take this. Please restart.';

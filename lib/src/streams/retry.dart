@@ -17,9 +17,12 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 ///         .listen((i) => print(i)); // Prints 1
 ///
 ///     RetryStream(
-///       () => Stream.value(1).concatWith([Stream.error(Error())]),
+///       () => Stream.value(1).concatWith([Stream<int>.error(Error())]),
 ///       1,
-///     ).listen(print, onError: (e, s) => print(e)); // Prints 1, 1, Instance of 'Error', Instance of 'Error'
+///     ).listen(
+///       print,
+///       onError: (Object e, StackTrace s) => print(e),
+///     ); // Prints 1, 1, Instance of 'Error', Instance of 'Error'
 class RetryStream<T> extends Stream<T> {
   /// The factory method used at subscription time
   final Stream<T> Function() streamFactory;
