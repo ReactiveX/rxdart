@@ -104,6 +104,28 @@ void main() {
     subscription.resume();
   });
 
+  test('RetryWhenStream.cancel.ensureSubStreamCancels', () async {
+    var isCancelled = false, didStopEmitting = true;
+    final subStream = (Object e, StackTrace s) =>
+        Stream.periodic(const Duration(milliseconds: 100), (count) => count)
+            .doOnData((_) {
+          if (isCancelled) {
+            didStopEmitting = false;
+          }
+        });
+    final subscription =
+        RetryWhenStream(_sourceStream(3, 0), subStream).listen(null);
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    await subscription.cancel();
+    isCancelled = true;
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    expect(didStopEmitting, isTrue);
+  });
+
   test('RetryWhenStream.retryStream.throws.originError', () {
     final error = 1;
     final stream = Rx.retryWhen<int>(
