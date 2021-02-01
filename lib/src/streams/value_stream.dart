@@ -14,7 +14,7 @@ abstract class ValueStream<T> implements Stream<T> {
   ErrorAndStackTrace? get errorAndStackTrace;
 }
 
-/// Extensions to access value and error easily.
+/// Extensions to easily access value and error.
 extension ValueStreamExtensions<T> on ValueStream<T> {
   /// A flag that turns true as soon as at least one event has been emitted.
   bool get hasValue => valueWrapper != null;
