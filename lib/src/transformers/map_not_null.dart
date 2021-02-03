@@ -28,7 +28,7 @@ class _MapNotNullSink<T, R extends Object>
 ///       .transform(MapNotNullStreamTransformer(int.tryParse))
 ///       .listen(print); // prints 1, 3
 ///
-/// #### as opposed to:
+///     // equivalent to:
 ///
 ///     Stream.fromIterable(['1', 'two', '3', 'four'])
 ///       .map(int.tryParse)
@@ -61,7 +61,7 @@ extension MapNotNullExtension<T> on Stream<T> {
   ///       .mapNotNull(int.tryParse)
   ///       .listen(print); // prints 1, 3
   ///
-  /// #### as opposed to:
+  ///     // equivalent to:
   ///
   ///     Stream.fromIterable(['1', 'two', '3', 'four'])
   ///       .map(int.tryParse)

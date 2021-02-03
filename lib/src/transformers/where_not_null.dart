@@ -14,6 +14,20 @@ class _WhereNotNullStreamSink<T extends Object>
   }
 }
 
+/// Create a Stream which emits all the non-`null` elements of the Stream,
+/// in their original emission order.
+///
+/// ### Example
+///
+///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
+///       .transform(WhereNotNullStreamTransformer())
+///       .listen(print); // prints 1, 2, 3, 4
+///
+///     // equivalent to:
+///
+///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
+///       .transform(WhereTypeStreamTransformer<int?, int>())
+///       .listen(print); // prints 1, 2, 3, 4
 class WhereNotNullStreamTransformer<T extends Object>
     extends StreamTransformerBase<T?, T> {
   @override
@@ -36,7 +50,7 @@ extension WhereNotNullExtension<T extends Object> on Stream<T?> {
   ///       .whereNotNull()
   ///       .listen(print); // prints 1, 2, 3, 4
   ///
-  /// #### as opposed to:
+  ///     // equivalent to:
   ///
   ///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
   ///       .whereType<int>()
