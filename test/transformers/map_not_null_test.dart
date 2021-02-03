@@ -82,11 +82,11 @@ void main() {
         Stream.fromIterable([2, 3, 4, 5, 6]).mapNotNull((i) => i).listen(null);
 
     subscription
+      ..pause()
       ..onData(expectAsync1((data) {
         expect(data, 2);
         subscription.cancel();
       }))
-      ..pause()
       ..resume();
   });
 }
