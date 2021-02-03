@@ -51,19 +51,6 @@ class MapNotNullStreamTransformer<T, R extends Object>
 /// Extends the Stream class with the ability to convert the source Stream
 /// to a Stream containing only the non-`null` results
 /// of applying the given [transform] function to each element of this Stream.
-///
-/// ### Example
-///
-///     Stream.fromIterable(['1', 'two', '3', 'four'])
-///       .mapNotNull(int.tryParse)
-///       .listen(print); // prints 1, 3
-///
-/// #### as opposed to:
-///
-///     Stream.fromIterable(['1', 'two', '3', 'four'])
-///       .map(int.tryParse)
-///       .whereType<int>()
-///       .listen(print); // prints 1, 3
 extension MapNotNullExtension<T> on Stream<T> {
   /// Returns a Stream containing only the non-`null` results
   /// of applying the given [transform] function to each element of this Stream.

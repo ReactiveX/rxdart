@@ -21,10 +21,25 @@ class WhereNotNullStreamTransformer<T extends Object>
       forwardStream(stream, _WhereNotNullStreamSink<T>());
 }
 
+/// Extends the Stream class with the ability to convert the source Stream
+/// to a Stream which emits all the non-`null` elements
+/// of this Stream, in their original emission order.
 extension WhereNotNullExtension<T extends Object> on Stream<T?> {
+  /// Returns a Stream which emits all the non-`null` elements
+  /// of this Stream, in their original emission order.
+  ///
+  /// For a `Stream<T?>`, this method is equivalent to `.whereType<T>()`.
+  ///
+  /// ### Example
+  ///
+  ///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
+  ///       .whereNotNull()
+  ///       .listen(print); // prints 1, 2, 3, 4
+  ///
+  /// #### as opposed to:
+  ///
+  ///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
+  ///       .whereType<int>()
+  ///       .listen(print); // prints 1, 2, 3, 4
   Stream<T> whereNotNull() => forwardStream(this, _WhereNotNullStreamSink<T>());
-}
-
-void main() {
-  Stream.fromIterable(<int?>[1, 2, null, 3, 4]).whereNotNull().listen(print);
 }
