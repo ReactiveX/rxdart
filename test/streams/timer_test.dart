@@ -59,47 +59,39 @@ void main() {
 
   test('TimerStream.pause.resume.C', () async {
     const value = 1;
-    StreamSubscription<int> subscription;
-
+    const delta = 100;
     final stream = TimerStream(value, const Duration(seconds: 1));
 
-    var firstElapses = Duration.zero;
-    final watch = Stopwatch()..start();
+    var elapses = Duration.zero;
+    late Stopwatch watch;
 
-    subscription = stream.listen(expectAsync1((actual) {
+    void startWatch() => watch = Stopwatch()..start();
+
+    final delay = () => Future<void>.delayed(const Duration(milliseconds: 200));
+
+    void stopWatch() => elapses = elapses + watch.elapsed;
+
+    final subscription = stream.listen(expectAsync1((actual) {
       expect(actual, value);
 
-      final duration = (watch..stop()).elapsed + firstElapses;
-      expect(duration.inSeconds, 1);
+      stopWatch();
+      expect(
+        1000 - delta <= elapses.inMilliseconds &&
+            elapses.inMilliseconds <= 1000 + delta,
+        isTrue,
+      );
     }));
+    startWatch();
 
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await delay();
 
-    firstElapses = firstElapses + (watch..stop()).elapsed;
-    watch
-      ..reset()
-      ..start();
-
-    subscription.pause(
-      Future<void>.delayed(const Duration(milliseconds: 200)).whenComplete(() {
-        watch
-          ..reset()
-          ..start();
-      }),
-    );
-
-    firstElapses = firstElapses + (watch..stop()).elapsed;
-    watch
-      ..reset()
-      ..start();
     subscription.pause();
+    stopWatch();
 
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await delay();
 
     subscription.resume();
-    watch
-      ..reset()
-      ..start();
+    startWatch();
   });
 
   test('TimerStream.single.subscription', () async {
