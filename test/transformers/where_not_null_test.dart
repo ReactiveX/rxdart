@@ -21,7 +21,7 @@ void main() {
     }
   });
 
-  test('Rx.whereNotNull.shouldThrowA', () {
+  test('Rx.whereNotNull.shouldThrow', () {
     expect(
       Stream<bool>.error(Exception()).whereNotNull(),
       emitsError(isA<Exception>()),
