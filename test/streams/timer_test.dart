@@ -59,8 +59,9 @@ void main() {
 
   test('TimerStream.pause.resume.C', () async {
     const value = 1;
-    const delta = 100;
-    final stream = TimerStream(value, const Duration(seconds: 1));
+    const delta = Duration(milliseconds: 100);
+    const duration = Duration(seconds: 1);
+    final stream = TimerStream(value, duration);
 
     var elapses = Duration.zero;
     late Stopwatch watch;
@@ -76,8 +77,7 @@ void main() {
 
       stopWatch();
       expect(
-        1000 - delta <= elapses.inMilliseconds &&
-            elapses.inMilliseconds <= 1000 + delta,
+        duration - delta <= elapses && elapses <= duration + delta,
         isTrue,
       );
     }));
