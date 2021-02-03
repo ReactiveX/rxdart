@@ -32,7 +32,7 @@ abstract class ForwardingSink<T, R> {
 }
 
 /// This [ForwardingSink] mixin implements all [ForwardingSink] members except [add].
-mixin ForwardingSinkMixin<T, R> on ForwardingSink<T, R> {
+mixin ForwardingSinkMixin<T, R> implements ForwardingSink<T, R> {
   @override
   FutureOr<void> onCancel(EventSink<R> sink) {}
 

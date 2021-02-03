@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _MapNotNullSink<T, R extends Object> extends ForwardingSink<T, R>
-    with ForwardingSinkMixin<T, R> {
+class _MapNotNullSink<T, R extends Object>
+    with ForwardingSinkMixin<T, R>
+    implements ForwardingSink<T, R> {
   final R? Function(T) transform;
 
   _MapNotNullSink(this.transform);
