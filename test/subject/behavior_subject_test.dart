@@ -155,7 +155,7 @@ void main() {
       await expectLater(seeded.value, isNull);
     });
 
-    test('can synchronously get the latest value', () async {
+    test('can synchronously get the latest value', () {
       // ignore: close_sinks
       final unseeded = BehaviorSubject<int>(),
           // ignore: close_sinks
@@ -169,9 +169,13 @@ void main() {
       seeded.add(2);
       seeded.add(3);
 
-      await expectLater(unseeded.value, 3);
+      expect(unseeded.value, 3);
+      expect(unseeded.valueWrapper, ValueWrapper(3));
+      expect(unseeded.requireValue, 3);
 
-      await expectLater(seeded.value, 3);
+      expect(seeded.value, 3);
+      expect(seeded.valueWrapper, ValueWrapper(3));
+      expect(seeded.requireValue, 3);
     });
 
     test('can synchronously get the latest null value', () async {
@@ -188,9 +192,13 @@ void main() {
       seeded.add(2);
       seeded.add(null);
 
-      await expectLater(unseeded.value, isNull);
+      expect(unseeded.value, isNull);
+      expect(unseeded.valueWrapper, ValueWrapper<int?>(null));
+      expect(unseeded.requireValue, isNull);
 
-      await expectLater(seeded.value, isNull);
+      expect(seeded.value, isNull);
+      expect(seeded.valueWrapper, ValueWrapper<int?>(null));
+      expect(seeded.requireValue, isNull);
     });
 
     test('emits the seed item if no new items have been emitted', () async {
@@ -217,6 +225,8 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.value, 1);
+      expect(subject.valueWrapper, ValueWrapper(1));
+      expect(subject.requireValue, 1);
     });
 
     test('can synchronously get the initial null value', () {
@@ -224,6 +234,8 @@ void main() {
       final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.value, null);
+      expect(subject.valueWrapper, ValueWrapper<int?>(null));
+      expect(subject.requireValue, null);
     });
 
     test('initial value is null when no value has been emitted', () {
@@ -231,6 +243,8 @@ void main() {
       final subject = BehaviorSubject<int>();
 
       expect(subject.value, isNull);
+      expect(subject.valueWrapper, null);
+      expect(() => subject.requireValue, throwsStateError);
     });
 
     test('emits done event to listeners when the subject is closed', () async {

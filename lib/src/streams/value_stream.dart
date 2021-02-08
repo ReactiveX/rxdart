@@ -26,14 +26,14 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
   /// Throws [error] if [hasError].
   /// Throws [StateError], if neither [hasData] nor [hasError].
   T get requireValue {
-    final value = valueWrapper?.value;
-    if (value != null) {
-      return value;
+    final wrapper = valueWrapper;
+    if (wrapper != null) {
+      return wrapper.value;
     }
 
-    final error = errorAndStackTrace?.error;
-    if (error != null) {
-      throw error;
+    final errorAndSt = errorAndStackTrace;
+    if (errorAndSt != null) {
+      throw errorAndSt.error;
     }
 
     throw StateError('Neither data event nor error event has been emitted.');
@@ -48,9 +48,9 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
   /// Returns last emitted error, failing if there is no error.
   /// Throws [StateError] if no error added or value exists.
   Object get requireError {
-    final error = errorAndStackTrace?.error;
-    if (error != null) {
-      return error;
+    final errorAndSt = errorAndStackTrace;
+    if (errorAndSt != null) {
+      return errorAndSt.error;
     }
 
     throw StateError('Last emitted event is not an error event.');
