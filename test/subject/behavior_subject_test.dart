@@ -583,6 +583,8 @@ void main() {
       final subject = BehaviorSubject<int>();
 
       expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.error, isNull);
+      expect(() => subject.requireError, throwsStateError);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
@@ -590,6 +592,8 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.error, isNull);
+      expect(() => subject.requireError, throwsStateError);
     });
 
     test('error returns null for a seeded subject with null seed', () {
@@ -597,6 +601,8 @@ void main() {
       final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.error, isNull);
+      expect(() => subject.requireError, throwsStateError);
     });
 
     test('can synchronously get the latest error', () async {
@@ -609,15 +615,23 @@ void main() {
       unseeded.add(2);
       unseeded.add(3);
       expect(unseeded.errorAndStackTrace?.error, isNull);
+      expect(unseeded.error, isNull);
+      expect(() => unseeded.requireError, throwsStateError);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.error, isException);
+      expect(unseeded.requireError, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
       expect(seeded.errorAndStackTrace?.error, isNull);
+      expect(seeded.error, isNull);
+      expect(() => seeded.requireError, throwsStateError);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.error, isException);
+      expect(seeded.requireError, isException);
     });
 
     test('emits event after error to every subscriber, ensures error is null',
@@ -631,15 +645,23 @@ void main() {
       unseeded.add(2);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.error, isException);
+      expect(unseeded.requireError, isException);
       unseeded.add(3);
       expect(unseeded.errorAndStackTrace?.error, isNull);
+      expect(unseeded.error, isNull);
+      expect(() => unseeded.requireError, throwsStateError);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.error, isException);
+      expect(seeded.requireError, isException);
       seeded.add(3);
       expect(seeded.errorAndStackTrace?.error, isNull);
+      expect(seeded.error, isNull);
+      expect(() => seeded.requireError, throwsStateError);
     });
 
     test(
