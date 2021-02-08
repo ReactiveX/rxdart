@@ -15,7 +15,7 @@ void main() {
     // 1--3--5--7--9--|
     final stream = Stream.periodic(const Duration(milliseconds: 10), (i) => i)
         .take(10)
-        .mapNotNull((i) => i.isOdd ? null : i + 1);
+        .transform(MapNotNullStreamTransformer((i) => i.isOdd ? null : i + 1));
     expect(stream, emitsInOrder(<Object>[1, 3, 5, 7, 9, emitsDone]));
   });
 

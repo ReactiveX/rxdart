@@ -13,8 +13,8 @@ void main() {
     }
 
     {
-      final notNull =
-          Stream.fromIterable([1, 2, null, 3, 4, null]).whereNotNull();
+      final notNull = Stream.fromIterable([1, 2, null, 3, 4, null])
+          .transform(WhereNotNullStreamTransformer());
 
       expect(notNull, isA<Stream<int>>());
       expect(notNull, emitsInOrder(<int>[1, 2, 3, 4]));
