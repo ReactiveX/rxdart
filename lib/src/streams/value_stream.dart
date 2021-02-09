@@ -53,6 +53,10 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
       return errorAndSt.error;
     }
 
-    throw StateError('Last emitted event is not an error event.');
+    if (hasValue) {
+      throw StateError('Last emitted event is not an error event.');
+    }
+
+    throw StateError('Neither data event nor error event has been emitted.');
   }
 }
