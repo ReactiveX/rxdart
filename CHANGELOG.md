@@ -1,3 +1,6 @@
+## 0.26.0
+  * Stable, null-safe release.
+
 ## 0.26.0-nullsafety.1
   * Breaking change: `ValueStream`
     - Add `valueWrapper` to `ValueStream`.
