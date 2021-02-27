@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -67,25 +66,28 @@ void main() {
     final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     expect(
-        streamWithError,
-        emitsInOrder(
-            <dynamic>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
+      streamWithError,
+      emitsInOrder(
+        <dynamic>[
+          emitsError(0),
+          emitsError(isA<Error>()),
+          emitsDone,
+        ],
+      ),
+    );
   });
 
   test('RetryWhenStream.error.capturesErrors', () async {
     final streamWithError = RetryWhenStream(_sourceStream(3, 0), _alwaysThrow);
 
     await expectLater(
-        streamWithError,
-        emitsInOrder(<dynamic>[
-          emitsError(
-            predicate<RetryError>((a) {
-              return a.errors.length == 1 &&
-                  a.errors.every((es) => es.stackTrace != null);
-            }),
-          ),
-          emitsDone,
-        ]));
+      streamWithError,
+      emitsInOrder(<dynamic>[
+        emitsError(0),
+        emitsError(isA<Error>()),
+        emitsDone,
+      ]),
+    );
   });
 
   test('RetryWhenStream.pause.resume', () async {
@@ -100,6 +102,60 @@ void main() {
 
     subscription.pause();
     subscription.resume();
+  });
+
+  test('RetryWhenStream.cancel.ensureSubStreamCancels', () async {
+    var isCancelled = false, didStopEmitting = true;
+    final subStream = (Object e, StackTrace s) =>
+        Stream.periodic(const Duration(milliseconds: 100), (count) => count)
+            .doOnData((_) {
+          if (isCancelled) {
+            didStopEmitting = false;
+          }
+        });
+    final subscription =
+        RetryWhenStream(_sourceStream(3, 0), subStream).listen(null);
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    await subscription.cancel();
+    isCancelled = true;
+
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    expect(didStopEmitting, isTrue);
+  });
+
+  test('RetryWhenStream.retryStream.throws.originError', () {
+    final error = 1;
+    final stream = Rx.retryWhen<int>(
+      _sourceStream(3, error),
+      (error, stackTrace) => Stream.error(error),
+    );
+    expect(
+      stream,
+      emitsInOrder(<Object>[
+        0,
+        emitsError(error),
+        emitsDone,
+      ]),
+    );
+  });
+
+  test('RetryWhenStream.streamFactory.throws.originError', () {
+    final error = 1;
+    final stream = Rx.retryWhen<int>(
+      _sourceStream(3, error),
+      (error, stackTrace) => throw error,
+    );
+    expect(
+      stream,
+      emitsInOrder(<Object>[
+        0,
+        emitsError(error),
+        emitsDone,
+      ]),
+    );
   });
 }
 
