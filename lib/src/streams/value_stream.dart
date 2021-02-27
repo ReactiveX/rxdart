@@ -22,9 +22,22 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
   /// Returns last emitted value, or null if there has been no emission yet.
   T? get value => valueWrapper?.value;
 
-  /// Returns last emitted value, or throws `"Null check operator used on a null value"` error
-  /// if there has been no emission yet.
-  T get requireValue => valueWrapper!.value;
+  /// Returns last emitted value, failing if there is no value.
+  /// Throws [error] if [hasError].
+  /// Throws [StateError], if neither [hasData] nor [hasError].
+  T get requireValue {
+    final wrapper = valueWrapper;
+    if (wrapper != null) {
+      return wrapper.value;
+    }
+
+    final errorAndSt = errorAndStackTrace;
+    if (errorAndSt != null) {
+      throw errorAndSt.error;
+    }
+
+    throw StateError('Neither data event nor error event has been emitted.');
+  }
 
   /// A flag that turns true as soon as at an error event has been emitted.
   bool get hasError => errorAndStackTrace != null;
@@ -32,6 +45,18 @@ extension ValueStreamExtensions<T> on ValueStream<T> {
   /// Last emitted error, or null if no error added or value exists.
   Object? get error => errorAndStackTrace?.error;
 
-  /// Last emitted error, or throws `"Null check operator used on a null value"` error if no error added or value exists.
-  Object get requireError => errorAndStackTrace!.error;
+  /// Returns last emitted error, failing if there is no error.
+  /// Throws [StateError] if no error added or value exists.
+  Object get requireError {
+    final errorAndSt = errorAndStackTrace;
+    if (errorAndSt != null) {
+      return errorAndSt.error;
+    }
+
+    if (hasValue) {
+      throw StateError('Last emitted event is not an error event.');
+    }
+
+    throw StateError('Neither data event nor error event has been emitted.');
+  }
 }
