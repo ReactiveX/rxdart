@@ -1,5 +1,13 @@
 ## 0.26.0
   * Stable, null-safe release.
+  * Add `takeLast` (thanks [@ThomasKliszowski](https://github.com/ThomasKliszowski)).
+  * Rework for `retry`/`retryWhen`:
+    * Removed `RetryError`.
+    * `retry`: emits all errors if retry fails.
+    * `retryWhen`: emits original error, and error from factory if they are not identical.
+    * `streamFactory` now accepts non-nullable `StackTrace` argument.
+  * Update `ValueStream.requireValue` and `ValueStream.requireError`: throws actual error or a `StateError`,
+    instead of throwing `"Null check operator used on a null value"` error.
 
 ## 0.26.0-nullsafety.1
   * Breaking change: `ValueStream`
