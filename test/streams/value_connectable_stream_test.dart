@@ -50,7 +50,7 @@ void main() {
     test('stops emitting after the connection is cancelled', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).publishValue();
 
-      stream.connect()..cancel(); // ignore: unawaited_futures
+      stream.connect().cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -58,7 +58,7 @@ void main() {
     test('stops emitting after the last subscriber unsubscribes', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
 
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -67,7 +67,7 @@ void main() {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
 
       stream.listen(null);
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
     });
