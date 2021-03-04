@@ -24,6 +24,16 @@ void main() {
     expect(count, equals(values.length));
   });
 
+
+  test('Rx.skipLast.skipMoreThanLength', () async {
+    final stream = Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(100);
+
+    await expectLater(
+      stream,
+      emits(emitsDone),
+    );
+  });
+
   test('Rx.skipLast.emitsError', () async {
     final stream = Stream<int>.error(Exception()).skipLast(3);
     await expectLater(stream, emitsError(isException));

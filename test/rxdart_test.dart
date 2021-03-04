@@ -70,6 +70,7 @@ import 'transformers/on_error_return_test.dart' as on_error_return_test;
 import 'transformers/on_error_return_with_test.dart'
     as on_error_return_with_test;
 import 'transformers/scan_test.dart' as scan_test;
+import 'transformers/skip_last_test.dart' as skip_last_test;
 import 'transformers/skip_until_test.dart' as skip_until_test;
 import 'transformers/start_with_many_test.dart' as start_with_many_test;
 import 'transformers/start_with_test.dart' as start_with_test;
@@ -130,6 +131,7 @@ void main() {
   on_error_return_test.main();
   on_error_return_with_test.main();
   scan_test.main();
+  skip_last_test.main();
   skip_until_test.main();
   start_with_many_test.main();
   start_with_test.main();
