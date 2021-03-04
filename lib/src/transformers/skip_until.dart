@@ -18,7 +18,7 @@ class _SkipUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, [StackTrace? st]) =>
+  void addError(EventSink<S> sink, Object e, StackTrace st) =>
       sink.addError(e, st);
 
   @override

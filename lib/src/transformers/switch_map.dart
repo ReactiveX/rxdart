@@ -30,7 +30,7 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, [StackTrace? st]) =>
+  void addError(EventSink<T> sink, Object e, StackTrace st) =>
       sink.addError(e, st);
 
   @override

@@ -16,6 +16,8 @@ Stream<R> forwardStream<T, R>(
   late StreamController<R> controller;
   late StreamSubscription<T> subscription;
 
+  @pragma('vm:prefer-inline')
+  @pragma('dart2js:tryInline')
   void runCatching(void Function() block) {
     try {
       block();
@@ -29,7 +31,7 @@ Stream<R> forwardStream<T, R>(
 
     subscription = stream.listen(
       (data) => runCatching(() => connectedSink.add(controller, data)),
-      onError: (Object e, StackTrace? st) =>
+      onError: (Object e, StackTrace st) =>
           runCatching(() => connectedSink.addError(controller, e, st)),
       onDone: () => runCatching(() => connectedSink.close(controller)),
     );
