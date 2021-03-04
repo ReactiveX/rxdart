@@ -49,7 +49,7 @@ void main() {
       final ConnectableStream<int> stream =
           Stream<int>.fromIterable(<int>[1, 2, 3]).publishReplay();
 
-      stream.connect()..cancel(); // ignore: unawaited_futures
+      stream.connect().cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -58,7 +58,7 @@ void main() {
       final Stream<int> stream =
           Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -68,7 +68,7 @@ void main() {
           Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
       stream.listen(null);
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
     });

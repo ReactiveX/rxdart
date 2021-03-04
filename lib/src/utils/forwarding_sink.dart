@@ -13,7 +13,7 @@ abstract class ForwardingSink<T, R> {
   void add(EventSink<R> sink, T data);
 
   /// Handle error event
-  void addError(EventSink<R> sink, Object error, [StackTrace? st]);
+  void addError(EventSink<R> sink, Object error, StackTrace st);
 
   /// Handle close event
   void close(EventSink<R> sink);

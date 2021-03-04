@@ -18,7 +18,7 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, Object error, [StackTrace? st]) {
+  void addError(EventSink<S> sink, Object error, StackTrace st) {
     sink.addError(error, st);
   }
 
