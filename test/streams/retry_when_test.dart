@@ -166,10 +166,10 @@ Stream<int> Function() _sourceStream(int i, [int? throwAt]) {
           Stream.fromIterable(range(i)).map((i) => i == throwAt ? throw i : i);
 }
 
-Stream<void> _alwaysThrow(dynamic e, StackTrace? s) =>
+Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
     Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace? s) => Stream.value('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;

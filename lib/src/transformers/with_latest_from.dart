@@ -22,7 +22,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
   }
 
   @override
-  void addError(EventSink<R> sink, Object e, [StackTrace? st]) =>
+  void addError(EventSink<R> sink, Object e, StackTrace st) =>
       sink.addError(e, st);
 
   @override

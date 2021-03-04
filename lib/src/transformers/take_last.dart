@@ -22,7 +22,8 @@ class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, [st]) => sink.addError(e, st);
+  void addError(EventSink<T> sink, Object e, StackTrace st) =>
+      sink.addError(e, st);
 
   @override
   void close(EventSink<T> sink) {

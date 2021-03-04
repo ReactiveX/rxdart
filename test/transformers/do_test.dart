@@ -260,7 +260,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -269,7 +269,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -279,7 +279,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
               count: 2,
             ),
           );
@@ -297,7 +297,7 @@ void main() {
               .doOnCancel(
                   () => throw Exception('catch me if you can! doOnCancel'))
               .listen(null)
-                .cancel();
+              .cancel();
         },
         expectAsync2(
           (Object e, StackTrace s) => expect(e, isException),
@@ -310,7 +310,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -319,7 +319,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
               count: 2,
             ),
           );
@@ -328,7 +328,7 @@ void main() {
           .doOnPause(() => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
-                (Exception e, [StackTrace? s]) => expect(e, isException),
+                (Exception e, StackTrace s) => expect(e, isException),
               ))
             ..pause()
             ..resume();
@@ -337,7 +337,7 @@ void main() {
           .doOnResume(() => throw Exception('catch me if you can! doOnResume'))
           .listen(null,
               onError: expectAsync2(
-                  (Exception e, [StackTrace? s]) => expect(e, isException)))
+                  (Exception e, StackTrace s) => expect(e, isException)))
             ..pause()
             ..resume();
     });

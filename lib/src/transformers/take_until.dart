@@ -13,7 +13,7 @@ class _TakeUntilStreamSink<S, T> implements ForwardingSink<S, S> {
   void add(EventSink<S> sink, S data) => sink.add(data);
 
   @override
-  void addError(EventSink<S> sink, Object e, [StackTrace? st]) =>
+  void addError(EventSink<S> sink, Object e, StackTrace st) =>
       sink.addError(e, st);
 
   @override
