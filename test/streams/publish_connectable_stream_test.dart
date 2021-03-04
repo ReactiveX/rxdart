@@ -46,7 +46,7 @@ void main() {
       final ConnectableStream<int> stream =
           Stream<int>.fromIterable(<int>[1, 2, 3]).publishValue();
 
-      stream.connect()..cancel(); // ignore: unawaited_futures
+      stream.connect().cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });

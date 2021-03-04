@@ -297,7 +297,7 @@ void main() {
               .doOnCancel(
                   () => throw Exception('catch me if you can! doOnCancel'))
               .listen(null)
-                ..cancel();
+                .cancel();
         },
         expectAsync2(
           (Object e, StackTrace s) => expect(e, isException),
