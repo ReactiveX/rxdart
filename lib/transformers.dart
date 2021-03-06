@@ -24,6 +24,7 @@ export 'src/transformers/max.dart';
 export 'src/transformers/min.dart';
 export 'src/transformers/on_error_resume.dart';
 export 'src/transformers/scan.dart';
+export 'src/transformers/skip_last.dart';
 export 'src/transformers/skip_until.dart';
 export 'src/transformers/start_with.dart';
 export 'src/transformers/start_with_many.dart';
