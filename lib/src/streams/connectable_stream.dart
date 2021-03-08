@@ -105,16 +105,13 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final BehaviorSubject<T> _subject;
 
   @override
-  // TODO: implement hasValue
-  bool get hasValue => throw UnimplementedError();
+  bool get hasValue => _subject.hasValue;
 
   @override
-  // TODO: implement value
-  T get value => throw UnimplementedError();
+  T get value => _subject.value;
 
   @override
-  // TODO: implement value
-  T? get valueOrNull => throw UnimplementedError();
+  T? get valueOrNull => _subject.valueOrNull;
 
   ValueConnectableStream._(Stream<T> source, this._subject)
       : _source = source.isBroadcast

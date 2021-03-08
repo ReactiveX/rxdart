@@ -84,7 +84,10 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
               ),
             );
           } else {
-            return stream.transform(StartWithStreamTransformer(event.data!));
+            return stream
+                .cast<T?>()
+                .transform(StartWithStreamTransformer(event.data))
+                .cast<T>();
           }
         }),
         reusable: true,

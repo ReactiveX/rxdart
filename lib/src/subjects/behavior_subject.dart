@@ -119,7 +119,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
         if (wrapper.hasValue) {
           return controller.stream
               .cast<T?>()
-              .startWith(wrapper.value)
+              .transform(StartWithStreamTransformer(wrapper.value))
               .cast<T>();
         }
 
