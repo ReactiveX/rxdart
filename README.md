@@ -25,6 +25,26 @@ If you are familiar with Observables from other languages, please see [the Rx
 Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams)
 for notable distinctions between the two.
 
+## Upgrading from RxDart 0.25.x to 0.26.x
+
+-   RxDart 0.26.0 removes `ValueStream.value` and `ValueStream.hasValue`, replaces them with `ValueStream.valueWrapper`.
+    `ValueStream.value` and `ValueStream.hasValue` now are extension getters
+    and when in use, it requires importing [ValueStreamExtensions](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions.html).
+
+-   If you see any of the following errors:
+    -   `The getter 'value' isn't defined for the type 'ValueStream<T>'`.
+    -   `The getter 'value' isn't defined for the type 'BehaviorSubject<T>'`.
+    -   `The getter 'value' isn't defined for the type 'ValueConnectableStream<T>'`.
+    -   `The getter 'value' isn't defined for the type 'XXX<T>'` (where `XXX<T> implements ValueStream<T>`).
+    
+    Fixing the problem by importing `import 'package:rxdart/rxdart.dart' show ValueStreamExtensions`.
+
+- In addition, [ValueStreamExtensions](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions.html) also provides some extension getters:
+    -   [requireValue](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions/requireValue.html): get the latest value or throwing an error.
+    -   [error](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions/error.html): get the latest error or null.
+    -   [requireError](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions/requireError.html): get the latest error or throwing a `StateEror`.
+    -   [hasError](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions/hasError.html): check if an error is emitted.
+
 ## Upgrading from RxDart 0.22.x to 0.23.x
 
 RxDart 0.23.x moves away from the Observable class, utilizing Dart 2.6's new
