@@ -27,7 +27,7 @@ for notable distinctions between the two.
 
 ## Upgrading from RxDart 0.25.x to 0.26.x
 
--   RxDart 0.26.0 removes `ValueStream.value` and `ValueStream.hasValue`, replaces them with `ValueStream.valueWrapper`.
+-   RxDart 0.26.0 has removed `ValueStream.value` and `ValueStream.hasValue`, replacing them with `ValueStream.valueWrapper`.
     `ValueStream.value` and `ValueStream.hasValue` now are extension getters
     and when in use, it requires importing [ValueStreamExtensions](https://pub.dev/documentation/rxdart/0.26.0/rx/ValueStreamExtensions.html).
 
