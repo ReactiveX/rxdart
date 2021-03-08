@@ -23,10 +23,11 @@ class Notification<T> {
   final Kind kind;
 
   /// The wrapped value, if applicable
+  /// Returns if [kind] is [Kind.OnData], otherwise throws `"Null check operator used on a null value"` error.
   late T value;
-  late bool _hasValue;
 
-  T? get valueOrNull => _hasValue ? value : null;
+  /// Same as [value], but allows null when [value] is not available.
+  T? get valueOrNull => kind == Kind.OnData ? value : null;
 
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace? errorAndStackTrace;
@@ -37,18 +38,15 @@ class Notification<T> {
   Notification(this.kind, this.errorAndStackTrace);
 
   /// Constructs a [Notification] with [Kind.OnData] and wraps a [value]
-  factory Notification.onData(T value) => Notification<T>(Kind.OnData, null)
-    ..value = value
-    .._hasValue = value != null;
+  factory Notification.onData(T value) =>
+      Notification<T>(Kind.OnData, null)..value = value;
 
   /// Constructs a [Notification] with [Kind.OnDone]
-  factory Notification.onDone() =>
-      Notification(Kind.OnDone, null).._hasValue = false;
+  factory Notification.onDone() => Notification(Kind.OnDone, null);
 
   /// Constructs a [Notification] with [Kind.OnError] and wraps an [error] and [stackTrace]
   factory Notification.onError(Object error, StackTrace? stackTrace) =>
-      Notification<T>(Kind.OnError, ErrorAndStackTrace(error, stackTrace))
-        .._hasValue = false;
+      Notification<T>(Kind.OnError, ErrorAndStackTrace(error, stackTrace));
 
   @override
   bool operator ==(Object other) =>

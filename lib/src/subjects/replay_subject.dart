@@ -7,7 +7,6 @@ import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -85,8 +84,7 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
               ),
             );
           } else {
-            return stream
-                .transform(StartWithStreamTransformer(event.data!.value));
+            return stream.transform(StartWithStreamTransformer(event.data!));
           }
         }),
         reusable: true,
@@ -123,8 +121,8 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
   @override
   List<T> get values => _queue
-      .where((event) => !event.isError)
-      .map((event) => event.data!.value)
+      .where((event) => event.hasData)
+      .map((event) => event.data!)
       .toList(growable: false);
 
   @override
@@ -148,15 +146,20 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 }
 
 class _Event<T> {
-  final bool isError;
-  final ValueWrapper<T>? data;
+  final bool isError, hasData;
+  final T? data;
   final ErrorAndStackTrace? errorAndStackTrace;
 
-  _Event._({required this.isError, this.data, this.errorAndStackTrace});
+  _Event._({
+    required this.isError,
+    required this.hasData,
+    this.data,
+    this.errorAndStackTrace,
+  });
 
   factory _Event.data(T data) =>
-      _Event._(isError: false, data: ValueWrapper(data));
+      _Event._(isError: false, hasData: true, data: data);
 
   factory _Event.error(ErrorAndStackTrace e) =>
-      _Event._(isError: true, errorAndStackTrace: e);
+      _Event._(isError: true, hasData: false, errorAndStackTrace: e);
 }

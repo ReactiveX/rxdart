@@ -6,7 +6,6 @@ import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -117,9 +116,11 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
           );
         }
 
-        if (wrapper.latestValue != null) {
-          return controller.stream.transform(
-              StartWithStreamTransformer(wrapper.latestValue!.value));
+        if (wrapper.hasValue) {
+          return controller.stream
+              .cast<T?>()
+              .startWith(wrapper.value)
+              .cast<T>();
         }
 
         return controller.stream;
@@ -136,7 +137,13 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  ValueWrapper<T>? get valueWrapper => _wrapper.latestValue;
+  bool get hasValue => _wrapper.hasValue;
+
+  @override
+  T get value => _wrapper.value!;
+
+  @override
+  T? get valueOrNull => hasValue ? _wrapper.value : null;
 
   @override
   ErrorAndStackTrace? get errorAndStackTrace =>
@@ -236,21 +243,28 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 }
 
 class _Wrapper<T> {
-  ValueWrapper<T>? latestValue;
+  T? value;
+  bool hasValue;
   ErrorAndStackTrace? latestErrorAndStackTrace;
 
-  /// Non-seeded constructor
-  _Wrapper();
+  T? get valueOrNull => hasValue ? value : null;
 
-  _Wrapper.seeded(T value) : latestValue = ValueWrapper(value);
+  /// Non-seeded constructor
+  _Wrapper() : hasValue = false;
+
+  _Wrapper.seeded(T value)
+      : value = value,
+        hasValue = true;
 
   void setValue(T event) {
-    latestValue = ValueWrapper(event);
+    hasValue = true;
+    value = event;
     latestErrorAndStackTrace = null;
   }
 
   void setError(Object error, [StackTrace? stackTrace]) {
-    latestValue = null;
+    hasValue = false;
+    value = null;
     latestErrorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
   }
 }

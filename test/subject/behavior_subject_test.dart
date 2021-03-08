@@ -146,13 +146,13 @@ void main() {
       seeded.add(3);
       seeded.addError(Exception('oh noes!'));
 
-      await expectLater(unseeded.value, isNull);
-      await expectLater(unseeded.value, isNull);
-      await expectLater(unseeded.value, isNull);
+      await expectLater(unseeded.valueOrNull, isNull);
+      await expectLater(unseeded.valueOrNull, isNull);
+      await expectLater(unseeded.valueOrNull, isNull);
 
-      await expectLater(seeded.value, isNull);
-      await expectLater(seeded.value, isNull);
-      await expectLater(seeded.value, isNull);
+      await expectLater(seeded.valueOrNull, isNull);
+      await expectLater(seeded.valueOrNull, isNull);
+      await expectLater(seeded.valueOrNull, isNull);
     });
 
     test('can synchronously get the latest value', () {
@@ -170,12 +170,12 @@ void main() {
       seeded.add(3);
 
       expect(unseeded.value, 3);
-      expect(unseeded.valueWrapper, ValueWrapper(3));
-      expect(unseeded.requireValue, 3);
+      expect(unseeded.valueOrNull, 3);
+      expect(unseeded.hasValue, true);
 
       expect(seeded.value, 3);
-      expect(seeded.valueWrapper, ValueWrapper(3));
-      expect(seeded.requireValue, 3);
+      expect(seeded.valueOrNull, 3);
+      expect(seeded.hasValue, true);
     });
 
     test('can synchronously get the latest null value', () async {
@@ -192,13 +192,11 @@ void main() {
       seeded.add(2);
       seeded.add(null);
 
-      expect(unseeded.value, isNull);
-      expect(unseeded.valueWrapper, ValueWrapper<int?>(null));
-      expect(unseeded.requireValue, isNull);
+      expect(unseeded.valueOrNull, isNull);
+      expect(unseeded.hasValue, true);
 
-      expect(seeded.value, isNull);
-      expect(seeded.valueWrapper, ValueWrapper<int?>(null));
-      expect(seeded.requireValue, isNull);
+      expect(seeded.valueOrNull, isNull);
+      expect(seeded.hasValue, true);
     });
 
     test('emits the seed item if no new items have been emitted', () async {
@@ -225,26 +223,24 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.value, 1);
-      expect(subject.valueWrapper, ValueWrapper(1));
-      expect(subject.requireValue, 1);
+      expect(subject.valueOrNull, 1);
+      expect(subject.hasValue, true);
     });
 
     test('can synchronously get the initial null value', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int?>.seeded(null);
 
-      expect(subject.value, null);
-      expect(subject.valueWrapper, ValueWrapper<int?>(null));
-      expect(subject.requireValue, null);
+      expect(subject.valueOrNull, null);
+      expect(subject.hasValue, true);
     });
 
     test('initial value is null when no value has been emitted', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(subject.value, isNull);
-      expect(subject.valueWrapper, null);
-      expect(() => subject.requireValue, throwsStateError);
+      expect(subject.valueOrNull, isNull);
+      expect(subject.hasValue, false);
     });
 
     test('emits done event to listeners when the subject is closed', () async {
@@ -726,7 +722,7 @@ void main() {
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, equals(isNull));
 
       await subject.close();
     });
@@ -740,7 +736,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, equals(isNull));
 
       await subject.close();
     });
