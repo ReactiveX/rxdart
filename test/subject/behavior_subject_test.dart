@@ -156,6 +156,18 @@ void main() {
       await expectLater(unseeded, emitsError(exception));
       await expectLater(unseeded, emitsError(exception));
       await expectLater(unseeded, emitsError(exception));
+
+      expect(() => seeded.value, throwsA(exception));
+      expect(seeded.valueOrNull, isNull);
+      expect(seeded.hasValue, false);
+
+      expect(seeded.error, exception);
+      expect(seeded.errorOrNull, exception);
+      expect(seeded.hasError, true);
+
+      await expectLater(seeded, emitsError(exception));
+      await expectLater(seeded, emitsError(exception));
+      await expectLater(seeded, emitsError(exception));
     });
 
     test('can synchronously get the latest value', () {
