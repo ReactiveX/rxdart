@@ -518,7 +518,7 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
-    test('setter has same behavior as adding to Subject', () async {
+    test('setter `value=` has same behavior as adding to Subject', () async {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
