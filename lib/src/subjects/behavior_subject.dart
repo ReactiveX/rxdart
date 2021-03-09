@@ -136,9 +136,6 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  ValueWrapper<T>? get valueWrapper => _wrapper.latestValue;
-
-  @override
   ErrorAndStackTrace? get errorAndStackTrace =>
       _wrapper.latestErrorAndStackTrace;
 
@@ -233,6 +230,27 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       sync: true,
     );
   }
+
+  @override
+  bool get hasValue => _wrapper.latestValue != null;
+
+  @override
+  T get value {
+    final wrapper = _wrapper.latestValue;
+    if (wrapper != null) {
+      return wrapper.value;
+    }
+
+    final errorAndSt = _wrapper.latestErrorAndStackTrace;
+    if (errorAndSt != null) {
+      throw errorAndSt.error;
+    }
+
+    throw StateError('Neither data event nor error event has been emitted.');
+  }
+
+  @override
+  T? get valueOrNull => _wrapper.latestValue?.value;
 }
 
 class _Wrapper<T> {

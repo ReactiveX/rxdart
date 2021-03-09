@@ -4,8 +4,6 @@ import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
-typedef AsyncVoidCallBack = Future<Null> Function();
-
 void main() {
   group('BehaviorSubject', () {
     test('emits the most recently emitted item to every subscriber', () async {
@@ -135,24 +133,29 @@ void main() {
       final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
           seeded = BehaviorSubject<int?>.seeded(0);
+      final exception = Exception('oh noes!');
 
       unseeded.add(1);
       unseeded.add(2);
       unseeded.add(3);
-      unseeded.addError(Exception('oh noes!'));
+      unseeded.addError(exception);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
-      seeded.addError(Exception('oh noes!'));
+      seeded.addError(exception);
 
-      await expectLater(unseeded.value, isNull);
-      await expectLater(unseeded.value, isNull);
-      await expectLater(unseeded.value, isNull);
+      expect(() => unseeded.value, throwsA(exception));
+      expect(unseeded.valueOrNull, isNull);
+      expect(unseeded.hasValue, false);
 
-      await expectLater(seeded.value, isNull);
-      await expectLater(seeded.value, isNull);
-      await expectLater(seeded.value, isNull);
+      expect(unseeded.error, exception);
+      expect(unseeded.errorOrNull, exception);
+      expect(unseeded.hasError, true);
+
+      await expectLater(unseeded, emitsError(exception));
+      await expectLater(unseeded, emitsError(exception));
+      await expectLater(unseeded, emitsError(exception));
     });
 
     test('can synchronously get the latest value', () {
@@ -170,12 +173,12 @@ void main() {
       seeded.add(3);
 
       expect(unseeded.value, 3);
-      expect(unseeded.valueWrapper, ValueWrapper(3));
-      expect(unseeded.requireValue, 3);
+      expect(unseeded.valueOrNull, 3);
+      expect(unseeded.hasValue, true);
 
       expect(seeded.value, 3);
-      expect(seeded.valueWrapper, ValueWrapper(3));
-      expect(seeded.requireValue, 3);
+      expect(seeded.valueOrNull, 3);
+      expect(seeded.hasValue, true);
     });
 
     test('can synchronously get the latest null value', () async {
@@ -193,12 +196,12 @@ void main() {
       seeded.add(null);
 
       expect(unseeded.value, isNull);
-      expect(unseeded.valueWrapper, ValueWrapper<int?>(null));
-      expect(unseeded.requireValue, isNull);
+      expect(unseeded.valueOrNull, isNull);
+      expect(unseeded.hasValue, true);
 
       expect(seeded.value, isNull);
-      expect(seeded.valueWrapper, ValueWrapper<int?>(null));
-      expect(seeded.requireValue, isNull);
+      expect(seeded.valueOrNull, isNull);
+      expect(seeded.hasValue, true);
     });
 
     test('emits the seed item if no new items have been emitted', () async {
@@ -225,8 +228,8 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.value, 1);
-      expect(subject.valueWrapper, ValueWrapper(1));
-      expect(subject.requireValue, 1);
+      expect(subject.valueOrNull, 1);
+      expect(subject.hasValue, true);
     });
 
     test('can synchronously get the initial null value', () {
@@ -234,17 +237,17 @@ void main() {
       final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.value, null);
-      expect(subject.valueWrapper, ValueWrapper<int?>(null));
-      expect(subject.requireValue, null);
+      expect(subject.valueOrNull, null);
+      expect(subject.hasValue, true);
     });
 
     test('initial value is null when no value has been emitted', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(subject.value, isNull);
-      expect(subject.valueWrapper, null);
-      expect(() => subject.requireValue, throwsStateError);
+      expect(() => subject.value, throwsStateError);
+      expect(subject.valueOrNull, null);
+      expect(subject.hasValue, false);
     });
 
     test('emits done event to listeners when the subject is closed', () async {
@@ -597,8 +600,8 @@ void main() {
       final subject = BehaviorSubject<int>();
 
       expect(subject.errorAndStackTrace?.error, isNull);
-      expect(subject.error, isNull);
-      expect(() => subject.requireError, throwsStateError);
+      expect(subject.errorOrNull, isNull);
+      expect(() => subject.error, throwsStateError);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
@@ -606,8 +609,8 @@ void main() {
       final subject = BehaviorSubject<int>.seeded(1);
 
       expect(subject.errorAndStackTrace?.error, isNull);
-      expect(subject.error, isNull);
-      expect(() => subject.requireError, throwsStateError);
+      expect(subject.errorOrNull, isNull);
+      expect(() => subject.error, throwsStateError);
     });
 
     test('error returns null for a seeded subject with null seed', () {
@@ -615,8 +618,8 @@ void main() {
       final subject = BehaviorSubject<int?>.seeded(null);
 
       expect(subject.errorAndStackTrace?.error, isNull);
-      expect(subject.error, isNull);
-      expect(() => subject.requireError, throwsStateError);
+      expect(subject.errorOrNull, isNull);
+      expect(() => subject.error, throwsStateError);
     });
 
     test('can synchronously get the latest error', () async {
@@ -629,23 +632,23 @@ void main() {
       unseeded.add(2);
       unseeded.add(3);
       expect(unseeded.errorAndStackTrace?.error, isNull);
-      expect(unseeded.error, isNull);
-      expect(() => unseeded.requireError, throwsStateError);
+      expect(unseeded.errorOrNull, isNull);
+      expect(() => unseeded.error, throwsStateError);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.errorOrNull, isException);
       expect(unseeded.error, isException);
-      expect(unseeded.requireError, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
       expect(seeded.errorAndStackTrace?.error, isNull);
-      expect(seeded.error, isNull);
-      expect(() => seeded.requireError, throwsStateError);
+      expect(seeded.errorOrNull, isNull);
+      expect(() => seeded.error, throwsStateError);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.errorOrNull, isException);
       expect(seeded.error, isException);
-      expect(seeded.requireError, isException);
     });
 
     test('emits event after error to every subscriber, ensures error is null',
@@ -659,23 +662,23 @@ void main() {
       unseeded.add(2);
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.errorOrNull, isException);
       expect(unseeded.error, isException);
-      expect(unseeded.requireError, isException);
       unseeded.add(3);
       expect(unseeded.errorAndStackTrace?.error, isNull);
-      expect(unseeded.error, isNull);
-      expect(() => unseeded.requireError, throwsStateError);
+      expect(unseeded.errorOrNull, isNull);
+      expect(() => unseeded.error, throwsStateError);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.errorOrNull, isException);
       expect(seeded.error, isException);
-      expect(seeded.requireError, isException);
       seeded.add(3);
       expect(seeded.errorAndStackTrace?.error, isNull);
-      expect(seeded.error, isNull);
-      expect(() => seeded.requireError, throwsStateError);
+      expect(seeded.errorOrNull, isNull);
+      expect(() => seeded.error, throwsStateError);
     });
 
     test(
@@ -726,7 +729,9 @@ void main() {
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(mappedStream.value, equals(isNull));
+      expect(() => mappedStream.value, throwsStateError);
+      expect(mappedStream.valueOrNull, isNull);
+      expect(mappedStream.hasValue, false);
 
       await subject.close();
     });
@@ -740,7 +745,9 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(isNull));
+      expect(() => mappedStream.value, throwsStateError);
+      expect(mappedStream.valueOrNull, isNull);
+      expect(mappedStream.hasValue, false);
 
       await subject.close();
     });

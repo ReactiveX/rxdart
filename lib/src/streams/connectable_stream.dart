@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
@@ -173,7 +172,13 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   ErrorAndStackTrace? get errorAndStackTrace => _subject.errorAndStackTrace;
 
   @override
-  ValueWrapper<T>? get valueWrapper => _subject.valueWrapper;
+  bool get hasValue => _subject.hasValue;
+
+  @override
+  T get value => _subject.value;
+
+  @override
+  T? get valueOrNull => _subject.valueOrNull;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
