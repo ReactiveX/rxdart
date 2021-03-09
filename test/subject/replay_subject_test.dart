@@ -406,7 +406,7 @@ void main() {
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });
@@ -420,7 +420,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });
