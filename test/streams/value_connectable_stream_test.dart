@@ -164,12 +164,12 @@ void main() {
 
       stream.listen(
         null,
-        onError: (Object error) {
+        onError: expectAsync1((Object error) {
           expect(stream.value, isNull);
           expect(stream.hasValue, isFalse);
           expect(stream.errorAndStackTrace?.error, error);
           expect(stream.hasError, isTrue);
-        },
+        }),
       );
     });
 
