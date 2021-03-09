@@ -518,6 +518,22 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
+    test('setter has same behavior as adding to Subject', () async {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      subject.value = 1;
+
+      expect(subject.value, 1);
+
+      subject.value = 2;
+      subject.value = 3;
+
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+      await expectLater(subject.stream, emits(3));
+    });
+
     test('is always treated as a broadcast Stream', () async {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
