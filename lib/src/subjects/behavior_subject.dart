@@ -156,6 +156,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   @override
   T? get valueOrNull => _wrapper.latestValue?.value;
 
+  /// Set and emit the new value.
+  set value(T newValue) => add(newValue);
+
   @override
   ErrorAndStackTrace? get errorAndStackTrace =>
       _wrapper.latestErrorAndStackTrace;
