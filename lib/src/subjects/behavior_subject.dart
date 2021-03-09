@@ -144,13 +144,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
     if (wrapper != null) {
       return wrapper.value;
     }
-
-    final errorAndSt = _wrapper.latestErrorAndStackTrace;
-    if (errorAndSt != null) {
-      throw errorAndSt.error;
-    }
-
-    throw StateError('Neither data event nor error event has been emitted.');
+    throw ValueIsMissingError(hasError);
   }
 
   @override
@@ -160,8 +154,23 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   set value(T newValue) => add(newValue);
 
   @override
-  ErrorAndStackTrace? get errorAndStackTrace =>
-      _wrapper.latestErrorAndStackTrace;
+  bool get hasError => _wrapper.latestErrorAndStackTrace != null;
+
+  @override
+  Object? get errorOrNull => _wrapper.latestErrorAndStackTrace?.error;
+
+  @override
+  Object get error {
+    final errorAndSt = _wrapper.latestErrorAndStackTrace;
+    if (errorAndSt != null) {
+      return errorAndSt.error;
+    }
+    throw MissingErrorError(hasValue);
+  }
+
+  @override
+  StackTrace? get stackTraceOrNull =>
+      _wrapper.latestErrorAndStackTrace?.stackTrace;
 
   @override
   BehaviorSubject<R> createForwardingSubject<R>({
