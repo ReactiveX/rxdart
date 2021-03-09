@@ -9,10 +9,10 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Throws [StateError], if neither [hasValue] nor [hasError].
   T get value;
 
-  /// Returns either [value], or 'null', should [value] not yet have been set.
+  /// Returns either [value], or `null`, should [value] not yet have been set.
   T? get valueOrNull;
 
-  /// Returns 'true' when [value] is available.
+  /// Returns `true` when [value] is available.
   bool get hasValue;
 
   /// Last emitted error and the corresponding stack trace,
