@@ -226,7 +226,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
 
       {
@@ -242,7 +242,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
     });
   });
