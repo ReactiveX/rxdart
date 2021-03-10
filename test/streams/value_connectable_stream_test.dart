@@ -165,9 +165,11 @@ void main() {
       stream.listen(
         null,
         onError: expectAsync1((Object error) {
-          expect(stream.valueOrNull, isNull);
-          expect(stream.hasValue, isFalse);
+          expect(stream.valueOrNull, 3);
+          expect(stream.value, 3);
+          expect(stream.hasValue, isTrue);
 
+          expect(stream.errorOrNull, error);
           expect(stream.error, error);
           expect(stream.hasError, isTrue);
         }),
