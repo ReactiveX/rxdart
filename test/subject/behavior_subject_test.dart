@@ -5,6 +5,8 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
+  final throwsValueStreamError = throwsA(isA<ValueStreamError>());
+
   group('BehaviorSubject', () {
     test('emits the most recently emitted item to every subscriber', () async {
       // ignore: close_sinks
@@ -128,7 +130,7 @@ void main() {
       await expectLater(seeded.stream, emits(3));
     });
 
-    test('emits errors to every subscriber, ensures value is null', () async {
+    test('emits errors to every subscriber', () async {
       // ignore: close_sinks
       final unseeded = BehaviorSubject<int?>(),
           // ignore: close_sinks
@@ -145,9 +147,9 @@ void main() {
       seeded.add(3);
       seeded.addError(exception);
 
-      expect(() => unseeded.value, throwsA(exception));
-      expect(unseeded.valueOrNull, isNull);
-      expect(unseeded.hasValue, false);
+      expect(unseeded.value, 3);
+      expect(unseeded.valueOrNull, 3);
+      expect(unseeded.hasValue, true);
 
       expect(unseeded.error, exception);
       expect(unseeded.errorOrNull, exception);
@@ -157,9 +159,9 @@ void main() {
       await expectLater(unseeded, emitsError(exception));
       await expectLater(unseeded, emitsError(exception));
 
-      expect(() => seeded.value, throwsA(exception));
-      expect(seeded.valueOrNull, isNull);
-      expect(seeded.hasValue, false);
+      expect(seeded.value, 3);
+      expect(seeded.valueOrNull, 3);
+      expect(seeded.hasValue, true);
 
       expect(seeded.error, exception);
       expect(seeded.errorOrNull, exception);
@@ -257,7 +259,7 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(() => subject.value, throwsStateError);
+      expect(() => subject.value, throwsValueStreamError);
       expect(subject.valueOrNull, null);
       expect(subject.hasValue, false);
     });
@@ -627,27 +629,27 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.error, throwsStateError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>.seeded(1);
 
-      expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.error, throwsStateError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('error returns null for a seeded subject with null seed', () {
       // ignore: close_sinks
       final subject = BehaviorSubject<int?>.seeded(null);
 
-      expect(subject.errorAndStackTrace?.error, isNull);
+      expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.error, throwsStateError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('can synchronously get the latest error', () async {
@@ -659,28 +661,29 @@ void main() {
       unseeded.add(1);
       unseeded.add(2);
       unseeded.add(3);
-      expect(unseeded.errorAndStackTrace?.error, isNull);
+      expect(unseeded.hasError, isFalse);
       expect(unseeded.errorOrNull, isNull);
-      expect(() => unseeded.error, throwsStateError);
+      expect(() => unseeded.error, throwsValueStreamError);
+
       unseeded.addError(Exception('oh noes!'));
-      expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.hasError, isTrue);
       expect(unseeded.errorOrNull, isException);
       expect(unseeded.error, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
-      expect(seeded.errorAndStackTrace?.error, isNull);
+      expect(seeded.hasError, isFalse);
       expect(seeded.errorOrNull, isNull);
-      expect(() => seeded.error, throwsStateError);
+      expect(() => seeded.error, throwsValueStreamError);
+
       seeded.addError(Exception('oh noes!'));
-      expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.hasError, isTrue);
       expect(seeded.errorOrNull, isException);
       expect(seeded.error, isException);
     });
 
-    test('emits event after error to every subscriber, ensures error is null',
-        () async {
+    test('emits event after error to every subscriber', () async {
       // ignore: close_sinks
       final unseeded = BehaviorSubject<int>(),
           // ignore: close_sinks
@@ -689,24 +692,24 @@ void main() {
       unseeded.add(1);
       unseeded.add(2);
       unseeded.addError(Exception('oh noes!'));
-      expect(unseeded.errorAndStackTrace?.error, isException);
+      expect(unseeded.hasError, isTrue);
       expect(unseeded.errorOrNull, isException);
       expect(unseeded.error, isException);
       unseeded.add(3);
-      expect(unseeded.errorAndStackTrace?.error, isNull);
-      expect(unseeded.errorOrNull, isNull);
-      expect(() => unseeded.error, throwsStateError);
+      expect(unseeded.hasError, isTrue);
+      expect(unseeded.errorOrNull, isException);
+      expect(unseeded.error, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
-      expect(seeded.errorAndStackTrace?.error, isException);
+      expect(seeded.hasError, isTrue);
       expect(seeded.errorOrNull, isException);
       expect(seeded.error, isException);
       seeded.add(3);
-      expect(seeded.errorAndStackTrace?.error, isNull);
-      expect(seeded.errorOrNull, isNull);
-      expect(() => seeded.error, throwsStateError);
+      expect(seeded.hasError, isTrue);
+      expect(seeded.errorOrNull, isException);
+      expect(seeded.error, isException);
     });
 
     test(
@@ -757,7 +760,7 @@ void main() {
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(() => mappedStream.value, throwsStateError);
+      expect(() => mappedStream.value, throwsValueStreamError);
       expect(mappedStream.valueOrNull, isNull);
       expect(mappedStream.hasValue, false);
 
@@ -773,7 +776,7 @@ void main() {
 
       subject.add(2);
 
-      expect(() => mappedStream.value, throwsStateError);
+      expect(() => mappedStream.value, throwsValueStreamError);
       expect(mappedStream.valueOrNull, isNull);
       expect(mappedStream.hasValue, false);
 

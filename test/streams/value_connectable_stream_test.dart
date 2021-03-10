@@ -168,7 +168,7 @@ void main() {
           expect(stream.valueOrNull, isNull);
           expect(stream.hasValue, isFalse);
 
-          expect(stream.errorAndStackTrace?.error, error);
+          expect(stream.error, error);
           expect(stream.hasError, isTrue);
         }),
       );

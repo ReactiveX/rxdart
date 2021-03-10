@@ -106,9 +106,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   static Stream<T> Function() _deferStream<T>(
           _Wrapper<T> wrapper, StreamController<T> controller, bool sync) =>
       () {
-        if (wrapper.latestErrorAndStackTrace != null) {
-          final errorAndStackTrace = wrapper.latestErrorAndStackTrace!;
-
+        final errorAndStackTrace = wrapper.errorAndStackTrace;
+        if (errorAndStackTrace != null && !wrapper.isValue) {
           return controller.stream.transform(
             StartWithErrorStreamTransformer(
               errorAndStackTrace.error,
@@ -117,9 +116,10 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
           );
         }
 
-        if (wrapper.latestValue != null) {
-          return controller.stream.transform(
-              StartWithStreamTransformer(wrapper.latestValue!.value));
+        final value = wrapper.value;
+        if (value != null && wrapper.isValue) {
+          return controller.stream
+              .transform(StartWithStreamTransformer(value.value));
         }
 
         return controller.stream;
@@ -136,41 +136,40 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper.latestValue != null;
+  bool get hasValue => _wrapper.value != null;
 
   @override
   T get value {
-    final wrapper = _wrapper.latestValue;
+    final wrapper = _wrapper.value;
     if (wrapper != null) {
       return wrapper.value;
     }
-    throw ValueIsMissingError(hasError);
+    throw ValueStreamError.hasNoValue();
   }
 
   @override
-  T? get valueOrNull => _wrapper.latestValue?.value;
+  T? get valueOrNull => _wrapper.value?.value;
 
   /// Set and emit the new value.
   set value(T newValue) => add(newValue);
 
   @override
-  bool get hasError => _wrapper.latestErrorAndStackTrace != null;
+  bool get hasError => _wrapper.errorAndStackTrace != null;
 
   @override
-  Object? get errorOrNull => _wrapper.latestErrorAndStackTrace?.error;
+  Object? get errorOrNull => _wrapper.errorAndStackTrace?.error;
 
   @override
   Object get error {
-    final errorAndSt = _wrapper.latestErrorAndStackTrace;
+    final errorAndSt = _wrapper.errorAndStackTrace;
     if (errorAndSt != null) {
       return errorAndSt.error;
     }
-    throw MissingErrorError(hasValue);
+    throw ValueStreamError.hasNoError();
   }
 
   @override
-  StackTrace? get stackTraceOrNull =>
-      _wrapper.latestErrorAndStackTrace?.stackTrace;
+  StackTrace? get stackTraceOrNull => _wrapper.errorAndStackTrace?.stackTrace;
 
   @override
   BehaviorSubject<R> createForwardingSubject<R>({
@@ -266,21 +265,24 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 }
 
 class _Wrapper<T> {
-  ValueWrapper<T>? latestValue;
-  ErrorAndStackTrace? latestErrorAndStackTrace;
+  bool isValue;
+  ValueWrapper<T>? value;
+  ErrorAndStackTrace? errorAndStackTrace;
 
   /// Non-seeded constructor
-  _Wrapper();
+  _Wrapper() : isValue = false;
 
-  _Wrapper.seeded(T value) : latestValue = ValueWrapper(value);
+  _Wrapper.seeded(T value)
+      : value = ValueWrapper(value),
+        isValue = true;
 
   void setValue(T event) {
-    latestValue = ValueWrapper(event);
-    latestErrorAndStackTrace = null;
+    value = ValueWrapper(event);
+    isValue = true;
   }
 
-  void setError(Object error, [StackTrace? stackTrace]) {
-    latestValue = null;
-    latestErrorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
+  void setError(Object error, StackTrace? stackTrace) {
+    errorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
+    isValue = false;
   }
 }

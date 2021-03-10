@@ -135,17 +135,22 @@ void main() {
       await expectLater(subject.values, const <int>[1, 2, 3]);
     });
 
-    test('synchronously get the previous errors', () async {
+    test('synchronously get the previous errors', () {
       final subject = ReplaySubject<int>();
       final e1 = Exception(), e2 = Exception(), e3 = Exception();
+      final stackTrace = StackTrace.fromString('#');
 
       subject.addError(e1);
-      subject.addError(e2);
+      subject.addError(e2, stackTrace);
       subject.addError(e3);
 
-      await expectLater(
-        subject.errorAndStackTraces.map((es) => es.error),
+      expect(
+        subject.errors,
         containsAllInOrder(<Exception>[e1, e2, e3]),
+      );
+      expect(
+        subject.stackTraces,
+        containsAllInOrder(<StackTrace?>[null, stackTrace, null]),
       );
     });
 

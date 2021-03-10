@@ -128,9 +128,15 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       .toList(growable: false);
 
   @override
-  List<ErrorAndStackTrace> get errorAndStackTraces => _queue
+  List<Object> get errors => _queue
       .where((event) => event.isError)
-      .map((event) => event.errorAndStackTrace!)
+      .map((event) => event.errorAndStackTrace!.error)
+      .toList(growable: false);
+
+  @override
+  List<StackTrace?> get stackTraces => _queue
+      .where((event) => event.isError)
+      .map((event) => event.errorAndStackTrace!.stackTrace)
       .toList(growable: false);
 
   @override

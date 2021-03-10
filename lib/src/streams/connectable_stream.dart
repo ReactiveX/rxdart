@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
-import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
@@ -169,9 +168,6 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   }
 
   @override
-  ErrorAndStackTrace? get errorAndStackTrace => _subject.errorAndStackTrace;
-
-  @override
   bool get hasValue => _subject.hasValue;
 
   @override
@@ -179,6 +175,18 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
 
   @override
   T? get valueOrNull => _subject.valueOrNull;
+
+  @override
+  Object get error => _subject.error;
+
+  @override
+  Object? get errorOrNull => _subject.errorOrNull;
+
+  @override
+  bool get hasError => _subject.hasError;
+
+  @override
+  StackTrace? get stackTraceOrNull => _subject.stackTraceOrNull;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
@@ -249,8 +257,10 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   List<T> get values => _subject.values;
 
   @override
-  List<ErrorAndStackTrace> get errorAndStackTraces =>
-      _subject.errorAndStackTraces;
+  List<Object> get errors => _subject.errors;
+
+  @override
+  List<StackTrace?> get stackTraces => _subject.stackTraces;
 }
 
 /// A special [StreamSubscription] that not only cancels the connection to
