@@ -20,7 +20,7 @@ class _ScanStreamSink<S, T> implements EventSink<S> {
 }
 
 /// Applies an accumulator function over an stream sequence and returns
-/// each intermediate result. The optional seed value is used as the initial
+/// each intermediate result. The seed value is used as the initial
 /// accumulator value.
 ///
 /// ### Example
@@ -37,7 +37,7 @@ class ScanStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   /// Constructs a [ScanStreamTransformer] which applies an accumulator Function
   /// over the source [Stream] and returns each intermediate result.
-  /// The optional seed value is used as the initial accumulator value.
+  /// The seed value is used as the initial accumulator value.
   ScanStreamTransformer(this.accumulator, this.seed);
 
   @override
@@ -48,7 +48,7 @@ class ScanStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 /// Extends
 extension ScanExtension<T> on Stream<T> {
   /// Applies an accumulator function over a Stream sequence and returns each
-  /// intermediate result. The optional seed value is used as the initial
+  /// intermediate result. The seed value is used as the initial
   /// accumulator value.
   ///
   /// ### Example
