@@ -139,7 +139,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   bool get hasValue => _wrapper.value != null;
 
   @override
-  T get value {
+  T get requireValue {
     final wrapper = _wrapper.value;
     if (wrapper != null) {
       return wrapper.value;
@@ -160,7 +160,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   Object? get errorOrNull => _wrapper.errorAndStackTrace?.error;
 
   @override
-  Object get error {
+  Object get requireError {
     final errorAndSt = _wrapper.errorAndStackTrace;
     if (errorAndSt != null) {
       return errorAndSt.error;

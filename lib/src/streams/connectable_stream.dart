@@ -171,13 +171,13 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   bool get hasValue => _subject.hasValue;
 
   @override
-  T get value => _subject.value;
+  T get requireValue => _subject.requireValue;
 
   @override
   T? get valueOrNull => _subject.valueOrNull;
 
   @override
-  Object get error => _subject.error;
+  Object get requireError => _subject.requireError;
 
   @override
   Object? get errorOrNull => _subject.errorOrNull;
