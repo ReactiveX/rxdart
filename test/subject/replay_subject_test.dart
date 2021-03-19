@@ -200,7 +200,7 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(const <int>[1, 2, 3]));
     });
 
-    test('allows items to be added once addStream is completes with an error',
+    test('allows items to be added once addStream completes with an error',
         () async {
       final subject = ReplaySubject<int>();
 

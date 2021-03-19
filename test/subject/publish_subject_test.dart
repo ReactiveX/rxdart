@@ -105,7 +105,7 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
-    test('allows items to be added once addStream is completes with an error',
+    test('allows items to be added once addStream completes with an error',
         () async {
       // ignore: close_sinks
       final subject = PublishSubject<int>();
