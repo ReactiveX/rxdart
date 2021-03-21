@@ -135,17 +135,22 @@ void main() {
       await expectLater(subject.values, const <int>[1, 2, 3]);
     });
 
-    test('synchronously get the previous errors', () async {
+    test('synchronously get the previous errors', () {
       final subject = ReplaySubject<int>();
       final e1 = Exception(), e2 = Exception(), e3 = Exception();
+      final stackTrace = StackTrace.fromString('#');
 
       subject.addError(e1);
-      subject.addError(e2);
+      subject.addError(e2, stackTrace);
       subject.addError(e3);
 
-      await expectLater(
-        subject.errorAndStackTraces.map((es) => es.error),
+      expect(
+        subject.errors,
         containsAllInOrder(<Exception>[e1, e2, e3]),
+      );
+      expect(
+        subject.stackTraces,
+        containsAllInOrder(<StackTrace?>[null, stackTrace, null]),
       );
     });
 
@@ -381,7 +386,7 @@ void main() {
 
       mappedStream.listen(null);
 
-      expect(mappedStream.value, equals(1));
+      expect(mappedStream.requireValue, equals(1));
 
       await subject.close();
     }, skip: true);
@@ -394,7 +399,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(2));
+      expect(mappedStream.requireValue, equals(2));
 
       await subject.close();
     });
@@ -404,9 +409,9 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.value, equals(1)));
+          onDone: () => expect(mappedStream.requireValue, equals(1)));
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });
@@ -416,11 +421,11 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.value, equals(2)));
+          onDone: () => expect(mappedStream.requireValue, equals(2)));
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });

@@ -42,7 +42,7 @@ void main() {
 
       expect(stream, emitsInOrder(items));
       stream.listen(expectAsync1((i) {
-        expect(stream.value, items[count]);
+        expect(stream.requireValue, items[count]);
         count++;
       }, count: items.length));
     });
@@ -135,7 +135,7 @@ void main() {
     test('transform Stream with initial value', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
 
-      expect(stream.value, 0);
+      expect(stream.requireValue, 0);
       expect(stream, emitsInOrder(const <int>[0, 1, 2, 3]));
     });
 
@@ -148,7 +148,7 @@ void main() {
         expect(data, items[count]);
         count++;
         if (count == items.length) {
-          expect(stream.value, 3);
+          expect(stream.requireValue, 3);
         }
       }, count: items.length));
     });
@@ -164,12 +164,15 @@ void main() {
 
       stream.listen(
         null,
-        onError: (Object error) {
-          expect(stream.value, isNull);
-          expect(stream.hasValue, isFalse);
-          expect(stream.errorAndStackTrace?.error, error);
+        onError: expectAsync1((Object error) {
+          expect(stream.valueOrNull, 3);
+          expect(stream.requireValue, 3);
+          expect(stream.hasValue, isTrue);
+
+          expect(stream.errorOrNull, error);
+          expect(stream.requireError, error);
           expect(stream.hasError, isTrue);
-        },
+        }),
       );
     });
 
@@ -226,7 +229,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
 
       {
@@ -242,7 +245,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
     });
   });
