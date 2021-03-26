@@ -49,28 +49,23 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
     return PublishConnectableStream<T>._(source, PublishSubject<T>(sync: sync));
   }
 
-  PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
+  PublishConnectableStream._(this._source, this._subject) : super(_subject);
 
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
+  late final _connection = ConnectableStreamSubscription<T>(
+    _source.listen(
+      _subject.add,
+      onError: _subject.addError,
+      onDone: _subject.close,
+    ),
+    _subject,
+  );
 
   @override
   Stream<T> autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
-      final subscription = _connect();
+      final subscription = _connection;
       connection?.call(subscription);
     };
     _subject.onCancel = null;
@@ -81,15 +76,15 @@ class PublishConnectableStream<T> extends ConnectableStream<T> {
   @override
   StreamSubscription<T> connect() {
     _subject.onListen = _subject.onCancel = null;
-    return _connect();
+    return _connection;
   }
 
   @override
   Stream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
+    ConnectableStreamSubscription<T>? subscription;
 
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
+    _subject.onListen = () => subscription = _connection;
+    _subject.onCancel = () => subscription?.cancel();
 
     return _subject;
   }
@@ -103,11 +98,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   final Stream<T> _source;
   final BehaviorSubject<T> _subject;
 
-  ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
+  ValueConnectableStream._(this._source, this._subject) : super(_subject);
 
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
@@ -128,22 +119,21 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
         BehaviorSubject<T>.seeded(seedValue, sync: sync),
       );
 
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
+  late final _connection = ConnectableStreamSubscription<T>(
+    _source.listen(
+      _subject.add,
+      onError: _subject.addError,
+      onDone: _subject.close,
+    ),
+    _subject,
+  );
 
   @override
   ValueStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
-      final subscription = _connect();
+      final subscription = _connection;
       connection?.call(subscription);
     };
     _subject.onCancel = null;
@@ -154,15 +144,15 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   @override
   StreamSubscription<T> connect() {
     _subject.onListen = _subject.onCancel = null;
-    return _connect();
+    return _connection;
   }
 
   @override
   ValueStream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
+    StreamSubscription<T>? subscription;
 
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
+    _subject.onListen = () => subscription = _connection;
+    _subject.onCancel = () => subscription?.cancel();
 
     return _subject;
   }
@@ -208,28 +198,23 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
     );
   }
 
-  ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
+  ReplayConnectableStream._(this._source, this._subject) : super(_subject);
 
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
+  late final _connection = ConnectableStreamSubscription<T>(
+    _source.listen(
+      _subject.add,
+      onError: _subject.addError,
+      onDone: _subject.close,
+    ),
+    _subject,
+  );
 
   @override
   ReplayStream<T> autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _subject.onListen = () {
-      final subscription = _connect();
+      final subscription = _connection;
       connection?.call(subscription);
     };
     _subject.onCancel = null;
@@ -240,15 +225,15 @@ class ReplayConnectableStream<T> extends ConnectableStream<T>
   @override
   StreamSubscription<T> connect() {
     _subject.onListen = _subject.onCancel = null;
-    return _connect();
+    return _connection;
   }
 
   @override
   ReplayStream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
+    ConnectableStreamSubscription<T>? subscription;
 
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
+    _subject.onListen = () => subscription = _connection;
+    _subject.onCancel = () => subscription?.cancel();
 
     return _subject;
   }
