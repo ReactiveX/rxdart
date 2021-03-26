@@ -22,7 +22,7 @@ void main() {
     var count = 0;
 
     Stream<int>.error(Exception())
-        .onErrorResume((dynamic e) => _getStream())
+        .onErrorResume((e, st) => _getStream())
         .listen(expectAsync1((result) {
           expect(result, expected[count++]);
         }, count: expected.length));
@@ -32,8 +32,7 @@ void main() {
     final exception = Exception();
 
     expect(
-      Stream<Object>.error(exception)
-          .onErrorResume((Object e) => Stream.value(e)),
+      Stream<Object>.error(exception).onErrorResume((e, st) => Stream.value(e)),
       emits(exception),
     );
   });
@@ -66,7 +65,7 @@ void main() {
 
   test('Rx.onErrorResumeNext.pause.resume', () async {
     final transformer =
-        OnErrorResumeStreamTransformer<int>((Object _) => _getStream());
+        OnErrorResumeStreamTransformer<int>((_, __) => _getStream());
     final exp = const [50] + expected;
     late StreamSubscription<num> subscription;
     var count = 0;
@@ -108,7 +107,7 @@ void main() {
 
   test('OnErrorResumeStreamTransformer.reusable', () async {
     final transformer = OnErrorResumeStreamTransformer<int>(
-        (Object _) => _getStream().asBroadcastStream());
+        (_, __) => _getStream().asBroadcastStream());
     var countA = 0, countB = 0;
 
     Stream<int>.error(Exception())
@@ -128,7 +127,7 @@ void main() {
     final controller = StreamController<int>();
 
     final stream =
-        controller.stream.onErrorResume((Object _) => Stream<int>.empty());
+        controller.stream.onErrorResume((_, __) => Stream<int>.empty());
 
     stream.listen(null);
     expect(() => stream.listen(null), throwsStateError);
