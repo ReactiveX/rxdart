@@ -55,7 +55,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   ControllerCancelCallback? get onCancel => _controller.onCancel;
 
   @override
-  set onCancel(void Function()? onCancelHandler) {
+  set onCancel(ControllerCancelCallback? onCancelHandler) {
     _controller.onCancel = onCancelHandler;
   }
 
