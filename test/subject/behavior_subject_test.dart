@@ -147,11 +147,11 @@ void main() {
       seeded.add(3);
       seeded.addError(exception);
 
-      expect(unseeded.requireValue, 3);
+      expect(unseeded.value, 3);
       expect(unseeded.valueOrNull, 3);
       expect(unseeded.hasValue, true);
 
-      expect(unseeded.requireError, exception);
+      expect(unseeded.error, exception);
       expect(unseeded.errorOrNull, exception);
       expect(unseeded.hasError, true);
 
@@ -159,11 +159,11 @@ void main() {
       await expectLater(unseeded, emitsError(exception));
       await expectLater(unseeded, emitsError(exception));
 
-      expect(seeded.requireValue, 3);
+      expect(seeded.value, 3);
       expect(seeded.valueOrNull, 3);
       expect(seeded.hasValue, true);
 
-      expect(seeded.requireError, exception);
+      expect(seeded.error, exception);
       expect(seeded.errorOrNull, exception);
       expect(seeded.hasError, true);
 
@@ -186,11 +186,11 @@ void main() {
       seeded.add(2);
       seeded.add(3);
 
-      expect(unseeded.requireValue, 3);
+      expect(unseeded.value, 3);
       expect(unseeded.valueOrNull, 3);
       expect(unseeded.hasValue, true);
 
-      expect(seeded.requireValue, 3);
+      expect(seeded.value, 3);
       expect(seeded.valueOrNull, 3);
       expect(seeded.hasValue, true);
     });
@@ -209,11 +209,11 @@ void main() {
       seeded.add(2);
       seeded.add(null);
 
-      expect(unseeded.requireValue, isNull);
+      expect(unseeded.value, isNull);
       expect(unseeded.valueOrNull, isNull);
       expect(unseeded.hasValue, true);
 
-      expect(seeded.requireValue, isNull);
+      expect(seeded.value, isNull);
       expect(seeded.valueOrNull, isNull);
       expect(seeded.hasValue, true);
     });
@@ -241,7 +241,7 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>.seeded(1);
 
-      expect(subject.requireValue, 1);
+      expect(subject.value, 1);
       expect(subject.valueOrNull, 1);
       expect(subject.hasValue, true);
     });
@@ -250,7 +250,7 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int?>.seeded(null);
 
-      expect(subject.requireValue, null);
+      expect(subject.value, null);
       expect(subject.valueOrNull, null);
       expect(subject.hasValue, true);
     });
@@ -259,7 +259,7 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<int>();
 
-      expect(() => subject.requireValue, throwsValueStreamError);
+      expect(() => subject.value, throwsValueStreamError);
       expect(subject.valueOrNull, null);
       expect(subject.hasValue, false);
     });
@@ -511,7 +511,7 @@ void main() {
 
       subject.sink.add(1);
 
-      expect(subject.requireValue, 1);
+      expect(subject.value, 1);
 
       subject.sink.add(2);
       subject.sink.add(3);
@@ -527,7 +527,7 @@ void main() {
 
       subject.value = 1;
 
-      expect(subject.requireValue, 1);
+      expect(subject.value, 1);
 
       subject.value = 2;
       subject.value = 3;
@@ -632,7 +632,7 @@ void main() {
 
       expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.requireError, throwsValueStreamError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('error returns null for a seeded subject with non-null seed', () {
@@ -641,7 +641,7 @@ void main() {
 
       expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.requireError, throwsValueStreamError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('error returns null for a seeded subject with null seed', () {
@@ -650,7 +650,7 @@ void main() {
 
       expect(subject.hasError, isFalse);
       expect(subject.errorOrNull, isNull);
-      expect(() => subject.requireError, throwsValueStreamError);
+      expect(() => subject.error, throwsValueStreamError);
     });
 
     test('can synchronously get the latest error', () async {
@@ -664,24 +664,24 @@ void main() {
       unseeded.add(3);
       expect(unseeded.hasError, isFalse);
       expect(unseeded.errorOrNull, isNull);
-      expect(() => unseeded.requireError, throwsValueStreamError);
+      expect(() => unseeded.error, throwsValueStreamError);
 
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.hasError, isTrue);
       expect(unseeded.errorOrNull, isException);
-      expect(unseeded.requireError, isException);
+      expect(unseeded.error, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.add(3);
       expect(seeded.hasError, isFalse);
       expect(seeded.errorOrNull, isNull);
-      expect(() => seeded.requireError, throwsValueStreamError);
+      expect(() => seeded.error, throwsValueStreamError);
 
       seeded.addError(Exception('oh noes!'));
       expect(seeded.hasError, isTrue);
       expect(seeded.errorOrNull, isException);
-      expect(seeded.requireError, isException);
+      expect(seeded.error, isException);
     });
 
     test('emits event after error to every subscriber', () async {
@@ -695,22 +695,22 @@ void main() {
       unseeded.addError(Exception('oh noes!'));
       expect(unseeded.hasError, isTrue);
       expect(unseeded.errorOrNull, isException);
-      expect(unseeded.requireError, isException);
+      expect(unseeded.error, isException);
       unseeded.add(3);
       expect(unseeded.hasError, isTrue);
       expect(unseeded.errorOrNull, isException);
-      expect(unseeded.requireError, isException);
+      expect(unseeded.error, isException);
 
       seeded.add(1);
       seeded.add(2);
       seeded.addError(Exception('oh noes!'));
       expect(seeded.hasError, isTrue);
       expect(seeded.errorOrNull, isException);
-      expect(seeded.requireError, isException);
+      expect(seeded.error, isException);
       seeded.add(3);
       expect(seeded.hasError, isTrue);
       expect(seeded.errorOrNull, isException);
-      expect(seeded.requireError, isException);
+      expect(seeded.error, isException);
     });
 
     test(
@@ -736,7 +736,7 @@ void main() {
 
       mappedStream.listen(null);
 
-      expect(mappedStream.requireValue, equals(1));
+      expect(mappedStream.value, equals(1));
 
       await subject.close();
     }, skip: true);
@@ -749,7 +749,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.requireValue, equals(2));
+      expect(mappedStream.value, equals(2));
 
       await subject.close();
     });
@@ -759,9 +759,9 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.requireValue, equals(1)));
+          onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(() => mappedStream.requireValue, throwsValueStreamError);
+      expect(() => mappedStream.value, throwsValueStreamError);
       expect(mappedStream.valueOrNull, isNull);
       expect(mappedStream.hasValue, false);
 
@@ -773,11 +773,11 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.requireValue, equals(2)));
+          onDone: () => expect(mappedStream.value, equals(2)));
 
       subject.add(2);
 
-      expect(() => mappedStream.requireValue, throwsValueStreamError);
+      expect(() => mappedStream.value, throwsValueStreamError);
       expect(mappedStream.valueOrNull, isNull);
       expect(mappedStream.hasValue, false);
 

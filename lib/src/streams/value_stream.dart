@@ -4,7 +4,7 @@ abstract class ValueStream<T> implements Stream<T> {
   /// See [hasValue] to determine whether [value] has already been set.
   ///
   /// Throws [ValueStreamError] if this Stream has no value.
-  T get requireValue;
+  T get value;
 
   /// Returns either [value], or `null`, should [value] not yet have been set.
   T? get valueOrNull;
@@ -15,7 +15,7 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Returns last emitted error, failing if there is no error.
   ///
   /// Throws [ValueStreamError] if this Stream has no error.
-  Object get requireError;
+  Object get error;
 
   /// Last emitted error, or `null` if no error added.
   Object? get errorOrNull;
@@ -25,7 +25,7 @@ abstract class ValueStream<T> implements Stream<T> {
 
   /// Returns [StackTrace] of the last emitted error,
   /// or `null` if no error added or the added error has no [StackTrace].
-  StackTrace? get stackTraceOrNull;
+  StackTrace? get stackTrace;
 }
 
 enum _MissingCase {
@@ -33,13 +33,13 @@ enum _MissingCase {
   error,
 }
 
-/// The error throw by [ValueStream.requireValue] or [ValueStream.error].
+/// The error throw by [ValueStream.value] or [ValueStream.error].
 class ValueStreamError extends Error {
   final _MissingCase _missingCase;
 
   ValueStreamError._(this._missingCase);
 
-  /// Construct an [ValueStreamError] thrown by [ValueStream.requireValue] when there is no value.
+  /// Construct an [ValueStreamError] thrown by [ValueStream.value] when there is no value.
   factory ValueStreamError.hasNoValue() =>
       ValueStreamError._(_MissingCase.value);
 
@@ -51,9 +51,11 @@ class ValueStreamError extends Error {
   String toString() {
     switch (_missingCase) {
       case _MissingCase.value:
-        return 'ValueStream has no value. You should check ValueStream.hasValue before accessing ValueStream.requireValue, or use ValueStream.requireValueOrNull instead.';
+        return 'ValueStream has no value. You should check ValueStream.hasValue '
+            'before accessing ValueStream.value, or use ValueStream.valueOrNull instead.';
       case _MissingCase.error:
-        return 'ValueStream has no error. You should check ValueStream.hasError before accessing ValueStream.error, or use ValueStream.errorOrNull instead.';
+        return 'ValueStream has no error. You should check ValueStream.hasError '
+            'before accessing ValueStream.error, or use ValueStream.errorOrNull instead.';
     }
   }
 }

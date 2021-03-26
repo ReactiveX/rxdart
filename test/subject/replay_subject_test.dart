@@ -386,7 +386,7 @@ void main() {
 
       mappedStream.listen(null);
 
-      expect(mappedStream.requireValue, equals(1));
+      expect(mappedStream.value, equals(1));
 
       await subject.close();
     }, skip: true);
@@ -399,7 +399,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.requireValue, equals(2));
+      expect(mappedStream.value, equals(2));
 
       await subject.close();
     });
@@ -409,7 +409,7 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.requireValue, equals(1)));
+          onDone: () => expect(mappedStream.value, equals(1)));
 
       expect(mappedStream.valueOrNull, isNull);
 
@@ -421,7 +421,7 @@ void main() {
       final mappedStream = subject.map((event) => event).shareValue();
 
       mappedStream.listen(null,
-          onDone: () => expect(mappedStream.requireValue, equals(2)));
+          onDone: () => expect(mappedStream.value, equals(2)));
 
       subject.add(2);
 

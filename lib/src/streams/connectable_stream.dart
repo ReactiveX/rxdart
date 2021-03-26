@@ -171,13 +171,13 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   bool get hasValue => _subject.hasValue;
 
   @override
-  T get requireValue => _subject.requireValue;
+  T get value => _subject.value;
 
   @override
   T? get valueOrNull => _subject.valueOrNull;
 
   @override
-  Object get requireError => _subject.requireError;
+  Object get error => _subject.error;
 
   @override
   Object? get errorOrNull => _subject.errorOrNull;
@@ -186,7 +186,7 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   bool get hasError => _subject.hasError;
 
   @override
-  StackTrace? get stackTraceOrNull => _subject.stackTraceOrNull;
+  StackTrace? get stackTrace => _subject.stackTrace;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into

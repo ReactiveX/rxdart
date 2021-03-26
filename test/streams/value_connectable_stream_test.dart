@@ -42,7 +42,7 @@ void main() {
 
       expect(stream, emitsInOrder(items));
       stream.listen(expectAsync1((i) {
-        expect(stream.requireValue, items[count]);
+        expect(stream.value, items[count]);
         count++;
       }, count: items.length));
     });
@@ -135,7 +135,7 @@ void main() {
     test('transform Stream with initial value', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValueSeeded(0);
 
-      expect(stream.requireValue, 0);
+      expect(stream.value, 0);
       expect(stream, emitsInOrder(const <int>[0, 1, 2, 3]));
     });
 
@@ -148,7 +148,7 @@ void main() {
         expect(data, items[count]);
         count++;
         if (count == items.length) {
-          expect(stream.requireValue, 3);
+          expect(stream.value, 3);
         }
       }, count: items.length));
     });
@@ -166,11 +166,11 @@ void main() {
         null,
         onError: expectAsync1((Object error) {
           expect(stream.valueOrNull, 3);
-          expect(stream.requireValue, 3);
+          expect(stream.value, 3);
           expect(stream.hasValue, isTrue);
 
           expect(stream.errorOrNull, error);
-          expect(stream.requireError, error);
+          expect(stream.error, error);
           expect(stream.hasError, isTrue);
         }),
       );
