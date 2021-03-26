@@ -20,7 +20,7 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Last emitted error, or `null` if no error added.
   Object? get errorOrNull;
 
-  /// Returns `true` when [errorOrNull] is available.
+  /// Returns `true` when [error] is available.
   bool get hasError;
 
   /// Returns [StackTrace] of the last emitted error,
