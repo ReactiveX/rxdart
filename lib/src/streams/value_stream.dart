@@ -6,26 +6,55 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Throws [ValueStreamError] if this Stream has no value.
   T get value;
 
-  /// Returns either [value], or `null`, should [value] not yet have been set.
-  T? get valueOrNull;
-
-  /// Returns `true` when [value] is available.
-  bool get hasValue;
-
   /// Returns last emitted error, failing if there is no error.
   ///
   /// Throws [ValueStreamError] if this Stream has no error.
   Object get error;
 
-  /// Last emitted error, or `null` if no error added.
-  Object? get errorOrNull;
-
-  /// Returns `true` when [error] is available.
-  bool get hasError;
-
   /// Returns [StackTrace] of the last emitted error,
   /// or `null` if no error added or the added error has no [StackTrace].
   StackTrace? get stackTrace;
+}
+
+/// Extensions to easily access value and error.
+extension ValueStreamExtensions<T> on ValueStream<T> {
+  /// Returns either [value], or `null`, should [value] not yet have been set.
+  T? get valueOrNull {
+    try {
+      return value;
+    } on ValueStreamError {
+      return null;
+    }
+  }
+
+  /// Returns `true` when [value] is available.
+  bool get hasValue {
+    try {
+      value;
+      return true;
+    } on ValueStreamError {
+      return false;
+    }
+  }
+
+  /// Last emitted error, or `null` if no error added.
+  Object? get errorOrNull {
+    try {
+      return error;
+    } on ValueStreamError {
+      return null;
+    }
+  }
+
+  /// Returns `true` when [error] is available.
+  bool get hasError {
+    try {
+      error;
+      return true;
+    } on ValueStreamError {
+      return false;
+    }
+  }
 }
 
 enum _MissingCase {

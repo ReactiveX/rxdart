@@ -158,22 +158,10 @@ class ValueConnectableStream<T> extends ConnectableStream<T>
   }
 
   @override
-  bool get hasValue => _subject.hasValue;
-
-  @override
   T get value => _subject.value;
 
   @override
-  T? get valueOrNull => _subject.valueOrNull;
-
-  @override
   Object get error => _subject.error;
-
-  @override
-  Object? get errorOrNull => _subject.errorOrNull;
-
-  @override
-  bool get hasError => _subject.hasError;
 
   @override
   StackTrace? get stackTrace => _subject.stackTrace;

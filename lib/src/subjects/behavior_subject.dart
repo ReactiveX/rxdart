@@ -136,9 +136,6 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper.value != null;
-
-  @override
   T get value {
     final wrapper = _wrapper.value;
     if (wrapper != null) {
@@ -147,17 +144,8 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
     throw ValueStreamError.hasNoValue();
   }
 
-  @override
-  T? get valueOrNull => _wrapper.value?.value;
-
   /// Set and emit the new value.
   set value(T newValue) => add(newValue);
-
-  @override
-  bool get hasError => _wrapper.errorAndStackTrace != null;
-
-  @override
-  Object? get errorOrNull => _wrapper.errorAndStackTrace?.error;
 
   @override
   Object get error {
