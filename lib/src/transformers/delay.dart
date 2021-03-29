@@ -1,39 +1,60 @@
 import 'dart:async';
+import 'dart:collection';
 
-class _DelayStreamSink<S> implements EventSink<S> {
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
+
+class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   final Duration _duration;
-  final EventSink<S> _outputSink;
-  var _openTimers = 0;
   var _inputClosed = false;
+  final _timers = Queue<Timer>();
 
-  _DelayStreamSink(this._outputSink, this._duration);
+  _DelayStreamSink(this._duration);
 
   @override
-  void add(S data) {
-    _openTimers++;
+  void add(EventSink<S> sink, S data) {
+    final timer = Timer(_duration, () {
+      _timers.removeFirst();
 
-    Timer(_duration, () {
-      _openTimers--;
+      sink.add(data);
 
-      _outputSink.add(data);
-
-      if (_inputClosed && _openTimers == 0) {
-        _outputSink.close();
+      if (_inputClosed && _timers.isEmpty) {
+        sink.close();
       }
     });
+
+    _timers.addLast(timer);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void addError(EventSink<S> sink, Object error, StackTrace st) =>
+      sink.addError(error, st);
 
   @override
-  void close() {
+  void close(EventSink<S> sink) {
     _inputClosed = true;
 
-    if (_openTimers == 0) {
-      _outputSink.close();
+    if (_timers.isEmpty) {
+      sink.close();
     }
   }
+
+  @override
+  FutureOr onCancel(EventSink<S> sink) {
+    if (_timers.isNotEmpty) {
+      _timers.forEach((t) => t.cancel());
+      _timers.clear();
+    }
+  }
+
+  @override
+  void onListen(EventSink<S> sink) {}
+
+  @override
+  void onPause(EventSink<S> sink) {}
+
+  @override
+  void onResume(EventSink<S> sink) {}
 }
 
 /// The Delay operator modifies its source Stream by pausing for
@@ -58,8 +79,8 @@ class DelayStreamTransformer<S> extends StreamTransformerBase<S, S> {
   DelayStreamTransformer(this.duration);
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _DelayStreamSink<S>(sink, duration));
+  Stream<S> bind(Stream<S> stream) =>
+      forwardStream(stream, _DelayStreamSink<S>(duration));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted

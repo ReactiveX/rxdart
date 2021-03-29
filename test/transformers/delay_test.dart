@@ -15,6 +15,13 @@ void main() {
         }, count: 4));
   });
 
+  test('Rx.delay.zero', () {
+    expect(
+      _getStream().delay(Duration.zero),
+      emitsInOrder(<int>[1, 2, 3, 4]),
+    );
+  });
+
   test('Rx.delay.shouldBeDelayed', () async {
     var value = 1;
     _getStream()
