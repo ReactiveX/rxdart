@@ -1,3 +1,20 @@
+## 0.27.0
+  * **BREAKING: ValueStream**
+    * Remove `ValueStreamExtensions`.
+    * `ValueStream.valueWrapper` becomes
+      - `value`.
+      - `valueOrNull`.
+      - `hasValue`.
+    * `ValueStream.errorAndStackTrace` becomes
+      - `error`.
+      - `errorOrNull`.
+      - `hasError`.
+      - `stackTrace`.
+  * Add `skipLast`/`SkipLastStreamTransformer` (thanks [@HannibalKcc](https://github.com/HannibalKcc)).
+  * Update `scan`: change `seed` to required param.
+  * Add `StackTrace` param to `recoveryFn` when using `OnErrorResumeStreamTransformer`/`onErrorResume`/`onErrorReturnWith`.
+  * Internal refactoring `ConnectableStream`.
+
 ## 0.26.0
   * Stable, null-safe release.
   * Add `takeLast` (thanks [@ThomasKliszowski](https://github.com/ThomasKliszowski)).
