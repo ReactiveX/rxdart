@@ -18,8 +18,8 @@ RxDart adds functionality from the reactive extensions specification on top of
 it. 
 
 RxDart does not provide its Observable class as a replacement for Dart 
-Streams. Instead, it offers several additional Stream classes, operators (
-extension methods on the Stream class), and Subjects. 
+Streams. Instead, it offers several additional Stream classes, operators 
+(extension methods on the Stream class), and Subjects. 
 
 If you are familiar with Observables from other languages, please see [the Rx
 Observables vs. Dart Streams comparison chart](#rx-observables-vs-dart-streams)
@@ -79,9 +79,9 @@ The Stream class provides different ways to create a Stream: `Stream.fromIterabl
 
 You can construct the Streams provided by RxDart in two ways. The following examples are equivalent in terms of functionality:
  
-  - You are instantiating the Stream class directly. 
+  - Instantiating the Stream class directly. 
     - Example: `final mergedStream = MergeStream([myFirstStream, mySecondStream]);`
-  - They are using static factories from the `Rx` class, which are helpful for discovering which RxDart provides types of Streams. Under the hood, these factories call the corresponding Stream constructor.  
+  - Using static factories from the Rx class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories call the corresponding Stream constructor.  
     - Example: `final mergedStream = Rx.merge([myFirstStream, mySecondStream]);`
 
 #### List of Classes / Static Factories
