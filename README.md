@@ -7,7 +7,7 @@
 
 ## About
 
-RxDart adds additional capabilities to Dart
+RxDart extends the capabilities of Dart
 [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) and
 [StreamControllers](https://api.dart.dev/stable/dart-async/StreamController-class.html).
 
@@ -17,12 +17,12 @@ out-of-the-box; rather than attempting to provide an alternative to this API,
 RxDart adds functionality from the reactive extensions specification on top of
 it. 
 
-RxDart does not provide its own Observable class as a replacement for Dart
-Streams. Rather, it provides a number of additional Stream classes, operators
+RxDart does not provide its Observable class as a replacement for Dart 
+Streams. Instead, it offers several additional Stream classes, operators 
 (extension methods on the Stream class), and Subjects. 
 
 If you are familiar with Observables from other languages, please see [the Rx
-Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams)
+Observables vs. Dart Streams comparison chart](#rx-observables-vs-dart-streams)
 for notable distinctions between the two.
 
 ## Upgrading from RxDart 0.22.x to 0.23.x
@@ -69,19 +69,19 @@ void main() {
 
 RxDart adds functionality to Dart Streams in three ways:
 
-  * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams together.
+  * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams.
   * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling or buffering events.
   * [Subjects](#subjects) - StreamControllers with additional powers 
 
 ### Stream Classes
 
-The Stream class provides different ways to create a Stream: `Stream.fromIterable` or `Stream.periodic`, for example. RxDart provides additional Stream classes for a variety of tasks, such as combining or merging Streams together!
+The Stream class provides different ways to create a Stream: `Stream.fromIterable` or `Stream.periodic`. RxDart provides additional Stream classes for a variety of tasks, such as combining or merging Streams!
 
 You can construct the Streams provided by RxDart in two ways. The following examples are equivalent in terms of functionality:
  
   - Instantiating the Stream class directly. 
     - Example: `final mergedStream = MergeStream([myFirstStream, mySecondStream]);`
-  - Using static factories from the `Rx` class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories simply call the the corresponding Stream constructor. 
+  - Using static factories from the Rx class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories call the corresponding Stream constructor.  
     - Example: `final mergedStream = Rx.merge([myFirstStream, mySecondStream]);`
 
 #### List of Classes / Static Factories
@@ -189,14 +189,14 @@ Dart provides the [StreamController](https://api.dart.dev/stable/dart-async/Stre
 
 ## Rx Observables vs Dart Streams
 
-In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream api may surprise you. We've included a table below to help folks understand the differences. 
+In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream API may surprise you. We've included a table below to help folks understand the differences. 
 
 Additional information about the following situations can be found by reading the [Rx class documentation](https://pub.dev/documentation/rxdart/latest/rx/Rx-class.html).
 
 | Situation | Rx Observables  | Dart Streams |
 | ------------- |------------- | ------------- |
 | An error is raised | Observable Terminates with Error  | Error is emitted and Stream continues |
-| Cold Observables  | Multiple subscribers can listen to the same cold Observable, each subscription will receive a unique Stream of data | Single subscriber only | 
+| Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
 | Single/Maybe/Complete ? | Yes | No, uses Dart `Future` |
@@ -230,7 +230,7 @@ In order to run the command line example, please follow these steps:
   
 #### Install Flutter
 
-In order to run the flutter example, you must have Flutter installed. For installation instructions, view the online
+To run the flutter example, you must have Flutter installed. For installation instructions, view the online
 [documentation](https://flutter.io/).
 
 #### Run the app
