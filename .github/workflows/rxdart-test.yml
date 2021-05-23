@@ -12,47 +12,50 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image:  google/dart:latest
+      image: google/dart:latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: pub get
+      - name: Print Dart version
+        run: dart --version
 
-    - name: Analyze
-      run: dartanalyzer --fatal-infos --fatal-warnings ./lib
+      - name: Install dependencies
+        run: pub get
 
-    - name: Format code
-      run: dartfmt -n ./lib --set-exit-if-changed
+      - name: Analyze
+        run: dart analyze --fatal-infos --fatal-warnings
 
-    - name: Active coverage
-      run: pub global activate coverage
+      - name: Format code
+        run: dartfmt -n . --set-exit-if-changed
 
-    - name: Run tests
-      run: pub run test test/rxdart_test.dart
+      - name: Active coverage
+        run: pub global activate coverage
 
-    - name: Start Observatory
-      run: dart
-         --disable-service-auth-codes
-         --enable-vm-service=8111
-         --pause-isolates-on-exit
-         --enable-asserts
-         test/rxdart_test.dart &
+      - name: Run tests
+        run: pub run test test/rxdart_test.dart
 
-    - name: Collect coverage
-      run: nohup pub global run coverage:collect_coverage
-        --port=8111
-        --out=coverage.json
-        --wait-paused
-        --resume-isolates
+      - name: Start Observatory
+        run: dart
+          --disable-service-auth-codes
+          --enable-vm-service=8111
+          --pause-isolates-on-exit
+          --enable-asserts
+          test/rxdart_test.dart &
 
-    - name: Format coverage
-      run: pub global run coverage:format_coverage
-        --lcov
-        --in=coverage.json
-        --out=lcov.info
-        --packages=.packages
-        --report-on=lib
+      - name: Collect coverage
+        run: nohup pub global run coverage:collect_coverage
+          --port=8111
+          --out=coverage.json
+          --wait-paused
+          --resume-isolates
 
-    - uses: codecov/codecov-action@v1
+      - name: Format coverage
+        run: pub global run coverage:format_coverage
+          --lcov
+          --in=coverage.json
+          --out=lcov.info
+          --packages=.packages
+          --report-on=lib
+
+      - uses: codecov/codecov-action@v1
