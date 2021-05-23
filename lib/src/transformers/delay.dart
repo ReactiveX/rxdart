@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
-
-import '../rx.dart';
 
 class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   final Duration _duration;
