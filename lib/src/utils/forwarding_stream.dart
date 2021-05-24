@@ -10,9 +10,6 @@ import 'package:rxdart/subjects.dart';
 /// which can be used in pair with a [ForwardingSink]
 Stream<R> forwardStream<T, R>(
     Stream<T> stream, ForwardingSink<T, R> connectedSink) {
-  ArgumentError.checkNotNull(stream, 'stream');
-  ArgumentError.checkNotNull(connectedSink, 'connectedSink');
-
   late StreamController<R> controller;
   late StreamSubscription<T> subscription;
 
@@ -28,13 +25,6 @@ Stream<R> forwardStream<T, R>(
 
   final onListen = () {
     runCatching(() => connectedSink.onListen(controller));
-
-    subscription = stream.listen(
-      (data) => runCatching(() => connectedSink.add(controller, data)),
-      onError: (Object e, StackTrace st) =>
-          runCatching(() => connectedSink.addError(controller, e, st)),
-      onDone: () => runCatching(() => connectedSink.close(controller)),
-    );
   };
 
   final onCancel = () {
@@ -81,5 +71,25 @@ Stream<R> forwardStream<T, R>(
     );
   }
 
-  return controller.stream;
+  subscription = stream.listen(
+    (data) => runCatching(() => connectedSink.add(controller, data)),
+    onError: (Object e, StackTrace st) =>
+        runCatching(() => connectedSink.addError(controller, e, st)),
+    onDone: () => runCatching(() => connectedSink.close(controller)),
+  );
+
+  return _ForwardingStream(controller.stream);
+}
+
+class _ForwardingStream<T> extends Stream<T> {
+  final Stream<T> source;
+
+  _ForwardingStream(this.source);
+
+  @override
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    return source.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
 }

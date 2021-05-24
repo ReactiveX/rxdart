@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils/on_subscription_triggerable_stream.dart';
+
 Stream<int> _getStream() {
   final controller = StreamController<int>();
 
@@ -150,5 +152,21 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     await inner.close();
     await outer.close();
+  });
+
+  test('Rx.switchMap every subscription triggers a listen on the root Stream',
+      () async {
+    var count = 0;
+    final controller = StreamController<bool>.broadcast();
+    final root =
+        OnSubscriptionTriggerableStream(controller.stream, () => count++);
+    final stream = root.map((event) => Stream.value(event));
+
+    stream.listen((event) {});
+    stream.listen((event) {});
+
+    expect(count, 2);
+
+    await controller.close();
   });
 }
