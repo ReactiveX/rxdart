@@ -78,18 +78,5 @@ Stream<R> forwardStream<T, R>(
     onDone: () => runCatching(() => connectedSink.close(controller)),
   );
 
-  return _ForwardingStream(controller.stream);
-}
-
-class _ForwardingStream<T> extends Stream<T> {
-  final Stream<T> source;
-
-  _ForwardingStream(this.source);
-
-  @override
-  StreamSubscription<T> listen(void Function(T event)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return source.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+  return controller.stream;
 }
