@@ -80,7 +80,7 @@ class DelayStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _DelayStreamSink<S>(duration));
+      ForwardingStream(stream, _DelayStreamSink<S>(duration));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted

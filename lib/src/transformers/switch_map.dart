@@ -83,7 +83,7 @@ class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _SwitchMapStreamSink(mapper));
+      ForwardingStream(stream, _SwitchMapStreamSink(mapper));
 }
 
 /// Extends the Stream with the ability to convert one stream into a new Stream

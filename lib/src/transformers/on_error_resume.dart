@@ -91,7 +91,7 @@ class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   OnErrorResumeStreamTransformer(this.recoveryFn);
 
   @override
-  Stream<S> bind(Stream<S> stream) => forwardStream(
+  Stream<S> bind(Stream<S> stream) => ForwardingStream(
         stream,
         _OnErrorResumeStreamSink<S>(recoveryFn),
       );

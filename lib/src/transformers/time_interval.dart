@@ -59,7 +59,7 @@ class TimeIntervalStreamTransformer<S>
 
   @override
   Stream<TimeInterval<S>> bind(Stream<S> stream) =>
-      forwardStream(stream, _TimeIntervalStreamSink());
+      ForwardingStream(stream, _TimeIntervalStreamSink());
 }
 
 /// A class that represents a snapshot of the current value emitted by a

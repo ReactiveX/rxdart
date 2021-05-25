@@ -169,7 +169,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
+  Stream<S> bind(Stream<S> stream) => ForwardingStream<S, S>(
         stream,
         _DoStreamSink<S>(
           onCancel,

@@ -87,7 +87,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _FlatMapStreamSink(mapper));
+      ForwardingStream(stream, _FlatMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into

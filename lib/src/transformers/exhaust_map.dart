@@ -83,7 +83,7 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _ExhaustMapStreamSink(mapper));
+      ForwardingStream(stream, _ExhaustMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to transform the Stream into

@@ -73,7 +73,7 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithStreamSink(startValue));
+      ForwardingStream(stream, _StartWithStreamSink(startValue));
 }
 
 /// Extends the [Stream] class with the ability to emit the given value as the

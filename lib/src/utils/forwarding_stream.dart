@@ -8,75 +8,84 @@ import 'package:rxdart/subjects.dart';
 /// to a new [StreamController].
 /// It captures events such as onListen, onPause, onResume and onCancel,
 /// which can be used in pair with a [ForwardingSink]
-Stream<R> forwardStream<T, R>(
-    Stream<T> stream, ForwardingSink<T, R> connectedSink) {
-  late StreamController<R> controller;
-  late StreamSubscription<T> subscription;
+class ForwardingStream<T, R> extends Stream<R> {
+  final Stream<T> _inner;
+  final ForwardingSink<T, R> _connectedSink;
+  late StreamController<R> _controller;
+  StreamSubscription<T>? _subscription;
 
-  @pragma('vm:prefer-inline')
-  @pragma('dart2js:tryInline')
-  void runCatching(void Function() block) {
-    try {
-      block();
-    } catch (e, s) {
-      connectedSink.addError(controller, e, s);
+  /// Constructs a ForwardingStream using an underlying "inner" [Stream],
+  /// and a [ForwardingSink], which will connect to events.
+  ForwardingStream(this._inner, this._connectedSink) {
+    final inner = _inner;
+    // Create a new Controller, which will serve as a trampoline for
+    // forwarded events.
+    if (inner is Subject<T>) {
+      _controller = inner.createForwardingSubject<R>(
+        onListen: _onListen,
+        onCancel: _onCancel,
+        sync: true,
+      );
+    } else if (inner.isBroadcast) {
+      _controller = StreamController<R>.broadcast(
+        onListen: _onListen,
+        onCancel: _onCancel,
+        sync: true,
+      );
+    } else {
+      _controller = StreamController<R>(
+        onListen: _onListen,
+        onPause: _onPause,
+        onResume: _onResume,
+        onCancel: _onCancel,
+        sync: true,
+      );
     }
   }
 
-  final onListen = () {
-    runCatching(() => connectedSink.onListen(controller));
-  };
+  @override
+  StreamSubscription<R> listen(void Function(R event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    _subscription ??= _inner.listen(
+      (data) => _runCatching(() => _connectedSink.add(_controller, data)),
+      onError: (Object e, StackTrace st) =>
+          _runCatching(() => _connectedSink.addError(_controller, e, st)),
+      onDone: () => _runCatching(() => _connectedSink.close(_controller)),
+    );
 
-  final onCancel = () {
-    final onCancelSelfFuture = subscription.cancel();
-    final onCancelConnectedFuture = connectedSink.onCancel(controller);
+    return _controller.stream.listen(onData,
+        onDone: onDone, onError: onError, cancelOnError: cancelOnError);
+  }
+
+  void _onListen() => _runCatching(() => _connectedSink.onListen(_controller));
+
+  Future<List> _onCancel() {
+    final onCancelSelfFuture = _subscription!.cancel();
+    final onCancelConnectedFuture = _connectedSink.onCancel(_controller);
     final futures = <Future>[
       if (onCancelSelfFuture is Future) onCancelSelfFuture,
       if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
     ];
     return Future.wait<dynamic>(futures);
-  };
-
-  final onPause = () {
-    subscription.pause();
-    runCatching(() => connectedSink.onPause(controller));
-  };
-
-  final onResume = () {
-    subscription.resume();
-    runCatching(() => connectedSink.onResume(controller));
-  };
-
-  // Create a new Controller, which will serve as a trampoline for
-  // forwarded events.
-  if (stream is Subject<T>) {
-    controller = stream.createForwardingSubject<R>(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: true,
-    );
-  } else if (stream.isBroadcast) {
-    controller = StreamController<R>.broadcast(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: true,
-    );
-  } else {
-    controller = StreamController<R>(
-      onListen: onListen,
-      onPause: onPause,
-      onResume: onResume,
-      onCancel: onCancel,
-      sync: true,
-    );
   }
 
-  subscription = stream.listen(
-    (data) => runCatching(() => connectedSink.add(controller, data)),
-    onError: (Object e, StackTrace st) =>
-        runCatching(() => connectedSink.addError(controller, e, st)),
-    onDone: () => runCatching(() => connectedSink.close(controller)),
-  );
+  @pragma('vm:prefer-inline')
+  @pragma('dart2js:tryInline')
+  void _runCatching(void Function() block) {
+    try {
+      block();
+    } catch (e, s) {
+      _connectedSink.addError(_controller, e, s);
+    }
+  }
 
-  return controller.stream;
+  void _onPause() {
+    _subscription!.pause();
+    _runCatching(() => _connectedSink.onPause(_controller));
+  }
+
+  void _onResume() {
+    _subscription!.resume();
+    _runCatching(() => _connectedSink.onResume(_controller));
+  }
 }

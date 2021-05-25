@@ -65,7 +65,7 @@ class TakeLastStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   @override
   Stream<T> bind(Stream<T> stream) =>
-      forwardStream(stream, _TakeLastStreamSink<T>(count));
+      ForwardingStream(stream, _TakeLastStreamSink<T>(count));
 }
 
 /// Extends the [Stream] class with the ability receive only the final [count]

@@ -352,7 +352,7 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
       dispatchOnClose,
       maxLengthQueue,
     );
-    return forwardStream(stream, sink);
+    return ForwardingStream(stream, sink);
   }
 }
 

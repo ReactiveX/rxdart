@@ -59,7 +59,7 @@ class TakeUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _TakeUntilStreamSink(otherStream));
+      ForwardingStream(stream, _TakeUntilStreamSink(otherStream));
 }
 
 /// Extends the Stream class with the ability receive events from the source

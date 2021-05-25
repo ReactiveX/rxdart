@@ -367,7 +367,7 @@ class WithLatestFromStreamTransformer<S, T, R>
           );
 
   @override
-  Stream<R> bind(Stream<S> stream) => forwardStream(
+  Stream<R> bind(Stream<S> stream) => ForwardingStream(
         stream,
         _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
       );
