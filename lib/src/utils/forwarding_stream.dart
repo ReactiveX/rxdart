@@ -106,7 +106,8 @@ class _CombinedStreamSubscription<T, R> extends StreamSubscription<R> {
   _CombinedStreamSubscription(this._innerSubscription, this._outerSubscription);
 
   @override
-  Future<E> asFuture<E>([E? futureValue]) => _outerSubscription.asFuture();
+  Future<E> asFuture<E>([E? futureValue]) =>
+      _outerSubscription.asFuture(futureValue);
 
   @override
   Future<void> cancel() {
