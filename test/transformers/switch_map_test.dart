@@ -160,7 +160,7 @@ void main() {
     final controller = StreamController<bool>.broadcast();
     final root =
         OnSubscriptionTriggerableStream(controller.stream, () => count++);
-    final stream = root.map((event) => Stream.value(event));
+    final stream = root.switchMap((event) => Stream.value(event));
 
     stream.listen((event) {});
     stream.listen((event) {});
