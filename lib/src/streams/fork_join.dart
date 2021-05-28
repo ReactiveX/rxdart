@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 /// This operator is best used when you have a group of streams
 /// and only care about the final emitted value of each.
@@ -332,9 +331,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
 
               if (++completed == length) {
                 try {
-                  final copiedValues =
-                      UnmodifiableListView(values.map((e) => e as T));
-                  controller.add(combiner(copiedValues));
+                  controller.add(combiner(List<T>.unmodifiable(values)));
                 } catch (e, s) {
                   controller.addError(e, s);
                 }
