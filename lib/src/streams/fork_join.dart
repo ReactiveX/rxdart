@@ -333,7 +333,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
               if (++completed == length) {
                 try {
                   final copiedValues =
-                      UnmodifiableListView(values.map((e) => e!));
+                      UnmodifiableListView(values.map((e) => e as T));
                   controller.add(combiner(copiedValues));
                 } catch (e, s) {
                   controller.addError(e, s);
