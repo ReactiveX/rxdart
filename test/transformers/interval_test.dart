@@ -66,20 +66,6 @@ void main() {
     }));
   });
 
-  test('Rx.interval.error.shouldThrowB', () async {
-    runZoned(() {
-      final streamWithError =
-          Stream.value(1).interval(const Duration(milliseconds: 20));
-
-      streamWithError.listen(null,
-          onError: expectAsync2(
-              (Exception e, StackTrace s) => expect(e, isException)));
-    },
-        zoneSpecification: ZoneSpecification(
-            createTimer: (self, parent, zone, duration, void Function() f) =>
-                throw Exception('Zone createTimer error')));
-  });
-
   test('Rx.interval accidental broadcast', () async {
     final controller = StreamController<int>();
 

@@ -1,29 +1,30 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   final Duration _duration;
   var _inputClosed = false;
-  final _timers = Queue<Timer>();
+  final _subscriptions = Queue<StreamSubscription<void>>();
 
   _DelayStreamSink(this._duration);
 
   @override
   void add(EventSink<S> sink, S data) {
-    final timer = Timer(_duration, () {
-      _timers.removeFirst();
+    final subscription = Rx.timer<void>(null, _duration).listen((_) {
+      _subscriptions.removeFirst();
 
       sink.add(data);
 
-      if (_inputClosed && _timers.isEmpty) {
+      if (_inputClosed && _subscriptions.isEmpty) {
         sink.close();
       }
     });
 
-    _timers.addLast(timer);
+    _subscriptions.addLast(subscription);
   }
 
   @override
@@ -34,16 +35,16 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   void close(EventSink<S> sink) {
     _inputClosed = true;
 
-    if (_timers.isEmpty) {
+    if (_subscriptions.isEmpty) {
       sink.close();
     }
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
-    if (_timers.isNotEmpty) {
-      _timers.forEach((t) => t.cancel());
-      _timers.clear();
+  FutureOr<void> onCancel(EventSink<S> sink) {
+    if (_subscriptions.isNotEmpty) {
+      return Future.wait(_subscriptions.map((t) => t.cancel()))
+          .whenComplete(() => _subscriptions.clear());
     }
   }
 
@@ -51,10 +52,10 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink) {}
+  void onPause(EventSink<S> sink) => _subscriptions.forEach((s) => s.pause());
 
   @override
-  void onResume(EventSink<S> sink) {}
+  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
 }
 
 /// The Delay operator modifies its source Stream by pausing for

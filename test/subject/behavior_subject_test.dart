@@ -347,8 +347,7 @@ void main() {
       final subject = BehaviorSubject<void>();
 
       unawaited(subject
-          .addStream(Stream<void>.error(Exception()),
-              cancelOnError: true)
+          .addStream(Stream<void>.error(Exception()), cancelOnError: true)
           .whenComplete(() => subject.add(1)));
 
       await expectLater(subject.stream,
@@ -874,8 +873,8 @@ void main() {
         {
           var behaviorSubject = BehaviorSubject.seeded(1);
 
-          var mapped = behaviorSubject
-              .asyncMap((event) => Future.value(event + 1));
+          var mapped =
+              behaviorSubject.asyncMap((event) => Future.value(event + 1));
           expect(mapped, emitsInOrder(<int>[2, 3]));
 
           behaviorSubject.add(2);
@@ -884,8 +883,8 @@ void main() {
         {
           var behaviorSubject = BehaviorSubject<int>();
 
-          var mapped = behaviorSubject
-              .asyncMap((event) => Future.value(event + 1));
+          var mapped =
+              behaviorSubject.asyncMap((event) => Future.value(event + 1));
           expect(mapped, emitsInOrder(<int>[2, 3]));
 
           behaviorSubject.add(1);

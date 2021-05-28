@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/utils/notification.dart';
 import 'package:stack_trace/stack_trace.dart';
 import 'package:test/test.dart';
 

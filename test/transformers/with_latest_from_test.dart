@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/rx.dart';
 import 'package:test/test.dart';
 
 /// creates 5 Streams, deferred from a source Stream, so that they all emit
