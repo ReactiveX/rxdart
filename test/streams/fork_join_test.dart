@@ -34,6 +34,20 @@ void main() {
     );
   });
 
+  test('Rx.forkJoin.nullable', () {
+    expect(
+      ForkJoinStream.combine2(
+        Stream.value(null),
+        Stream.value(1),
+        (a, b) => '$a $b',
+      ),
+      emitsInOrder(<Object>[
+        'null 1',
+        emitsDone,
+      ]),
+    );
+  });
+
   test('Rx.forkJoin.empty', () {
     expect(Rx.forkJoinList<int>([]), emitsDone);
   });
