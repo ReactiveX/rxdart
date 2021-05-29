@@ -12,6 +12,11 @@ extension on Duration {
 void main() {
   test('Rx.delayWhen', () {
     expect(
+      _getStream().delayWhen((_) => Stream.value(null)),
+      emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]),
+    );
+
+    expect(
       _getStream()
           .delayWhen((_) => const Duration(milliseconds: 200).asTimerStream()),
       emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]),
