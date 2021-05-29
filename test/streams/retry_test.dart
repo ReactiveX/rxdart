@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/retry.dart';
 import 'package:test/test.dart';
 
 void main() {

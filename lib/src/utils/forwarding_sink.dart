@@ -28,5 +28,5 @@ abstract class ForwardingSink<T, R> {
   void onResume(EventSink<R> sink);
 
   /// Fires when a subscriber cancels.
-  FutureOr onCancel(EventSink<R> sink);
+  FutureOr<void> onCancel(EventSink<R> sink);
 }

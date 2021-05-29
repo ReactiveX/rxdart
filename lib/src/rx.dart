@@ -948,7 +948,7 @@ abstract class Rx {
   ///     Rx.timer('hi', Duration(minutes: 1))
   ///         .listen((i) => print(i); // print 'hi' after 1 minute
   static Stream<T> timer<T>(T value, Duration duration) =>
-      (TimerStream<T>(value, duration));
+      TimerStream<T>(value, duration);
 
   /// When listener listens to it, creates a resource object from resource factory function,
   /// and creates a [Stream] from the given factory function and resource as argument.
