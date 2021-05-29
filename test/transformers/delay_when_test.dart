@@ -16,6 +16,12 @@ void main() {
           .delayWhen((_) => const Duration(milliseconds: 200).asTimerStream()),
       emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]),
     );
+
+    expect(
+      _getStream()
+          .delayWhen((i) => Duration(milliseconds: 100 * i).asTimerStream()),
+      emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]),
+    );
   });
 
   test('Rx.delayWhen.zero', () {
@@ -26,30 +32,42 @@ void main() {
   });
 
   test('Rx.delayWhen.shouldBeDelayed', () {
-    var value = 1;
-    _getStream()
-        .delayWhen((_) => const Duration(milliseconds: 500).asTimerStream())
-        .timeInterval()
-        .listen(
-          expectAsync1(
-            (result) {
-              expect(result.value, value++);
+    {
+      var value = 1;
+      _getStream()
+          .delayWhen((_) => const Duration(milliseconds: 500).asTimerStream())
+          .timeInterval()
+          .listen(expectAsync1((result) {
+            expect(result.value, value++);
 
-              if (result.value == 1) {
-                expect(
-                  result.interval.inMilliseconds,
-                  greaterThanOrEqualTo(500),
-                ); // should be delayed
-              } else {
-                expect(
-                  result.interval.inMilliseconds,
-                  lessThanOrEqualTo(1),
-                ); // should be near instantaneous
-              }
-            },
-            count: 4,
-          ),
-        );
+            if (result.value == 1) {
+              expect(
+                result.interval.inMilliseconds,
+                greaterThanOrEqualTo(500),
+              ); // should be delayed
+            } else {
+              expect(
+                result.interval.inMilliseconds,
+                lessThanOrEqualTo(20),
+              ); // should be near instantaneous
+            }
+          }, count: 4));
+    }
+
+    {
+      var value = 1;
+      _getStream()
+          .delayWhen((i) => Duration(milliseconds: 500 * i).asTimerStream())
+          .timeInterval()
+          .listen(expectAsync1((result) {
+            expect(result.value, value++);
+
+            expect(
+              (result.interval.inMilliseconds - 500).abs(),
+              lessThanOrEqualTo(20),
+            ); // should be near instantaneous
+          }, count: 4));
+    }
   });
 
   test('Rx.delayWhen.reusable', () {
