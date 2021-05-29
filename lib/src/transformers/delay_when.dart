@@ -68,6 +68,7 @@ class _DelayWhenStreamSink<T> implements ForwardingSink<T, T> {
 ///       .delayWhen((i) => Rx.timer(null, Duration(seconds: i)))
 ///       .listen(print); // [after 1 second] prints 1 [after 1 second] prints 2 [after 1 second] prints 3
 class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
+  /// A function used to determine delay time span for each data event.
   final Stream<void> Function(T) itemDelaySelector;
 
   /// Constructs a [StreamTransformer] which delays the emission of items
