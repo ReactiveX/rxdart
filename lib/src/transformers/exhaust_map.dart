@@ -16,7 +16,13 @@ class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
       return;
     }
 
-    final mappedStream = _mapper(data);
+    final Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _mapperSubscription = mappedStream.listen(
       sink.add,

@@ -75,14 +75,30 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
 
   @override
   void onListen(EventSink<S> sink) {
-    _onListen?.call();
+    try {
+      _onListen?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
   }
 
   @override
-  void onPause(EventSink<S> sink) => _onPause?.call();
+  void onPause(EventSink<S> sink) {
+    try {
+      _onPause?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 
   @override
-  void onResume(EventSink<S> sink) => _onResume?.call();
+  void onResume(EventSink<S> sink) {
+    try {
+      _onResume?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 }
 
 /// Invokes the given callback at the corresponding point the the stream

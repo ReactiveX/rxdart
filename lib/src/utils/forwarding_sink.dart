@@ -19,7 +19,8 @@ abstract class ForwardingSink<T, R> {
   void close(EventSink<R> sink);
 
   /// Fires when a listener subscribes on the underlying [Stream].
-  void onListen(EventSink<R> sink);
+  /// Returns a [Future] to delay listening to source [Stream].
+  FutureOr<void> onListen(EventSink<R> sink);
 
   /// Fires when a subscriber pauses.
   void onPause(EventSink<R> sink);

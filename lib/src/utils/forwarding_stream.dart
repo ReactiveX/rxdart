@@ -10,51 +10,61 @@ import 'package:rxdart/subjects.dart';
 /// which can be used in pair with a [ForwardingSink]
 Stream<R> forwardStream<T, R>(
     Stream<T> stream, ForwardingSink<T, R> connectedSink) {
-  ArgumentError.checkNotNull(stream, 'stream');
-  ArgumentError.checkNotNull(connectedSink, 'connectedSink');
-
   late StreamController<R> controller;
-  late StreamSubscription<T> subscription;
-
-  @pragma('vm:prefer-inline')
-  @pragma('dart2js:tryInline')
-  void runCatching(void Function() block) {
-    try {
-      block();
-    } catch (e, s) {
-      connectedSink.addError(controller, e, s);
-    }
-  }
+  StreamSubscription<T>? subscription;
+  var cancelled = false;
 
   final onListen = () {
-    runCatching(() => connectedSink.onListen(controller));
+    void listenToUpstream([void _]) {
+      if (cancelled) {
+        return;
+      }
+      subscription = stream.listen(
+        (data) => connectedSink.add(controller, data),
+        onError: (Object e, StackTrace st) =>
+            connectedSink.addError(controller, e, st),
+        onDone: () => connectedSink.close(controller),
+      );
+    }
 
-    subscription = stream.listen(
-      (data) => runCatching(() => connectedSink.add(controller, data)),
-      onError: (Object e, StackTrace st) =>
-          runCatching(() => connectedSink.addError(controller, e, st)),
-      onDone: () => runCatching(() => connectedSink.close(controller)),
-    );
+    final futureOrVoid = connectedSink.onListen(controller);
+    if (futureOrVoid is Future<void>) {
+      futureOrVoid.then(listenToUpstream);
+    } else {
+      listenToUpstream();
+    }
   };
 
-  final onCancel = () {
-    final onCancelSelfFuture = subscription.cancel();
+  FutureOr<void> onCancel() {
+    cancelled = true;
+
+    final onCancelSelfFuture = subscription?.cancel();
+    subscription = null;
     final onCancelConnectedFuture = connectedSink.onCancel(controller);
-    final futures = <Future>[
-      if (onCancelSelfFuture is Future) onCancelSelfFuture,
-      if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
+    final futures = <Future<void>>[
+      if (onCancelSelfFuture is Future<void>) onCancelSelfFuture,
+      if (onCancelConnectedFuture is Future<void>) onCancelConnectedFuture,
     ];
-    return Future.wait<dynamic>(futures);
-  };
+
+    if (futures.isEmpty) {
+      return null;
+    }
+    if (futures.length == 1) {
+      return futures[0];
+    }
+    return Future.wait(futures);
+  }
+
+  ;
 
   final onPause = () {
-    subscription.pause();
-    runCatching(() => connectedSink.onPause(controller));
+    subscription!.pause();
+    connectedSink.onPause(controller);
   };
 
   final onResume = () {
-    subscription.resume();
-    runCatching(() => connectedSink.onResume(controller));
+    subscription!.resume();
+    connectedSink.onResume(controller);
   };
 
   // Create a new Controller, which will serve as a trampoline for

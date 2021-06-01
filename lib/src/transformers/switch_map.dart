@@ -12,7 +12,13 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
 
   @override
   void add(EventSink<T> sink, S data) {
-    final mappedStream = _mapper(data);
+    final Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _mapperSubscription?.cancel();
 

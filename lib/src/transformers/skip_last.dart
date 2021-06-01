@@ -20,8 +20,10 @@ class _SkipLastStreamSink<T> implements ForwardingSink<T, T> {
 
   @override
   void close(EventSink<T> sink) {
-    final takeNum = queue.length - count >= 0 ? queue.length - count : 0;
-    queue.take(takeNum).forEach(sink.add);
+    final limit = queue.length - count;
+    if (limit > 0) {
+      queue.sublist(0, limit).forEach(sink.add);
+    }
     sink.close();
   }
 
