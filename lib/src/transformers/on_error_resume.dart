@@ -136,14 +136,14 @@ extension OnErrorExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     ErrorStream(Exception())
-  ///       .onErrorResume((dynamic e) =>
+  ///       .onErrorResume((e, st) =>
   ///           Stream.fromIterable([e is StateError ? 1 : 0]))
   ///       .listen(print); // prints 0
   Stream<T> onErrorResume(
           Stream<T> Function(Object error, StackTrace stackTrace) recoveryFn) =>
       transform(OnErrorResumeStreamTransformer<T>(recoveryFn));
 
-  /// instructs a Stream to emit a particular item when it encounters an
+  /// Instructs a Stream to emit a particular item when it encounters an
   /// error, and then terminate normally
   ///
   /// The onErrorReturn operator intercepts an onError notification from
@@ -161,15 +161,15 @@ extension OnErrorExtensions<T> on Stream<T> {
   Stream<T> onErrorReturn(T returnValue) => transform(
       OnErrorResumeStreamTransformer<T>((_, __) => Stream.value(returnValue)));
 
-  /// instructs a Stream to emit a particular item created by the
+  /// Instructs a Stream to emit a particular item created by the
   /// [returnFn] when it encounters an error, and then terminate normally.
   ///
   /// The onErrorReturnWith operator intercepts an onError notification from
   /// the source Stream. Instead of passing it through to any observers, it
   /// replaces it with a given item, and then terminates normally.
   ///
-  /// The [returnFn] receives the emitted error and returns a Stream. You can
-  /// perform logic in the [returnFn] to return different Streams based on the
+  /// The [returnFn] receives the emitted error and returns a value. You can
+  /// perform logic in the [returnFn] to return different value based on the
   /// type of error that was emitted.
   ///
   /// If you do not need to perform logic based on the type of error that was
@@ -178,7 +178,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   /// ### Example
   ///
   ///     ErrorStream(Exception())
-  ///       .onErrorReturnWith((e) => e is Exception ? 1 : 0)
+  ///       .onErrorReturnWith((e, st) => e is Exception ? 1 : 0)
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturnWith(
           T Function(Object error, StackTrace stackTrace) returnFn) =>
