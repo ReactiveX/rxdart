@@ -55,8 +55,6 @@ Stream<R> forwardStream<T, R>(
     return Future.wait(futures);
   }
 
-  ;
-
   final onPause = () {
     subscription!.pause();
     connectedSink.onPause(controller);
