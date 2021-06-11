@@ -11,8 +11,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        container: ['google/dart:latest', 'google/dart:dev']
+
     container:
-      image: google/dart:latest
+      image: ${{ matrix.container }}
 
     steps:
       - uses: actions/checkout@v2
