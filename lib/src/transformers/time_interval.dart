@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
+class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
   final _stopwatch = Stopwatch();
 
   @override
@@ -59,7 +59,7 @@ class TimeIntervalStreamTransformer<S>
 
   @override
   Stream<TimeInterval<S>> bind(Stream<S> stream) =>
-      forwardStream(stream, _TimeIntervalStreamSink());
+      ForwardedStream(inner: stream, connectedSink: _TimeIntervalStreamSink());
 }
 
 /// A class that represents a snapshot of the current value emitted by a

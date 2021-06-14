@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
+class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
   final List<bool> _hasValues;
@@ -367,10 +367,10 @@ class WithLatestFromStreamTransformer<S, T, R>
           );
 
   @override
-  Stream<R> bind(Stream<S> stream) => forwardStream(
-        stream,
-        _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
-      );
+  Stream<R> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream,
+      connectedSink:
+          _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner));
 }
 
 /// Extends the Stream class with the ability to merge the source Stream with

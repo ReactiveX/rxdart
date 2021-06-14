@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
@@ -82,8 +82,8 @@ class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   SwitchMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _SwitchMapStreamSink(mapper));
+  Stream<T> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _SwitchMapStreamSink(mapper));
 }
 
 /// Extends the Stream with the ability to convert one stream into a new Stream

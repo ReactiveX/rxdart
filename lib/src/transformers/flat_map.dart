@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
@@ -87,7 +87,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _FlatMapStreamSink(mapper));
+      ForwardedStream(inner: stream, connectedSink: _FlatMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into

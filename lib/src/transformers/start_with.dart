@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   final S _startValue;
   var _isFirstEventAdded = false;
 
@@ -72,8 +72,8 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
   StartWithStreamTransformer(this.startValue);
 
   @override
-  Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithStreamSink(startValue));
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _StartWithStreamSink(startValue));
 }
 
 /// Extends the [Stream] class with the ability to emit the given value as the

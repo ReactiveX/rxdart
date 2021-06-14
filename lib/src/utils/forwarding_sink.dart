@@ -9,6 +9,11 @@ import 'dart:async';
 /// [Stream]s. See, for example, [Stream.eventTransformed] which uses
 /// `EventSink`s to transform events.
 abstract class ForwardingSink<T, R> {
+  /// @private
+  /// internal flag to determine if we should create a new subscription
+  /// on every listen, or rather subscribe only once.
+  bool get enforcesSingleSubscription => false;
+
   /// Handle data event
   void add(EventSink<R> sink, T data);
 

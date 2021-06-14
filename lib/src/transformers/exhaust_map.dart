@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _ExhaustMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
@@ -82,8 +82,8 @@ class ExhaustMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   ExhaustMapStreamTransformer(this.mapper);
 
   @override
-  Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _ExhaustMapStreamSink(mapper));
+  Stream<T> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _ExhaustMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to transform the Stream into

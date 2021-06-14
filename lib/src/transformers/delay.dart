@@ -5,7 +5,7 @@ import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _DelayStreamSink<S> implements ForwardingSink<S, S> {
+class _DelayStreamSink<S> extends ForwardingSink<S, S> {
   final Duration _duration;
   var _inputClosed = false;
   final _subscriptions = Queue<StreamSubscription<void>>();
@@ -80,8 +80,8 @@ class DelayStreamTransformer<S> extends StreamTransformerBase<S, S> {
   DelayStreamTransformer(this.duration);
 
   @override
-  Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _DelayStreamSink<S>(duration));
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _DelayStreamSink<S>(duration));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted

@@ -4,7 +4,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
-class _DoStreamSink<S> implements ForwardingSink<S, S> {
+class _DoStreamSink<S> extends ForwardingSink<S, S> {
   final FutureOr<void> Function()? _onCancel;
   final void Function(S event)? _onData;
   final void Function()? _onDone;
@@ -13,6 +13,9 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   final void Function()? _onListen;
   final void Function()? _onPause;
   final void Function()? _onResume;
+
+  @override
+  bool get enforcesSingleSubscription => true;
 
   _DoStreamSink(
     this._onCancel,
@@ -169,19 +172,18 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
-        stream,
-        _DoStreamSink<S>(
-          onCancel,
-          onData,
-          onDone,
-          onEach,
-          onError,
-          onListen,
-          onPause,
-          onResume,
-        ),
-      );
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream,
+      connectedSink: _DoStreamSink<S>(
+        onCancel,
+        onData,
+        onDone,
+        onEach,
+        onError,
+        onListen,
+        onPause,
+        onResume,
+      ));
 }
 
 /// Extends the Stream class with the ability to execute a callback function

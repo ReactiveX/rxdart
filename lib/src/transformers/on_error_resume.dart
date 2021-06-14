@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
+class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> Function(Object error, StackTrace stackTrace) _recoveryFn;
   var _inRecovery = false;
   final List<StreamSubscription<S>> _recoverySubscriptions = [];
@@ -91,10 +91,8 @@ class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   OnErrorResumeStreamTransformer(this.recoveryFn);
 
   @override
-  Stream<S> bind(Stream<S> stream) => forwardStream(
-        stream,
-        _OnErrorResumeStreamSink<S>(recoveryFn),
-      );
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _OnErrorResumeStreamSink<S>(recoveryFn));
 }
 
 /// Extends the Stream class with the ability to recover from errors in various

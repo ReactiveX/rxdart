@@ -4,7 +4,7 @@ import 'dart:collection';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
+class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
   _TakeLastStreamSink(this.count);
 
   final int count;
@@ -64,8 +64,8 @@ class TakeLastStreamTransformer<T> extends StreamTransformerBase<T, T> {
   final int count;
 
   @override
-  Stream<T> bind(Stream<T> stream) =>
-      forwardStream(stream, _TakeLastStreamSink<T>(count));
+  Stream<T> bind(Stream<T> stream) => ForwardedStream(
+      inner: stream, connectedSink: _TakeLastStreamSink<T>(count));
 }
 
 /// Extends the [Stream] class with the ability receive only the final [count]

@@ -12,12 +12,14 @@ Stream<int> _getSampleStream() =>
         .take(10);
 
 void main() {
+  // todo: flaky because of Timer dependency
   test('Rx.sample', () async {
     final stream = _getStream().sample(_getSampleStream());
 
     await expectLater(stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-  });
+  }, skip: true);
 
+  // todo: flaky because of Timer dependency
   test('Rx.sample.reusable', () async {
     final transformer = SampleStreamTransformer<int>(
         (_) => _getSampleStream().asBroadcastStream());
@@ -26,7 +28,7 @@ void main() {
 
     await expectLater(streamA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
     await expectLater(streamB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-  });
+  }, skip: true);
 
   test('Rx.sample.onDone', () async {
     final stream = Stream.value(1).sample(Stream<void>.empty());
@@ -81,6 +83,7 @@ void main() {
     }));
   });
 
+  // todo: flaky because of Timer dependency
   test('Rx.sample.pause.resume', () async {
     final controller = StreamController<int>();
     late StreamSubscription<int> subscription;
@@ -97,5 +100,5 @@ void main() {
 
     subscription.pause();
     subscription.resume();
-  });
+  }, skip: true);
 }
