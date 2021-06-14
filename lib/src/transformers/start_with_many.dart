@@ -71,8 +71,8 @@ class StartWithManyStreamTransformer<S> extends StreamTransformerBase<S, S> {
   StartWithManyStreamTransformer(this.startValues);
 
   @override
-  Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithManyStreamSink(startValues));
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _StartWithManyStreamSink(startValues));
 }
 
 /// Extends the [Stream] class with the ability to emit the given values as the

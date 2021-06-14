@@ -16,6 +16,7 @@ void main() {
       await expectLater(calls, 1);
     });
 
+    // todo: flaky because of Timer dependency
     test('starts emitting again after previous Stream is complete', () async {
       final stream = Stream.fromIterable(const [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
           .interval(Duration(milliseconds: 30))
@@ -23,8 +24,9 @@ void main() {
         yield await Future.delayed(Duration(milliseconds: 70), () => i);
       });
 
-      await expectLater(stream, emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
-    });
+      await expectLater(
+          stream, emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
+    }, skip: true);
 
     test('is reusable', () async {
       final transformer = ExhaustMapStreamTransformer(

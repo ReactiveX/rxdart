@@ -82,7 +82,8 @@ class SwitchIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) {
-    return forwardStream(stream, _SwitchIfEmptyStreamSink(fallbackStream));
+    return ForwardedStream(
+        inner: stream, connectedSink: _SwitchIfEmptyStreamSink(fallbackStream));
   }
 }
 

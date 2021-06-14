@@ -169,19 +169,18 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   }
 
   @override
-  Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
-        stream,
-        _DoStreamSink<S>(
-          onCancel,
-          onData,
-          onDone,
-          onEach,
-          onError,
-          onListen,
-          onPause,
-          onResume,
-        ),
-      );
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream,
+      connectedSink: _DoStreamSink<S>(
+        onCancel,
+        onData,
+        onDone,
+        onEach,
+        onError,
+        onListen,
+        onPause,
+        onResume,
+      ));
 }
 
 /// Extends the Stream class with the ability to execute a callback function

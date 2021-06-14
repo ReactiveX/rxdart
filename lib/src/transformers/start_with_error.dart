@@ -75,6 +75,7 @@ class StartWithErrorStreamTransformer<S> extends StreamTransformerBase<S, S> {
   StartWithErrorStreamTransformer(this.error, [this.stackTrace]);
 
   @override
-  Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithErrorStreamSink(error, stackTrace));
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream,
+      connectedSink: _StartWithErrorStreamSink(error, stackTrace));
 }

@@ -61,8 +61,8 @@ class SkipUntilStreamTransformer<S, T> extends StreamTransformerBase<S, S> {
   SkipUntilStreamTransformer(this.otherStream);
 
   @override
-  Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _SkipUntilStreamSink(otherStream));
+  Stream<S> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream, connectedSink: _SkipUntilStreamSink(otherStream));
 }
 
 /// Extends the Stream class with the ability to skip events until another

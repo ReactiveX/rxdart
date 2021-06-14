@@ -367,10 +367,10 @@ class WithLatestFromStreamTransformer<S, T, R>
           );
 
   @override
-  Stream<R> bind(Stream<S> stream) => forwardStream(
-        stream,
-        _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
-      );
+  Stream<R> bind(Stream<S> stream) => ForwardedStream(
+      inner: stream,
+      connectedSink:
+          _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner));
 }
 
 /// Extends the Stream class with the ability to merge the source Stream with

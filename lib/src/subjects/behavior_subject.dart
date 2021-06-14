@@ -171,18 +171,6 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   @override
   StackTrace? get stackTrace => _wrapper.errorAndStackTrace?.stackTrace;
 
-  @override
-  BehaviorSubject<R> createForwardingSubject<R>({
-    void Function()? onListen,
-    void Function()? onCancel,
-    bool sync = false,
-  }) =>
-      BehaviorSubject(
-        onListen: onListen,
-        onCancel: onCancel,
-        sync: sync,
-      );
-
   // Override built-in operators.
 
   @override
@@ -243,6 +231,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _forwardBehaviorSubject<T>(
           (s) => s.timeout(timeLimit, onTimeout: onTimeout));
 
+  // todo: maybe handle more gracefully, i.e. [Stream.multi]?
   ValueStream<R> _forwardBehaviorSubject<R>(
       Stream<R> Function(Stream<T> s) transformerStream) {
     late BehaviorSubject<R> subject;
@@ -256,7 +245,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
     final onCancel = () => subscription.cancel();
 
-    return subject = createForwardingSubject(
+    return subject = BehaviorSubject(
       onListen: onListen,
       onCancel: onCancel,
       sync: true,
