@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _ExhaustMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _ExhaustMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;

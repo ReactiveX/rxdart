@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithErrorStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithErrorStreamSink<S> extends ForwardingSink<S, S> {
   final Object _e;
   final StackTrace? _st;
   var _isFirstEventAdded = false;

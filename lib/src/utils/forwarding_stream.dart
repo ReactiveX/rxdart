@@ -56,7 +56,8 @@ class ForwardedStream<T, R> extends Stream<R> {
         _compositeController.addController(controller);
 
         final maybeListen = () {
-          if (totalListeners >= 1) {
+          if (_connectedSink.enforcesSingleSubscription &&
+              totalListeners >= 1) {
             return;
           }
 

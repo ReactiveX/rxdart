@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SkipLastStreamSink<T> implements ForwardingSink<T, T> {
+class _SkipLastStreamSink<T> extends ForwardingSink<T, T> {
   _SkipLastStreamSink(this.count);
 
   final int count;

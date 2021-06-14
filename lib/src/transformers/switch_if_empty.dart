@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
+class _SwitchIfEmptyStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> _fallbackStream;
 
   var _isEmpty = true;

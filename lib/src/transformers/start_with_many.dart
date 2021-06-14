@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithManyStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithManyStreamSink<S> extends ForwardingSink<S, S> {
   final Iterable<S> _startValues;
   var _isFirstEventAdded = false;
 

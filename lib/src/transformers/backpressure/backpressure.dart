@@ -22,7 +22,7 @@ enum WindowStrategy {
   onHandler
 }
 
-class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
+class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   final WindowStrategy _strategy;
   final Stream<dynamic> Function(S event)? _windowStreamFactory;
   final T Function(S event)? _onWindowStart;

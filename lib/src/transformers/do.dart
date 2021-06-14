@@ -4,7 +4,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
-class _DoStreamSink<S> implements ForwardingSink<S, S> {
+class _DoStreamSink<S> extends ForwardingSink<S, S> {
   final FutureOr<void> Function()? _onCancel;
   final void Function(S event)? _onData;
   final void Function()? _onDone;
@@ -13,6 +13,9 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   final void Function()? _onListen;
   final void Function()? _onPause;
   final void Function()? _onResume;
+
+  @override
+  bool get enforcesSingleSubscription => true;
 
   _DoStreamSink(
     this._onCancel,

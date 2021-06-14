@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TakeUntilStreamSink<S, T> implements ForwardingSink<S, S> {
+class _TakeUntilStreamSink<S, T> extends ForwardingSink<S, S> {
   final Stream<T> _otherStream;
   StreamSubscription<T>? _otherSubscription;
 

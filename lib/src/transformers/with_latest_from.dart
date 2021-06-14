@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
+class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
   final List<bool> _hasValues;

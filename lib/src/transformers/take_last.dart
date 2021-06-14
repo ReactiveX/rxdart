@@ -4,7 +4,7 @@ import 'dart:collection';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
+class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
   _TakeLastStreamSink(this.count);
 
   final int count;
