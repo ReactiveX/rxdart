@@ -23,7 +23,7 @@ void main() {
         yield await Future.delayed(Duration(milliseconds: 70), () => i);
       });
 
-      await expectLater(stream, emitsInOrder(<dynamic>[0, 3, 6, 9, emitsDone]));
+      await expectLater(stream, emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
     });
 
     test('is reusable', () async {

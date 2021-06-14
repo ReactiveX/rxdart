@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
-import 'package:rxdart/subjects.dart';
 
 /// @private
 /// Helper method which forwards the events from an incoming [Stream]
@@ -10,11 +10,9 @@ import 'package:rxdart/subjects.dart';
 /// which can be used in pair with a [ForwardingSink]
 Stream<R> forwardStream<T, R>(
     Stream<T> stream, ForwardingSink<T, R> connectedSink) {
-  ArgumentError.checkNotNull(stream, 'stream');
-  ArgumentError.checkNotNull(connectedSink, 'connectedSink');
-
-  late StreamController<R> controller;
-  late StreamSubscription<T> subscription;
+  final _compositeController = _CompositeMultiStreamController<R>();
+  StreamSubscription<T>? subscription;
+  var isDone = false;
 
   @pragma('vm:prefer-inline')
   @pragma('dart2js:tryInline')
@@ -22,64 +20,104 @@ Stream<R> forwardStream<T, R>(
     try {
       block();
     } catch (e, s) {
-      connectedSink.addError(controller, e, s);
+      connectedSink.addError(_compositeController, e, s);
     }
   }
 
-  final onListen = () {
-    runCatching(() => connectedSink.onListen(controller));
+  return Stream<R>.multi((controller) {
+    if (isDone) {
+      controller.close();
 
-    subscription = stream.listen(
-      (data) => runCatching(() => connectedSink.add(controller, data)),
-      onError: (Object e, StackTrace st) =>
-          runCatching(() => connectedSink.addError(controller, e, st)),
-      onDone: () => runCatching(() => connectedSink.close(controller)),
-    );
-  };
+      return;
+    }
 
-  final onCancel = () {
-    final onCancelSelfFuture = subscription.cancel();
-    final onCancelConnectedFuture = connectedSink.onCancel(controller);
-    final futures = <Future>[
-      if (onCancelSelfFuture is Future) onCancelSelfFuture,
-      if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
-    ];
-    return Future.wait<dynamic>(futures);
-  };
+    final totalListeners = _compositeController.totalListeners;
 
-  final onPause = () {
-    subscription.pause();
-    runCatching(() => connectedSink.onPause(controller));
-  };
+    _compositeController.addController(controller);
 
-  final onResume = () {
-    subscription.resume();
-    runCatching(() => connectedSink.onResume(controller));
-  };
+    final maybeListen = () {
+      if (totalListeners >= 1) {
+        return;
+      }
 
-  // Create a new Controller, which will serve as a trampoline for
-  // forwarded events.
-  if (stream is Subject<T>) {
-    controller = stream.createForwardingSubject<R>(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: true,
-    );
-  } else if (stream.isBroadcast) {
-    controller = StreamController<R>.broadcast(
-      onListen: onListen,
-      onCancel: onCancel,
-      sync: true,
-    );
-  } else {
-    controller = StreamController<R>(
-      onListen: onListen,
-      onPause: onPause,
-      onResume: onResume,
-      onCancel: onCancel,
-      sync: true,
-    );
+      runCatching(() => connectedSink.onListen(_compositeController));
+
+      subscription = stream.listen(
+        (data) {
+          runCatching(() => connectedSink.add(_compositeController, data));
+        },
+        onError: (Object e, StackTrace st) {
+          runCatching(
+              () => connectedSink.addError(_compositeController, e, st));
+        },
+        onDone: () {
+          isDone = true;
+          subscription?.cancel();
+
+          runCatching(() => connectedSink.close(_compositeController));
+        },
+      );
+    };
+
+    if (controller.hasListener) {
+      maybeListen();
+    }
+
+    controller.onListen = maybeListen;
+    controller.onPause = () {
+      subscription?.pause();
+      runCatching(() => connectedSink.onPause(_compositeController));
+    };
+    controller.onResume = () {
+      subscription?.resume();
+      runCatching(() => connectedSink.onResume(_compositeController));
+    };
+    controller.onCancel = () {
+      final onCancelConnectedFuture =
+          connectedSink.onCancel(_compositeController);
+      final onCancelSubscriptionFuture = subscription?.cancel();
+      final futures = <Future>[
+        if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
+        if (onCancelSubscriptionFuture is Future) onCancelSubscriptionFuture,
+      ];
+      _compositeController.removeController(controller);
+      return Future.wait<dynamic>(futures);
+    };
+  }, isBroadcast: stream.isBroadcast);
+}
+
+class _CompositeMultiStreamController<T> implements EventSink<T> {
+  final Set<MultiStreamController<T>> _currentListeners =
+      <MultiStreamController<T>>{};
+
+  int get totalListeners => _currentListeners.length;
+
+  @override
+  void add(T event) {
+    for (var listener in [..._currentListeners]) {
+      listener.addSync(event);
+    }
   }
 
-  return controller.stream;
+  @override
+  void close() {
+    for (var listener in _currentListeners) {
+      listener.close();
+    }
+
+    _currentListeners.clear();
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {
+    for (var listener in [..._currentListeners]) {
+      listener.addErrorSync(error, stackTrace);
+    }
+  }
+
+  bool addController(MultiStreamController<T> controller) =>
+      _currentListeners.add(controller);
+
+  bool removeController(MultiStreamController<T> controller) =>
+      _currentListeners.remove(controller);
 }
