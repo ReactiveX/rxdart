@@ -10,6 +10,7 @@ import 'package:test/test.dart' show TypeMatcher;
 
 import 'search_bloc_test.mocks.dart';
 
+// To gen 'search_bloc_test.mocks.dart', run: flutter packages pub run build_runner build --delete-conflicting-outputs
 @GenerateMocks([GithubApi])
 void main() {
   group('SearchBloc', () {
