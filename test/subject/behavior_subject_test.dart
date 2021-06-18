@@ -351,7 +351,7 @@ void main() {
           .whenComplete(() => subject.add(null));
 
       await expectLater(subject.stream,
-          emitsInOrder(<StreamMatcher>[emitsError(isException), emits(1)]));
+          emitsInOrder(<StreamMatcher>[emitsError(isException), emits(null)]));
     });
 
     test('does not allow events to be added when addStream is active',

@@ -13,4 +13,4 @@ dev_dependencies:
   build_web_compilers: ^2.7.0
   lints: ^1.0.1
   stack_trace: ^1.10.0
-  test: ^1.16.5
+  test: ^1.17.8
