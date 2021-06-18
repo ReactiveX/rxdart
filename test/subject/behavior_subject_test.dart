@@ -348,7 +348,7 @@ void main() {
 
       unawaited(subject
           .addStream(Stream<void>.error(Exception()), cancelOnError: true)
-          .whenComplete(() => subject.add(1)));
+          .whenComplete(() => subject.add(null)));
 
       await expectLater(subject.stream,
           emitsInOrder(<StreamMatcher>[emitsError(isException), emits(1)]));
@@ -405,7 +405,7 @@ void main() {
     });
 
     test('returns onListen callback set in constructor', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>(onListen: testOnListen);
 
@@ -413,7 +413,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>();
 
@@ -433,7 +433,7 @@ void main() {
     });
 
     test('sets onCancel callback', () async {
-      final testOnCancel = () {};
+      void testOnCancel() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>();
 

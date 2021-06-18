@@ -248,13 +248,13 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
     late BehaviorSubject<R> subject;
     late StreamSubscription<R> subscription;
 
-    final onListen = () => subscription = transformerStream(_stream).listen(
+    void onListen() => subscription = transformerStream(_stream).listen(
           subject.add,
           onError: subject.addError,
           onDone: subject.close,
         );
 
-    final onCancel = () => subscription.cancel();
+    void onCancel() => subscription.cancel();
 
     return subject = createForwardingSubject(
       onListen: onListen,

@@ -106,7 +106,7 @@ void main() {
 
   test('RetryWhenStream.cancel.ensureSubStreamCancels', () async {
     var isCancelled = false, didStopEmitting = true;
-    final subStream = (Object e, StackTrace s) =>
+    Stream<int> subStream(Object e, StackTrace s) =>
         Stream.periodic(const Duration(milliseconds: 100), (count) => count)
             .doOnData((_) {
           if (isCancelled) {
@@ -169,7 +169,7 @@ Stream<int> Function() _sourceStream(int i, [int? throwAt]) {
 Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
     Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value(null);
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;

@@ -30,7 +30,7 @@ void main() {
   });
 
   test('Rx.takeLast.countCantBeNegative', () async {
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(-1);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(-1);
     expect(stream, throwsA(isArgumentError));
   });
 

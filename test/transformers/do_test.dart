@@ -445,14 +445,14 @@ void main() {
       ];
       late StreamSubscription<int> subscription;
 
-      final addToResult = (String value) {
+      void addToResult(String value) {
         result.add(value);
 
         if (result.length == expectedOutput.length) {
           subscription.cancel();
           completer.complete();
         }
-      };
+      }
 
       subscription = Stream.value(1)
           .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))

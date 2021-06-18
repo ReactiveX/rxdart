@@ -294,13 +294,13 @@ class ZipStream<T, R> extends StreamView<R> {
             var index = 0;
 
             // resets variables for the next zip window
-            final next = () {
+            void next() {
               completeCurrent?.complete(null);
 
               completeCurrent = Completer<List<T>?>();
 
               pendingSubscriptions = subscriptions.toList();
-            };
+            }
 
             void Function(T) doUpdate(int index) {
               return (T value) {

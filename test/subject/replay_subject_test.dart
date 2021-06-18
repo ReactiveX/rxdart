@@ -264,7 +264,7 @@ void main() {
     });
 
     test('returns onListen callback set in constructor', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
 
       final subject = ReplaySubject<int>(onListen: testOnListen);
 
@@ -272,7 +272,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
 
       final subject = ReplaySubject<int>();
 
@@ -284,7 +284,7 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final onCancel = () => Future<void>.value(null);
+      void onCancel() => Future<void>.value(null);
 
       final subject = ReplaySubject<void>(onCancel: onCancel);
 
@@ -292,7 +292,7 @@ void main() {
     });
 
     test('sets onCancel callback', () async {
-      final testOnCancel = () {};
+      void testOnCancel() {}
 
       final subject = ReplaySubject<void>();
 

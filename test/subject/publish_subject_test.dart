@@ -177,7 +177,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = PublishSubject<int>();
 

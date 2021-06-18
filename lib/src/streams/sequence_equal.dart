@@ -76,8 +76,6 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
             }
           }
 
-          ;
-
           subscription =
               ZipStream.zip2(stream.materialize(), other.materialize(), compare)
                   .where((isEqual) => !isEqual)
