@@ -118,7 +118,7 @@ void main() {
       subscription.cancel();
     }, count: 1));
 
-    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
 
   test('Rx.concatEager.empty', () {

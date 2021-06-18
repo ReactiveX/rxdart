@@ -52,17 +52,21 @@ class SwitchLatestStream<T> extends Stream<T> {
     controller = StreamController<T>(
         sync: true,
         onListen: () {
-          final closeLeft = () {
+          void closeLeft() {
             leftClosed = true;
 
             if (rightClosed || !hasMainEvent) controller.close();
-          };
+          }
 
-          final closeRight = () {
+          ;
+
+          void closeRight() {
             rightClosed = true;
 
             if (leftClosed) controller.close();
-          };
+          }
+
+          ;
 
           subscription = streams.listen((stream) {
             try {

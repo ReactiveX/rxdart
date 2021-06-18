@@ -1,4 +1,4 @@
-include: package:pedantic/analysis_options.1.11.0.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   strong-mode:
@@ -10,3 +10,5 @@ analyzer:
 linter:
   rules:
     - public_member_api_docs
+    - always_declare_return_types
+    - unawaited_futures

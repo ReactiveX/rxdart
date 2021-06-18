@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
@@ -56,10 +57,10 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   void onListen(EventSink<T> sink) {}
 
   @override
-  void onPause(EventSink<T> sink) => _subscriptions.forEach((s) => s.pause());
+  void onPause(EventSink<T> sink) => _subscriptions.pauseAll();
 
   @override
-  void onResume(EventSink<T> sink) => _subscriptions.forEach((s) => s.resume());
+  void onResume(EventSink<T> sink) => _subscriptions.resumeAll();
 }
 
 /// Converts each emitted item into a new Stream using the given mapper

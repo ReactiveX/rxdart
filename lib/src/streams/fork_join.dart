@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// This operator is best used when you have a group of streams
 /// and only care about the final emitted value of each.
 /// One common use case for this is if you wish to issue multiple
@@ -313,7 +315,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         final values = List<T?>.filled(length, null);
         var completed = 0;
 
-        final listen = (Stream<T> stream, int i) {
+        StreamSubscription<T> listen(Stream<T> stream, int i) {
           var hasValue = false;
 
           return stream.listen(
@@ -339,15 +341,15 @@ class ForkJoinStream<T, R> extends StreamView<R> {
               }
             },
           );
-        };
+        }
 
         var i = 0;
         subscriptions =
             streams.map((s) => listen(s, i++)).toList(growable: false);
       },
-      onPause: () => subscriptions.forEach((s) => s.pause()),
-      onResume: () => subscriptions.forEach((s) => s.resume()),
-      onCancel: () => Future.wait(subscriptions.map((s) => s.cancel())),
+      onPause: () => subscriptions.pauseAll(),
+      onResume: () => subscriptions.resumeAll(),
+      onCancel: () => subscriptions.cancelAll(),
     );
 
     return controller.stream;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
@@ -26,28 +27,16 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
       sink.addError(e, st);
 
   @override
-  void close(EventSink<R> sink) {
-    _subscriptions?.forEach((it) => it.cancel());
-    _subscriptions = null;
-    sink.close();
-  }
+  void close(EventSink<R> sink) => sink.close();
 
   @override
-  FutureOr onCancel(EventSink<R> sink) {
-    Iterable<Future> futures = <Future>[];
-
-    if (_subscriptions != null && _subscriptions!.isNotEmpty) {
-      futures = _subscriptions!.map((it) => it.cancel());
-    }
-
-    return futures.isNotEmpty ? Future.wait<void>(futures) : null;
-  }
+  FutureOr onCancel(EventSink<R> sink) => _subscriptions?.cancelAll();
 
   @override
   void onListen(EventSink<R> sink) {
     var index = 0;
 
-    final mapper = (Stream<T> stream) {
+    StreamSubscription<T> mapper(Stream<T> stream) {
       var i = index++;
       return stream.listen(
         (it) {
@@ -56,18 +45,16 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
         },
         onError: sink.addError,
       );
-    };
+    }
 
     _subscriptions = _latestFromStreams.map(mapper).toList(growable: false);
   }
 
   @override
-  void onPause(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.pause());
+  void onPause(EventSink<R> sink) => _subscriptions?.pauseAll();
 
   @override
-  void onResume(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.resume());
+  void onResume(EventSink<R> sink) => _subscriptions?.resumeAll();
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining

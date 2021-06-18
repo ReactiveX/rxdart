@@ -93,7 +93,7 @@ void main() {
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emitsInOrder(<int>[2, 3]));
     });

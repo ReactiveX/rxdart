@@ -62,7 +62,7 @@ class RetryStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    final onError = (Object e, StackTrace s) {
+    void onError(Object e, StackTrace s) {
       _subscription!.cancel();
       _subscription = null;
 
@@ -70,13 +70,14 @@ class RetryStream<T> extends Stream<T> {
 
       if (count == _retryStep) {
         [..._errors]
+            // ignore: avoid_function_literals_in_foreach_calls
             .forEach((e) => _controller.addError(e.error, e.stackTrace));
         _controller.close();
       } else {
         ++_retryStep;
         _retry();
       }
-    };
+    }
 
     _subscription = streamFactory().listen(
       _controller.add,

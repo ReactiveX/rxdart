@@ -24,7 +24,7 @@ class RangeStream extends Stream<int> {
 
   static Stream<int> _buildStream(int startInclusive, int endInclusive) {
     final length = (endInclusive - startInclusive).abs() + 1;
-    final nextValue = (int index) => startInclusive > endInclusive
+    int nextValue(int index) => startInclusive > endInclusive
         ? startInclusive - index
         : startInclusive + index;
 

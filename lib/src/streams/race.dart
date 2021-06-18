@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Given two or more source streams, emit all of the items from only
 /// the first of these streams to emit an item or notification.
 ///
@@ -45,16 +47,15 @@ class RaceStream<T> extends Stream<T> {
         onListen: () {
           var index = 0;
 
-          final reduceToWinner = (int winnerIndex) {
-            //ignore: cancel_subscriptions
+          void reduceToWinner(int winnerIndex) {
             final winner = subscriptions.removeAt(winnerIndex);
 
-            subscriptions.forEach((subscription) => subscription.cancel());
+            subscriptions.cancelAll();
 
             subscriptions = [winner];
-          };
+          }
 
-          final doUpdate = (int index) => (T value) {
+          void Function(T) doUpdate(int index) => (T value) {
                 try {
                   if (subscriptions.length > 1) reduceToWinner(index);
 
@@ -69,12 +70,9 @@ class RaceStream<T> extends Stream<T> {
                   onError: controller.addError, onDone: controller.close))
               .toList();
         },
-        onPause: () =>
-            subscriptions.forEach((subscription) => subscription.pause()),
-        onResume: () =>
-            subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(
-            subscriptions.map((subscription) => subscription.cancel())));
+        onPause: () => subscriptions.pauseAll(),
+        onResume: () => subscriptions.resumeAll(),
+        onCancel: () => subscriptions.cancelAll());
 
     return controller;
   }

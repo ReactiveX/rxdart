@@ -26,7 +26,7 @@ Stream<R> forwardStream<T, R>(
     }
   }
 
-  final onListen = () {
+  void onListen() {
     runCatching(() => connectedSink.onListen(controller));
 
     subscription = stream.listen(
@@ -35,9 +35,9 @@ Stream<R> forwardStream<T, R>(
           runCatching(() => connectedSink.addError(controller, e, st)),
       onDone: () => runCatching(() => connectedSink.close(controller)),
     );
-  };
+  }
 
-  final onCancel = () {
+  Future<void> onCancel() {
     final onCancelSelfFuture = subscription.cancel();
     final onCancelConnectedFuture = connectedSink.onCancel(controller);
     final futures = <Future>[
@@ -45,17 +45,17 @@ Stream<R> forwardStream<T, R>(
       if (onCancelConnectedFuture is Future) onCancelConnectedFuture,
     ];
     return Future.wait<dynamic>(futures);
-  };
+  }
 
-  final onPause = () {
+  void onPause() {
     subscription.pause();
     runCatching(() => connectedSink.onPause(controller));
-  };
+  }
 
-  final onResume = () {
+  void onResume() {
     subscription.resume();
     runCatching(() => connectedSink.onResume(controller));
-  };
+  }
 
   // Create a new Controller, which will serve as a trampoline for
   // forwarded events.

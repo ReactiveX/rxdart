@@ -22,6 +22,7 @@ class _GroupByStreamSink<S, T> implements EventSink<S> {
 
   @override
   void close() {
+    // ignore: avoid_function_literals_in_foreach_calls
     _mapper.values.forEach((c) => c.close());
     _mapper.clear();
 

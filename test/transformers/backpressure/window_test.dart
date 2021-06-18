@@ -7,7 +7,7 @@ Stream<int> getStream(int n) async* {
   var k = 0;
 
   while (k < n) {
-    await Future<Null>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
 
     yield k++;
   }
@@ -17,7 +17,7 @@ void main() {
   test('Rx.window', () async {
     await expectLater(
         getStream(4)
-            .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
+            .window(Stream<void>.periodic(const Duration(milliseconds: 160))
                 .take(3))
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -30,10 +30,10 @@ void main() {
   test('Rx.window.sampleBeforeEvent.shouldEmit', () async {
     await expectLater(
         Stream.fromFuture(
-                Future<Null>.delayed(const Duration(milliseconds: 200))
+                Future<void>.delayed(const Duration(milliseconds: 200))
                     .then((_) => 'end'))
             .startWith('start')
-            .window(Stream<Null>.periodic(const Duration(milliseconds: 40))
+            .window(Stream<void>.periodic(const Duration(milliseconds: 40))
                 .take(10))
             .asyncMap((stream) => stream.toList()),
         emitsInOrder(<dynamic>[
@@ -53,7 +53,7 @@ void main() {
 
     await expectLater(
         controller.stream
-            .window(Stream<Null>.periodic(const Duration(seconds: 3)))
+            .window(Stream<void>.periodic(const Duration(seconds: 3)))
             .asyncMap((stream) => stream.toList())
             .take(1),
         emitsInOrder(<dynamic>[
@@ -64,7 +64,7 @@ void main() {
 
   test('Rx.window.reusable', () async {
     final transformer = WindowStreamTransformer<int>((_) =>
-        Stream<Null>.periodic(const Duration(milliseconds: 160))
+        Stream<void>.periodic(const Duration(milliseconds: 160))
             .take(3)
             .asBroadcastStream());
 
@@ -92,7 +92,7 @@ void main() {
   test('Rx.window.asBroadcastStream', () async {
     final future = getStream(4)
         .asBroadcastStream()
-        .window(Stream<Null>.periodic(const Duration(milliseconds: 160))
+        .window(Stream<void>.periodic(const Duration(milliseconds: 160))
             .take(10)
             .asBroadcastStream())
         .drain<void>();
@@ -104,8 +104,8 @@ void main() {
 
   test('Rx.window.error.shouldThrowA', () async {
     await expectLater(
-        Stream<Null>.error(Exception())
-            .window(Stream<Null>.periodic(const Duration(milliseconds: 160))),
+        Stream<void>.error(Exception())
+            .window(Stream<void>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
   });
 }

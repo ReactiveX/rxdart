@@ -10,7 +10,7 @@ Stream<int> getStream(int n) async* {
   yield 0;
 
   while (k < n) {
-    yield await Future<Null>.delayed(const Duration(milliseconds: 100))
+    yield await Future<void>.delayed(const Duration(milliseconds: 100))
         .then((_) => k++);
   }
 }

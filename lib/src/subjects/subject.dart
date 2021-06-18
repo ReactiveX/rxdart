@@ -101,13 +101,15 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
     final completer = Completer<void>();
     var isOnDoneCalled = false;
-    final complete = () {
+    void complete() {
       if (!isOnDoneCalled) {
         isOnDoneCalled = true;
         _isAddingStreamItems = false;
         completer.complete();
       }
-    };
+    }
+
+    ;
     _isAddingStreamItems = true;
 
     source.listen((T event) {

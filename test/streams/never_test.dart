@@ -7,7 +7,7 @@ void main() {
   test('NeverStream', () async {
     var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    final stream = NeverStream<Null>();
+    final stream = NeverStream<void>();
 
     final subscription = stream.listen(
         expectAsync1((_) {
@@ -20,7 +20,7 @@ void main() {
           onDataCalled = true;
         }, count: 0));
 
-    await Future<Null>.delayed(Duration(milliseconds: 10));
+    await Future<void>.delayed(Duration(milliseconds: 10));
 
     await subscription.cancel();
 
@@ -32,7 +32,7 @@ void main() {
   });
 
   test('NeverStream.single.subscription', () async {
-    final stream = NeverStream<Null>();
+    final stream = NeverStream<void>();
 
     stream.listen(null);
     await expectLater(() => stream.listen(null), throwsA(isStateError));
@@ -41,7 +41,7 @@ void main() {
   test('Rx.never', () async {
     var onDataCalled = false, onDoneCalled = false, onErrorCalled = false;
 
-    final stream = Rx.never<Null>();
+    final stream = Rx.never<void>();
 
     final subscription = stream.listen(
         expectAsync1((_) {
@@ -54,7 +54,7 @@ void main() {
           onDataCalled = true;
         }, count: 0));
 
-    await Future<Null>.delayed(Duration(milliseconds: 10));
+    await Future<void>.delayed(Duration(milliseconds: 10));
 
     await subscription.cancel();
 

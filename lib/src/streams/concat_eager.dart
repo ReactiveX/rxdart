@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/streams/concat.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 /// Concatenates all of the specified stream sequences, as long as the
 /// previous stream sequence terminated successfully.
@@ -58,7 +59,7 @@ class ConcatEagerStream<T> extends Stream<T> {
         onListen: () {
           var index = -1, completed = 0;
 
-          final onDone = (int index) {
+          void Function() onDone(int index) {
             final completer = completeEvents[index];
 
             return () {
@@ -70,9 +71,9 @@ class ConcatEagerStream<T> extends Stream<T> {
                 activeSubscription = subscriptions[index + 1];
               }
             };
-          };
+          }
 
-          final createSubscription = (Stream<T> stream) {
+          StreamSubscription<T> createSubscription(Stream<T> stream) {
             index++;
             //ignore: cancel_subscriptions
             final subscription = stream.listen(controller.add,
@@ -82,7 +83,7 @@ class ConcatEagerStream<T> extends Stream<T> {
             if (index > 0) subscription.pause(completeEvents[index - 1].future);
 
             return subscription;
-          };
+          }
 
           subscriptions =
               streams.map(createSubscription).toList(growable: false);
@@ -92,8 +93,7 @@ class ConcatEagerStream<T> extends Stream<T> {
         },
         onPause: () => activeSubscription.pause(),
         onResume: () => activeSubscription.resume(),
-        onCancel: () => Future.wait<dynamic>(
-            subscriptions.map((subscription) => subscription.cancel())));
+        onCancel: () => subscriptions.cancelAll());
 
     return controller;
   }

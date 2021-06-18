@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Acts as a container for multiple subscriptions that can be canceled at once
 /// e.g. view subscriptions in Flutter that need to be canceled on view disposal
 ///
@@ -56,7 +58,8 @@ class CompositeSubscription {
   ///
   /// This composite can be reused after calling this method.
   void clear() {
-    _subscriptionsList.forEach((it) => it.cancel());
+    // ignore: avoid_function_literals_in_foreach_calls
+    _subscriptionsList.forEach((s) => s.cancel());
     _subscriptionsList.clear();
   }
 
@@ -70,10 +73,10 @@ class CompositeSubscription {
 
   /// Pauses all subscriptions added to this composite.
   void pauseAll([Future<void>? resumeSignal]) =>
-      _subscriptionsList.forEach((it) => it.pause(resumeSignal));
+      _subscriptionsList.pauseAll(resumeSignal);
 
   /// Resumes all subscriptions added to this composite.
-  void resumeAll() => _subscriptionsList.forEach((it) => it.resume());
+  void resumeAll() => _subscriptionsList.resumeAll();
 }
 
 /// Extends the [StreamSubscription] class with the ability to be added to [CompositeSubscription] container.

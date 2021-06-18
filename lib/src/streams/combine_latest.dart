@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Merges the given Streams into one Stream sequence by using the
 /// combiner function whenever any of the source stream sequences emits an
 /// item.
@@ -301,12 +303,13 @@ class CombineLatestStream<T, R> extends StreamView<R> {
         final values = List<T?>.filled(len, null);
         var triggered = 0, completed = 0, index = 0;
 
-        final allHaveEvent = () => triggered == len;
+        bool allHaveEvent() => triggered == len;
 
-        final onDone = () {
+        void onDone() {
           if (++completed == len) controller.close();
-        };
-        final onUpdate = (int index) => (T value) => values[index] = value;
+        }
+
+        T Function(T) onUpdate(int index) => (T value) => values[index] = value;
 
         subscriptions = streams.map((stream) {
           final onUpdateForStream = onUpdate(index++);
@@ -334,12 +337,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
           );
         }).toList(growable: false);
       },
-      onPause: () =>
-          subscriptions.forEach((subscription) => subscription.pause()),
-      onResume: () =>
-          subscriptions.forEach((subscription) => subscription.resume()),
-      onCancel: () => Future.wait<dynamic>(
-          subscriptions.map((subscription) => subscription.cancel())),
+      onPause: () => subscriptions.pauseAll(),
+      onResume: () => subscriptions.resumeAll(),
+      onCancel: () => subscriptions.cancelAll(),
     );
 
     return controller;

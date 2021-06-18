@@ -425,7 +425,7 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final onCancel = () => Future<void>.value(null);
+      void onCancel() => Future<void>.value(null);
       // ignore: close_sinks
       final subject = BehaviorSubject<void>(onCancel: onCancel);
 

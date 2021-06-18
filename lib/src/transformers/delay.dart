@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   final Duration _duration;
@@ -41,21 +42,16 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr<void> onCancel(EventSink<S> sink) {
-    if (_subscriptions.isNotEmpty) {
-      return Future.wait(_subscriptions.map((t) => t.cancel()))
-          .whenComplete(() => _subscriptions.clear());
-    }
-  }
+  FutureOr<void> onCancel(EventSink<S> sink) => _subscriptions.cancelAll();
 
   @override
   void onListen(EventSink<S> sink) {}
 
   @override
-  void onPause(EventSink<S> sink) => _subscriptions.forEach((s) => s.pause());
+  void onPause(EventSink<S> sink) => _subscriptions.pauseAll();
 
   @override
-  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
+  void onResume(EventSink<S> sink) => _subscriptions.resumeAll();
 }
 
 /// The Delay operator modifies its source Stream by pausing for

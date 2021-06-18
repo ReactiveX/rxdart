@@ -36,7 +36,7 @@ void main() {
 
   test('Rx.takeLast.reusable', () async {
     final transformer = TakeLastStreamTransformer<int>(3);
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3);
     var valueA = 3, valueB = 3;
 
     stream().transform(transformer).listen(expectAsync1((result) {
