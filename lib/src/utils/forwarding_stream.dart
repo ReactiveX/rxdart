@@ -15,15 +15,9 @@ Stream<R> forwardStream<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) =>
 Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
   final compositeController = _CompositeMultiStreamController<R>();
   StreamSubscription<T>? subscription;
-  var isDone = false;
   var isCancelled = false;
 
   return Stream<R>.multi((controller) {
-    if (isDone) {
-      controller.close();
-      return;
-    }
-
     final wasEmpty = compositeController.isEmpty;
     compositeController.addController(controller);
 
@@ -38,10 +32,7 @@ Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
           (data) => sink.add(compositeController, data),
           onError: (Object e, StackTrace st) =>
               sink.addError(compositeController, e, st),
-          onDone: () {
-            isDone = true;
-            sink.close(compositeController);
-          },
+          onDone: () => sink.close(compositeController),
         );
       }
 
@@ -115,6 +106,7 @@ Stream<R> _forwardSingleSubscription<T, R>(
     cancelled = true;
 
     final onCancelUpstreamFuture = subscription?.cancel();
+    subscription = null;
     final onCancelConnectedFuture = sink.onCancel(controller);
 
     return _waitFutures([
