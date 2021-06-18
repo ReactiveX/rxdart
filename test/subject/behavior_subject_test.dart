@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
@@ -346,9 +345,10 @@ void main() {
       // ignore: close_sinks
       final subject = BehaviorSubject<void>();
 
-      unawaited(subject
+      // ignore: unawaited_futures
+      subject
           .addStream(Stream<void>.error(Exception()), cancelOnError: true)
-          .whenComplete(() => subject.add(null)));
+          .whenComplete(() => subject.add(null));
 
       await expectLater(subject.stream,
           emitsInOrder(<StreamMatcher>[emitsError(isException), emits(1)]));

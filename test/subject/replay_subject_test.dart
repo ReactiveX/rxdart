@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
@@ -209,9 +208,10 @@ void main() {
         () async {
       final subject = ReplaySubject<int>();
 
-      unawaited(subject
+      // ignore: unawaited_futures
+      subject
           .addStream(Stream<int>.error(Exception()), cancelOnError: true)
-          .whenComplete(() => subject.add(1)));
+          .whenComplete(() => subject.add(1));
 
       await expectLater(subject.stream,
           emitsInOrder(<StreamMatcher>[emitsError(isException), emits(1)]));
