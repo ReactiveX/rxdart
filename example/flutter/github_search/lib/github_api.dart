@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
@@ -10,8 +9,8 @@ class GithubApi {
   final http.Client client;
 
   GithubApi({
-    HttpClient client,
-    Map<String, SearchResult> cache,
+    http.Client? client,
+    Map<String, SearchResult>? cache,
     this.baseUrl = 'https://api.github.com/search/repositories?q=',
   })  : client = client ?? http.Client(),
         cache = cache ?? <String, SearchResult>{};
@@ -19,7 +18,7 @@ class GithubApi {
   /// Search Github for repositories using the given term
   Future<SearchResult> search(String term) async {
     if (cache.containsKey(term)) {
-      return cache[term];
+      return cache[term]!;
     } else {
       final result = await _fetchResults(term);
 
@@ -45,9 +44,8 @@ class SearchResult {
   factory SearchResult.fromJson(dynamic json) {
     final items = (json as List)
         .cast<Map<String, Object>>()
-        .map((Map<String, Object> item) {
-      return SearchResultItem.fromJson(item);
-    }).toList();
+        .map((item) => SearchResultItem.fromJson(item))
+        .toList(growable: false);
 
     return SearchResult(items);
   }

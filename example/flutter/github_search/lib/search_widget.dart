@@ -18,7 +18,7 @@ import 'search_state.dart';
 class SearchScreen extends StatefulWidget {
   final GithubApi api;
 
-  SearchScreen({Key key, this.api}) : super(key: key);
+  const SearchScreen({Key? key, required this.api}) : super(key: key);
 
   @override
   SearchScreenState createState() {
@@ -27,7 +27,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class SearchScreenState extends State<SearchScreen> {
-  SearchBloc bloc;
+  late final SearchBloc bloc;
 
   @override
   void initState() {
@@ -47,21 +47,21 @@ class SearchScreenState extends State<SearchScreen> {
     return StreamBuilder<SearchState>(
       stream: bloc.state,
       initialData: SearchNoTerm(),
-      builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
-        final state = snapshot.data;
+      builder: (context, snapshot) {
+        final state = snapshot.requireData;
 
         return Scaffold(
           body: Stack(
             children: <Widget>[
               Flex(direction: Axis.vertical, children: <Widget>[
                 Container(
-                  padding: EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
                   child: TextField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Search Github...',
                     ),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 36.0,
                       fontFamily: 'Hind',
                       decoration: TextDecoration.none,
@@ -85,13 +85,13 @@ class SearchScreenState extends State<SearchScreen> {
 
   Widget _buildChild(SearchState state) {
     if (state is SearchNoTerm) {
-      return SearchIntro();
+      return const SearchIntro();
     } else if (state is SearchEmpty) {
-      return EmptyWidget();
+      return const EmptyWidget();
     } else if (state is SearchLoading) {
-      return LoadingWidget();
+      return const LoadingWidget();
     } else if (state is SearchError) {
-      return SearchErrorWidget();
+      return const SearchErrorWidget();
     } else if (state is SearchPopulated) {
       return SearchResultWidget(items: state.result.items);
     }

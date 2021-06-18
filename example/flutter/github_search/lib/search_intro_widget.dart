@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SearchIntro extends StatelessWidget {
-  const SearchIntro({Key key}) : super(key: key);
+  const SearchIntro({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class SearchIntro extends StatelessWidget {
         children: <Widget>[
           Icon(Icons.info, color: Colors.green[200], size: 80.0),
           Container(
-            padding: EdgeInsets.only(top: 16.0),
+            padding: const EdgeInsets.only(top: 16.0),
             child: Text(
               'Enter a search term to begin',
               style: TextStyle(
