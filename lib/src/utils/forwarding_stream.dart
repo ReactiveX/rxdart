@@ -115,19 +115,11 @@ Stream<R> _forward<T, R>(
   return controller.stream;
 }
 
-FutureOr<void> _waitFutures(Future<void>? future1, FutureOr<void> future2) {
-  if (future1 == null) {
-    return future2;
-  }
-  if (future2 == null) {
-    return future1;
-  }
-  if (future2 is Future<void>) {
-    return Future.wait([future1, future2]);
-  } else {
-    return future1;
-  }
-}
+FutureOr<void> _waitFutures(Future<void>? f1, FutureOr<void> f2) => f1 == null
+    ? f2
+    : f2 is Future<void>
+        ? Future.wait([f1, f2])
+        : f1;
 
 class _CompositeMultiStreamController<T> implements EventSink<T> {
   final _controllers = <MultiStreamController<T>>[];
