@@ -7,12 +7,19 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 /// to a new [StreamController].
 /// It captures events such as onListen, onPause, onResume and onCancel,
 /// which can be used in pair with a [ForwardingSink]
-Stream<R> forwardStream<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) =>
-    stream.isBroadcast
-        ? _forwardBroadcast(stream, sink)
-        : _forwardSingleSubscription(stream, sink);
+Stream<R> forwardStream<T, R>(
+  Stream<T> stream,
+  ForwardingSink<T, R> sink, [
+  bool listenOnlyOnce = false,
+]) {
+  return stream.isBroadcast
+      ? listenOnlyOnce
+          ? _forward(stream, sink)
+          : _forwardMulti(stream, sink)
+      : _forward(stream, sink);
+}
 
-Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
+Stream<R> _forwardMulti<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
   final compositeController = _CompositeMultiStreamController<R>();
 
   return Stream<R>.multi((controller) {
@@ -22,6 +29,7 @@ Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
     }
 
     compositeController.addController(controller);
+
     StreamSubscription<T>? subscription;
     var cancelled = false;
 
@@ -46,7 +54,6 @@ Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
 
     controller.onCancel = () {
       cancelled = true;
-
       compositeController.removeController(controller);
 
       final future = subscription?.cancel();
@@ -56,11 +63,13 @@ Stream<R> _forwardBroadcast<T, R>(Stream<T> stream, ForwardingSink<T, R> sink) {
   }, isBroadcast: true);
 }
 
-Stream<R> _forwardSingleSubscription<T, R>(
+Stream<R> _forward<T, R>(
   Stream<T> stream,
   ForwardingSink<T, R> sink,
 ) {
-  final controller = StreamController<R>(sync: true);
+  final controller = stream.isBroadcast
+      ? StreamController<R>.broadcast(sync: true)
+      : StreamController<R>(sync: true);
 
   StreamSubscription<T>? subscription;
   var cancelled = false;
@@ -76,14 +85,16 @@ Stream<R> _forwardSingleSubscription<T, R>(
         onDone: () => sink.close(controller),
       );
 
-      controller.onPause = () {
-        subscription!.pause();
-        sink.onPause(controller);
-      };
-      controller.onResume = () {
-        subscription!.resume();
-        sink.onResume(controller);
-      };
+      if (!stream.isBroadcast) {
+        controller.onPause = () {
+          subscription!.pause();
+          sink.onPause(controller);
+        };
+        controller.onResume = () {
+          subscription!.resume();
+          sink.onResume(controller);
+        };
+      }
     }
 
     final futureOrVoid = sink.onListen(controller);
