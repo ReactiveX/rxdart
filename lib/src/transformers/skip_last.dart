@@ -15,7 +15,7 @@ class _SkipLastStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  void onError(Object e, [StackTrace? st]) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
   void onDone() {

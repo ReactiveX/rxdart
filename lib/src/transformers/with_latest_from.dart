@@ -22,7 +22,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   }
 
   @override
-  void onError(Object e, [StackTrace? st]) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
   void onDone() {

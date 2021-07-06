@@ -9,19 +9,13 @@ class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   _StartWithStreamSink(this._startValue);
 
   @override
-  void onData(S data) {
-    sink.add(data);
-  }
+  void onData(S data) => sink.add(data);
 
   @override
-  void onError(Object e, StackTrace st) {
-    sink.addError(e, st);
-  }
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void onDone() {
-    sink.close();
-  }
+  void onDone() => sink.close();
 
   @override
   FutureOr onCancel() {}
