@@ -17,7 +17,14 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   @override
   void onData(S data) {
     if (_hasValues.every((value) => value)) {
-      sink.add(_combiner(data, List<T>.unmodifiable(_latestValues)));
+      final R combinedValue;
+      try {
+        combinedValue = _combiner(data, List<T>.unmodifiable(_latestValues));
+      } catch (e, s) {
+        sink.addError(e, s);
+        return;
+      }
+      sink.add(combinedValue);
     }
   }
 
