@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
+class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
   final List<bool> _hasValues;
@@ -15,25 +15,24 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
         _latestValues = List<T?>.filled(_latestFromStreams.length, null);
 
   @override
-  void add(EventSink<R> sink, S data) {
+  void onData(S data) {
     if (_hasValues.every((value) => value)) {
       sink.add(_combiner(data, List<T>.unmodifiable(_latestValues)));
     }
   }
 
   @override
-  void addError(EventSink<R> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, [StackTrace? st]) => sink.addError(e, st);
 
   @override
-  void close(EventSink<R> sink) {
+  void onDone() {
     _subscriptions?.forEach((it) => it.cancel());
     _subscriptions = null;
     sink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<R> sink) {
+  FutureOr<void> onCancel() {
     Iterable<Future> futures = <Future>[];
 
     if (_subscriptions != null && _subscriptions!.isNotEmpty) {
@@ -44,7 +43,7 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
   }
 
   @override
-  void onListen(EventSink<R> sink) {
+  void onListen() {
     var index = 0;
 
     final mapper = (Stream<T> stream) {
@@ -62,12 +61,10 @@ class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
   }
 
   @override
-  void onPause(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.pause());
+  void onPause() => _subscriptions?.forEach((it) => it.pause());
 
   @override
-  void onResume(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.resume());
+  void onResume() => _subscriptions?.forEach((it) => it.resume());
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
@@ -369,7 +366,7 @@ class WithLatestFromStreamTransformer<S, T, R>
   @override
   Stream<R> bind(Stream<S> stream) => forwardStream(
         stream,
-        _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
+        () => _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
       );
 }
 
