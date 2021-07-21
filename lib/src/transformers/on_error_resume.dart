@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
+class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> Function(Object error, StackTrace stackTrace) _recoveryFn;
   var _inRecovery = false;
   final List<StreamSubscription<S>> _recoverySubscriptions = [];
@@ -11,14 +11,14 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   _OnErrorResumeStreamSink(this._recoveryFn);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     if (!_inRecovery) {
       sink.add(data);
     }
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
+  void onError(Object e, StackTrace st) {
     _inRecovery = true;
 
     final recoveryStream = _recoveryFn(e, st);
@@ -37,14 +37,14 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void close(EventSink<S> sink) {
+  void onDone() {
     if (!_inRecovery) {
       sink.close();
     }
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) {
+  FutureOr<void> onCancel() {
     return _recoverySubscriptions.isEmpty
         ? null
         : Future.wait<void>(
@@ -53,14 +53,14 @@ class _OnErrorResumeStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void onListen(EventSink<S> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<S> sink) =>
+  void onPause() =>
       _recoverySubscriptions.forEach((subscription) => subscription.pause());
 
   @override
-  void onResume(EventSink<S> sink) =>
+  void onResume() =>
       _recoverySubscriptions.forEach((subscription) => subscription.resume());
 }
 
@@ -93,7 +93,7 @@ class OnErrorResumeStreamTransformer<S> extends StreamTransformerBase<S, S> {
   @override
   Stream<S> bind(Stream<S> stream) => forwardStream(
         stream,
-        _OnErrorResumeStreamSink<S>(recoveryFn),
+        () => _OnErrorResumeStreamSink<S>(recoveryFn),
       );
 }
 

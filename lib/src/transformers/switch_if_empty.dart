@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
+class _SwitchIfEmptyStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> _fallbackStream;
 
   var _isEmpty = true;
@@ -12,18 +12,18 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   _SwitchIfEmptyStreamSink(this._fallbackStream);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     _isEmpty = false;
     sink.add(data);
   }
 
   @override
-  void addError(EventSink<S> sink, Object error, StackTrace st) {
+  void onError(Object error, StackTrace st) {
     sink.addError(error, st);
   }
 
   @override
-  void close(EventSink<S> sink) {
+  void onDone() {
     if (_isEmpty) {
       _fallbackSubscription = _fallbackStream.listen(
         sink.add,
@@ -36,16 +36,16 @@ class _SwitchIfEmptyStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _fallbackSubscription?.cancel();
+  FutureOr<void> onCancel() => _fallbackSubscription?.cancel();
 
   @override
-  void onListen(EventSink<S> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<S> sink) => _fallbackSubscription?.pause();
+  void onPause() => _fallbackSubscription?.pause();
 
   @override
-  void onResume(EventSink<S> sink) => _fallbackSubscription?.resume();
+  void onResume() => _fallbackSubscription?.resume();
 }
 
 /// When the original stream emits no items, this operator subscribes to
@@ -82,7 +82,8 @@ class SwitchIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) {
-    return forwardStream(stream, _SwitchIfEmptyStreamSink(fallbackStream));
+    return forwardStream(
+        stream, () => _SwitchIfEmptyStreamSink(fallbackStream));
   }
 }
 

@@ -3,41 +3,42 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SkipLastStreamSink<T> implements ForwardingSink<T, T> {
+class _SkipLastStreamSink<T> extends ForwardingSink<T, T> {
   _SkipLastStreamSink(this.count);
 
   final int count;
   final List<T> queue = <T>[];
 
   @override
-  void add(EventSink<T> sink, T data) {
+  void onData(T data) {
     queue.add(data);
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, [StackTrace? st]) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<T> sink) {
-    final takeNum = queue.length - count >= 0 ? queue.length - count : 0;
-    queue.take(takeNum).forEach(sink.add);
+  void onDone() {
+    final limit = queue.length - count;
+    if (limit > 0) {
+      queue.sublist(0, limit).forEach(sink.add);
+    }
     sink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) {
+  FutureOr<void> onCancel() {
     queue.clear();
   }
 
   @override
-  void onListen(EventSink<T> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<T> sink) {}
+  void onPause() {}
 
   @override
-  void onResume(EventSink<T> sink) {}
+  void onResume() {}
 }
 
 /// Skip the last [count] items emitted by the source [Stream]
@@ -59,7 +60,7 @@ class SkipLastStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   @override
   Stream<T> bind(Stream<T> stream) =>
-      forwardStream(stream, _SkipLastStreamSink(count));
+      forwardStream(stream, () => _SkipLastStreamSink(count));
 }
 
 /// Extends the Stream class with the ability to skip the last [count] items

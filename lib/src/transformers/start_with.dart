@@ -3,57 +3,33 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _StartWithStreamSink<S> implements ForwardingSink<S, S> {
+class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   final S _startValue;
-  var _isFirstEventAdded = false;
 
   _StartWithStreamSink(this._startValue);
 
   @override
-  void add(EventSink<S> sink, S data) {
-    _safeAddFirstEvent(sink);
-    sink.add(data);
+  void onData(S data) => sink.add(data);
+
+  @override
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
+
+  @override
+  void onDone() => sink.close();
+
+  @override
+  FutureOr onCancel() {}
+
+  @override
+  void onListen() {
+    sink.add(_startValue);
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
-    _safeAddFirstEvent(sink);
-    sink.addError(e, st);
-  }
+  void onPause() {}
 
   @override
-  void close(EventSink<S> sink) {
-    _safeAddFirstEvent(sink);
-    sink.close();
-  }
-
-  @override
-  FutureOr onCancel(EventSink<S> sink) {}
-
-  @override
-  void onListen(EventSink<S> sink) {
-    scheduleMicrotask(() => _safeAddFirstEvent(sink));
-  }
-
-  @override
-  void onPause(EventSink<S> sink) {}
-
-  @override
-  void onResume(EventSink<S> sink) {}
-
-  // Immediately setting the starting value when onListen trigger can
-  // result in an Exception (might be a bug in dart:async?)
-  // Therefore, scheduleMicrotask is used after onListen.
-  // Because events could be added before scheduleMicrotask completes,
-  // this method is ran before any other events might be added.
-  // Once the first event(s) is/are successfully added, this method
-  // will not trigger again.
-  void _safeAddFirstEvent(EventSink<S> sink) {
-    if (!_isFirstEventAdded) {
-      sink.add(_startValue);
-      _isFirstEventAdded = true;
-    }
-  }
+  void onResume() {}
 }
 
 /// Prepends a value to the source [Stream].
@@ -73,7 +49,7 @@ class StartWithStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _StartWithStreamSink(startValue));
+      forwardStream(stream, () => _StartWithStreamSink(startValue));
 }
 
 /// Extends the [Stream] class with the ability to emit the given value as the

@@ -751,7 +751,7 @@ void main() {
       expect(mappedStream.value, equals(2));
 
       await subject.close();
-    });
+    }, skip: true);
 
     test('issue/419: async behavior', () async {
       final subject = BehaviorSubject.seeded(1);
@@ -822,6 +822,18 @@ void main() {
             ..listen(print);
       await pumpEventQueue();
       expect(await b.first, 'b');
+    });
+
+    test('issue/587', () async {
+      final source = BehaviorSubject.seeded('source');
+      final switched =
+          source.switchMap((value) => BehaviorSubject.seeded('switched'));
+      var i = 0;
+      switched.listen((_) => i++);
+      expect(await switched.first, 'switched');
+      expect(i, 1);
+      expect(await switched.first, 'switched');
+      expect(i, 1);
     });
 
     group('override built-in', () {

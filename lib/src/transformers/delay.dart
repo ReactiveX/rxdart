@@ -5,7 +5,7 @@ import 'package:rxdart/src/rx.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _DelayStreamSink<S> implements ForwardingSink<S, S> {
+class _DelayStreamSink<S> extends ForwardingSink<S, S> {
   final Duration _duration;
   var _inputClosed = false;
   final _subscriptions = Queue<StreamSubscription<void>>();
@@ -13,7 +13,7 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   _DelayStreamSink(this._duration);
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     final subscription = Rx.timer<void>(null, _duration).listen((_) {
       _subscriptions.removeFirst();
 
@@ -28,11 +28,10 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, Object error, StackTrace st) =>
-      sink.addError(error, st);
+  void onError(Object error, StackTrace st) => sink.addError(error, st);
 
   @override
-  void close(EventSink<S> sink) {
+  void onDone() {
     _inputClosed = true;
 
     if (_subscriptions.isEmpty) {
@@ -41,7 +40,7 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr<void> onCancel(EventSink<S> sink) {
+  FutureOr<void> onCancel() {
     if (_subscriptions.isNotEmpty) {
       return Future.wait(_subscriptions.map((t) => t.cancel()))
           .whenComplete(() => _subscriptions.clear());
@@ -49,13 +48,13 @@ class _DelayStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void onListen(EventSink<S> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<S> sink) => _subscriptions.forEach((s) => s.pause());
+  void onPause() => _subscriptions.forEach((s) => s.pause());
 
   @override
-  void onResume(EventSink<S> sink) => _subscriptions.forEach((s) => s.resume());
+  void onResume() => _subscriptions.forEach((s) => s.resume());
 }
 
 /// The Delay operator modifies its source Stream by pausing for
@@ -81,7 +80,7 @@ class DelayStreamTransformer<S> extends StreamTransformerBase<S, S> {
 
   @override
   Stream<S> bind(Stream<S> stream) =>
-      forwardStream(stream, _DelayStreamSink<S>(duration));
+      forwardStream(stream, () => _DelayStreamSink<S>(duration));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted
