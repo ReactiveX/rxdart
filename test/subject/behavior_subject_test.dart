@@ -810,7 +810,7 @@ void main() {
     test('rxdart #477/#500 - a', () async {
       final a = BehaviorSubject.seeded('a')
           .switchMap((_) => BehaviorSubject.seeded('a'))
-            ..listen(print);
+        ..listen(print);
       await pumpEventQueue();
       expect(await a.first, 'a');
     });
@@ -819,7 +819,7 @@ void main() {
       final b = BehaviorSubject.seeded('b')
           .map((_) => 'b')
           .switchMap((_) => BehaviorSubject.seeded('b'))
-            ..listen(print);
+        ..listen(print);
       await pumpEventQueue();
       expect(await b.first, 'b');
     });

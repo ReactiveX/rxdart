@@ -27,7 +27,11 @@ void main() {
   });
 
   test('Rx.bufferTime.shouldClose', () async {
-    final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
+    final controller = StreamController<int>()
+      ..add(0)
+      ..add(1)
+      ..add(2)
+      ..add(3);
 
     scheduleMicrotask(controller.close);
 
