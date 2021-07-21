@@ -31,7 +31,7 @@ jobs:
         run: dart analyze --fatal-infos --fatal-warnings
 
       - name: Format code
-        run: dartfmt -n . --set-exit-if-changed
+        run: dart format . --set-exit-if-changed
 
       - name: Active coverage
         run: pub global activate coverage
