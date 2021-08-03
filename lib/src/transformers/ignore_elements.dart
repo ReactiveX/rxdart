@@ -1,7 +1,7 @@
 import 'dart:async';
 
 class _IgnoreElementsStreamSink<S> implements EventSink<S> {
-  final EventSink<S> _outputSink;
+  final EventSink<Never> _outputSink;
 
   _IgnoreElementsStreamSink(this._outputSink);
 
@@ -25,14 +25,14 @@ class _IgnoreElementsStreamSink<S> implements EventSink<S> {
 ///       ErrorStream(Exception())
 ///     ])
 ///     .listen(print, onError: print); // prints Exception
-@Deprecated('Use the drain method from the Stream class instead')
-class IgnoreElementsStreamTransformer<S> extends StreamTransformerBase<S, S> {
+class IgnoreElementsStreamTransformer<S>
+    extends StreamTransformerBase<S, Never> {
   /// Constructs a [StreamTransformer] which simply ignores all events from
   /// the source [Stream], except for error or completed events.
   IgnoreElementsStreamTransformer();
 
   @override
-  Stream<S> bind(Stream<S> stream) => Stream.eventTransformed(
+  Stream<Never> bind(Stream<S> stream) => Stream.eventTransformed(
       stream, (sink) => _IgnoreElementsStreamSink<S>(sink));
 }
 
@@ -48,6 +48,6 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   ///      Stream.error(Exception())
   ///    ])
   ///    .listen(print, onError: print); // prints Exception
-  @Deprecated('Use the drain method from the Stream class instead')
-  Stream<T> ignoreElements() => transform(IgnoreElementsStreamTransformer<T>());
+  Stream<Never> ignoreElements() =>
+      transform(IgnoreElementsStreamTransformer<T>());
 }
