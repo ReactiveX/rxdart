@@ -102,6 +102,7 @@ class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// A function used to determine delay time span for each data event.
   final Stream<void> Function(T) itemDelaySelector;
 
+  /// When [listenDelay] emits its first data or done event, the source Stream is listen to.
   final Stream<void>? listenDelay;
 
   /// Constructs a [StreamTransformer] which delays the emission of items
