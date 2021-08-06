@@ -5,10 +5,13 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   final Stream<void> Function(T) itemDelaySelector;
+  final Stream<void>? listenDelay;
+
   final subscriptions = <StreamSubscription<void>>[];
+  StreamSubscription<void>? subscription;
   var closed = false;
 
-  _DelayWhenStreamSink(this.itemDelaySelector);
+  _DelayWhenStreamSink(this.itemDelaySelector, this.listenDelay);
 
   @override
   void onData(T data) {
@@ -40,6 +43,9 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   FutureOr<void> onCancel() {
+    subscription?.cancel();
+    subscription = null;
+
     if (subscriptions.isNotEmpty) {
       return Future.wait(subscriptions.map((s) => s.cancel()))
           .whenComplete(() => subscriptions.clear());
@@ -47,13 +53,39 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  void onListen() {}
+  FutureOr<void> onListen() {
+    if (listenDelay == null) {
+      return null;
+    }
+
+    final completer = Completer<void>.sync();
+    subscription = listenDelay!.take(1).listen(
+      null,
+      onError: (Object e, StackTrace s) {
+        subscription?.cancel();
+        subscription = null;
+        completer.completeError(e, s);
+      },
+      onDone: () {
+        subscription?.cancel();
+        subscription = null;
+        completer.complete(null);
+      },
+    );
+    return completer.future;
+  }
 
   @override
-  void onPause() => subscriptions.forEach((s) => s.pause());
+  void onPause() {
+    subscription?.pause();
+    subscriptions.forEach((s) => s.pause());
+  }
 
   @override
-  void onResume() => subscriptions.forEach((s) => s.resume());
+  void onResume() {
+    subscription?.resume();
+    subscriptions.forEach((s) => s.resume());
+  }
 }
 
 /// Delays the emission of items from the source [Stream] by a given time span
@@ -70,13 +102,15 @@ class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// A function used to determine delay time span for each data event.
   final Stream<void> Function(T) itemDelaySelector;
 
+  final Stream<void>? listenDelay;
+
   /// Constructs a [StreamTransformer] which delays the emission of items
   /// from the source [Stream] by a given time span determined by the emissions of another [Stream].
-  DelayWhenStreamTransformer(this.itemDelaySelector);
+  DelayWhenStreamTransformer(this.itemDelaySelector, [this.listenDelay]);
 
   @override
-  Stream<T> bind(Stream<T> stream) =>
-      forwardStream(stream, () => _DelayWhenStreamSink(itemDelaySelector));
+  Stream<T> bind(Stream<T> stream) => forwardStream(
+      stream, () => _DelayWhenStreamSink(itemDelaySelector, listenDelay));
 }
 
 /// Extends the Stream class with the ability to delay events being emitted.
@@ -89,6 +123,11 @@ extension DelayWhenExtension<T> on Stream<T> {
   /// The source element is emitted on the output Stream only when the "duration" Stream
   /// emits a data or done event.
   ///
+  /// Optionally, `delayWhen` takes a second argument `listenDelay`. When `listenDelay`
+  /// emits its first data or done event, the source Stream is listen to.
+  /// If `listenDelay` is not provided, `delayWhen` will listen to the source Stream
+  /// as soon as the output Stream is listen.
+  ///
   /// [Interactive marble diagram](http://rxmarbles.com/#delayWhen)
   ///
   /// ### Example
@@ -96,6 +135,7 @@ extension DelayWhenExtension<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2, 3])
   ///       .delayWhen((i) => Rx.timer(null, Duration(seconds: i)))
   ///       .listen(print); // [after 1 second] prints 1 [after 1 second] prints 2 [after 1 second] prints 3
-  Stream<T> delayWhen(Stream<void> Function(T) itemDelaySelector) =>
-      transform(DelayWhenStreamTransformer(itemDelaySelector));
+  Stream<T> delayWhen(Stream<void> Function(T) itemDelaySelector,
+          [Stream<void>? listenDelay]) =>
+      transform(DelayWhenStreamTransformer(itemDelaySelector, listenDelay));
 }
