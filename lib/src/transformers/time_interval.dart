@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
+class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
   final _stopwatch = Stopwatch();
 
   @override
-  void add(EventSink<TimeInterval<S>> sink, S data) {
+  void onData(S data) {
     _stopwatch.stop();
     sink.add(
       TimeInterval<S>(
@@ -23,23 +23,22 @@ class _TimeIntervalStreamSink<S> implements ForwardingSink<S, TimeInterval<S>> {
   }
 
   @override
-  void addError(EventSink<TimeInterval<S>> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<TimeInterval<S>> sink) => sink.close();
+  void onDone() => sink.close();
 
   @override
-  FutureOr onCancel(EventSink<TimeInterval<S>> sink) {}
+  FutureOr onCancel() {}
 
   @override
-  void onListen(EventSink<TimeInterval<S>> sink) => _stopwatch.start();
+  void onListen() => _stopwatch.start();
 
   @override
-  void onPause(EventSink<TimeInterval<S>> sink) {}
+  void onPause() {}
 
   @override
-  void onResume(EventSink<TimeInterval<S>> sink) {}
+  void onResume() {}
 }
 
 /// Records the time interval between consecutive values in an stream
@@ -59,7 +58,7 @@ class TimeIntervalStreamTransformer<S>
 
   @override
   Stream<TimeInterval<S>> bind(Stream<S> stream) =>
-      forwardStream(stream, _TimeIntervalStreamSink());
+      forwardStream(stream, () => _TimeIntervalStreamSink());
 }
 
 /// A class that represents a snapshot of the current value emitted by a

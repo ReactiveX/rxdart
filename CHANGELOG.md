@@ -1,3 +1,10 @@
+## 0.27.1
+
+* Bugfix: `ForkJoinStream` throws `Null check operator used on a null value` when using nullable-type.
+* Bugfix: `delay` operator
+  *  Pause and resume properly.
+  *  Cancel all timers after it has been cancelled.
+
 ## 0.27.0
   * **BREAKING: ValueStream**
     * Remove `ValueStreamExtensions`.

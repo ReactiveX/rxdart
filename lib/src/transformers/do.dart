@@ -4,7 +4,7 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
-class _DoStreamSink<S> implements ForwardingSink<S, S> {
+class _DoStreamSink<S> extends ForwardingSink<S, S> {
   final FutureOr<void> Function()? _onCancel;
   final void Function(S event)? _onData;
   final void Function()? _onDone;
@@ -26,7 +26,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   );
 
   @override
-  void add(EventSink<S> sink, S data) {
+  void onData(S data) {
     try {
       _onData?.call(data);
     } catch (e, s) {
@@ -41,7 +41,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void addError(EventSink<S> sink, Object e, StackTrace st) {
+  void onError(Object e, StackTrace st) {
     try {
       _onError?.call(e, st);
     } catch (e, s) {
@@ -56,7 +56,7 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  void close(EventSink<S> sink) {
+  void onDone() {
     try {
       _onDone?.call();
     } catch (e, s) {
@@ -71,18 +71,34 @@ class _DoStreamSink<S> implements ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel(EventSink<S> sink) => _onCancel?.call();
+  FutureOr onCancel() => _onCancel?.call();
 
   @override
-  void onListen(EventSink<S> sink) {
-    _onListen?.call();
+  void onListen() {
+    try {
+      _onListen?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
   }
 
   @override
-  void onPause(EventSink<S> sink) => _onPause?.call();
+  void onPause() {
+    try {
+      _onPause?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 
   @override
-  void onResume(EventSink<S> sink) => _onResume?.call();
+  void onResume() {
+    try {
+      _onResume?.call();
+    } catch (e, s) {
+      sink.addError(e, s);
+    }
+  }
 }
 
 /// Invokes the given callback at the corresponding point the the stream
@@ -171,7 +187,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   @override
   Stream<S> bind(Stream<S> stream) => forwardStream<S, S>(
         stream,
-        _DoStreamSink<S>(
+        () => _DoStreamSink<S>(
           onCancel,
           onData,
           onDone,
@@ -181,6 +197,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
           onPause,
           onResume,
         ),
+        true,
       );
 }
 

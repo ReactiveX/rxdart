@@ -4,14 +4,14 @@ import 'dart:collection';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
+class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
   _TakeLastStreamSink(this.count);
 
   final int count;
   final Queue<T> queue = DoubleLinkedQueue<T>();
 
   @override
-  void add(EventSink<T> sink, T data) {
+  void onData(T data) {
     if (count > 0) {
       queue.add(data);
 
@@ -22,28 +22,27 @@ class _TakeLastStreamSink<T> implements ForwardingSink<T, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<T> sink) {
+  void onDone() {
     queue.forEach(sink.add);
     sink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) {
+  FutureOr<void> onCancel() {
     queue.clear();
   }
 
   @override
-  void onListen(EventSink<T> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<T> sink) {}
+  void onPause() {}
 
   @override
-  void onResume(EventSink<T> sink) {}
+  void onResume() {}
 }
 
 /// Emits only the final [count] values emitted by the source [Stream].
@@ -65,7 +64,7 @@ class TakeLastStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   @override
   Stream<T> bind(Stream<T> stream) =>
-      forwardStream(stream, _TakeLastStreamSink<T>(count));
+      forwardStream(stream, () => _TakeLastStreamSink<T>(count));
 }
 
 /// Extends the [Stream] class with the ability receive only the final [count]

@@ -22,7 +22,7 @@ enum WindowStrategy {
   onHandler
 }
 
-class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
+class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   final WindowStrategy _strategy;
   final Stream<dynamic> Function(S event)? _windowStreamFactory;
   final T Function(S event)? _onWindowStart;
@@ -51,7 +51,7 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   );
 
   @override
-  void add(EventSink<T> sink, S data) {
+  void onData(S data) {
     _hasData = true;
     maybeCreateWindow(data, sink);
 
@@ -71,11 +71,10 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<T> sink) {
+  void onDone() {
     _mainClosed = true;
 
     if (_strategy == WindowStrategy.eventAfterLastWindow) {
@@ -97,16 +96,16 @@ class _BackpressureStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) => _windowSubscription?.cancel();
+  FutureOr<void> onCancel() => _windowSubscription?.cancel();
 
   @override
-  void onListen(EventSink<T> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<T> sink) => _windowSubscription?.pause();
+  void onPause() => _windowSubscription?.pause();
 
   @override
-  void onResume(EventSink<T> sink) => _windowSubscription?.resume();
+  void onResume() => _windowSubscription?.resume();
 
   void maybeCreateWindow(S event, EventSink<T> sink) {
     switch (_strategy) {
@@ -341,17 +340,17 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) {
-    final sink = _BackpressureStreamSink(
-      strategy,
-      windowStreamFactory,
-      onWindowStart,
-      onWindowEnd,
-      startBufferEvery,
-      closeWindowWhen,
-      ignoreEmptyWindows,
-      dispatchOnClose,
-      maxLengthQueue,
-    );
+    final sink = () => _BackpressureStreamSink(
+          strategy,
+          windowStreamFactory,
+          onWindowStart,
+          onWindowEnd,
+          startBufferEvery,
+          closeWindowWhen,
+          ignoreEmptyWindows,
+          dispatchOnClose,
+          maxLengthQueue,
+        );
     return forwardStream(stream, sink);
   }
 }

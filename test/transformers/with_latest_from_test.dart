@@ -100,6 +100,19 @@ void main() {
     }));
   });
 
+  test('Rx.withLatestFrom.error.shouldThrowB', () async {
+    final streams = _createTestStreams();
+    final stream = streams[1].take(1).withLatestFrom(
+        Stream<int>.value(0), (first, int second) => throw Exception());
+
+    expect(
+        stream,
+        emitsInOrder(<Object>[
+          emitsError(isException),
+          emitsDone,
+        ]));
+  });
+
   test('Rx.withLatestFrom.pause.resume', () async {
     late StreamSubscription<Pair> subscription;
     const expectedOutput = [Pair(2, 0)];

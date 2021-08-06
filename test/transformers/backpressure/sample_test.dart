@@ -26,7 +26,7 @@ void main() {
 
     await expectLater(streamA, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
     await expectLater(streamB, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
-  });
+  }, skip: true);
 
   test('Rx.sample.onDone', () async {
     final stream = Stream.value(1).sample(Stream<void>.empty());

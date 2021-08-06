@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
@@ -11,8 +11,14 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   _SwitchMapStreamSink(this._mapper);
 
   @override
-  void add(EventSink<T> sink, S data) {
-    final mappedStream = _mapper(data);
+  void onData(S data) {
+    final Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _mapperSubscription?.cancel();
 
@@ -30,27 +36,26 @@ class _SwitchMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<T> sink) {
+  void onDone() {
     _inputClosed = true;
 
     _mapperSubscription ?? sink.close();
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) => _mapperSubscription?.cancel();
+  FutureOr<void> onCancel() => _mapperSubscription?.cancel();
 
   @override
-  void onListen(EventSink<T> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<T> sink) => _mapperSubscription?.pause();
+  void onPause() => _mapperSubscription?.pause();
 
   @override
-  void onResume(EventSink<T> sink) => _mapperSubscription?.resume();
+  void onResume() => _mapperSubscription?.resume();
 }
 
 /// Converts each emitted item into a new Stream using the given mapper
@@ -83,7 +88,7 @@ class SwitchMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _SwitchMapStreamSink(mapper));
+      forwardStream(stream, () => _SwitchMapStreamSink(mapper));
 }
 
 /// Extends the Stream with the ability to convert one stream into a new Stream

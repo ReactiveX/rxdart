@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
+class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
   int _openSubscriptions = 0;
@@ -12,8 +12,14 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   _FlatMapStreamSink(this._mapper);
 
   @override
-  void add(EventSink<T> sink, S data) {
-    final mappedStream = _mapper(data);
+  void onData(S data) {
+    final Stream<T> mappedStream;
+    try {
+      mappedStream = _mapper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     _openSubscriptions++;
 
@@ -36,11 +42,10 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  void addError(EventSink<T> sink, Object e, StackTrace st) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<T> sink) {
+  void onDone() {
     _inputClosed = true;
 
     if (_openSubscriptions == 0) {
@@ -49,17 +54,17 @@ class _FlatMapStreamSink<S, T> implements ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel(EventSink<T> sink) =>
+  FutureOr<void> onCancel() =>
       Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
 
   @override
-  void onListen(EventSink<T> sink) {}
+  void onListen() {}
 
   @override
-  void onPause(EventSink<T> sink) => _subscriptions.forEach((s) => s.pause());
+  void onPause() => _subscriptions.forEach((s) => s.pause());
 
   @override
-  void onResume(EventSink<T> sink) => _subscriptions.forEach((s) => s.resume());
+  void onResume() => _subscriptions.forEach((s) => s.resume());
 }
 
 /// Converts each emitted item into a new Stream using the given mapper
@@ -87,7 +92,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, _FlatMapStreamSink(mapper));
+      forwardStream(stream, () => _FlatMapStreamSink(mapper));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into
