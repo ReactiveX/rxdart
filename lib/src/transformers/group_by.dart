@@ -1,40 +1,81 @@
 import 'dart:async';
 
-class _GroupByStreamSink<S, T> implements EventSink<S> {
-  final T Function(S event) _grouper;
-  final EventSink<GroupByStream<S, T>> _outputSink;
-  final _mapper = <T, StreamController<S>>{};
+import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-  _GroupByStreamSink(this._outputSink, this._grouper);
+class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
+  final K Function(T event) _grouper;
+  final Stream<void> Function(GroupByStream<T, K>)? duration;
+
+  final groups = <K, StreamController<T>>{};
+  final subscriptions = <K, StreamSubscription<void>>{};
+
+  _GroupByStreamSink(this._grouper, this.duration);
 
   @override
-  void add(S data) {
-    final key = _grouper(data);
+  void onData(T data) {
+    K key;
+    try {
+      key = _grouper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
 
     final groupedController =
-        _mapper.putIfAbsent(key, () => _controllerBuilder(key));
+        groups.putIfAbsent(key, () => _controllerBuilder(key));
 
     groupedController.add(data);
   }
 
   @override
-  void addError(e, [st]) => _outputSink.addError(e, st);
+  void onError(e, st) => sink.addError(e, st);
 
   @override
-  void close() {
-    _mapper.values.forEach((c) => c.close());
-    _mapper.clear();
-
-    _outputSink.close();
+  void onDone() {
+    closeAll();
+    sink.close();
   }
 
-  StreamController<S> _controllerBuilder(T forKey) {
-    final groupedController = StreamController<S>();
+  void closeAll() {
+    groups.values.forEach((c) => c.close());
+    groups.clear();
+  }
 
-    _outputSink.add(GroupByStream<S, T>(forKey, groupedController.stream));
+  StreamController<T> _controllerBuilder(K key) {
+    final groupedController = StreamController<T>.broadcast(sync: true);
+    final groupByStream = GroupByStream<T, K>(key, groupedController.stream);
 
+    if (duration != null) {
+      subscriptions.remove(key)?.cancel();
+      subscriptions[key] = duration!(groupByStream).take(1).listen(null)
+        ..onDone(() {
+          subscriptions.remove(key);
+          groups.remove(key)?.close();
+        })
+        ..onError(onError);
+    }
+
+    sink.add(groupByStream);
     return groupedController;
   }
+
+  @override
+  FutureOr<void> onCancel() {
+    scheduleMicrotask(closeAll);
+    return subscriptions.isNotEmpty
+        ? Future.wait(subscriptions.values.map((s) => s.cancel()))
+        : null;
+  }
+
+  @override
+  FutureOr<void> onListen() {}
+
+  @override
+  void onPause() => subscriptions.values.forEach((s) => s.pause());
+
+  @override
+  void onResume() => subscriptions.values.forEach((s) => s.resume());
 }
 
 /// The GroupBy operator divides a [Stream] that emits items into
@@ -47,29 +88,35 @@ class _GroupByStreamSink<S, T> implements EventSink<S> {
 /// the [_grouper] Function.
 ///
 /// All items with the same key are emitted by the same [GroupByStream].
-class GroupByStreamTransformer<S, T>
-    extends StreamTransformerBase<S, GroupByStream<S, T>> {
+class GroupByStreamTransformer<T, K>
+    extends StreamTransformerBase<T, GroupByStream<T, K>> {
   /// Method which converts incoming events into a new [GroupByStream]
-  final T Function(S event) grouper;
+  final K Function(T event) grouper;
+
+  /// TODO
+  final Stream<void> Function(GroupByStream<T, K>)? duration;
 
   /// Constructs a [StreamTransformer] which groups events from the source
   /// [Stream] and emits them as [GroupByStream].
-  GroupByStreamTransformer(this.grouper);
+  GroupByStreamTransformer(this.grouper, [this.duration]);
 
   @override
-  Stream<GroupByStream<S, T>> bind(Stream<S> stream) => Stream.eventTransformed(
-      stream, (sink) => _GroupByStreamSink<S, T>(sink, grouper));
+  Stream<GroupByStream<T, K>> bind(Stream<T> stream) =>
+      forwardStream(stream, () => _GroupByStreamSink<T, K>(grouper, duration));
 }
 
 /// The [Stream] used by [GroupByStreamTransformer], it contains events
 /// that are grouped by a key value.
-class GroupByStream<T, S> extends StreamView<T> {
+class GroupByStream<T, K> extends StreamView<T> {
   /// The key is the category to which all events in this group belong to.
-  final S key;
+  final K key;
 
   /// Constructs a [Stream] which only emits events that can be
   /// categorized under [key].
   GroupByStream(this.key, Stream<T> stream) : super(stream);
+
+  @override
+  String toString() => 'GroupByStream{key: $key}';
 }
 
 /// Extends the Stream class with the ability to convert events into Streams
@@ -83,6 +130,9 @@ extension GroupByExtension<T> on Stream<T> {
   /// which receives its [Type] and value from the [grouper] Function.
   ///
   /// All items with the same key are emitted by the same [GroupByStream].
-  Stream<GroupByStream<T, S>> groupBy<S>(S Function(T value) grouper) =>
-      transform(GroupByStreamTransformer<T, S>(grouper));
+  ///
+  /// TODO
+  Stream<GroupByStream<T, K>> groupBy<K>(K Function(T value) grouper,
+          [Stream<void> Function(GroupByStream<T, K>)? duration]) =>
+      transform(GroupByStreamTransformer<T, K>(grouper, duration));
 }

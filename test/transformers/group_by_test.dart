@@ -124,4 +124,34 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.groupBy.durationSelector', () {
+    final g = [
+      '0 -> 1',
+      '1 -> 1',
+      '2 -> 1',
+      '0 -> 2',
+      '1 -> 2',
+      '2 -> 2',
+    ];
+    final take = 30;
+
+    final stream = Stream.periodic(const Duration(milliseconds: 100), (i) => i)
+        .groupBy(
+          (i) => i % 3,
+          (i) => Rx.timer(null, const Duration(milliseconds: 400)),
+        )
+        .flatMap((g) => g
+            .scan<int>((acc, value, index) => acc + 1, 0)
+            .map((event) => '${g.key} -> $event'))
+        .take(take);
+
+    expect(
+      stream,
+      emitsInOrder(<Object>[
+        ...List.filled(take ~/ g.length, g).expand<String>((e) => e),
+        emitsDone,
+      ]),
+    );
+  });
 }
