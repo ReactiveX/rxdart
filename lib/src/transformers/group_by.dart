@@ -8,7 +8,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
   final Stream<void> Function(GroupByStream<T, K>)? duration;
 
   final groups = <K, StreamController<T>>{};
-  final subscriptions = <K, StreamSubscription<void>>{};
+  Map<K, StreamSubscription<void>>? subscriptions;
 
   _GroupByStreamSink(this.grouper, this.duration);
 
@@ -22,13 +22,15 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
     final groupByStream = GroupByStream<T, K>(key, groupedController.stream);
 
     if (duration != null) {
-      subscriptions.remove(key)?.cancel();
-      subscriptions[key] = duration!(groupByStream).take(1).listen(null)
-        ..onDone(() {
-          subscriptions.remove(key);
+      subscriptions?.remove(key)?.cancel();
+      (subscriptions ??= {})[key] = duration!(groupByStream).take(1).listen(
+        null,
+        onDone: () {
+          subscriptions!.remove(key);
           groups.remove(key)?.close();
-        })
-        ..onError(onError);
+        },
+        onError: onError,
+      );
     }
 
     sink.add(groupByStream);
@@ -45,10 +47,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
       return;
     }
 
-    final groupedController =
-        groups.putIfAbsent(key, () => _controllerBuilder(key));
-
-    groupedController.add(data);
+    groups.putIfAbsent(key, () => _controllerBuilder(key)).add(data);
   }
 
   @override
@@ -63,19 +62,25 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
   @override
   FutureOr<void> onCancel() {
     scheduleMicrotask(_closeAll);
-    return subscriptions.isNotEmpty
-        ? Future.wait(subscriptions.values.map((s) => s.cancel()))
-        : null;
+
+    if (subscriptions?.isNotEmpty == true) {
+      final future = Future.wait(subscriptions!.values.map((s) => s.cancel()));
+      subscriptions?.clear();
+      subscriptions = null;
+      return future;
+    } else {
+      return null;
+    }
   }
 
   @override
   FutureOr<void> onListen() {}
 
   @override
-  void onPause() => subscriptions.values.forEach((s) => s.pause());
+  void onPause() => subscriptions?.values.forEach((s) => s.pause());
 
   @override
-  void onResume() => subscriptions.values.forEach((s) => s.resume());
+  void onResume() => subscriptions?.values.forEach((s) => s.resume());
 }
 
 /// The GroupBy operator divides a [Stream] that emits items into
