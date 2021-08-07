@@ -4,40 +4,15 @@ import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
-  final K Function(T event) _grouper;
+  final K Function(T event) grouper;
   final Stream<void> Function(GroupByStream<T, K>)? duration;
 
   final groups = <K, StreamController<T>>{};
   final subscriptions = <K, StreamSubscription<void>>{};
 
-  _GroupByStreamSink(this._grouper, this.duration);
+  _GroupByStreamSink(this.grouper, this.duration);
 
-  @override
-  void onData(T data) {
-    K key;
-    try {
-      key = _grouper(data);
-    } catch (e, s) {
-      sink.addError(e, s);
-      return;
-    }
-
-    final groupedController =
-        groups.putIfAbsent(key, () => _controllerBuilder(key));
-
-    groupedController.add(data);
-  }
-
-  @override
-  void onError(e, st) => sink.addError(e, st);
-
-  @override
-  void onDone() {
-    closeAll();
-    sink.close();
-  }
-
-  void closeAll() {
+  void _closeAll() {
     groups.values.forEach((c) => c.close());
     groups.clear();
   }
@@ -61,8 +36,33 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
   }
 
   @override
+  void onData(T data) {
+    K key;
+    try {
+      key = grouper(data);
+    } catch (e, s) {
+      sink.addError(e, s);
+      return;
+    }
+
+    final groupedController =
+        groups.putIfAbsent(key, () => _controllerBuilder(key));
+
+    groupedController.add(data);
+  }
+
+  @override
+  void onError(e, st) => sink.addError(e, st);
+
+  @override
+  void onDone() {
+    _closeAll();
+    sink.close();
+  }
+
+  @override
   FutureOr<void> onCancel() {
-    scheduleMicrotask(closeAll);
+    scheduleMicrotask(_closeAll);
     return subscriptions.isNotEmpty
         ? Future.wait(subscriptions.values.map((s) => s.cancel()))
         : null;
@@ -96,7 +96,7 @@ class GroupByStreamTransformer<T, K>
   /// A function that returns an [Stream] to determine how long each group should exist.
   /// When the returned [Stream] emits its first data or done event,
   /// the group will be closed and removed.
-  final Stream<void> Function(GroupByStream<T, K>)? duration;
+  final Stream<void> Function(GroupByStream<T, K> grouped)? duration;
 
   /// Constructs a [StreamTransformer] which groups events from the source
   /// [Stream] and emits them as [GroupByStream].
@@ -138,6 +138,6 @@ extension GroupByExtension<T> on Stream<T> {
   /// each group should exist. When the returned [Stream] emits its first data or done event,
   /// the group will be closed and removed.
   Stream<GroupByStream<T, K>> groupBy<K>(K Function(T value) grouper,
-          [Stream<void> Function(GroupByStream<T, K>)? duration]) =>
+          [Stream<void> Function(GroupByStream<T, K> grouped)? duration]) =>
       transform(GroupByStreamTransformer<T, K>(grouper, duration));
 }
