@@ -39,7 +39,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
 
   @override
   void onData(T data) {
-    K key;
+    final K key;
     try {
       key = grouper(data);
     } catch (e, s) {
