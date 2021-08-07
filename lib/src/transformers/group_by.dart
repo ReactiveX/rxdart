@@ -93,7 +93,9 @@ class GroupByStreamTransformer<T, K>
   /// Method which converts incoming events into a new [GroupByStream]
   final K Function(T event) grouper;
 
-  /// TODO
+  /// A function that returns an [Stream] to determine how long each group should exist.
+  /// When the returned [Stream] emits its first data or done event,
+  /// the group will be closed and removed.
   final Stream<void> Function(GroupByStream<T, K>)? duration;
 
   /// Constructs a [StreamTransformer] which groups events from the source
@@ -131,7 +133,10 @@ extension GroupByExtension<T> on Stream<T> {
   ///
   /// All items with the same key are emitted by the same [GroupByStream].
   ///
-  /// TODO
+  /// Optionally, `groupBy` takes a second argument [duration].
+  /// [duration] is a function that returns an [Stream] to determine how long
+  /// each group should exist. When the returned [Stream] emits its first data or done event,
+  /// the group will be closed and removed.
   Stream<GroupByStream<T, K>> groupBy<K>(K Function(T value) grouper,
           [Stream<void> Function(GroupByStream<T, K>)? duration]) =>
       transform(GroupByStreamTransformer<T, K>(grouper, duration));
