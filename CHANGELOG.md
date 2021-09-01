@@ -1,3 +1,13 @@
+## 0.27.2
+
+* Internal refactoring Stream Transformers: uses `Stream.multi`.
+* Add optional parameter `maxConcurrent` to `flatMap`.
+* Update to docs ([@AlexanderJohr](https://github.com/AlexanderJohr)).
+* Bugfix: `onErrorReturnWith` drops remaining data event after the first error.
+* Update `groupBy`
+  * Rename `GroupByStream` to `GroupedStream`.
+  * Add optional parameter `durationSelector`, which used to determine how long each group should exist.
+
 ## 0.27.1
 
 * Bugfix: `ForkJoinStream` throws `Null check operator used on a null value` when using nullable-type.
