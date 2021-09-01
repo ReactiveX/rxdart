@@ -145,4 +145,57 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.onErrorResume still adds data when Stream emits an error: issue/616',
+      () {
+    {
+      final stream = Rx.concat<int>([
+        Stream.value(1),
+        Stream.error(Exception()),
+        Stream.fromIterable([2, 3]),
+        Stream.error(Exception()),
+        Stream.value(4),
+      ]).onErrorResume((e, s) => Stream.value(-1));
+      expect(
+        stream,
+        emitsInOrder(<Object>[1, -1, 2, 3, -1, 4, emitsDone]),
+      );
+    }
+
+    {
+      final stream = Rx.concat<int>([
+        Stream.value(1),
+        Stream.error(Exception()),
+        Stream.fromIterable([2, 3]),
+        Stream.error(Exception()),
+        Stream.value(4),
+      ]).onErrorResumeNext(Stream.value(-1));
+      expect(
+        stream,
+        emitsInOrder(<Object>[1, -1, 2, 3, -1, 4, emitsDone]),
+      );
+    }
+  });
+
+  test('Rx.onErrorResumeNext with many errors', () {
+    final stream = Rx.concat<int>([
+      Stream.value(1),
+      Stream.error(Exception()),
+      Stream.value(2),
+      Stream.error(StateError('')),
+      Stream.value(3),
+    ]).onErrorResume((e, s) {
+      if (e is Exception) {
+        return Rx.timer(-1, const Duration(milliseconds: 100));
+      }
+      if (e is StateError) {
+        return Rx.timer(-2, const Duration(milliseconds: 200));
+      }
+      throw e;
+    });
+    expect(
+      stream,
+      emitsInOrder(<Object>[1, 2, 3, -1, -2, emitsDone]),
+    );
+  });
 }

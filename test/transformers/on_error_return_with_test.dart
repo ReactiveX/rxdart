@@ -55,4 +55,20 @@ void main() {
 
     controller.add(1);
   });
+
+  test(
+      'Rx.onErrorReturnWith still adds data when Stream emits an error: issue/616',
+      () {
+    final stream = Rx.concat<int>([
+      Stream.value(1),
+      Stream.error(Exception()),
+      Stream.fromIterable([2, 3]),
+      Stream.error(Exception()),
+      Stream.value(4),
+    ]).onErrorReturnWith((e, s) => -1);
+    expect(
+      stream,
+      emitsInOrder(<Object>[1, -1, 2, 3, -1, 4, emitsDone]),
+    );
+  });
 }
