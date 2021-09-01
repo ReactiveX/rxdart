@@ -46,16 +46,17 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
     final future = subscription?.cancel();
     subscription = null;
 
-    if (subscriptions.isNotEmpty) {
-      final futures = [
-        ...subscriptions.map((s) => s.cancel()),
-        if (future != null) future,
-      ];
-      subscriptions.clear();
-      return Future.wait(futures);
-    } else {
+    if (subscriptions.isEmpty) {
       return future;
     }
+
+    final futures = [
+      for (final s in subscriptions) s.cancel(),
+      if (future != null) future,
+    ];
+    subscriptions.clear();
+
+    return futures.isNotEmpty ? Future.wait(futures) : null;
   }
 
   @override
