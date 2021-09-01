@@ -145,7 +145,7 @@ void main() {
     }
   });
 
-  test('Rx.flatMap(maxConcurrent: 2)', () {
+  test('Rx.flatMap(maxConcurrent: 2)', () async {
     const maxConcurrent = 2;
     var activeCount = 0;
 
@@ -154,7 +154,7 @@ void main() {
         return Rx.fromCallable(() {
           expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
 
-          final ms = value.isOdd ? ((10 - value) * 100) : ((11 - value) * 200);
+          final ms = value.isOdd ? ((10 - value) * 200) : ((11 - value) * 400);
           return Future.delayed(
             Duration(milliseconds: ms),
             () => value,
@@ -164,7 +164,7 @@ void main() {
       maxConcurrent: maxConcurrent,
     );
 
-    expect(stream,
+    await expectLater(stream,
         emitsInOrder(<Object>[1, 3, 2, 5, 4, 6, 7, 9, 10, 8, emitsDone]));
   });
 
@@ -187,7 +187,7 @@ void main() {
       maxConcurrent: maxConcurrent,
     );
 
-    expect(stream,
+    await expectLater(stream,
         emitsInOrder(<Object>[3, 1, 2, 5, 7, 4, 9, 10, 6, 8, emitsDone]));
   });
 }
