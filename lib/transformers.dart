@@ -8,6 +8,7 @@ export 'src/transformers/backpressure/throttle.dart';
 export 'src/transformers/backpressure/window.dart';
 export 'src/transformers/default_if_empty.dart';
 export 'src/transformers/delay.dart';
+export 'src/transformers/delay_when.dart';
 export 'src/transformers/dematerialize.dart';
 export 'src/transformers/distinct_unique.dart';
 export 'src/transformers/do.dart';

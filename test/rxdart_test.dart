@@ -49,6 +49,7 @@ import 'transformers/backpressure/window_time_test.dart' as window_time_test;
 import 'transformers/concat_with_test.dart' as concat_with_test;
 import 'transformers/default_if_empty_test.dart' as default_if_empty_test;
 import 'transformers/delay_test.dart' as delay_test;
+import 'transformers/delay_when_test.dart' as delay_when_test;
 import 'transformers/dematerialize_test.dart' as dematerialize_test;
 import 'transformers/distinct_test.dart' as distinct_test;
 import 'transformers/distinct_unique_test.dart' as distinct_unique_test;
@@ -111,6 +112,7 @@ void main() {
   concat_with_test.main();
   default_if_empty_test.main();
   delay_test.main();
+  delay_when_test.main();
   dematerialize_test.main();
   distinct_test.main();
   distinct_unique_test.main();

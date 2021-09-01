@@ -7,6 +7,7 @@
 * Update `groupBy`
   * Rename `GroupByStream` to `GroupedStream`.
   * Add optional parameter `durationSelector`, which used to determine how long each group should exist.
+* Add `delayWhen` operator.
 
 ## 0.27.1
 
