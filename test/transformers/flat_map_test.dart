@@ -172,23 +172,12 @@ void main() {
     const maxConcurrent = 3;
     var activeCount = 0;
 
-    // 1  ~ 900 ms
-    // 2  ~ 1800 ms
-    // 3  ~ 700 ms
-    // 4  ~ 1400 ms
-    // 5  ~ 500 ms
-    // 6  ~ 1000 ms
-    // 7  ~ 300 ms
-    // 8  ~ 600 ms
-    // 9  ~ 100 ms
-    // 10 ~ 200 ms
-
     final stream = Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).flatMap(
       (value) {
         return Rx.fromCallable(() {
           expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
 
-          final ms = value.isOdd ? ((10 - value) * 100) : ((11 - value) * 200);
+          final ms = value.isOdd ? ((10 - value) * 150) : ((11 - value) * 300);
           return Future.delayed(
             Duration(milliseconds: ms),
             () => value,
