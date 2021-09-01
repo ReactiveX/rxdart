@@ -2,7 +2,7 @@
 
 * Internal refactoring Stream Transformers: uses `Stream.multi`.
 * Add optional parameter `maxConcurrent` to `flatMap`.
-* Update to docs ([@c](https://github.com/AlexanderJohr)).
+* Update to docs ([@AlexanderJohr](https://github.com/AlexanderJohr)).
 * Bugfix: `onErrorReturnWith` drop data event after first error.
 
 ## 0.27.1
