@@ -89,6 +89,7 @@ void main() {
       emitsInOrder(<dynamic>[3, emitsDone]),
     );
   });
+
   test('Rx.flatMap accidental broadcast', () async {
     final controller = StreamController<int>();
 
