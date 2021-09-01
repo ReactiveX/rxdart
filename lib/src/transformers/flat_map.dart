@@ -135,7 +135,9 @@ extension FlatMapExtension<T> on Stream<T> {
   ///     RangeStream(1, 4)
   ///       .flatMapIterable((i) => Stream.fromIterable([[i]]))
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper) =>
-      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper))
+  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper,
+          {int? maxConcurrent}) =>
+      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper,
+              maxConcurrent: maxConcurrent))
           .expand((Iterable<S> iterable) => iterable);
 }
