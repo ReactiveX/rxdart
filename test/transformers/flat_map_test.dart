@@ -100,8 +100,9 @@ void main() {
     controller.add(1);
   });
 
-  test('Rx.flatMap(maxConcurrent: 1)', () async {
+  test('Rx.flatMap(maxConcurrent: 1)', () {
     {
+      // like asyncExpand
       final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
         (value) => Rx.timer(
           value,
@@ -113,6 +114,7 @@ void main() {
     }
 
     {
+      // emits error
       final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
         (value) => value == 1
             ? throw Exception()
@@ -127,6 +129,7 @@ void main() {
     }
 
     {
+      // emits error
       final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
         (value) => value == 1
             ? Stream<int>.error(Exception())
@@ -139,6 +142,63 @@ void main() {
       expect(stream,
           emitsInOrder(<Object>[emitsError(isException), 2, 3, 4, emitsDone]));
     }
+  });
+
+  test('Rx.flatMap(maxConcurrent: 2)', () {
+    const maxConcurrent = 2;
+    var activeCount = 0;
+
+    final stream = Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).flatMap(
+      (value) {
+        return Rx.fromCallable(() {
+          expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
+
+          final ms = value.isOdd ? ((10 - value) * 100) : ((11 - value) * 200);
+          return Future.delayed(
+            Duration(milliseconds: ms),
+            () => value,
+          );
+        }).doOnDone(() => --activeCount);
+      },
+      maxConcurrent: maxConcurrent,
+    );
+
+    expect(stream,
+        emitsInOrder(<Object>[1, 3, 2, 5, 4, 6, 7, 9, 10, 8, emitsDone]));
+  });
+
+  test('Rx.flatMap(maxConcurrent: 3)', () {
+    const maxConcurrent = 3;
+    var activeCount = 0;
+
+    // 1  ~ 900 ms
+    // 2  ~ 1800 ms
+    // 3  ~ 700 ms
+    // 4  ~ 1400 ms
+    // 5  ~ 500 ms
+    // 6  ~ 1000 ms
+    // 7  ~ 300 ms
+    // 8  ~ 600 ms
+    // 9  ~ 100 ms
+    // 10 ~ 200 ms
+
+    final stream = Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).flatMap(
+      (value) {
+        return Rx.fromCallable(() {
+          expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
+
+          final ms = value.isOdd ? ((10 - value) * 100) : ((11 - value) * 200);
+          return Future.delayed(
+            Duration(milliseconds: ms),
+            () => value,
+          );
+        }).doOnDone(() => --activeCount);
+      },
+      maxConcurrent: maxConcurrent,
+    );
+
+    expect(stream,
+        emitsInOrder(<Object>[3, 1, 5, 2, 7, 4, 9, 6, 10, 8, emitsDone]));
   });
 }
 
