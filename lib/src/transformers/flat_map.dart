@@ -71,9 +71,9 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   void onResume() => _subscriptions.forEach((s) => s.resume());
 }
 
-/// Converts each emitted item into a new Stream using the given mapper
-/// function. The newly created Stream will be listened to and begin
-/// emitting items downstream.
+/// Converts each emitted item into a new Stream using the given mapper function,
+/// while limiting the maximum number of concurrent subscriptions to these [Stream]s.
+/// The newly created Stream will be listened to and begin emitting items downstream.
 ///
 /// The items emitted by each of the new Streams are emitted downstream in the
 /// same order they arrive. In other words, the sequences are merged
@@ -90,7 +90,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   /// Method which converts incoming events into a new [Stream]
   final Stream<T> Function(S value) mapper;
 
-  /// TODO
+  /// Maximum number of inner [Stream] that may be listened to concurrently.
   final int? maxConcurrent;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
@@ -105,9 +105,9 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
 /// Extends the Stream class with the ability to convert the source Stream into
 /// a new Stream each time the source emits an item.
 extension FlatMapExtension<T> on Stream<T> {
-  /// Converts each emitted item into a Stream using the given mapper
-  /// function. The newly created Stream will be be listened to and begin
-  /// emitting items downstream.
+  /// Converts each emitted item into a Stream using the given mapper function,
+  /// while limiting the maximum number of concurrent subscriptions to these [Stream]s.
+  /// The newly created Stream will be be listened to and begin emitting items downstream.
   ///
   /// The items emitted by each of the Streams are emitted downstream in the
   /// same order they arrive. In other words, the sequences are merged
