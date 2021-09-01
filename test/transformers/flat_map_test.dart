@@ -102,7 +102,7 @@ void main() {
 
   test('Rx.flatMap(maxConcurrent: 1)', () {
     {
-      // like asyncExpand
+      // asyncExpand / concatMap
       final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
         (value) => Rx.timer(
           value,
