@@ -113,7 +113,7 @@ class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
 
   /// Constructs a [StreamTransformer] which delays the emission of items
   /// from the source [Stream] by a given time span determined by the emissions of another [Stream].
-  DelayWhenStreamTransformer(this.itemDelaySelector, [this.listenDelay]);
+  DelayWhenStreamTransformer(this.itemDelaySelector, {this.listenDelay});
 
   @override
   Stream<T> bind(Stream<T> stream) => forwardStream(
@@ -142,7 +142,10 @@ extension DelayWhenExtension<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2, 3])
   ///       .delayWhen((i) => Rx.timer(null, Duration(seconds: i)))
   ///       .listen(print); // [after 1 second] prints 1 [after 1 second] prints 2 [after 1 second] prints 3
-  Stream<T> delayWhen(Stream<void> Function(T) itemDelaySelector,
-          [Stream<void>? listenDelay]) =>
-      transform(DelayWhenStreamTransformer(itemDelaySelector, listenDelay));
+  Stream<T> delayWhen(
+    Stream<void> Function(T) itemDelaySelector, {
+    Stream<void>? listenDelay,
+  }) =>
+      transform(DelayWhenStreamTransformer(itemDelaySelector,
+          listenDelay: listenDelay));
 }
