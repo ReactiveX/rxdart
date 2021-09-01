@@ -99,6 +99,47 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.flatMap(maxConcurrent: 1)', () async {
+    {
+      final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
+        (value) => Rx.timer(
+          value,
+          Duration(milliseconds: (5 - value) * 100),
+        ),
+        maxConcurrent: 1,
+      );
+      expect(stream, emitsInOrder(<Object>[1, 2, 3, 4, emitsDone]));
+    }
+
+    {
+      final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
+        (value) => value == 1
+            ? throw Exception()
+            : Rx.timer(
+                value,
+                Duration(milliseconds: (5 - value) * 100),
+              ),
+        maxConcurrent: 1,
+      );
+      expect(stream,
+          emitsInOrder(<Object>[emitsError(isException), 2, 3, 4, emitsDone]));
+    }
+
+    {
+      final stream = Stream.fromIterable([1, 2, 3, 4]).flatMap(
+        (value) => value == 1
+            ? Stream<int>.error(Exception())
+            : Rx.timer(
+                value,
+                Duration(milliseconds: (5 - value) * 100),
+              ),
+        maxConcurrent: 1,
+      );
+      expect(stream,
+          emitsInOrder(<Object>[emitsError(isException), 2, 3, 4, emitsDone]));
+    }
+  });
 }
 
 Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
