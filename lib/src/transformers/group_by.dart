@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
+class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   final K Function(T event) grouper;
-  final Stream<void> Function(GroupByStream<T, K>)? duration;
+  final Stream<void> Function(GroupedStream<T, K>)? duration;
 
   final groups = <K, StreamController<T>>{};
   Map<K, StreamSubscription<void>>? subscriptions;
@@ -19,7 +19,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
 
   StreamController<T> _controllerBuilder(K key) {
     final groupedController = StreamController<T>.broadcast(sync: true);
-    final groupByStream = GroupByStream<T, K>(key, groupedController.stream);
+    final groupByStream = GroupedStream<T, K>(key, groupedController.stream);
 
     if (duration != null) {
       subscriptions?.remove(key)?.cancel();
@@ -84,65 +84,68 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupByStream<T, K>> {
 }
 
 /// The GroupBy operator divides a [Stream] that emits items into
-/// a [Stream] that emits [GroupByStream],
+/// a [Stream] that emits [GroupedStream],
 /// each one of which emits some subset of the items
 /// from the original source [Stream].
 ///
-/// [GroupByStream] acts like a regular [Stream], yet
+/// [GroupedStream] acts like a regular [Stream], yet
 /// adding a 'key' property, which receives its [Type] and value from
 /// the [_grouper] Function.
 ///
-/// All items with the same key are emitted by the same [GroupByStream].
+/// All items with the same key are emitted by the same [GroupedStream].
 class GroupByStreamTransformer<T, K>
-    extends StreamTransformerBase<T, GroupByStream<T, K>> {
-  /// Method which converts incoming events into a new [GroupByStream]
+    extends StreamTransformerBase<T, GroupedStream<T, K>> {
+  /// Method which converts incoming events into a new [GroupedStream]
   final K Function(T event) grouper;
 
   /// A function that returns an [Stream] to determine how long each group should exist.
   /// When the returned [Stream] emits its first data or done event,
   /// the group will be closed and removed.
-  final Stream<void> Function(GroupByStream<T, K> grouped)? duration;
+  final Stream<void> Function(GroupedStream<T, K> grouped)? durationSelector;
 
   /// Constructs a [StreamTransformer] which groups events from the source
-  /// [Stream] and emits them as [GroupByStream].
-  GroupByStreamTransformer(this.grouper, [this.duration]);
+  /// [Stream] and emits them as [GroupedStream].
+  GroupByStreamTransformer(this.grouper, {this.durationSelector});
 
   @override
-  Stream<GroupByStream<T, K>> bind(Stream<T> stream) =>
-      forwardStream(stream, () => _GroupByStreamSink<T, K>(grouper, duration));
+  Stream<GroupedStream<T, K>> bind(Stream<T> stream) => forwardStream(
+      stream, () => _GroupByStreamSink<T, K>(grouper, durationSelector));
 }
 
 /// The [Stream] used by [GroupByStreamTransformer], it contains events
 /// that are grouped by a key value.
-class GroupByStream<T, K> extends StreamView<T> {
+class GroupedStream<T, K> extends StreamView<T> {
   /// The key is the category to which all events in this group belong to.
   final K key;
 
   /// Constructs a [Stream] which only emits events that can be
   /// categorized under [key].
-  GroupByStream(this.key, Stream<T> stream) : super(stream);
+  GroupedStream(this.key, Stream<T> stream) : super(stream);
 
   @override
-  String toString() => 'GroupByStream{key: $key}';
+  String toString() => 'GroupedStream{key: $key}';
 }
 
 /// Extends the Stream class with the ability to convert events into Streams
 /// of events that are united by a key.
 extension GroupByExtension<T> on Stream<T> {
   /// The GroupBy operator divides a [Stream] that emits items into a [Stream]
-  /// that emits [GroupByStream], each one of which emits some subset of the
+  /// that emits [GroupedStream], each one of which emits some subset of the
   /// items from the original source [Stream].
   ///
-  /// [GroupByStream] acts like a regular [Stream], yet adding a 'key' property,
+  /// [GroupedStream] acts like a regular [Stream], yet adding a 'key' property,
   /// which receives its [Type] and value from the [grouper] Function.
   ///
-  /// All items with the same key are emitted by the same [GroupByStream].
+  /// All items with the same key are emitted by the same [GroupedStream].
   ///
-  /// Optionally, `groupBy` takes a second argument [duration].
-  /// [duration] is a function that returns an [Stream] to determine how long
+  /// Optionally, `groupBy` takes a second argument [durationSelector].
+  /// [durationSelector] is a function that returns an [Stream] to determine how long
   /// each group should exist. When the returned [Stream] emits its first data or done event,
   /// the group will be closed and removed.
-  Stream<GroupByStream<T, K>> groupBy<K>(K Function(T value) grouper,
-          [Stream<void> Function(GroupByStream<T, K> grouped)? duration]) =>
-      transform(GroupByStreamTransformer<T, K>(grouper, duration));
+  Stream<GroupedStream<T, K>> groupBy<K>(
+    K Function(T value) grouper, {
+    Stream<void> Function(GroupedStream<T, K> grouped)? durationSelector,
+  }) =>
+      transform(GroupByStreamTransformer<T, K>(grouper,
+          durationSelector: durationSelector));
 }

@@ -10,28 +10,28 @@ void main() {
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4]).groupBy((value) => value),
         emitsInOrder(<Matcher>[
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 1),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 2),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 3),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 4),
           emitsDone
         ]));
 
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
-            .groupBy((value) => value, (_) => Rx.never()),
+            .groupBy((value) => value, durationSelector: (_) => Rx.never()),
         emitsInOrder(<Matcher>[
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 1),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 2),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 3),
-          TypeMatcher<GroupByStream<int, int>>()
+          TypeMatcher<GroupedStream<int, int>>()
               .having((stream) => stream.key, 'key', 4),
           emitsDone
         ]));
@@ -52,8 +52,11 @@ void main() {
 
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
-            .groupBy((value) => _toEventOdd(value % 2),
-                (_) => Stream.periodic(const Duration(seconds: 1)))
+            .groupBy(
+              (value) => _toEventOdd(value % 2),
+              durationSelector: (_) =>
+                  Stream.periodic(const Duration(seconds: 1)),
+            )
             .flatMap((stream) => stream.map((event) => {stream.key: event})),
         emitsInOrder(<dynamic>[
           {'odd': 1},
@@ -85,8 +88,11 @@ void main() {
 
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
-            .groupBy((value) => _toEventOdd(value % 2),
-                (_) => Stream.periodic(const Duration(seconds: 1)))
+            .groupBy(
+              (value) => _toEventOdd(value % 2),
+              durationSelector: (_) =>
+                  Stream.periodic(const Duration(seconds: 1)),
+            )
             // fold is called when onDone triggers on the Stream
             .map((stream) async => await stream.fold(
                 {stream.key: <int>[]},
@@ -113,7 +119,7 @@ void main() {
 
     await expectLater(
         Stream.fromIterable([1, 2, 3, 4])
-            .groupBy((value) => value, (_) => Rx.never())
+            .groupBy((value) => value, durationSelector: (_) => Rx.never())
             // drain will emit 'done' onDone
             .map((stream) async => await stream.drain('done')),
         emitsInOrder(<dynamic>['done', 'done', 'done', 'done', emitsDone]));
@@ -133,10 +139,12 @@ void main() {
     }
 
     {
-      final stream = Stream.fromIterable([1, 2, 3, 4])
-          .asBroadcastStream()
-          .groupBy((value) => value,
-              (_) => Stream.periodic(const Duration(seconds: 2)));
+      final stream =
+          Stream.fromIterable([1, 2, 3, 4]).asBroadcastStream().groupBy(
+                (value) => value,
+                durationSelector: (_) =>
+                    Stream.periodic(const Duration(seconds: 2)),
+              );
 
       // listen twice on same stream
       stream.listen(null);
@@ -170,8 +178,10 @@ void main() {
       late StreamSubscription subscription;
 
       subscription = Stream.fromIterable([1, 2, 3, 4])
-          .groupBy((value) => value,
-              (_) => Rx.timer(null, const Duration(seconds: 1)))
+          .groupBy(
+            (value) => value,
+            durationSelector: (_) => Rx.timer(null, const Duration(seconds: 1)),
+          )
           .listen(expectAsync1((result) {
             count++;
 
@@ -199,7 +209,7 @@ void main() {
     {
       final streamWithError = Stream<void>.error(Exception()).groupBy(
         (value) => value,
-        (_) => Rx.timer(null, const Duration(seconds: 1)),
+        durationSelector: (_) => Rx.timer(null, const Duration(seconds: 1)),
       );
 
       streamWithError.listen(null,
@@ -225,7 +235,7 @@ void main() {
     {
       final streamWithError = Stream.fromIterable([1, 2, 3, 4]).groupBy(
         (value) => throw Exception(),
-        (_) => Rx.timer(null, const Duration(seconds: 1)),
+        durationSelector: (_) => Rx.timer(null, const Duration(seconds: 1)),
       );
 
       streamWithError.listen(null,
@@ -251,7 +261,7 @@ void main() {
 
       final stream = controller.stream.groupBy(
         (_) => _,
-        (_) => Rx.timer(null, const Duration(seconds: 1)),
+        durationSelector: (_) => Rx.timer(null, const Duration(seconds: 1)),
       );
 
       stream.listen(null);
@@ -275,7 +285,8 @@ void main() {
     final stream = Stream.periodic(const Duration(milliseconds: 100), (i) => i)
         .groupBy(
           (i) => i % 3,
-          (i) => Rx.timer(null, const Duration(milliseconds: 400)),
+          durationSelector: (i) =>
+              Rx.timer(null, const Duration(milliseconds: 400)),
         )
         .flatMap((g) => g
             .scan<int>((acc, value, index) => acc + 1, 0)
