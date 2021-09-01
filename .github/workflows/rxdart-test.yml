@@ -3,8 +3,10 @@ name: Dart CI
 on:
   push:
     branches: [ master ]
+    paths-ignore: [ '**.md' ]
   pull_request:
     branches: [ master ]
+    paths-ignore: [ '**.md' ]
 
 jobs:
   build:
@@ -13,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        container: ['google/dart:latest', 'google/dart:dev']
+        container: [ 'google/dart:latest', 'google/dart:dev' ]
 
     container:
       image: ${{ matrix.container }}
@@ -38,7 +40,7 @@ jobs:
         run: pub global activate coverage
 
       - name: Run tests
-        run: pub run test test/rxdart_test.dart
+        run: pub run test test/rxdart_test.dart --chain-stack-traces
 
       - name: Start Observatory
         run: dart
