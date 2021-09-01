@@ -21,7 +21,7 @@ import 'package:rxdart/src/subjects/subject.dart';
 ///     subject.add(2);
 ///
 ///     // observer2 will only receive 3 and done event
-///     subject.stream.listen(observe2);
+///     subject.stream.listen(observer2);
 ///     subject.add(3);
 ///     subject.close();
 class PublishSubject<T> extends Subject<T> {

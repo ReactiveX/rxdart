@@ -5,40 +5,40 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> Function(Object error, StackTrace stackTrace) _recoveryFn;
-  var _inRecovery = false;
   final List<StreamSubscription<S>> _recoverySubscriptions = [];
+  var closed = false;
 
   _OnErrorResumeStreamSink(this._recoveryFn);
 
   @override
-  void onData(S data) {
-    if (!_inRecovery) {
-      sink.add(data);
-    }
-  }
+  void onData(S data) => sink.add(data);
 
   @override
   void onError(Object e, StackTrace st) {
-    _inRecovery = true;
+    final Stream<S> recoveryStream;
 
-    final recoveryStream = _recoveryFn(e, st);
-    late StreamSubscription<S> subscription;
+    try {
+      recoveryStream = _recoveryFn(e, st);
+    } catch (newError, newSt) {
+      sink.addError(newError, newSt);
+      return;
+    }
 
-    subscription = recoveryStream.listen(
-      sink.add,
-      onError: sink.addError,
-      onDone: () {
-        _recoverySubscriptions.remove(subscription);
+    final subscription =
+        recoveryStream.listen(sink.add, onError: sink.addError);
+    subscription.onDone(() {
+      _recoverySubscriptions.remove(subscription);
+      if (closed && _recoverySubscriptions.isEmpty) {
         sink.close();
-      },
-    );
-
+      }
+    });
     _recoverySubscriptions.add(subscription);
   }
 
   @override
   void onDone() {
-    if (!_inRecovery) {
+    closed = true;
+    if (_recoverySubscriptions.isEmpty) {
       sink.close();
     }
   }

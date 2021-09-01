@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
+  final int? maxConcurrent;
+
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
-  int _openSubscriptions = 0;
+  final Queue<Stream<T>> queue = DoubleLinkedQueue();
   bool _inputClosed = false;
 
-  _FlatMapStreamSink(this._mapper);
+  _FlatMapStreamSink(this._mapper, this.maxConcurrent);
 
   @override
   void onData(S data) {
@@ -21,23 +24,24 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
       return;
     }
 
-    _openSubscriptions++;
+    if (maxConcurrent != null && _subscriptions.length >= maxConcurrent!) {
+      queue.addLast(mappedStream);
+    } else {
+      listenInner(mappedStream);
+    }
+  }
 
-    late StreamSubscription<T> subscription;
+  void listenInner(Stream<T> mappedStream) {
+    final subscription = mappedStream.listen(sink.add, onError: sink.addError);
+    subscription.onDone(() {
+      _subscriptions.remove(subscription);
 
-    subscription = mappedStream.listen(
-      sink.add,
-      onError: sink.addError,
-      onDone: () {
-        _openSubscriptions--;
-        _subscriptions.remove(subscription);
-
-        if (_inputClosed && _openSubscriptions == 0) {
-          sink.close();
-        }
-      },
-    );
-
+      if (queue.isNotEmpty) {
+        listenInner(queue.removeFirst());
+      } else if (_inputClosed && _subscriptions.isEmpty) {
+        sink.close();
+      }
+    });
     _subscriptions.add(subscription);
   }
 
@@ -48,7 +52,7 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   void onDone() {
     _inputClosed = true;
 
-    if (_openSubscriptions == 0) {
+    if (_subscriptions.isEmpty) {
       sink.close();
     }
   }
@@ -67,9 +71,9 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   void onResume() => _subscriptions.forEach((s) => s.resume());
 }
 
-/// Converts each emitted item into a new Stream using the given mapper
-/// function. The newly created Stream will be listened to and begin
-/// emitting items downstream.
+/// Converts each emitted item into a new Stream using the given mapper function,
+/// while limiting the maximum number of concurrent subscriptions to these [Stream]s.
+/// The newly created Stream will be listened to and begin emitting items downstream.
 ///
 /// The items emitted by each of the new Streams are emitted downstream in the
 /// same order they arrive. In other words, the sequences are merged
@@ -86,21 +90,24 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   /// Method which converts incoming events into a new [Stream]
   final Stream<T> Function(S value) mapper;
 
+  /// Maximum number of inner [Stream] that may be listened to concurrently.
+  final int? maxConcurrent;
+
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
   /// The mapped [Stream] will be listened to and begin emitting items downstream.
-  FlatMapStreamTransformer(this.mapper);
+  FlatMapStreamTransformer(this.mapper, {this.maxConcurrent});
 
   @override
   Stream<T> bind(Stream<S> stream) =>
-      forwardStream(stream, () => _FlatMapStreamSink(mapper));
+      forwardStream(stream, () => _FlatMapStreamSink(mapper, maxConcurrent));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream into
 /// a new Stream each time the source emits an item.
 extension FlatMapExtension<T> on Stream<T> {
-  /// Converts each emitted item into a Stream using the given mapper
-  /// function. The newly created Stream will be be listened to and begin
-  /// emitting items downstream.
+  /// Converts each emitted item into a Stream using the given mapper function,
+  /// while limiting the maximum number of concurrent subscriptions to these [Stream]s.
+  /// The newly created Stream will be be listened to and begin emitting items downstream.
   ///
   /// The items emitted by each of the Streams are emitted downstream in the
   /// same order they arrive. In other words, the sequences are merged
@@ -111,8 +118,10 @@ extension FlatMapExtension<T> on Stream<T> {
   ///     RangeStream(4, 1)
   ///       .flatMap((i) => TimerStream(i, Duration(minutes: i)))
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<S> flatMap<S>(Stream<S> Function(T value) mapper) =>
-      transform(FlatMapStreamTransformer<T, S>(mapper));
+  Stream<S> flatMap<S>(Stream<S> Function(T value) mapper,
+          {int? maxConcurrent}) =>
+      transform(
+          FlatMapStreamTransformer<T, S>(mapper, maxConcurrent: maxConcurrent));
 
   /// Converts each item into a Stream. The Stream must return an
   /// Iterable. Then, each item from the Iterable will be emitted one by one.
@@ -126,7 +135,9 @@ extension FlatMapExtension<T> on Stream<T> {
   ///     RangeStream(1, 4)
   ///       .flatMapIterable((i) => Stream.fromIterable([[i]]))
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper) =>
-      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper))
+  Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper,
+          {int? maxConcurrent}) =>
+      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper,
+              maxConcurrent: maxConcurrent))
           .expand((Iterable<S> iterable) => iterable);
 }
