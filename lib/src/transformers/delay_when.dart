@@ -102,8 +102,18 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 /// ### Example
 ///
 ///     Stream.fromIterable([1, 2, 3])
-///       .delayWhen((i) => Rx.timer(null, Duration(seconds: i)))
-///       .listen(print); // [after 1 second] prints 1 [after 1 second] prints 2 [after 1 second] prints 3
+///       .transform(DelayWhenStreamTransformer(
+///           (i) => Rx.timer(null, Duration(seconds: i))))
+///       .listen(print); // [after 1s] prints 1 [after 1s] prints 2 [after 1s] prints 3
+///
+///     Stream.fromIterable([1, 2, 3])
+///       .transform(
+///          DelayWhenStreamTransformer(
+///            (i) => Rx.timer(null, Duration(seconds: i)),
+///            listenDelay: Rx.timer(null, Duration(seconds: 2)),
+///          ),
+///       )
+///       .listen(print); // [after 3s] prints 1 [after 1s] prints 2 [after 1s] prints 3
 class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// A function used to determine delay time span for each data event.
   final Stream<void> Function(T) itemDelaySelector;
@@ -141,7 +151,14 @@ extension DelayWhenExtension<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1, 2, 3])
   ///       .delayWhen((i) => Rx.timer(null, Duration(seconds: i)))
-  ///       .listen(print); // [after 1 second] prints 1 [after 1 second] prints 2 [after 1 second] prints 3
+  ///       .listen(print); // [after 1s] prints 1 [after 1s] prints 2 [after 1s] prints 3
+  ///
+  ///     Stream.fromIterable([1, 2, 3])
+  ///       .delayWhen(
+  ///          (i) => Rx.timer(null, Duration(seconds: i)),
+  ///          listenDelay: Rx.timer(null, Duration(seconds: 2)),
+  ///       )
+  ///       .listen(print); // [after 3s] prints 1 [after 1s] prints 2 [after 1s] prints 3
   Stream<T> delayWhen(
     Stream<void> Function(T) itemDelaySelector, {
     Stream<void>? listenDelay,
