@@ -1,3 +1,7 @@
+## 0.27.2
+
+* Add optional parameter `maxConcurrent` to `flatMap`.
+
 ## 0.27.1
 
 * Bugfix: `ForkJoinStream` throws `Null check operator used on a null value` when using nullable-type.

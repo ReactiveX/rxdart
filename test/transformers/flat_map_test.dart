@@ -168,7 +168,7 @@ void main() {
         emitsInOrder(<Object>[1, 3, 2, 5, 4, 6, 7, 9, 10, 8, emitsDone]));
   });
 
-  test('Rx.flatMap(maxConcurrent: 3)', () {
+  test('Rx.flatMap(maxConcurrent: 3)', () async {
     const maxConcurrent = 3;
     var activeCount = 0;
 
@@ -177,7 +177,7 @@ void main() {
         return Rx.fromCallable(() {
           expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
 
-          final ms = value.isOdd ? ((10 - value) * 150) : ((11 - value) * 300);
+          final ms = value.isOdd ? ((10 - value) * 240) : ((11 - value) * 360);
           return Future.delayed(
             Duration(milliseconds: ms),
             () => value,
@@ -188,7 +188,7 @@ void main() {
     );
 
     expect(stream,
-        emitsInOrder(<Object>[3, 1, 5, 2, 7, 4, 9, 6, 10, 8, emitsDone]));
+        emitsInOrder(<Object>[3, 1, 2, 5, 7, 4, 9, 10, 6, 8, emitsDone]));
   });
 }
 
