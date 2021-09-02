@@ -41,7 +41,12 @@ Stream<R> _forwardMulti<T, R>(
 
     final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
-      futureOrVoid.then(listenToUpstream);
+      futureOrVoid.then(listenToUpstream).onError<Object>((e, s) {
+        if (!cancelled && !controller.isClosed) {
+          controller.addError(e, s);
+          controller.close();
+        }
+      });
     } else {
       listenToUpstream();
     }
@@ -94,7 +99,12 @@ Stream<R> _forward<T, R>(
     sink.setSink(controller);
     final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
-      futureOrVoid.then(listenToUpstream);
+      futureOrVoid.then(listenToUpstream).onError<Object>((e, s) {
+        if (!cancelled && !controller.isClosed) {
+          controller.addError(e, s);
+          controller.close();
+        }
+      });
     } else {
       listenToUpstream();
     }
