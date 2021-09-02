@@ -27,6 +27,11 @@ void main() {
         onDone: expectAsync0(() {
           expect(hasReceivedEvent, isFalse);
         }, count: 1));
+
+    expect(
+      _getStream().ignoreElements(),
+      emitsInOrder(<Object>[emitsDone]),
+    );
   });
 
   test('Rx.ignoreElements.reusable', () async {
