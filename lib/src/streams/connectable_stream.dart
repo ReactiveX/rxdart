@@ -263,25 +263,28 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
       _source.cancel().then<void>((_) => _subject.close());
 
   @override
-  Future<E> asFuture<E>([E? futureValue]) => _source.asFuture(futureValue);
+  Never asFuture<E>([E? futureValue]) => _unsupportedError();
 
   @override
   bool get isPaused => _source.isPaused;
 
   @override
-  void onData(void Function(T data)? handleData) => _source.onData(handleData);
+  Never onData(void Function(T data)? handleData) => _unsupportedError();
 
   @override
-  void onDone(void Function()? handleDone) => _source.onDone(handleDone);
+  Never onDone(void Function()? handleDone) => _unsupportedError();
 
   @override
-  void onError(Function? handleError) => _source.onError(handleError);
+  Never onError(Function? handleError) => _unsupportedError();
 
   @override
   void pause([Future<void>? resumeSignal]) => _source.pause(resumeSignal);
 
   @override
   void resume() => _source.resume();
+
+  Never _unsupportedError() => throw UnsupportedError(
+      'Cannot change handlers of ConnectableStreamSubscription.');
 }
 
 /// Extends the Stream class with the ability to transform a single-subscription
