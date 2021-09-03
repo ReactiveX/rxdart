@@ -18,12 +18,16 @@ class _IgnoreElementsStreamSink<S> implements EventSink<S> {
 /// Creates a [Stream] where all emitted items are ignored, only the
 /// error / completed notifications are passed
 ///
+/// [ReactiveX doc](http://reactivex.io/documentation/operators/ignoreelements.html)
+/// [Interactive marble diagram](https://rxmarbles.com/#ignoreElements)
+///
 /// ### Example
 ///
 ///     MergeStream([
 ///       Stream.fromIterable([1]),
 ///       ErrorStream(Exception())
 ///     ])
+///     .transform(IgnoreElementsStreamTransformer())
 ///     .listen(print, onError: print); // prints Exception
 class IgnoreElementsStreamTransformer<S>
     extends StreamTransformerBase<S, Never> {
@@ -41,12 +45,16 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   /// Creates a Stream where all emitted items are ignored, only the error /
   /// completed notifications are passed
   ///
+  /// [ReactiveX doc](http://reactivex.io/documentation/operators/ignoreelements.html)
+  /// [Interactive marble diagram](https://rxmarbles.com/#ignoreElements)
+  ///
   /// ### Example
   ///
   ///    MergeStream([
   ///      Stream.fromIterable([1]),
   ///      Stream.error(Exception())
   ///    ])
+  ///    .ignoreElements()
   ///    .listen(print, onError: print); // prints Exception
   Stream<Never> ignoreElements() =>
       transform(IgnoreElementsStreamTransformer<T>());

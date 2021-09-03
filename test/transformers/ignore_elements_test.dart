@@ -34,6 +34,26 @@ void main() {
     );
   });
 
+  test('Rx.ignoreElements.cast', () {
+    final ignored = _getStream().ignoreElements();
+
+    expect(ignored, isA<Stream<void>>());
+    expect(ignored, isA<Stream<Null>>());
+    expect(ignored, isA<Stream<int>>());
+    expect(ignored, isA<Stream<int?>>());
+    expect(ignored, isA<Stream<Object>>());
+    expect(ignored, isA<Stream<Object?>>());
+
+    ignored as Stream<void>; // ignore: unnecessary_cast
+    ignored as Stream<Null>; // ignore: unnecessary_cast
+    ignored as Stream<int>; // ignore: unnecessary_cast
+    ignored as Stream<int?>; // ignore: unnecessary_cast
+    ignored as Stream<Object>; // ignore: unnecessary_cast
+    ignored as Stream<Object?>; // ignore: unnecessary_cast
+
+    expect(true, true);
+  });
+
   test('Rx.ignoreElements.reusable', () async {
     final transformer = IgnoreElementsStreamTransformer<int>();
     var hasReceivedEvent = false;
