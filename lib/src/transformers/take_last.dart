@@ -26,7 +26,7 @@ class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   void onDone() {
-    queue.forEach(sink.add);
+    queue.toList(growable: false).forEach(sink.add);
     sink.close();
   }
 
