@@ -50,12 +50,12 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   ///
   /// ### Example
   ///
-  ///    MergeStream([
-  ///      Stream.fromIterable([1]),
-  ///      Stream.error(Exception())
-  ///    ])
-  ///    .ignoreElements()
-  ///    .listen(print, onError: print); // prints Exception
+  ///     MergeStream([
+  ///       Stream.fromIterable([1]),
+  ///       Stream<int>.error(Exception())
+  ///     ])
+  ///     .ignoreElements()
+  ///     .listen(print, onError: print); // prints Exception
   Stream<Never> ignoreElements() =>
       transform(IgnoreElementsStreamTransformer<T>());
 }
