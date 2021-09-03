@@ -84,4 +84,18 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.takeLast.cancel', () {
+    final subscription =
+        Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3).listen(null);
+    subscription.onData(
+      expectAsync1(
+        (event) {
+          subscription.cancel();
+          expect(event, 3);
+        },
+        count: 1,
+      ),
+    );
+  }, timeout: const Timeout(Duration(seconds: 2)));
 }

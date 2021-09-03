@@ -8,6 +8,9 @@
   * Rename `GroupByStream` to `GroupedStream`.
   * Add optional parameter `durationSelector`, which used to determine how long each group should exist.
 * Add `delayWhen` operator.
+* Update `ignoreElements`
+  * Remove `@deprecated` annotation (`ignoreElements` should not be marked as deprecated).
+  * Change return type to `Stream<Never>`.
 
 ## 0.27.1
 
