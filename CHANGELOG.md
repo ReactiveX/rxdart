@@ -1,17 +1,28 @@
 ## 0.27.2
 
-* Internal refactoring Stream Transformers: uses `Stream.multi`.
+### Bug fixes
+
+* `onErrorReturnWith` now does not drop remaining data event after the first error.
+* Disallow changing handlers of `ConnectableStreamSubscription`.
+
+### Features
+
+* Add `delayWhen` operator.
 * Add optional parameter `maxConcurrent` to `flatMap`.
-* Update to docs ([@AlexanderJohr](https://github.com/AlexanderJohr)).
-* Bugfix: `onErrorReturnWith` drops remaining data event after the first error.
-* Update `groupBy`
+* `groupBy`
   * Rename `GroupByStream` to `GroupedStream`.
   * Add optional parameter `durationSelector`, which used to determine how long each group should exist.
-* Add `delayWhen` operator.
-* Update `ignoreElements`
+* `ignoreElements`
   * Remove `@deprecated` annotation (`ignoreElements` should not be marked as deprecated).
   * Change return type to `Stream<Never>`.
-* Disallow changing handlers of `ConnectableStreamSubscription`.
+
+### Documentation
+
+* Update to docs (thanks to [@AlexanderJohr](https://github.com/AlexanderJohr)).
+
+### Code refactoring
+
+* Refactoring Stream Transformers, using `Stream.multi` internally.
 
 ## 0.27.1
 
