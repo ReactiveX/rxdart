@@ -2,7 +2,7 @@
 
 ### Bug fixes
 
-* `onErrorReturnWith` now does not drop remaining data event after the first error.
+* `onErrorReturnWith` now does not drop the remaining data events after the first error.
 * Disallow changing handlers of `ConnectableStreamSubscription`.
 
 ### Features
@@ -18,7 +18,7 @@
 
 ### Documentation
 
-* Update to docs (thanks to [@AlexanderJohr](https://github.com/AlexanderJohr)).
+* Update to `PublishSubject`'s docs (thanks to [@AlexanderJohr](https://github.com/AlexanderJohr)).
 
 ### Code refactoring
 
