@@ -11,6 +11,7 @@
 * Update `ignoreElements`
   * Remove `@deprecated` annotation (`ignoreElements` should not be marked as deprecated).
   * Change return type to `Stream<Never>`.
+* Disallow changing handlers of `ConnectableStreamSubscription`.
 
 ## 0.27.1
 
