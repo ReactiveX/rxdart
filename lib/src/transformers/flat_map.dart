@@ -9,13 +9,21 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final int? maxConcurrent;
 
   final List<StreamSubscription<T>> _subscriptions = <StreamSubscription<T>>[];
-  final Queue<Stream<T>> queue = DoubleLinkedQueue();
+  final Queue<S> queue = DoubleLinkedQueue();
   bool _inputClosed = false;
 
   _FlatMapStreamSink(this._mapper, this.maxConcurrent);
 
   @override
   void onData(S data) {
+    if (maxConcurrent != null && _subscriptions.length >= maxConcurrent!) {
+      queue.addLast(data);
+    } else {
+      listenInner(data);
+    }
+  }
+
+  void listenInner(S data) {
     final Stream<T> mappedStream;
     try {
       mappedStream = _mapper(data);
@@ -24,14 +32,6 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
       return;
     }
 
-    if (maxConcurrent != null && _subscriptions.length >= maxConcurrent!) {
-      queue.addLast(mappedStream);
-    } else {
-      listenInner(mappedStream);
-    }
-  }
-
-  void listenInner(Stream<T> mappedStream) {
     final subscription = mappedStream.listen(sink.add, onError: sink.addError);
     subscription.onDone(() {
       _subscriptions.remove(subscription);
@@ -58,8 +58,13 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr<void> onCancel() =>
-      Future.wait<dynamic>(_subscriptions.map((s) => s.cancel()));
+  FutureOr<void>? onCancel() {
+    queue.clear();
+
+    final futures =
+        _subscriptions.map((s) => s.cancel()).toList(growable: false);
+    return futures.isNotEmpty ? Future.wait(futures) : null;
+  }
 
   @override
   void onListen() {}
@@ -91,6 +96,7 @@ class FlatMapStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   final Stream<T> Function(S value) mapper;
 
   /// Maximum number of inner [Stream] that may be listened to concurrently.
+  /// If it's `null`, it means unlimited.
   final int? maxConcurrent;
 
   /// Constructs a [StreamTransformer] which emits events from the source [Stream] using the given [mapper].
