@@ -190,6 +190,41 @@ void main() {
     await expectLater(stream,
         emitsInOrder(<Object>[3, 1, 2, 5, 7, 4, 9, 10, 6, 8, emitsDone]));
   });
+
+  test('Rx.flatMap.cancel', () {
+    _getStream()
+        .flatMap(_getOtherStream)
+        .listen(expectAsync1((data) {}, count: 0))
+        .cancel();
+  }, timeout: const Timeout(Duration(milliseconds: 500)));
+
+  test('Rx.flatMap(maxConcurrent: 1).cancel', () {
+    _getStream()
+        .flatMap(_getOtherStream, maxConcurrent: 1)
+        .listen(expectAsync1((data) {}, count: 0))
+        .cancel();
+  }, timeout: const Timeout(Duration(milliseconds: 500)));
+
+  test('Rx.flatMap.take.cancel', () {
+    _getStream()
+        .flatMap(_getOtherStream)
+        .take(1)
+        .listen(expectAsync1((data) => expect(data, 3), count: 1));
+  }, timeout: const Timeout(Duration(milliseconds: 500)));
+
+  test('Rx.flatMap(maxConcurrent: 1).take.cancel', () {
+    _getStream()
+        .flatMap(_getOtherStream, maxConcurrent: 1)
+        .take(1)
+        .listen(expectAsync1((data) => expect(data, 1), count: 1));
+  }, timeout: const Timeout(Duration(milliseconds: 500)));
+
+  test('Rx.flatMap(maxConcurrent: 2).take.cancel', () {
+    _getStream()
+        .flatMap(_getOtherStream, maxConcurrent: 2)
+        .take(1)
+        .listen(expectAsync1((data) => expect(data, 2), count: 1));
+  }, timeout: const Timeout(Duration(milliseconds: 500)));
 }
 
 Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
