@@ -19,7 +19,7 @@ void main() {
         Stream.fromIterable(values).doOnData((_) => count++).takeLast(0);
     await expectLater(
       stream,
-      emits(emitsDone),
+      emitsInOrder(<Object>[emitsDone]),
     );
     expect(count, equals(values.length));
   });
@@ -97,5 +97,5 @@ void main() {
         count: 1,
       ),
     );
-  }, timeout: const Timeout(Duration(seconds: 2)));
+  }, timeout: const Timeout(Duration(seconds: 1)));
 }
