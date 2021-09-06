@@ -13,10 +13,9 @@ class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
   @override
   void onData(T data) {
     if (count > 0) {
-      queue.add(data);
-
+      queue.addLast(data);
       if (queue.length > count) {
-        queue.removeFirstElements(queue.length - count);
+        queue.removeFirst();
       }
     }
   }
@@ -26,7 +25,9 @@ class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   void onDone() {
-    queue.toList(growable: false).forEach(sink.add);
+    if (queue.isNotEmpty) {
+      queue.toList(growable: false).forEach(sink.add);
+    }
     sink.close();
   }
 
@@ -79,13 +80,4 @@ extension TakeLastExtension<T> on Stream<T> {
   ///       .listen(print); // prints 3, 4, 5
   Stream<T> takeLast(int count) =>
       transform(TakeLastStreamTransformer<T>(count));
-}
-
-extension _RemoveFirstNQueueExtension<T> on Queue<T> {
-  /// Removes the first [count] elements of this queue.
-  void removeFirstElements(int count) {
-    for (var i = 0; i < count; i++) {
-      removeFirst();
-    }
-  }
 }
