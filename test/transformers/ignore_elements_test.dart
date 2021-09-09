@@ -45,7 +45,7 @@ void main() {
     expect(ignored, isA<Stream<Object?>>());
 
     ignored as Stream<void>; // ignore: unnecessary_cast
-    ignored as Stream<void>; // ignore: unnecessary_cast, prefer_void_to_null
+    ignored as Stream<Null>; // ignore: unnecessary_cast, prefer_void_to_null
     ignored as Stream<int>; // ignore: unnecessary_cast
     ignored as Stream<int?>; // ignore: unnecessary_cast
     ignored as Stream<Object>; // ignore: unnecessary_cast
