@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Merges the specified streams into one stream sequence using the given
 /// zipper Function whenever all of the stream sequences have produced
 /// an element at a corresponding index.
@@ -292,15 +294,15 @@ class ZipStream<T, R> extends StreamView<R> {
             var index = 0;
 
             // resets variables for the next zip window
-            final next = () {
+            void next() {
               completeCurrent?.complete(null);
 
               completeCurrent = Completer<List<T>?>();
 
               pendingSubscriptions = subscriptions.toList();
-            };
+            }
 
-            final doUpdate = (int index) => (T value) {
+            void Function(T value) doUpdate(int index) => (T value) {
                   window.onValue(index, value);
 
                   if (window.isComplete) {
@@ -335,12 +337,9 @@ class ZipStream<T, R> extends StreamView<R> {
             controller.addError(e, s);
           }
         },
-        onPause: () => pendingSubscriptions
-            .forEach((subscription) => subscription.pause()),
-        onResume: () => pendingSubscriptions
-            .forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait<dynamic>(
-            subscriptions.map((subscription) => subscription.cancel())));
+        onPause: () => pendingSubscriptions.pauseAll(),
+        onResume: () => pendingSubscriptions.resumeAll(),
+        onCancel: () => pendingSubscriptions.cancelAll());
 
     return controller;
   }

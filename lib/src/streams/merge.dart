@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Flattens the items emitted by the given streams into a single Stream
 /// sequence.
 ///
@@ -43,23 +45,20 @@ class MergeStream<T> extends Stream<T> {
         onListen: () {
           var completed = 0;
 
-          final onDone = () {
+          void onDone() {
             completed++;
 
             if (completed == len) controller.close();
-          };
+          }
 
           subscriptions = streams
               .map((s) => s.listen(controller.add,
                   onError: controller.addError, onDone: onDone))
               .toList(growable: false);
         },
-        onPause: () =>
-            subscriptions.forEach((subscription) => subscription.pause()),
-        onResume: () =>
-            subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait(
-            subscriptions.map((subscription) => subscription.cancel())));
+        onPause: () => subscriptions.pauseAll(),
+        onResume: () => subscriptions.resumeAll(),
+        onCancel: () => subscriptions.cancelAll());
 
     return controller;
   }

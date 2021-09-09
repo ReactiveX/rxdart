@@ -145,8 +145,8 @@ void main() {
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 4, emitsDone]));
 
-    await Future<Null>.delayed(const Duration(milliseconds: 150)).whenComplete(
+    await Future<void>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription
-            .pause(Future<Null>.delayed(const Duration(milliseconds: 150))));
+            .pause(Future<void>.delayed(const Duration(milliseconds: 150))));
   });
 }

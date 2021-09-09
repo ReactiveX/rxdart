@@ -68,7 +68,8 @@ void main() {
 
     void startWatch() => watch = Stopwatch()..start();
 
-    final delay = () => Future<void>.delayed(const Duration(milliseconds: 200));
+    Future<void> delay() =>
+        Future<void>.delayed(const Duration(milliseconds: 200));
 
     void stopWatch() => elapses = elapses + watch.elapsed;
 

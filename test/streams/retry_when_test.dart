@@ -106,7 +106,7 @@ void main() {
 
   test('RetryWhenStream.cancel.ensureSubStreamCancels', () async {
     var isCancelled = false, didStopEmitting = true;
-    final subStream = (Object e, StackTrace s) =>
+    Stream<int> subStream(Object e, StackTrace s) =>
         Stream.periodic(const Duration(milliseconds: 100), (count) => count)
             .doOnData((_) {
           if (isCancelled) {
@@ -169,7 +169,7 @@ Stream<int> Function() _sourceStream(int i, [int? throwAt]) {
 Stream<void> _alwaysThrow(dynamic e, StackTrace s) =>
     Stream<void>.error(Error(), StackTrace.fromString('S'));
 
-Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value('');
+Stream<void> _neverThrow(dynamic e, StackTrace s) => Stream.value(null);
 
 Stream<int> Function() _getStreamWithExtras(int failCount) {
   var count = 0;
@@ -192,18 +192,18 @@ Stream<int> Function() _getStreamWithExtras(int failCount) {
 
 /// Returns an [Iterable] sequence of [int]s.
 ///
-/// If only one argument is provided, [start_or_stop] is the upper bound for
+/// If only one argument is provided, [startOrStop] is the upper bound for
 /// the sequence. If two or more arguments are provided, [stop] is the upper
 /// bound.
 ///
-/// The sequence starts at 0 if one argument is provided, or [start_or_stop] if
+/// The sequence starts at 0 if one argument is provided, or [startOrStop] if
 /// two or more arguments are provided. The sequence increments by 1, or [step]
 /// if provided. [step] can be negative, in which case the sequence counts down
 /// from the starting point and [stop] must be less than the starting point so
 /// that it becomes the lower bound.
-Iterable<int> range(int start_or_stop, [int? stop, int? step]) sync* {
-  final start = stop == null ? 0 : start_or_stop;
-  stop ??= start_or_stop;
+Iterable<int> range(int startOrStop, [int? stop, int? step]) sync* {
+  final start = stop == null ? 0 : startOrStop;
+  stop ??= startOrStop;
   step ??= 1;
 
   if (step == 0) throw ArgumentError('step cannot be 0');

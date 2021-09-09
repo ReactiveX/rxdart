@@ -52,29 +52,29 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
     controller = StreamController<bool>(
         sync: true,
         onListen: () {
-          final emitAndClose = ([bool value = true]) => controller
+          void emitAndClose([bool value = true]) => controller
             ..add(value)
             ..close();
 
-          final compare = (Notification<S> s, Notification<T> t) {
+          bool compare(Notification<S> s, Notification<T> t) {
             if (s.kind != t.kind) {
               return false;
             }
             switch (s.kind) {
-              case Kind.OnData:
+              case Kind.onData:
                 return dataEquals!(
                   s.requireData,
                   t.requireData,
                 );
-              case Kind.OnDone:
+              case Kind.onDone:
                 return true;
-              case Kind.OnError:
+              case Kind.onError:
                 return errorEquals!(
                   s.errorAndStackTrace!,
                   t.errorAndStackTrace!,
                 );
             }
-          };
+          }
 
           subscription =
               ZipStream.zip2(stream.materialize(), other.materialize(), compare)

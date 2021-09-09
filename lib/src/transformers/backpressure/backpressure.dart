@@ -339,8 +339,9 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
   });
 
   @override
-  Stream<T> bind(Stream<S> stream) {
-    final sink = () => _BackpressureStreamSink(
+  Stream<T> bind(Stream<S> stream) => forwardStream(
+        stream,
+        () => _BackpressureStreamSink(
           strategy,
           windowStreamFactory,
           onWindowStart,
@@ -350,9 +351,8 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
           ignoreEmptyWindows,
           dispatchOnClose,
           maxLengthQueue,
-        );
-    return forwardStream(stream, sink);
-  }
+        ),
+      );
 }
 
 extension _RemoveFirstNQueueExtension<T> on Queue<T> {

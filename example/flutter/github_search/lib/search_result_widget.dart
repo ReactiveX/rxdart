@@ -5,7 +5,7 @@ import 'github_api.dart';
 class SearchResultWidget extends StatelessWidget {
   final List<SearchResultItem> items;
 
-  const SearchResultWidget({Key key, @required this.items}) : super(key: key);
+  const SearchResultWidget({Key? key, required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +18,12 @@ class SearchResultWidget extends StatelessWidget {
           onTap: () => showItem(context, item),
           child: Container(
             alignment: FractionalOffset.center,
-            margin: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
+            margin: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(right: 16.0),
+                  margin: const EdgeInsets.only(right: 16.0),
                   child: Hero(
                     tag: item.fullName,
                     child: ClipOval(
@@ -40,30 +40,28 @@ class SearchResultWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                        margin: EdgeInsets.only(
+                        margin: const EdgeInsets.only(
                           top: 6.0,
                           bottom: 4.0,
                         ),
                         child: Text(
-                          '${item.fullName}',
+                          item.fullName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Montserrat',
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Container(
-                        child: Text(
-                          '${item.url}',
-                          style: TextStyle(
-                            fontFamily: 'Hind',
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      Text(
+                        item.url,
+                        style: const TextStyle(
+                          fontFamily: 'Hind',
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       )
                     ],
                   ),
@@ -79,10 +77,10 @@ class SearchResultWidget extends StatelessWidget {
   void showItem(BuildContext context, SearchResultItem item) {
     Navigator.push(
       context,
-      MaterialPageRoute<Null>(
+      MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
-            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
             body: GestureDetector(
               key: Key(item.avatarUrl),
               onTap: () => Navigator.pop(context),

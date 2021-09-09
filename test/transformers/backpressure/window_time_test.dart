@@ -10,7 +10,7 @@ Stream<int> getStream(int n) async* {
   yield 0;
 
   while (k < n) {
-    yield await Future<Null>.delayed(const Duration(milliseconds: 100))
+    yield await Future<void>.delayed(const Duration(milliseconds: 100))
         .then((_) => k++);
   }
 }
@@ -29,7 +29,11 @@ void main() {
   });
 
   test('Rx.windowTime.shouldClose', () async {
-    final controller = StreamController<int>()..add(0)..add(1)..add(2)..add(3);
+    final controller = StreamController<int>()
+      ..add(0)
+      ..add(1)
+      ..add(2)
+      ..add(3);
 
     scheduleMicrotask(controller.close);
 

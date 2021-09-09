@@ -18,7 +18,7 @@ class SearchBloc {
         // Wait for the user to stop typing for 250ms before running a search
         .debounceTime(const Duration(milliseconds: 250))
         // Call the Github api with the given search term and convert it to a
-        // State. If another search term is entered, flatMapLatest will ensure
+        // State. If another search term is entered, switchMap will ensure
         // the previous search is discarded so we don't deliver stale results
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))

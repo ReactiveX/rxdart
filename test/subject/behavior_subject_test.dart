@@ -344,10 +344,10 @@ void main() {
     test('allows items to be added once addStream completes with an error',
         () async {
       // ignore: close_sinks
-      final subject = BehaviorSubject<void>();
+      final subject = BehaviorSubject<int>();
 
       unawaited(subject
-          .addStream(Stream<void>.error(Exception()), cancelOnError: true)
+          .addStream(Stream<int>.error(Exception()), cancelOnError: true)
           .whenComplete(() => subject.add(1)));
 
       await expectLater(subject.stream,
@@ -405,7 +405,7 @@ void main() {
     });
 
     test('returns onListen callback set in constructor', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>(onListen: testOnListen);
 
@@ -413,7 +413,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>();
 
@@ -425,7 +425,7 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final onCancel = () => Future<void>.value(null);
+      Future<void> onCancel() => Future<void>.value(null);
       // ignore: close_sinks
       final subject = BehaviorSubject<void>(onCancel: onCancel);
 
@@ -433,7 +433,7 @@ void main() {
     });
 
     test('sets onCancel callback', () async {
-      final testOnCancel = () {};
+      void testOnCancel() {}
       // ignore: close_sinks
       final subject = BehaviorSubject<void>();
 
@@ -810,7 +810,7 @@ void main() {
     test('rxdart #477/#500 - a', () async {
       final a = BehaviorSubject.seeded('a')
           .switchMap((_) => BehaviorSubject.seeded('a'))
-            ..listen(print);
+        ..listen(print);
       await pumpEventQueue();
       expect(await a.first, 'a');
     });
@@ -819,7 +819,7 @@ void main() {
       final b = BehaviorSubject.seeded('b')
           .map((_) => 'b')
           .switchMap((_) => BehaviorSubject.seeded('b'))
-            ..listen(print);
+        ..listen(print);
       await pumpEventQueue();
       expect(await b.first, 'b');
     });

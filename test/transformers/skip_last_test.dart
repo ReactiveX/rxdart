@@ -39,13 +39,13 @@ void main() {
   });
 
   test('Rx.skipLast.countCantBeNegative', () async {
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(-1);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(-1);
     expect(stream, throwsA(isArgumentError));
   });
 
   test('Rx.skipLast.reusable', () async {
     final transformer = SkipLastStreamTransformer<int>(1);
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(2);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(2);
     var valueA = 1, valueB = 1;
 
     stream().transform(transformer).listen(expectAsync1(
