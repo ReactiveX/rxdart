@@ -89,7 +89,7 @@ class RetryWhenStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    final onError = (Object originalError, StackTrace originalStacktrace) {
+    void onError(Object originalError, StackTrace originalStacktrace) {
       _cancelSubscription();
 
       Stream<void> retryStream;
@@ -110,7 +110,7 @@ class RetryWhenStream<T> extends Stream<T> {
         },
         cancelOnError: false,
       );
-    };
+    }
 
     _subscription = streamFactory().listen(
       _controller.add,

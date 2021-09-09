@@ -62,21 +62,24 @@ class RetryStream<T> extends Stream<T> {
   }
 
   void _retry() {
-    final onError = (Object e, StackTrace s) {
+    void onError(Object e, StackTrace s) {
       _subscription!.cancel();
       _subscription = null;
 
       _errors.add(ErrorAndStackTrace(e, s));
 
       if (count == _retryStep) {
-        [..._errors]
-            .forEach((e) => _controller.addError(e.error, e.stackTrace));
+        for (var e in [..._errors]) {
+          _controller.addError(e.error, e.stackTrace);
+        }
         _controller.close();
       } else {
         ++_retryStep;
         _retry();
       }
-    };
+    }
+
+    ;
 
     _subscription = streamFactory().listen(
       _controller.add,
