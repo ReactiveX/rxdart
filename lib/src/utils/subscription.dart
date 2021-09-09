@@ -5,11 +5,18 @@ import 'dart:collection';
 extension StreamSubscriptionsIterableExtensions
     on Iterable<StreamSubscription<void>> {
   /// Pause all subscriptions.
-  void pauseAll([Future<void>? resumeSignal]) =>
-      forEach((s) => s.pause(resumeSignal));
+  void pauseAll([Future<void>? resumeSignal]) {
+    for (final s in this) {
+      s.pause(resumeSignal);
+    }
+  }
 
   /// Resume all subscriptions.
-  void resumeAll() => forEach((s) => s.resume());
+  void resumeAll() {
+    for (final s in this) {
+      s.resume();
+    }
+  }
 }
 
 /// Extensions for [List] of [StreamSubscription]s.
