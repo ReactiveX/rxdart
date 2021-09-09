@@ -10,7 +10,7 @@ void main() {
 class SearchApp extends StatefulWidget {
   final GithubApi api;
 
-  SearchApp({Key key, this.api}) : super(key: key);
+  const SearchApp({Key? key, required this.api}) : super(key: key);
 
   @override
   _RxDartGithubSearchAppState createState() => _RxDartGithubSearchAppState();
