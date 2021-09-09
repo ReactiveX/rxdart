@@ -61,8 +61,8 @@ void main() {
     var count = 0;
 
     final stream = Rx.combineLatest3(streamA, streamB, streamC,
-        (int a_value, int b_value, bool c_value) {
-      return '$a_value $b_value $c_value';
+        (int aValue, int bValue, bool cValue) {
+      return '$aValue $bValue $cValue';
     });
 
     stream.listen(expectAsync1((result) {
@@ -73,8 +73,8 @@ void main() {
 
   test('Rx.combineLatest3.single.subscription', () async {
     final stream = Rx.combineLatest3(streamA, streamB, streamC,
-        (int a_value, int b_value, bool c_value) {
-      return '$a_value $b_value $c_value';
+        (int aValue, int bValue, bool cValue) {
+      return '$aValue $bValue $cValue';
     });
 
     stream.listen(null);
@@ -296,8 +296,8 @@ void main() {
 
   test('Rx.combineLatest.asBroadcastStream', () async {
     final stream = Rx.combineLatest3(streamA, streamB, streamC,
-        (int a_value, int b_value, bool c_value) {
-      return '$a_value $b_value $c_value';
+        (int aValue, int bValue, bool cValue) {
+      return '$aValue $bValue $cValue';
     }).asBroadcastStream();
 
     // listen twice on same stream
@@ -310,8 +310,8 @@ void main() {
   test('Rx.combineLatest.error.shouldThrowA', () async {
     final streamWithError = Rx.combineLatest4(Stream.value(1), Stream.value(1),
         Stream.value(1), Stream<int>.error(Exception()),
-        (int a_value, int b_value, int c_value, dynamic _) {
-      return '$a_value $b_value $c_value $_';
+        (int aValue, int bValue, int cValue, dynamic _) {
+      return '$aValue $bValue $cValue $_';
     });
 
     streamWithError.listen(null,
@@ -323,7 +323,7 @@ void main() {
   test('Rx.combineLatest.error.shouldThrowB', () async {
     final streamWithError =
         Rx.combineLatest3(Stream.value(1), Stream.value(1), Stream.value(1),
-            (int a_value, int b_value, int c_value) {
+            (int aValue, int bValue, int cValue) {
       throw Exception('oh noes!');
     });
 
@@ -369,6 +369,6 @@ void main() {
       subscription.cancel();
     }, count: 1));
 
-    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
 }

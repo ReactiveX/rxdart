@@ -19,13 +19,13 @@ Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T>? comparator) {
   late T accumulator;
   late Comparator<T> comparatorNotNull;
 
-  final cancelAndCompleteError = (Object e, StackTrace st) async {
+  Future<void> cancelAndCompleteError(Object e, StackTrace st) async {
     await subscription.cancel();
 
     completer.completeError(e, st);
-  };
+  }
 
-  final onData = (T element) async {
+  void onData(T element) async {
     if (seenFirst) {
       try {
         accumulator = findMin
@@ -56,14 +56,15 @@ Future<T> minMax<T>(Stream<T> stream, bool findMin, Comparator<T>? comparator) {
     } catch (e, st) {
       await cancelAndCompleteError(e, st);
     }
-  };
-  final onDone = () {
+  }
+
+  void onDone() {
     if (seenFirst) {
       completer.complete(accumulator);
     } else {
       completer.completeError(StateError('No element'));
     }
-  };
+  }
 
   subscription = stream.listen(
     onData,

@@ -4,13 +4,13 @@ import 'package:rxdart/src/utils/value_wrapper.dart';
 /// The type of event used in [Notification]
 enum Kind {
   /// Specifies an onData event
-  OnData,
+  onData,
 
   /// Specifies an onDone event
-  OnDone,
+  onDone,
 
   /// Specifies an error event
-  OnError
+  onError
 }
 
 /// A class that encapsulates the [Kind] of event, value of the event in case of
@@ -31,20 +31,20 @@ class Notification<T> {
 
   /// Constructs a [Notification] which, depending on the [kind], wraps either
   /// [value], or [errorAndStackTrace], or neither if it is just a
-  /// [Kind.OnData] event.
+  /// [Kind.onData] event.
   const Notification(this.kind, this._value, this.errorAndStackTrace);
 
-  /// Constructs a [Notification] with [Kind.OnData] and wraps a [value]
+  /// Constructs a [Notification] with [Kind.onData] and wraps a [value]
   factory Notification.onData(T value) =>
-      Notification<T>(Kind.OnData, ValueWrapper(value), null);
+      Notification<T>(Kind.onData, ValueWrapper(value), null);
 
-  /// Constructs a [Notification] with [Kind.OnDone]
-  factory Notification.onDone() => const Notification(Kind.OnDone, null, null);
+  /// Constructs a [Notification] with [Kind.onDone]
+  factory Notification.onDone() => const Notification(Kind.onDone, null, null);
 
-  /// Constructs a [Notification] with [Kind.OnError] and wraps an [error] and [stackTrace]
+  /// Constructs a [Notification] with [Kind.onError] and wraps an [error] and [stackTrace]
   factory Notification.onError(Object error, StackTrace? stackTrace) =>
       Notification<T>(
-          Kind.OnError, null, ErrorAndStackTrace(error, stackTrace));
+          Kind.onError, null, ErrorAndStackTrace(error, stackTrace));
 
   @override
   bool operator ==(Object other) =>
@@ -64,14 +64,14 @@ class Notification<T> {
       'Notification{kind: $kind, value: ${_value?.value}, errorAndStackTrace: $errorAndStackTrace}';
 
   /// A test to determine if this [Notification] wraps an onData event
-  bool get isOnData => kind == Kind.OnData;
+  bool get isOnData => kind == Kind.onData;
 
   /// A test to determine if this [Notification] wraps an onDone event
-  bool get isOnDone => kind == Kind.OnDone;
+  bool get isOnDone => kind == Kind.onDone;
 
   /// A test to determine if this [Notification] wraps an error event
-  bool get isOnError => kind == Kind.OnError;
+  bool get isOnError => kind == Kind.onError;
 
-  /// Returns data if [kind] is [Kind.OnData], otherwise throws `"Null check operator used on a null value"` error.
+  /// Returns data if [kind] is [Kind.onData], otherwise throws `"Null check operator used on a null value"` error.
   T get requireData => _value!.value;
 }

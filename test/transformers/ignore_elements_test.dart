@@ -38,14 +38,14 @@ void main() {
     final ignored = _getStream().ignoreElements();
 
     expect(ignored, isA<Stream<void>>());
-    expect(ignored, isA<Stream<Null>>());
+    expect(ignored, isA<Stream<Null>>()); // ignore: prefer_void_to_null
     expect(ignored, isA<Stream<int>>());
     expect(ignored, isA<Stream<int?>>());
     expect(ignored, isA<Stream<Object>>());
     expect(ignored, isA<Stream<Object?>>());
 
     ignored as Stream<void>; // ignore: unnecessary_cast
-    ignored as Stream<Null>; // ignore: unnecessary_cast
+    ignored as Stream<void>; // ignore: unnecessary_cast, prefer_void_to_null
     ignored as Stream<int>; // ignore: unnecessary_cast
     ignored as Stream<int?>; // ignore: unnecessary_cast
     ignored as Stream<Object>; // ignore: unnecessary_cast

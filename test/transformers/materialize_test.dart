@@ -74,8 +74,8 @@ void main() {
         Notification<int>.onDone()
       ]);
     }))
-          ..pause()
-          ..resume();
+      ..pause()
+      ..resume();
   });
 
   test('Rx.materialize accidental broadcast', () async {

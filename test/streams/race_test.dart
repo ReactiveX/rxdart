@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> getDelayedStream(int delay, int value) async* {
-  final completer = Completer<Null>();
+  final completer = Completer<void>();
 
   Timer(Duration(milliseconds: delay), () => completer.complete());
 
@@ -52,7 +52,7 @@ void main() {
   });
 
   test('Rx.race.shouldThrowB', () async {
-    final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
+    final stream = Rx.race([Stream<void>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
     stream.listen(null,
@@ -73,7 +73,7 @@ void main() {
       subscription.cancel();
     }, count: 1));
 
-    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
 
   test('Rx.race.empty', () {

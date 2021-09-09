@@ -86,7 +86,7 @@ void main() {
   test('Rx.delayWhen.shouldBeDelayed.listenDelay', () {
     var value = 1;
 
-    final onData = (TimeInterval<int> result) {
+    void onData(TimeInterval<int> result) {
       expect(result.value, value++);
 
       if (result.value == 1) {
@@ -100,7 +100,7 @@ void main() {
           lessThanOrEqualTo(20),
         ); // should be near instantaneous
       }
-    };
+    }
 
     _getStream()
         .delayWhen(

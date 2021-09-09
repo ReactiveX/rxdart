@@ -91,7 +91,7 @@ void main() {
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(3));
     });
@@ -105,7 +105,7 @@ void main() {
       expect(stream, emitsInOrder(const <int>[3]));
       expect(stream, emitsInOrder(const <int>[3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(3));
     });
@@ -119,7 +119,7 @@ void main() {
       expect(stream, emitsInOrder(const <int?>[null]));
       expect(stream, emitsInOrder(const <int?>[null]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(null));
     });

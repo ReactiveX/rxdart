@@ -61,14 +61,14 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
               return false;
             }
             switch (s.kind) {
-              case Kind.OnData:
+              case Kind.onData:
                 return dataEquals!(
                   s.requireData,
                   t.requireData,
                 );
-              case Kind.OnDone:
+              case Kind.onDone:
                 return true;
-              case Kind.OnError:
+              case Kind.onError:
                 return errorEquals!(
                   s.errorAndStackTrace!,
                   t.errorAndStackTrace!,
