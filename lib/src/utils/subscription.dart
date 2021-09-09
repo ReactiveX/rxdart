@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'dart:collection';
 
-/// Extensions for [List] of [StreamSubscription]s.
-extension StreamSubscriptionsListExtensions on List<StreamSubscription<void>> {
+/// Extensions for [Iterable] of [StreamSubscription]s.
+extension StreamSubscriptionsIterableExtensions
+    on Iterable<StreamSubscription<void>> {
   /// Pause all subscriptions.
   void pauseAll([Future<void>? resumeSignal]) =>
       forEach((s) => s.pause(resumeSignal));
 
   /// Resume all subscriptions.
   void resumeAll() => forEach((s) => s.resume());
+}
 
+/// Extensions for [List] of [StreamSubscription]s.
+extension StreamSubscriptionsListExtension on List<StreamSubscription<void>> {
   /// Cancel all subscriptions.
   Future<void>? cancelAll() {
     if (isEmpty) {
@@ -23,15 +27,7 @@ extension StreamSubscriptionsListExtensions on List<StreamSubscription<void>> {
 }
 
 /// Extensions for [Queue] of [StreamSubscription]s.
-extension StreamSubscriptionsQueueExtensions
-    on Queue<StreamSubscription<void>> {
-  /// Pause all subscriptions.
-  void pauseAll([Future<void>? resumeSignal]) =>
-      forEach((s) => s.pause(resumeSignal));
-
-  /// Resume all subscriptions.
-  void resumeAll() => forEach((s) => s.resume());
-
+extension StreamSubscriptionsQueueExtension on Queue<StreamSubscription<void>> {
   /// Cancel all subscriptions.
   Future<void>? cancelAll() {
     if (isEmpty) {

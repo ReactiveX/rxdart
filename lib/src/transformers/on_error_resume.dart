@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   final Stream<S> Function(Object error, StackTrace stackTrace) _recoveryFn;
@@ -44,24 +45,16 @@ class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr<void> onCancel() {
-    return _recoverySubscriptions.isEmpty
-        ? null
-        : Future.wait<void>(
-            _recoverySubscriptions.map((subscription) => subscription.cancel()),
-          );
-  }
+  Future<void>? onCancel() => _recoverySubscriptions.cancelAll();
 
   @override
   void onListen() {}
 
   @override
-  void onPause() =>
-      _recoverySubscriptions.forEach((subscription) => subscription.pause());
+  void onPause() => _recoverySubscriptions.pauseAll();
 
   @override
-  void onResume() =>
-      _recoverySubscriptions.forEach((subscription) => subscription.resume());
+  void onResume() => _recoverySubscriptions.resumeAll();
 }
 
 /// Intercepts error events and switches to a recovery stream created by the

@@ -79,8 +79,6 @@ class RetryStream<T> extends Stream<T> {
       }
     }
 
-    ;
-
     _subscription = streamFactory().listen(
       _controller.add,
       onError: onError,

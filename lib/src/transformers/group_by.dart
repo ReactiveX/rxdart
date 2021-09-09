@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   final K Function(T event) grouper;
@@ -13,7 +14,9 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   _GroupByStreamSink(this.grouper, this.duration);
 
   void _closeAll() {
-    groups.values.forEach((c) => c.close());
+    for (var c in groups.values) {
+      c.close();
+    }
     groups.clear();
   }
 
@@ -60,7 +63,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   }
 
   @override
-  FutureOr<void> onCancel() {
+  Future<void>? onCancel() {
     scheduleMicrotask(_closeAll);
 
     if (subscriptions?.isNotEmpty == true) {
@@ -68,8 +71,6 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
       subscriptions?.clear();
       subscriptions = null;
       return future;
-    } else {
-      return null;
     }
   }
 
@@ -77,10 +78,10 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   FutureOr<void> onListen() {}
 
   @override
-  void onPause() => subscriptions?.values.forEach((s) => s.pause());
+  void onPause() => subscriptions?.values.pauseAll();
 
   @override
-  void onResume() => subscriptions?.values.forEach((s) => s.resume());
+  void onResume() => subscriptions?.values.resumeAll();
 }
 
 /// The GroupBy operator divides a [Stream] that emits items into

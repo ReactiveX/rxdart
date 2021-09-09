@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
@@ -58,22 +59,19 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr<void>? onCancel() {
+  Future<void>? onCancel() {
     queue.clear();
-
-    final futures =
-        _subscriptions.map((s) => s.cancel()).toList(growable: false);
-    return futures.isNotEmpty ? Future.wait(futures) : null;
+    return _subscriptions.cancelAll();
   }
 
   @override
   void onListen() {}
 
   @override
-  void onPause() => _subscriptions.forEach((s) => s.pause());
+  void onPause() => _subscriptions.pauseAll();
 
   @override
-  void onResume() => _subscriptions.forEach((s) => s.resume());
+  void onResume() => _subscriptions.resumeAll();
 }
 
 /// Converts each emitted item into a new Stream using the given mapper function,

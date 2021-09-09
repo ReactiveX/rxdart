@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
 class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   final Stream<void> Function(T) itemDelaySelector;
@@ -42,7 +43,7 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  FutureOr<void> onCancel() {
+  Future<void>? onCancel() {
     final future = subscription?.cancel();
     subscription = null;
 
@@ -85,13 +86,13 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   @override
   void onPause() {
     subscription?.pause();
-    subscriptions.forEach((s) => s.pause());
+    subscriptions.pauseAll();
   }
 
   @override
   void onResume() {
     subscription?.resume();
-    subscriptions.forEach((s) => s.resume());
+    subscriptions.resumeAll();
   }
 }
 
