@@ -62,11 +62,11 @@ class SearchResultItem {
 
   SearchResultItem(this.fullName, this.url, this.avatarUrl);
 
-  factory SearchResultItem.fromJson(Map<String, Object> json) {
+  factory SearchResultItem.fromJson(Map<String, dynamic> json) {
     return SearchResultItem(
       json['full_name'] as String,
       json['html_url'] as String,
-      (json['owner'] as Map<String, Object>)['avatar_url'] as String,
+      (json['owner'] as Map<String, dynamic>)['avatar_url'] as String,
     );
   }
 }
