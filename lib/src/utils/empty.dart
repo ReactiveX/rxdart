@@ -5,11 +5,11 @@ class _Empty {
   String toString() => '<<EMPTY>>';
 }
 
-/// TODO
+/// Sentinel object.
 const Object? EMPTY = _Empty(); // ignore: constant_identifier_names
 
-/// TODO
+/// Returns `null` if [o] is [EMPTY], otherwise returns [o] itself.
 T? unbox<T>(Object? o) => identical(o, EMPTY) ? null : o as T;
 
-/// TODO
+/// Check [o] is [EMPTY].
 bool isNotEmpty(Object? o) => !identical(o, EMPTY);
