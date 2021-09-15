@@ -6,8 +6,7 @@ class _Empty {
 }
 
 /// TODO
-// ignore: constant_identifier_names
-const Object? EMPTY = _Empty();
+const Object? EMPTY = _Empty(); // ignore: constant_identifier_names
 
 /// TODO
 T? unbox<T>(Object? o) => identical(o, EMPTY) ? null : o as T;
