@@ -6,8 +6,9 @@ import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
+import 'package:rxdart/src/utils/collection_extensions.dart';
+import 'package:rxdart/src/utils/empty.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures all of the items that have been
 /// added to the controller, and emits those as the first items to any new
@@ -73,22 +74,24 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
     return ReplaySubject<T>._(
       controller,
       Rx.defer<T>(
-        () => queue.toList(growable: false).reversed.fold(controller.stream,
-            (stream, event) {
-          if (event.isError) {
-            final errorAndStackTrace = event.errorAndStackTrace!;
+        () => queue.toList(growable: false).reversed.fold(
+          controller.stream,
+          (stream, event) {
+            final errorAndStackTrace = event.errorAndStackTrace;
 
-            return stream.transform(
-              StartWithErrorStreamTransformer(
-                errorAndStackTrace.error,
-                errorAndStackTrace.stackTrace,
-              ),
-            );
-          } else {
-            return stream
-                .transform(StartWithStreamTransformer(event.data!.value));
-          }
-        }),
+            if (errorAndStackTrace != null) {
+              return stream.transform(
+                StartWithErrorStreamTransformer(
+                  errorAndStackTrace.error,
+                  errorAndStackTrace.stackTrace,
+                ),
+              );
+            } else {
+              return stream
+                  .transform(StartWithStreamTransformer(event.data as T));
+            }
+          },
+        ),
         reusable: true,
       ),
       queue,
@@ -123,33 +126,30 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
   @override
   List<T> get values => _queue
-      .where((event) => !event.isError)
-      .map((event) => event.data!.value)
+      .where((event) => event.errorAndStackTrace == null)
+      .map((event) => event.data as T)
       .toList(growable: false);
 
   @override
   List<Object> get errors => _queue
-      .where((event) => event.isError)
-      .map((event) => event.errorAndStackTrace!.error)
+      .mapNotNull((event) => event.errorAndStackTrace?.error)
       .toList(growable: false);
 
   @override
   List<StackTrace?> get stackTraces => _queue
-      .where((event) => event.isError)
+      .where((event) => event.errorAndStackTrace != null)
       .map((event) => event.errorAndStackTrace!.stackTrace)
       .toList(growable: false);
 }
 
 class _Event<T> {
-  final bool isError;
-  final ValueWrapper<T>? data;
+  final Object? data;
   final ErrorAndStackTrace? errorAndStackTrace;
 
-  _Event._({required this.isError, this.data, this.errorAndStackTrace});
+  _Event._({required this.data, required this.errorAndStackTrace});
 
-  factory _Event.data(T data) =>
-      _Event._(isError: false, data: ValueWrapper(data));
+  factory _Event.data(T data) => _Event._(data: data, errorAndStackTrace: null);
 
   factory _Event.error(ErrorAndStackTrace e) =>
-      _Event._(isError: true, errorAndStackTrace: e);
+      _Event._(errorAndStackTrace: e, data: EMPTY);
 }
