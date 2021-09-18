@@ -206,12 +206,9 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
       this._source, this._subject, this._closeSubject);
 
   @override
-  Future<dynamic> cancel() {
-    print('[Cancel] $_closeSubject');
-    return _closeSubject
-        ? _source.cancel().then<void>((_) => _subject.close())
-        : _source.cancel();
-  }
+  Future<dynamic> cancel() => _closeSubject
+      ? _source.cancel().then<void>((_) => _subject.close())
+      : _source.cancel();
 
   @override
   Never asFuture<E>([E? futureValue]) => _unsupportedError();
