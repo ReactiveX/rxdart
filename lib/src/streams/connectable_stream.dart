@@ -62,7 +62,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
     _wasListened = true;
 
-    onListen(_subject);
+    onListen(_subject, _source);
     return ConnectableStreamSubscription<T>(
       _source.listen(
         _subject.add,
@@ -128,7 +128,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
   /// An extension point for sub-classes.
   /// This method called when listening to single-subscription at the first time
   /// or broadcast Stream at any times.
-  void onListen(S subject) {}
+  void onListen(S subject, Stream<T> source) {}
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
