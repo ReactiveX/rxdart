@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/subjects.dart';
@@ -38,7 +37,7 @@ abstract class ConnectableStream<T> extends StreamView<T> {
 }
 
 /// Base class for implementations of [ConnectableStream].
-/// [S] is type of forwarding [Subject].
+/// [S] is type of the forwarding [Subject].
 /// [R] is return type of [autoConnect] and [refCount] (constraint: `S extends R`).
 abstract class AbstractConnectableStream<T, S extends Subject<T>,
     R extends Stream<T>> extends ConnectableStream<T> {
@@ -47,8 +46,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
   var _wasListened = false;
   var _called = false;
 
-  /// Constructs a [AbstractConnectableStream]
-  /// with source Stream and forwarding [Subject].
+  /// Constructs a [AbstractConnectableStream] with a source Stream and the forwarding [Subject].
   AbstractConnectableStream(
     Stream<T> source,
     S subject,
@@ -57,7 +55,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
         _subject = subject,
         super(subject);
 
-  StreamSubscription<T> _connection(bool refCount) {
+  StreamSubscription<T> _connection() {
     if (_wasListened && !_source.isBroadcast) {
       return const Stream<Never>.empty().listen(null);
     }
@@ -70,8 +68,8 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
         onDone: _subject.close,
       ),
       _subject,
-      // does not close subject when using refCount && source is broadcast.
-      !(refCount && _source.isBroadcast),
+      // close the subject when the source is single-subscription Stream.
+      !_source.isBroadcast,
     );
   }
 
@@ -88,9 +86,13 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
     _checkCalled();
+
+    StreamSubscription<T>? subscription;
     _subject.onListen = () {
-      final subscription = _connection(false);
-      connection?.call(subscription);
+      if (subscription == null) {
+        subscription = _connection();
+        connection?.call(subscription!);
+      }
     };
     _subject.onCancel = null;
 
@@ -100,17 +102,22 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
   @override
   StreamSubscription<T> connect() {
     _checkCalled();
+
     _subject.onListen = _subject.onCancel = null;
-    return _connection(false);
+    return _connection();
   }
 
   @override
   R refCount() {
     _checkCalled();
-    StreamSubscription<T>? subscription;
 
-    _subject.onListen = () => subscription = _connection(true);
-    _subject.onCancel = () => subscription?.cancel();
+    StreamSubscription<T>? subscription;
+    _subject.onListen = () => subscription ??= _connection();
+    _subject.onCancel = () {
+      final future = subscription?.cancel();
+      subscription = null;
+      return future;
+    };
 
     return _subject as R;
   }
