@@ -61,6 +61,8 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     }
 
     _wasListened = true;
+
+    onListen(_subject);
     return ConnectableStreamSubscription<T>(
       _source.listen(
         _subject.add,
@@ -121,6 +123,12 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
     return _subject as R;
   }
+
+  /// @protected
+  /// An extension point for sub-classes.
+  /// This method called when listening to single-subscription at the first time
+  /// or broadcast Stream at any times.
+  void onListen(S subject) {}
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
@@ -504,4 +512,8 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// ```
   ReplayStream<T> shareReplay({int? maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
+}
+
+void main() {
+  final s = PublishSubject<int>();
 }
