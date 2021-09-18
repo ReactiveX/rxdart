@@ -180,5 +180,47 @@ void main() {
 
       expect(isCanceled.future, completes);
     });
+
+    test('throws StateError', () {
+      ReplayConnectableStream<int> stream() =>
+          Stream.value(1).publishReplay(maxSize: 1);
+
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..autoConnect(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..connect(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..refCount(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..connect()
+          ..connect(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..connect()
+          ..refCount(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..refCount()
+          ..refCount(),
+        throwsStateError,
+      );
+    });
   });
 }

@@ -265,7 +265,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subject
   /// subscription.cancel();
   /// ```
-  ConnectableStream<T> publish() =>
+  PublishConnectableStream<T> publish() =>
       PublishConnectableStream<T>(this, sync: true);
 
   /// Convert the current Stream into a [ValueConnectableStream]
