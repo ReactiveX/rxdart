@@ -142,5 +142,23 @@ void main() {
         throwsStateError,
       );
     });
+
+    test('calling autoConnect() multiple times returns the same value', () {
+      final s = Stream.value(1).publish();
+      expect(s.autoConnect(), same(s.autoConnect()));
+      expect(s.autoConnect(), same(s.autoConnect()));
+    });
+
+    test('calling connect() multiple times returns the same value', () {
+      final s = Stream.value(1).publish();
+      expect(s.connect(), same(s.connect()));
+      expect(s.connect(), same(s.connect()));
+    });
+
+    test('calling refCount() multiple times returns the same value', () {
+      final s = Stream.value(1).publish();
+      expect(s.refCount(), same(s.refCount()));
+      expect(s.refCount(), same(s.refCount()));
+    });
   });
 }
