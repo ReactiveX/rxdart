@@ -11,7 +11,7 @@ void main() {
         .timeout(Duration(milliseconds: 1));
 
     subscription = stream.listen((_) {},
-        onError: expectAsync2((TimeoutException e, StackTrace s) {
+        onError: expectAsync2((Object e, StackTrace s) {
           expect(e is TimeoutException, isTrue);
           subscription.cancel();
         }, count: 1));
