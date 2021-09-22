@@ -29,7 +29,7 @@ void main() {
   });
 
   test('Rx.whereType.polymorphism', () async {
-    _getStream().whereType<num>().listen(expectAsync1((result) {
+    _getStream().whereType<num>().listen(expectAsync1((Object result) {
           expect(result is num, true);
         }, count: 2));
   });
