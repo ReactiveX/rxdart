@@ -44,14 +44,14 @@ enum _ConnectableStreamUse {
 
 /// Base class for implementations of [ConnectableStream].
 /// [S] is type of the forwarding [Subject].
-/// [R] is return type of [autoConnect] and [refCount] (constraint: `S extends R`).
+/// [R] is return type of [autoConnect] and [refCount] (type constraint: `S extends R`).
 abstract class AbstractConnectableStream<T, S extends Subject<T>,
     R extends Stream<T>> extends ConnectableStream<T> {
   final Stream<T> _source;
   final S _subject;
   _ConnectableStreamUse? _use;
 
-  /// Constructs a [AbstractConnectableStream] with a source Stream and the forwarding [Subject].
+  /// Constructs a [AbstractConnectableStream] with a source [Stream] and the forwarding [Subject].
   AbstractConnectableStream(
     Stream<T> source,
     S subject,
@@ -69,22 +69,22 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     _subject,
   );
 
-  bool _checkUsed(_ConnectableStreamUse use) {
+  bool _canReuse(_ConnectableStreamUse use) {
     if (_use != null && _use != use) {
       throw StateError(
           'Do not mix autoConnect, connect and refCount together, you should only use one of them!');
     }
 
-    final reuseAllowed = _use != null && _use == use;
+    final canReuse = _use != null && _use == use;
     _use = use;
-    return reuseAllowed;
+    return canReuse;
   }
 
   @override
   R autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
-    if (_checkUsed(_ConnectableStreamUse.autoConnect)) {
+    if (_canReuse(_ConnectableStreamUse.autoConnect)) {
       return _subject as R;
     }
 
@@ -99,7 +99,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
   @override
   StreamSubscription<T> connect() {
-    if (_checkUsed(_ConnectableStreamUse.connect)) {
+    if (_canReuse(_ConnectableStreamUse.connect)) {
       return _connection;
     }
 
@@ -109,7 +109,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
   @override
   R refCount() {
-    if (_checkUsed(_ConnectableStreamUse.refCount)) {
+    if (_canReuse(_ConnectableStreamUse.refCount)) {
       return _subject as R;
     }
 
