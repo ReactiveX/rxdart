@@ -249,7 +249,9 @@ void main() {
       }
     });
 
-    test('throws StateError', () {
+    test(
+        'throws StateError when mixing autoConnect, connect and refCount together',
+        () {
       ValueConnectableStream<int> stream() => Stream.value(1).publishValue();
 
       expect(

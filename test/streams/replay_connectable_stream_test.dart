@@ -181,7 +181,9 @@ void main() {
       expect(isCanceled.future, completes);
     });
 
-    test('throws StateError', () {
+    test(
+        'throws StateError when mixing autoConnect, connect and refCount together',
+        () {
       ReplayConnectableStream<int> stream() =>
           Stream.value(1).publishReplay(maxSize: 1);
 
