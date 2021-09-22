@@ -485,25 +485,3 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ReplayStream<T> shareReplay({int? maxSize}) =>
       publishReplay(maxSize: maxSize).refCount();
 }
-
-void main() async {
-  final s = StreamController<int>.broadcast();
-  final shared$ = s.stream.share();
-
-  var sub = shared$.listen(print);
-  s.add(1);
-  s.add(2);
-  await Future(() {});
-
-  await sub.cancel();
-  await Future<void>.delayed(const Duration(milliseconds: 200));
-  s.add(-1);
-
-  shared$.listen(print);
-
-  s.add(3);
-  s.add(4);
-  await Future(() {});
-
-  await sub.cancel();
-}
