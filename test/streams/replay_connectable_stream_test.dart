@@ -188,12 +188,6 @@ void main() {
       expect(
         () => stream()
           ..autoConnect()
-          ..autoConnect(),
-        throwsStateError,
-      );
-      expect(
-        () => stream()
-          ..autoConnect()
           ..connect(),
         throwsStateError,
       );
@@ -203,21 +197,10 @@ void main() {
           ..refCount(),
         throwsStateError,
       );
+
       expect(
         () => stream()
           ..connect()
-          ..connect(),
-        throwsStateError,
-      );
-      expect(
-        () => stream()
-          ..connect()
-          ..refCount(),
-        throwsStateError,
-      );
-      expect(
-        () => stream()
-          ..refCount()
           ..refCount(),
         throwsStateError,
       );
