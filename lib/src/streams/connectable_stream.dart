@@ -70,18 +70,13 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
   );
 
   bool _checkUsed(_ConnectableStreamUse use) {
-    if (_use == null) {
-      _use = use;
-      return false;
+    if (_use != null && _use != use) {
+      throw StateError(
+          'Do not mix autoConnect(), connect() and refCount() together, must use one of them!');
     }
-
-    if (_use == use) {
-      _use = use;
-      return true;
-    }
-
-    throw StateError(
-        'Call autoConnect() or connect() or refCount() only once!');
+    final shouldReuse = _use == null || _use == use;
+    _use = use;
+    return shouldReuse;
   }
 
   @override
