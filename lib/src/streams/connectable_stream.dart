@@ -43,8 +43,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     R extends Stream<T>> extends ConnectableStream<T> {
   final Stream<T> _source;
   final S _subject;
-  var _wasListened = false;
-  var _called = false;
+  var _used = false;
 
   /// Constructs a [AbstractConnectableStream] with a source Stream and the forwarding [Subject].
   AbstractConnectableStream(
@@ -55,46 +54,32 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
         _subject = subject,
         super(subject);
 
-  StreamSubscription<T> _connection() {
-    if (_wasListened && !_source.isBroadcast) {
-      return const Stream<Never>.empty().listen(null);
-    }
+  late final _connection = ConnectableStreamSubscription<T>(
+    _source.listen(
+      _subject.add,
+      onError: _subject.addError,
+      onDone: _subject.close,
+    ),
+    _subject,
+  );
 
-    _wasListened = true;
-
-    onListen(_subject, _source);
-    return ConnectableStreamSubscription<T>(
-      _source.listen(
-        _subject.add,
-        onError: _subject.addError,
-        onDone: _subject.close,
-      ),
-      _subject,
-      // close the subject when the source is single-subscription Stream.
-      !_source.isBroadcast,
-    );
-  }
-
-  void _checkCalled() {
-    if (_called) {
+  void _checkUsed() {
+    if (_used) {
       throw StateError(
-          'Only call autoConnect() or connect() or refCount() once!');
+          'Should call either autoConnect() or connect() or refCount() only once!');
     }
-    _called = true;
+    _used = true;
   }
 
   @override
   R autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
-    _checkCalled();
+    _checkUsed();
 
-    StreamSubscription<T>? subscription;
     _subject.onListen = () {
-      if (subscription == null) {
-        subscription = _connection();
-        connection?.call(subscription!);
-      }
+      final subscription = _connection;
+      connection?.call(subscription);
     };
     _subject.onCancel = null;
 
@@ -103,32 +88,22 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
   @override
   StreamSubscription<T> connect() {
-    _checkCalled();
+    _checkUsed();
 
     _subject.onListen = _subject.onCancel = null;
-    return _connection();
+    return _connection;
   }
 
   @override
   R refCount() {
-    _checkCalled();
+    _checkUsed();
 
     StreamSubscription<T>? subscription;
-    _subject.onListen = () => subscription ??= _connection();
-    _subject.onCancel = () {
-      final future = subscription?.cancel();
-      subscription = null;
-      return future;
-    };
+    _subject.onListen = () => subscription = _connection;
+    _subject.onCancel = () => subscription?.cancel();
 
     return _subject as R;
   }
-
-  /// @protected
-  /// An extension point for sub-classes.
-  /// This method called when listening to single-subscription at the first time
-  /// or broadcast Stream at any times.
-  void onListen(S subject, Stream<T> source) {}
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
@@ -213,17 +188,14 @@ class ReplayConnectableStream<T>
 class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
   final StreamSubscription<T> _source;
   final Subject<T> _subject;
-  final bool _closeSubject;
 
   /// Constructs a special [StreamSubscription], which will close the provided subject
   /// when [cancel] is called.
-  ConnectableStreamSubscription(
-      this._source, this._subject, this._closeSubject);
+  ConnectableStreamSubscription(this._source, this._subject);
 
   @override
-  Future<dynamic> cancel() => _closeSubject
-      ? _source.cancel().then<void>((_) => _subject.close())
-      : _source.cancel();
+  Future<dynamic> cancel() =>
+      _source.cancel().then<void>((_) => _subject.close());
 
   @override
   Never asFuture<E>([E? futureValue]) => _unsupportedError();
