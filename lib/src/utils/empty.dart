@@ -5,11 +5,14 @@ class _Empty {
   String toString() => '<<EMPTY>>';
 }
 
-/// Sentinel object.
+/// @internal
+/// Sentinel object used to represent a missing value (distinct from `null`).
 const Object? EMPTY = _Empty(); // ignore: constant_identifier_names
 
-/// Returns `null` if [o] is [EMPTY], otherwise returns [o] itself.
+/// @internal
+/// Returns `null` if [o] is [EMPTY], otherwise returns itself.
 T? unbox<T>(Object? o) => identical(o, EMPTY) ? null : o as T;
 
-/// Check [o] is [EMPTY].
+/// @internal
+/// Returns `true` if [o] is not [EMPTY].
 bool isNotEmpty(Object? o) => !identical(o, EMPTY);

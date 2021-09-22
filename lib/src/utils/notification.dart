@@ -72,6 +72,9 @@ class Notification<T> {
   /// A test to determine if this [Notification] wraps an error event
   bool get isOnError => kind == Kind.onError;
 
-  /// Returns data if [kind] is [Kind.onData], otherwise throws a [TypeError] error.
-  T get requireData => _value as T;
+  /// Returns data if [kind] is [Kind.onData], otherwise throws a [StateError] error.
+  T get requireData => isNotEmpty(_value)
+      ? _value as T
+      : (throw StateError(
+          'This notification has no data value, because its kind is $kind'));
 }
