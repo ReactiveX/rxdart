@@ -36,6 +36,12 @@ abstract class ConnectableStream<T> extends StreamView<T> {
   Stream<T> refCount();
 }
 
+enum _ConnectableStreamUse {
+  autoConnect,
+  connect,
+  refCount,
+}
+
 /// Base class for implementations of [ConnectableStream].
 /// [S] is type of the forwarding [Subject].
 /// [R] is return type of [autoConnect] and [refCount] (constraint: `S extends R`).
@@ -43,7 +49,7 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     R extends Stream<T>> extends ConnectableStream<T> {
   final Stream<T> _source;
   final S _subject;
-  var _used = false;
+  _ConnectableStreamUse? _use;
 
   /// Constructs a [AbstractConnectableStream] with a source Stream and the forwarding [Subject].
   AbstractConnectableStream(
@@ -63,19 +69,28 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
     _subject,
   );
 
-  void _checkUsed() {
-    if (_used) {
-      throw StateError(
-          'Should call either autoConnect() or connect() or refCount() only once!');
+  bool _checkUsed(_ConnectableStreamUse use) {
+    if (_use == null) {
+      _use = use;
+      return false;
     }
-    _used = true;
+
+    if (_use == use) {
+      _use = use;
+      return true;
+    }
+
+    throw StateError(
+        'Call autoConnect() or connect() or refCount() only once!');
   }
 
   @override
   R autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
-    _checkUsed();
+    if (_checkUsed(_ConnectableStreamUse.autoConnect)) {
+      return _subject as R;
+    }
 
     _subject.onListen = () {
       final subscription = _connection;
@@ -88,7 +103,9 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
   @override
   StreamSubscription<T> connect() {
-    _checkUsed();
+    if (_checkUsed(_ConnectableStreamUse.connect)) {
+      return _connection;
+    }
 
     _subject.onListen = _subject.onCancel = null;
     return _connection;
@@ -96,7 +113,9 @@ abstract class AbstractConnectableStream<T, S extends Subject<T>,
 
   @override
   R refCount() {
-    _checkUsed();
+    if (_checkUsed(_ConnectableStreamUse.refCount)) {
+      return _subject as R;
+    }
 
     StreamSubscription<T>? subscription;
     _subject.onListen = () => subscription = _connection;
