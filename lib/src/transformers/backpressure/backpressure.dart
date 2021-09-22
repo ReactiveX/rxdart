@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
@@ -353,13 +354,4 @@ class BackpressureStreamTransformer<S, T> extends StreamTransformerBase<S, T> {
           maxLengthQueue,
         ),
       );
-}
-
-extension _RemoveFirstNQueueExtension<T> on Queue<T> {
-  /// Removes the first [count] elements of this queue.
-  void removeFirstElements(int count) {
-    for (var i = 0; i < count; i++) {
-      removeFirst();
-    }
-  }
 }

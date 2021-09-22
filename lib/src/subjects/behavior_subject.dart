@@ -5,8 +5,8 @@ import 'package:rxdart/src/streams/value_stream.dart';
 import 'package:rxdart/src/subjects/subject.dart';
 import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
+import 'package:rxdart/src/utils/empty.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -116,9 +116,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
         }
 
         final value = wrapper.value;
-        if (value != null && wrapper.isValue) {
+        if (isNotEmpty(value) && wrapper.isValue) {
           return controller.stream
-              .transform(StartWithStreamTransformer(value.value));
+              .transform(StartWithStreamTransformer(value as T));
         }
 
         return controller.stream;
@@ -135,19 +135,19 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   ValueStream<T> get stream => this;
 
   @override
-  bool get hasValue => _wrapper.value != null;
+  bool get hasValue => isNotEmpty(_wrapper.value);
 
   @override
   T get value {
-    final wrapper = _wrapper.value;
-    if (wrapper != null) {
-      return wrapper.value;
+    final value = _wrapper.value;
+    if (isNotEmpty(value)) {
+      return value as T;
     }
     throw ValueStreamError.hasNoValue();
   }
 
   @override
-  T? get valueOrNull => _wrapper.value?.value;
+  T? get valueOrNull => unbox(_wrapper.value);
 
   /// Set and emit the new value.
   set value(T newValue) => add(newValue);
@@ -173,18 +173,16 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
 class _Wrapper<T> {
   bool isValue;
-  ValueWrapper<T>? value;
+  var value = EMPTY;
   ErrorAndStackTrace? errorAndStackTrace;
 
   /// Non-seeded constructor
   _Wrapper() : isValue = false;
 
-  _Wrapper.seeded(T value)
-      : value = ValueWrapper(value),
-        isValue = true;
+  _Wrapper.seeded(this.value) : isValue = true;
 
   void setValue(T event) {
-    value = ValueWrapper(event);
+    value = event;
     isValue = true;
   }
 

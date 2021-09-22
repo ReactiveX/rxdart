@@ -5,7 +5,6 @@ export 'src/streams/connectable_stream.dart';
 export 'src/utils/composite_subscription.dart';
 export 'src/utils/error_and_stacktrace.dart';
 export 'src/utils/notification.dart';
-export 'src/utils/value_wrapper.dart';
 export 'streams.dart';
 export 'subjects.dart';
 export 'transformers.dart';
