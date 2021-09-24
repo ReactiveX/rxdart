@@ -5,54 +5,96 @@ import 'package:test/test.dart';
 
 void main() {
   group('CompositeSubscription', () {
-    test('should cancel all subscriptions on clear()', () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
-      final composite = CompositeSubscription();
+    group('Rx.compositeSubscription.clear', () {
+      test('should cancel all subscriptions', () {
+        final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+        final composite = CompositeSubscription();
 
-      composite
-        ..add(stream.listen(null))
-        ..add(stream.listen(null))
-        ..add(stream.listen(null));
+        composite
+          ..add(stream.listen(null))
+          ..add(stream.listen(null))
+          ..add(stream.listen(null));
 
-      composite.clear();
+        final done = composite.clear();
 
-      expect(stream, neverEmits(anything));
+        expect(stream, neverEmits(anything));
+        expect(done, isA<Future>());
+      });
+      test('should return null since no subscription has been canceled clear()',
+          () {
+        final composite = CompositeSubscription();
+
+        final done = composite.clear();
+
+        expect(done, null);
+      });
     });
-    test('should cancel all subscriptions on dispose()', () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
-      final composite = CompositeSubscription();
 
-      composite
-        ..add(stream.listen(null))
-        ..add(stream.listen(null))
-        ..add(stream.listen(null));
+    group('Rx.compositeSubscription.onDispose', () {
+      test('should cancel all subscriptions', () {
+        final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+        final composite = CompositeSubscription();
 
-      composite.dispose();
+        composite
+          ..add(stream.listen(null))
+          ..add(stream.listen(null))
+          ..add(stream.listen(null));
 
-      expect(stream, neverEmits(anything));
+        final done = composite.dispose();
+
+        expect(stream, neverEmits(anything));
+        expect(done, isA<Future>());
+      });
+      test(
+          'should return null since no subscription has been canceled on dispose()',
+          () {
+        final composite = CompositeSubscription();
+
+        final done = composite.dispose();
+
+        expect(done, null);
+      });
+      test(
+          'should throw exception if trying to add subscription to disposed composite',
+          () {
+        final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
+        final composite = CompositeSubscription();
+
+        composite.dispose();
+
+        expect(() => composite.add(stream.listen(null)), throwsA(anything));
+      });
     });
-    test(
-        'should throw exception if trying to add subscription to disposed composite',
-        () {
-      final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
-      final composite = CompositeSubscription();
 
-      composite.dispose();
+    group('Rx.compositeSubscription.remove', () {
+      test('should cancel subscription on if it is removed from composite', () {
+        const value = 1;
+        final stream = Stream.fromIterable([value]).shareValue();
+        final composite = CompositeSubscription();
+        final subscription = stream.listen(null);
 
-      expect(() => composite.add(stream.listen(null)), throwsA(anything));
+        composite.add(subscription);
+        final done = composite.remove(subscription);
+
+        expect(stream, neverEmits(anything));
+        expect(done, isA<Future>());
+      });
+      test(
+          'should not cancel the subscription since it is not present in the composite',
+          () {
+        const value = 1;
+        final stream = Stream.fromIterable([value]).shareValue();
+        final composite = CompositeSubscription();
+        final subscription = stream.listen(null);
+
+        final done = composite.remove(subscription);
+
+        expect(stream, emits(anything));
+        expect(done, null);
+      });
     });
-    test('should cancel subscription on if it is removed from composite', () {
-      const value = 1;
-      final stream = Stream.fromIterable([value]).shareValue();
-      final composite = CompositeSubscription();
-      final subscription = stream.listen(null);
 
-      composite.add(subscription);
-      composite.remove(subscription);
-
-      expect(stream, neverEmits(anything));
-    });
-    test('Rx.compositeSubscription.pauseAndResume', () {
+    test('Rx.compositeSubscription.pauseAndResume()', () {
       final composite = CompositeSubscription();
       final s1 = Stream.fromIterable(const [1, 2, 3]).listen(null),
           s2 = Stream.fromIterable(const [4, 5, 6]).listen(null);
