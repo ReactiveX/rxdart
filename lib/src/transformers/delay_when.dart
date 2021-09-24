@@ -118,7 +118,7 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 ///       .listen(print); // [after 3s] prints 1 [after 1s] prints 2 [after 1s] prints 3
 class DelayWhenStreamTransformer<T> extends StreamTransformerBase<T, T> {
   /// A function used to determine delay time span for each data event.
-  final Stream<void> Function(T) itemDelaySelector;
+  final Stream<void> Function(T value) itemDelaySelector;
 
   /// When [listenDelay] emits its first data or done event, the source Stream is listen to.
   final Stream<void>? listenDelay;
@@ -162,7 +162,7 @@ extension DelayWhenExtension<T> on Stream<T> {
   ///       )
   ///       .listen(print); // [after 3s] prints 1 [after 1s] prints 2 [after 1s] prints 3
   Stream<T> delayWhen(
-    Stream<void> Function(T) itemDelaySelector, {
+    Stream<void> Function(T value) itemDelaySelector, {
     Stream<void>? listenDelay,
   }) =>
       transform(DelayWhenStreamTransformer(itemDelaySelector,
