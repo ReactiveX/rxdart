@@ -80,7 +80,7 @@ void main() {
     expect(Rx.race<int>(const []), emitsDone);
   });
 
-  test('Rx.race.cancelThrowing', () async {
+  test('Rx.race.cancel.throws', () async {
     Stream<int> stream() {
       final controller = StreamController<int>();
       controller.onCancel = () async {
