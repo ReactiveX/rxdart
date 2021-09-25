@@ -51,7 +51,11 @@ class RaceStream<T> extends Stream<T> {
             //ignore: cancel_subscriptions
             final winner = subscriptions.removeAt(winnerIndex);
 
-            subscriptions.cancelAll();
+            subscriptions.cancelAll()?.onError<Object>((e, s) {
+              if (!controller.isClosed && controller.hasListener) {
+                controller.addError(e, s);
+              }
+            });
 
             subscriptions = [winner];
           }

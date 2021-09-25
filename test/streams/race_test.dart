@@ -79,4 +79,31 @@ void main() {
   test('Rx.race.empty', () {
     expect(Rx.race<int>(const []), emitsDone);
   });
+
+  test('Rx.race.cancel.throws', () async {
+    Stream<int> stream() {
+      final controller = StreamController<int>();
+      controller.onCancel = () async {
+        throw Exception('Exception when cancelling!');
+      };
+
+      return Rx.race<int>([
+        controller.stream,
+        Rx.concat([
+          Rx.timer(1, const Duration(milliseconds: 100)),
+          Rx.timer(2, const Duration(milliseconds: 100)),
+        ]),
+      ]);
+    }
+
+    await expectLater(
+      stream(),
+      emitsInOrder(<Object>[1, emitsError(isException), 2, emitsDone]),
+    );
+
+    await expectLater(
+      stream().take(1),
+      emitsInOrder(<Object>[1, emitsDone]),
+    );
+  });
 }

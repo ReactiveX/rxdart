@@ -29,7 +29,7 @@ extension StreamSubscriptionsListExtension on List<StreamSubscription<void>> {
     if (length == 1) {
       return this[0].cancel();
     }
-    return Future.wait(map((s) => s.cancel()));
+    return Future.wait(map((s) => s.cancel())).then((_) => null);
   }
 }
 
@@ -43,6 +43,6 @@ extension StreamSubscriptionsQueueExtension on Queue<StreamSubscription<void>> {
     if (length == 1) {
       return first.cancel();
     }
-    return Future.wait(map((s) => s.cancel()));
+    return Future.wait(map((s) => s.cancel())).then((value) => null);
   }
 }

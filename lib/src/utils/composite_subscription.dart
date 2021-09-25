@@ -14,7 +14,7 @@ import 'package:rxdart/src/utils/subscription.dart';
 ///
 /// // clear them all at once
 /// composite.clear();
-class CompositeSubscription {
+class CompositeSubscription implements StreamSubscription<Never> {
   bool _isDisposed = false;
 
   final List<StreamSubscription<dynamic>> _subscriptionsList = [];
@@ -33,9 +33,9 @@ class CompositeSubscription {
   bool get isNotEmpty => _subscriptionsList.isNotEmpty;
 
   /// Whether all managed [StreamSubscription]s are currently paused.
-  bool get allPaused => _subscriptionsList.isNotEmpty
-      ? _subscriptionsList.every((it) => it.isPaused)
-      : false;
+  bool get allPaused =>
+      _subscriptionsList.isNotEmpty &&
+      _subscriptionsList.every((s) => s.isPaused);
 
   /// Adds new subscription to this composite.
   ///
@@ -82,6 +82,35 @@ class CompositeSubscription {
 
   /// Resumes all subscriptions added to this composite.
   void resumeAll() => _subscriptionsList.resumeAll();
+
+  // implements StreamSubscription
+
+  @override
+  Future<void> cancel() => dispose() ?? Future<void>.value(null);
+
+  @override
+  bool get isPaused => allPaused;
+
+  @override
+  void pause([Future<void>? resumeSignal]) => pauseAll(resumeSignal);
+
+  @override
+  void resume() => resumeAll();
+
+  @override
+  Never asFuture<E>([E? futureValue]) => _unsupportedError();
+
+  @override
+  Never onData(void Function(Never data)? handleData) => _unsupportedError();
+
+  @override
+  Never onDone(void Function()? handleDone) => _unsupportedError();
+
+  @override
+  Never onError(Function? handleError) => _unsupportedError();
+
+  Never _unsupportedError() => throw UnsupportedError(
+      'Cannot change handlers of CompositeSubscription.');
 }
 
 /// Extends the [StreamSubscription] class with the ability to be added to [CompositeSubscription] container.
