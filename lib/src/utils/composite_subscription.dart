@@ -48,26 +48,32 @@ class CompositeSubscription {
     return subscription;
   }
 
-  /// Cancels subscription and removes it from this composite.
-  void remove(StreamSubscription<dynamic> subscription) {
-    subscription.cancel();
-    _subscriptionsList.remove(subscription);
+  /// Remove the subscription from this composite and cancel it if it has been removed.
+  Future<void>? remove(
+    StreamSubscription<dynamic> subscription, {
+    bool shouldCancel = true,
+  }) {
+    if (_subscriptionsList.remove(subscription) && shouldCancel) {
+      return subscription.cancel();
+    }
   }
 
   /// Cancels all subscriptions added to this composite. Clears subscriptions collection.
   ///
   /// This composite can be reused after calling this method.
-  void clear() {
-    _subscriptionsList.cancelAll();
+  Future<void>? clear() {
+    final cancelAllDone = _subscriptionsList.cancelAll();
     _subscriptionsList.clear();
+    return cancelAllDone;
   }
 
   /// Cancels all subscriptions added to this composite. Disposes this.
   ///
   /// This composite can't be reused after calling this method.
-  void dispose() {
-    clear();
+  Future<void>? dispose() {
+    final clearDone = clear();
     _isDisposed = true;
+    return clearDone;
   }
 
   /// Pauses all subscriptions added to this composite.
