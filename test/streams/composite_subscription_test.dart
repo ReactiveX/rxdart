@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('CompositeSubscription', () {
-    test('can be casted to any of StreamSubscription', () {
+    test('cast to StreamSubscription of any type', () {
       final cs = CompositeSubscription();
 
       expect(cs, isA<StreamSubscription<void>>());
