@@ -200,7 +200,7 @@ Additional information about the following situations can be found by reading th
 | Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
-| Single/Maybe/Complete ? | Yes | No, uses Dart `Future` |
+| Single/Maybe/Complete ? | Yes | Yes, `Stream<T>.value(...)` / `Stream<T>.error(...)` |
 | Support back pressure| Yes | Yes |
 | Can emit null? | Yes, except RxJava | Yes |
 | Sync by default | Yes | No |
