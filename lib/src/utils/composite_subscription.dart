@@ -42,7 +42,8 @@ class CompositeSubscription implements StreamSubscription<Never> {
   /// Throws an exception if this composite was disposed
   StreamSubscription<T> add<T>(StreamSubscription<T> subscription) {
     if (isDisposed) {
-      throw ('This composite was disposed, try to use new instance instead');
+      throw StateError(
+          'This $runtimeType was disposed, consider checking `isDisposed` or try to use new instance instead');
     }
     _subscriptionsList.add(subscription);
     return subscription;
