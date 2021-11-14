@@ -7,7 +7,9 @@ on:
   pull_request:
     branches: [ master ]
     paths-ignore: [ '**.md' ]
-
+  schedule:
+    # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
+    - cron:  '0 0 */7 * *'
 jobs:
   build:
 
