@@ -259,6 +259,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 1, 2, 3
   /// final subscription = connectable.connect();
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // Subject
@@ -290,6 +291,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Late subscribers will receive the last emitted value
   /// connectable.listen(print); // Prints 3
+  /// await Future(() {});
   ///
   /// // Can access the latest emitted value synchronously. Prints 3
   /// print(connectable.value);
@@ -325,6 +327,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Late subscribers will receive the last emitted value
   /// connectable.listen(print); // Prints 3
+  /// await Future(() {});
   ///
   /// // Can access the latest emitted value synchronously. Prints 3
   /// print(connectable.value);
@@ -360,6 +363,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Late subscribers will receive the emitted value, up to a specified
   /// // maxSize
   /// connectable.listen(print); // Prints 1, 2, 3
+  /// await Future(() {});
   ///
   /// // Can access a list of the emitted values synchronously. Prints [1, 2, 3]
   /// print(connectable.values);
@@ -387,6 +391,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // PublishSubject
@@ -413,6 +418,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Synchronously print the latest value
   /// print(stream.value);
@@ -420,6 +426,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -455,6 +462,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -483,6 +491,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Synchronously print the emitted values up to a given maxSize
   /// // Prints [1, 2, 3]
@@ -491,6 +500,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 1, 2, 3 because it receives the
   /// // last emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // ReplaySubject by cancelling all subscriptions.
