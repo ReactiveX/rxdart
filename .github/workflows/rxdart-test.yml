@@ -33,10 +33,11 @@ jobs:
         run: pub get
 
       - name: Analyze
+        if: ${{ matrix.sdk == 'stable' }}
         run: dart analyze --fatal-infos --fatal-warnings
 
       - name: Format code
-        if: ${{ matrix.container == 'google/dart:latest' }}
+        if: ${{ matrix.sdk == 'stable' }}
         run: dart format . --set-exit-if-changed
 
       - name: Active coverage
