@@ -12,18 +12,19 @@ on:
     - cron:  '0 0 */7 * *'
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        container: [ 'google/dart:latest', 'google/dart:dev' ]
-
-    container:
-      image: ${{ matrix.container }}
+        sdk: [ stable, beta, dev, 2.12.0 ]
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
 
       - name: Print Dart version
         run: dart --version
