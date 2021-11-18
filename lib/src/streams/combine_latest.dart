@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// Merges the given Streams into one Stream sequence by using the
@@ -289,59 +290,60 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
-    if (streams.isEmpty) {
-      return StreamController<R>()..close();
-    }
+    final controller = StreamController<R>(sync: true);
+    late List<StreamSubscription<T>> subscriptions;
+    List<T?>? values;
 
-    final len = streams.length;
-    late List<StreamSubscription<dynamic>> subscriptions;
-    late StreamController<R> controller;
+    controller.onListen = () {
+      var triggered = 0, completed = 0;
 
-    controller = StreamController<R>(
-      sync: true,
-      onListen: () {
-        final values = List<T?>.filled(len, null);
-        var triggered = 0, completed = 0, index = 0;
+      void onDone() {
+        if (++completed == subscriptions.length) controller.close();
+      }
 
-        bool allHaveEvent() => triggered == len;
+      subscriptions = streams.mapIndexed((index, stream) {
+        var hasFirstEvent = false;
 
-        void onDone() {
-          if (++completed == len) controller.close();
-        }
+        return stream.listen(
+          (T value) {
+            values![index] = value;
 
-        T Function(T value) onUpdate(int index) =>
-            (T value) => values[index] = value;
+            if (!hasFirstEvent) {
+              hasFirstEvent = true;
+              triggered++;
+            }
 
-        subscriptions = streams.map((stream) {
-          final onUpdateForStream = onUpdate(index++);
-          var hasFirstEvent = false;
-
-          return stream.listen(
-            (T value) {
-              onUpdateForStream(value);
-
-              if (!hasFirstEvent) {
-                hasFirstEvent = true;
-                triggered++;
+            if (values == null) {
+              // cancelled
+              return;
+            }
+            if (triggered == subscriptions.length) {
+              final R combined;
+              try {
+                combined = combiner(List<T>.unmodifiable(values!));
+              } catch (e, s) {
+                controller.addError(e, s);
+                return;
               }
-
-              if (allHaveEvent()) {
-                try {
-                  controller.add(combiner(List<T>.unmodifiable(values)));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-              }
-            },
-            onError: controller.addError,
-            onDone: onDone,
-          );
-        }).toList(growable: false);
-      },
-      onPause: () => subscriptions.pauseAll(),
-      onResume: () => subscriptions.resumeAll(),
-      onCancel: () => subscriptions.cancelAll(),
-    );
+              controller.add(combined);
+            }
+          },
+          onError: controller.addError,
+          onDone: onDone,
+        );
+      }).toList(growable: false);
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        values = List<T?>.filled(subscriptions.length, null);
+      }
+    };
+    controller.onPause = () => subscriptions.pauseAll();
+    controller.onResume = () => subscriptions.resumeAll();
+    controller.onCancel = () {
+      values = null;
+      return subscriptions.cancelAll();
+    };
 
     return controller;
   }

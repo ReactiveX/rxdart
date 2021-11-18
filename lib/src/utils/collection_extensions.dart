@@ -17,6 +17,14 @@ extension MapNotNullIterableExtension<T> on Iterable<T> {
       }
     }
   }
+
+  /// Maps each element and its index to a new value.
+  Iterable<R> mapIndexed<R>(R Function(int index, T element) transform) sync* {
+    var index = 0;
+    for (final e in this) {
+      yield transform(index++, e);
+    }
+  }
 }
 
 /// Provides [removeFirstElements] extension method on [Queue].
