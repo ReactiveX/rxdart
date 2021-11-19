@@ -5,7 +5,7 @@ import 'package:rxdart/rxdart.dart';
 // Side note: To maintain readability, this example was not formatted using dart_fmt.
 
 void main() {
-  final dragTarget = querySelector('#dragTarget');
+  final dragTarget = querySelector('#dragTarget')!;
   final mouseUp = document.onMouseUp;
   final mouseMove = document.onMouseMove;
   final mouseDown = document.onMouseDown;
