@@ -11,7 +11,7 @@ on:
     # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
     - cron:  '0 0 */7 * *'
 jobs:
-  build:
+  analyze-and-test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -69,4 +69,4 @@ jobs:
           --packages=.packages
           --report-on=lib
 
-      - uses: codecov/codecov-action@v1
+      - uses: codecov/codecov-action@v2.1.0
