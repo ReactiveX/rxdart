@@ -105,6 +105,13 @@ void main() {
     expect(Rx.concat<int>(const []), emitsDone);
   });
 
+  test('Rx.concat.single', () {
+    expect(
+      Rx.concat<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[1, emitsDone]),
+    );
+  });
+
   test('Rx.concat.iterate.once', () async {
     var iterationCount = 0;
 
