@@ -36,10 +36,10 @@ void main() {
   });
 
   test('Rx.combineLatestList.iterate.once', () async {
-    var iteratedCount = 0;
+    var iterationCount = 0;
 
     final combined = Rx.combineLatestList<int>(() sync* {
-      ++iteratedCount;
+      ++iterationCount;
       yield Stream.value(1);
       yield Stream.value(2);
       yield Stream.value(3);
@@ -52,7 +52,7 @@ void main() {
         emitsDone,
       ]),
     );
-    expect(iteratedCount, 1);
+    expect(iterationCount, 1);
   });
 
   test('Rx.combineLatestList.empty', () async {

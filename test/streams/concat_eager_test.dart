@@ -162,10 +162,10 @@ void main() {
   });
 
   test('Rx.concatEager.iterate.once', () async {
-    var iteratedCount = 0;
+    var iterationCount = 0;
 
     final stream = Rx.concatEager<int>(() sync* {
-      ++iteratedCount;
+      ++iterationCount;
       yield Stream.value(1);
       yield Stream.value(2);
       yield Stream.value(3);
@@ -180,6 +180,6 @@ void main() {
         emitsDone,
       ]),
     );
-    expect(iteratedCount, 1);
+    expect(iterationCount, 1);
   });
 }
