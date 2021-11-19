@@ -31,6 +31,42 @@ void main() {
     }, count: expectedOutput.length));
   });
 
+  test('Rx.concatEager.single', () async {
+    final stream = Rx.concatEager([
+      Stream.fromIterable([1, 2, 3, 4, 5])
+    ]);
+
+    await expectLater(stream, emitsInOrder(<Object>[1, 2, 3, 4, 5, emitsDone]));
+  });
+
+  test('Rx.concatEager.eagerlySubscription', () async {
+    var subscribed2 = false;
+    var subscribed3 = false;
+
+    final stream = Rx.concatEager<int>([
+      Rx.timer(1, Duration(milliseconds: 100)).doOnDone(
+          expectAsync0(() => expect(subscribed2 && subscribed3, true))),
+      Rx.timer([2, 3, 4], Duration(milliseconds: 100))
+          .exhaustMap((v) => Stream.fromIterable(v))
+          .doOnListen(() => subscribed2 = true)
+          .doOnDone(expectAsync0(() => expect(subscribed3, true))),
+      Rx.timer(5, Duration(milliseconds: 100))
+          .doOnListen(() => subscribed3 = true),
+    ]);
+
+    await expectLater(
+      stream,
+      emitsInOrder(<Object>[
+        1,
+        2,
+        3,
+        4,
+        5,
+        emitsDone,
+      ]),
+    );
+  });
+
   test('Rx.concatEager.single.subscription', () async {
     final stream = Rx.concatEager(_getStreams());
 
@@ -123,5 +159,27 @@ void main() {
 
   test('Rx.concatEager.empty', () {
     expect(Rx.concatEager<int>(const []), emitsDone);
+  });
+
+  test('Rx.concatEager.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.concatEager<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        1,
+        2,
+        3,
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
   });
 }

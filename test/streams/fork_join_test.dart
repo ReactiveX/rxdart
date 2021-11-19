@@ -48,6 +48,26 @@ void main() {
     );
   });
 
+  test('Rx.concatEager.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.forkJoinList<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.forkJoin.empty', () {
     expect(Rx.forkJoinList<int>([]), emitsDone);
   });

@@ -35,6 +35,26 @@ void main() {
     );
   });
 
+  test('Rx.combineLatestList.iterate.once', () async {
+    var iterationCount = 0;
+
+    final combined = Rx.combineLatestList<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      combined,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.combineLatestList.empty', () async {
     final combined = Rx.combineLatestList<int>([]);
     expect(combined, emitsDone);

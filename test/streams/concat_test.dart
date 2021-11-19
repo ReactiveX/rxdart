@@ -104,4 +104,33 @@ void main() {
   test('Rx.concat.empty', () {
     expect(Rx.concat<int>(const []), emitsDone);
   });
+
+  test('Rx.concat.single', () {
+    expect(
+      Rx.concat<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[1, emitsDone]),
+    );
+  });
+
+  test('Rx.concat.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.concat<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        1,
+        2,
+        3,
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
 }

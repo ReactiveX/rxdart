@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/streams/concat.dart';
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// Concatenates all of the specified stream sequences, as long as the
@@ -24,76 +25,64 @@ import 'package:rxdart/src/utils/subscription.dart';
 ///       Stream.fromIterable([3])
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
-class ConcatEagerStream<T> extends Stream<T> {
-  final StreamController<T> _controller;
-
+class ConcatEagerStream<T> extends StreamView<T> {
   /// Constructs a [Stream] which emits all events from [streams].
   /// Unlike [ConcatStream], all [Stream]s inside [streams] are
   /// immediately subscribed to and events captured at the correct time,
   /// but emitted only after the previous [Stream] in [streams] is
   /// successfully closed.
   ConcatEagerStream(Iterable<Stream<T>> streams)
-      : _controller = _buildController(streams);
-
-  @override
-  StreamSubscription<T> listen(void Function(T event)? onData,
-      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return _controller.stream.listen(onData,
-        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-  }
+      : super(_buildController(streams).stream);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams.isEmpty) {
-      return StreamController<T>()..close();
-    }
-
-    final len = streams.length;
-    final completeEvents = List.generate(len, (_) => Completer<dynamic>());
+    final controller = StreamController<T>(sync: true);
     late List<StreamSubscription<T>> subscriptions;
-    late StreamController<T> controller;
-    //ignore: cancel_subscriptions
-    late StreamSubscription<T> activeSubscription;
+    StreamSubscription<T>? activeSubscription;
 
-    controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          var index = -1, completed = 0;
+    controller.onListen = () {
+      final completeEvents = <Completer<void>>[];
 
-          void Function() onDone(int index) {
-            final completer = completeEvents[index];
-
-            return () {
-              completer.complete();
-
-              if (++completed == len) {
-                controller.close();
-              } else {
-                activeSubscription = subscriptions[index + 1];
-              }
-            };
+      void Function() onDone(int index) {
+        return () {
+          if (index < subscriptions.length - 1) {
+            completeEvents[index].complete();
+          } else if (index == subscriptions.length - 1) {
+            controller.close();
+          } else {
+            activeSubscription = subscriptions[index + 1];
           }
+        };
+      }
 
-          StreamSubscription<T> createSubscription(Stream<T> stream) {
-            index++;
-            //ignore: cancel_subscriptions
-            final subscription = stream.listen(controller.add,
-                onError: controller.addError, onDone: onDone(index));
+      StreamSubscription<T> createSubscription(int index, Stream<T> stream) {
+        final subscription = stream.listen(controller.add,
+            onError: controller.addError, onDone: onDone(index));
 
-            // pause all subscriptions, except the first, initially
-            if (index > 0) subscription.pause(completeEvents[index - 1].future);
+        // pause all subscriptions, except the first, initially
+        if (index > 0) {
+          final completer = Completer<void>.sync();
+          completeEvents.add(completer);
+          subscription.pause(completer.future);
+        }
 
-            return subscription;
-          }
+        return subscription;
+      }
 
-          subscriptions =
-              streams.map(createSubscription).toList(growable: false);
-
-          // initially, the very first subscription is the active one
-          activeSubscription = subscriptions.first;
-        },
-        onPause: () => activeSubscription.pause(),
-        onResume: () => activeSubscription.resume(),
-        onCancel: () => subscriptions.cancelAll());
+      subscriptions =
+          streams.mapIndexed(createSubscription).toList(growable: false);
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        // initially, the very first subscription is the active one
+        activeSubscription = subscriptions.first;
+      }
+    };
+    controller.onPause = () => activeSubscription?.pause();
+    controller.onResume = () => activeSubscription?.resume();
+    controller.onCancel = () {
+      activeSubscription = null;
+      return subscriptions.cancelAll();
+    };
 
     return controller;
   }

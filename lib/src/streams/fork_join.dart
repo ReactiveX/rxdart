@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// This operator is best used when you have a group of streams
@@ -301,56 +302,62 @@ class ForkJoinStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) combiner,
   ) {
-    if (streams.isEmpty) {
-      return (StreamController<R>()..close()).stream;
-    }
-
-    late StreamController<R> controller;
+    final controller = StreamController<R>(sync: true);
     late List<StreamSubscription<T>> subscriptions;
-    final length = streams.length;
+    List<T?>? values;
 
-    controller = StreamController<R>(
-      sync: true,
-      onListen: () {
-        final values = List<T?>.filled(length, null);
-        var completed = 0;
+    controller.onListen = () {
+      var completed = 0;
 
-        StreamSubscription<T> listen(Stream<T> stream, int i) {
-          var hasValue = false;
+      StreamSubscription<T> listen(int i, Stream<T> stream) {
+        var hasValue = false;
 
-          return stream.listen(
-            (value) {
-              hasValue = true;
-              values[i] = value;
-            },
-            onError: controller.addError,
-            onDone: () {
-              if (!hasValue) {
-                controller.addError(StateError('No element'));
+        return stream.listen(
+          (value) {
+            hasValue = true;
+            values?[i] = value;
+          },
+          onError: controller.addError,
+          onDone: () {
+            if (!hasValue) {
+              controller.addError(StateError('No element'));
+              controller.close();
+              return;
+            }
+
+            if (values == null) {
+              return;
+            }
+            if (++completed == subscriptions.length) {
+              final R combined;
+              try {
+                combined = combiner(List<T>.unmodifiable(values!));
+              } catch (e, s) {
+                controller.addError(e, s);
                 controller.close();
                 return;
               }
 
-              if (++completed == length) {
-                try {
-                  controller.add(combiner(List<T>.unmodifiable(values)));
-                } catch (e, s) {
-                  controller.addError(e, s);
-                }
-                controller.close();
-              }
-            },
-          );
-        }
+              controller.add(combined);
+              controller.close();
+            }
+          },
+        );
+      }
 
-        var i = 0;
-        subscriptions =
-            streams.map((s) => listen(s, i++)).toList(growable: false);
-      },
-      onPause: () => subscriptions.pauseAll(),
-      onResume: () => subscriptions.resumeAll(),
-      onCancel: () => subscriptions.cancelAll(),
-    );
+      subscriptions = streams.mapIndexed(listen).toList(growable: false);
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        values = List<T?>.filled(subscriptions.length, null);
+      }
+    };
+    controller.onPause = () => subscriptions.pauseAll();
+    controller.onResume = () => subscriptions.resumeAll();
+    controller.onCancel = () {
+      values = null;
+      return subscriptions.cancelAll();
+    };
 
     return controller.stream;
   }
