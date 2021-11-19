@@ -24,7 +24,7 @@ void main() {
       .distinct()
       // Ensure the term has some value before calling the API
       .where((term) => term.isNotEmpty)
-      // Use debounce() to prevent calling the server on fast following
+      // Use debounceTime() to prevent calling the server on fast following
       // keystrokes
       .debounceTime(const Duration(milliseconds: 250))
       // Use doOnData() to clear resultsField
