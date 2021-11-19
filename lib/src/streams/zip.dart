@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// Merges the specified streams into one stream sequence using the given
@@ -282,15 +283,13 @@ class ZipStream<T, R> extends StreamView<R> {
     var pendingSubscriptions = <StreamSubscription<T>>[];
 
     controller.onListen = () {
-      Completer<List<T>?>? completeCurrent;
+      Completer<void>? completeCurrent;
       late final _Window<T> window;
-      var index = 0;
 
       // resets variables for the next zip window
       void next() {
         completeCurrent?.complete(null);
-
-        completeCurrent = Completer<List<T>?>();
+        completeCurrent = Completer<void>();
 
         pendingSubscriptions = subscriptions.toList();
       }
@@ -302,18 +301,21 @@ class ZipStream<T, R> extends StreamView<R> {
           if (window.isComplete) {
             // all streams emitted for the current zip index
             // dispatch event and reset for next
+            final R combined;
             try {
-              controller.add(zipper(window.flush()));
-              // reset for next zip event
-              next();
+              combined = zipper(window.flush());
             } catch (e, s) {
               controller.addError(e, s);
+              return;
             }
+            controller.add(combined);
+
+            // reset for next zip event
+            next();
           } else {
             // other streams are still pending to get to the next
             // zip event index.
             // pause this subscription while we await the others
-            //ignore: cancel_subscriptions
             final subscription = subscriptions[index]
               ..pause(completeCurrent!.future);
 
@@ -323,7 +325,7 @@ class ZipStream<T, R> extends StreamView<R> {
       }
 
       subscriptions = streams
-          .map((stream) => stream.listen(doUpdate(index++),
+          .mapIndexed((index, stream) => stream.listen(doUpdate(index),
               onError: controller.addError, onDone: controller.close))
           .toList(growable: false);
       if (subscriptions.isEmpty) {

@@ -18,6 +18,16 @@ void main() {
     expect(Rx.zipList<int>([]), emitsDone);
   });
 
+  test('Rx.zip.single', () {
+    expect(
+      Rx.zipList<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[
+        [1],
+        emitsDone
+      ]),
+    );
+  });
+
   test('Rx.zip.iterate.once', () async {
     var iterationCount = 0;
 

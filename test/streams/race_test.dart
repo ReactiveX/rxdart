@@ -97,6 +97,16 @@ void main() {
     expect(Rx.race<int>(const []), emitsDone);
   });
 
+  test('Rx.race.single', () {
+    expect(
+      Rx.race<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[
+        1,
+        emitsDone,
+      ]),
+    );
+  });
+
   test('Rx.race.cancel.throws', () async {
     Stream<int> stream() {
       final controller = StreamController<int>();

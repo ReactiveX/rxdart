@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// Given two or more source streams, emit all of the items from only
@@ -30,8 +31,6 @@ class RaceStream<T> extends StreamView<T> {
     late List<StreamSubscription<T>> subscriptions;
 
     controller.onListen = () {
-      var index = 0;
-
       void reduceToWinner(int winnerIndex) {
         final winner = subscriptions.removeAt(winnerIndex);
 
@@ -46,18 +45,15 @@ class RaceStream<T> extends StreamView<T> {
 
       void Function(T value) doUpdate(int index) {
         return (T value) {
-          try {
-            if (subscriptions.length > 1) reduceToWinner(index);
-
-            controller.add(value);
-          } catch (e, s) {
-            controller.addError(e, s);
+          if (subscriptions.length > 1) {
+            reduceToWinner(index);
           }
+          controller.add(value);
         };
       }
 
       subscriptions = streams
-          .map((stream) => stream.listen(doUpdate(index++),
+          .mapIndexed((index, stream) => stream.listen(doUpdate(index),
               onError: controller.addError, onDone: controller.close))
           .toList();
 
