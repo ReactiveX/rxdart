@@ -28,6 +28,23 @@ void main() {
     }, count: 3));
   });
 
+  test('Rx.race.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.race<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[1, emitsDone]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.race.single.subscription', () async {
     final first = getDelayedStream(50, 1);
 
@@ -78,6 +95,16 @@ void main() {
 
   test('Rx.race.empty', () {
     expect(Rx.race<int>(const []), emitsDone);
+  });
+
+  test('Rx.race.single', () {
+    expect(
+      Rx.race<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[
+        1,
+        emitsDone,
+      ]),
+    );
   });
 
   test('Rx.race.cancel.throws', () async {

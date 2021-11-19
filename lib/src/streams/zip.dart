@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 /// Merges the specified streams into one stream sequence using the given
@@ -277,69 +278,66 @@ class ZipStream<T, R> extends StreamView<R> {
     Iterable<Stream<T>> streams,
     R Function(List<T> values) zipper,
   ) {
-    if (streams.isEmpty) {
-      return StreamController<R>()..close();
-    }
+    final controller = StreamController<R>(sync: true);
+    late List<StreamSubscription<T>> subscriptions;
+    var pendingSubscriptions = <StreamSubscription<T>>[];
 
-    late StreamController<R> controller;
-    final len = streams.length;
-    late List<StreamSubscription<T>> subscriptions, pendingSubscriptions;
+    controller.onListen = () {
+      Completer<void>? completeCurrent;
+      late final _Window<T> window;
 
-    controller = StreamController<R>(
-        sync: true,
-        onListen: () {
-          try {
-            Completer<List<T>?>? completeCurrent;
-            final window = _Window<T>(len);
-            var index = 0;
+      // resets variables for the next zip window
+      void next() {
+        completeCurrent?.complete(null);
+        completeCurrent = Completer<void>();
 
-            // resets variables for the next zip window
-            void next() {
-              completeCurrent?.complete(null);
+        pendingSubscriptions = subscriptions.toList();
+      }
 
-              completeCurrent = Completer<List<T>?>();
+      void Function(T value) doUpdate(int index) {
+        return (T value) {
+          window.onValue(index, value);
 
-              pendingSubscriptions = subscriptions.toList();
+          if (window.isComplete) {
+            // all streams emitted for the current zip index
+            // dispatch event and reset for next
+            final R combined;
+            try {
+              combined = zipper(window.flush());
+            } catch (e, s) {
+              controller.addError(e, s);
+              return;
             }
+            controller.add(combined);
 
-            void Function(T value) doUpdate(int index) => (T value) {
-                  window.onValue(index, value);
-
-                  if (window.isComplete) {
-                    // all streams emitted for the current zip index
-                    // dispatch event and reset for next
-                    try {
-                      controller.add(zipper(window.flush()));
-                      // reset for next zip event
-                      next();
-                    } catch (e, s) {
-                      controller.addError(e, s);
-                    }
-                  } else {
-                    // other streams are still pending to get to the next
-                    // zip event index.
-                    // pause this subscription while we await the others
-                    //ignore: cancel_subscriptions
-                    final subscription = subscriptions[index]
-                      ..pause(completeCurrent!.future);
-
-                    pendingSubscriptions.remove(subscription);
-                  }
-                };
-
-            subscriptions = streams
-                .map((stream) => stream.listen(doUpdate(index++),
-                    onError: controller.addError, onDone: controller.close))
-                .toList(growable: false);
-
+            // reset for next zip event
             next();
-          } catch (e, s) {
-            controller.addError(e, s);
+          } else {
+            // other streams are still pending to get to the next
+            // zip event index.
+            // pause this subscription while we await the others
+            final subscription = subscriptions[index]
+              ..pause(completeCurrent!.future);
+
+            pendingSubscriptions.remove(subscription);
           }
-        },
-        onPause: () => pendingSubscriptions.pauseAll(),
-        onResume: () => pendingSubscriptions.resumeAll(),
-        onCancel: () => pendingSubscriptions.cancelAll());
+        };
+      }
+
+      subscriptions = streams
+          .mapIndexed((index, stream) => stream.listen(doUpdate(index),
+              onError: controller.addError, onDone: controller.close))
+          .toList(growable: false);
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        window = _Window<T>(subscriptions.length);
+        next();
+      }
+    };
+    controller.onPause = () => pendingSubscriptions.pauseAll();
+    controller.onResume = () => pendingSubscriptions.resumeAll();
+    controller.onCancel = () => pendingSubscriptions.cancelAll();
 
     return controller;
   }

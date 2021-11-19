@@ -18,6 +18,28 @@ void main() {
     await expectLater(stream, emitsInOrder(const <int>[1, 2, 3, 4, 0, 1, 2]));
   });
 
+  test('Rx.merge.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.merge<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        1,
+        2,
+        3,
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.merge.single.subscription', () async {
     final stream = Rx.merge(_getStreams());
 
