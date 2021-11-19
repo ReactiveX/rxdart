@@ -63,7 +63,6 @@ class RaceStream<T> extends StreamView<T> {
 
       if (subscriptions.isEmpty) {
         controller.close();
-        return;
       }
     };
     controller.onPause = () => subscriptions.pauseAll();
