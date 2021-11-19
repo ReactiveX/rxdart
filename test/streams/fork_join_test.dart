@@ -48,7 +48,7 @@ void main() {
     );
   });
 
-  test('Rx.concatEager.iterate.once', () async {
+  test('Rx.forkJoin.iterate.once', () async {
     var iterationCount = 0;
 
     final stream = Rx.forkJoinList<int>(() sync* {
