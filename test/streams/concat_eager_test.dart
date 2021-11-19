@@ -31,6 +31,14 @@ void main() {
     }, count: expectedOutput.length));
   });
 
+  test('Rx.concatEager.single', () async {
+    final stream = Rx.concatEager([
+      Stream.fromIterable([1, 2, 3, 4, 5])
+    ]);
+
+    await expectLater(stream, emitsInOrder(<Object>[1, 2, 3, 4, 5, emitsDone]));
+  });
+
   test('Rx.concatEager.eagerlySubscription', () async {
     var subscribed2 = false;
     var subscribed3 = false;

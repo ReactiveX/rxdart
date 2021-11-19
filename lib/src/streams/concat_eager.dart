@@ -34,34 +34,22 @@ class ConcatEagerStream<T> extends StreamView<T> {
   ConcatEagerStream(Iterable<Stream<T>> streams)
       : super(_buildController(streams).stream);
 
-  static StreamController<T> _buildController<T>(
-      Iterable<Stream<T>> streamsIterable) {
+  static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     final controller = StreamController<T>(sync: true);
+    late List<StreamSubscription<T>> subscriptions;
 
-    List<StreamSubscription<T>>? subscriptions;
-    List<Completer>? completeEvents;
+    final completeEvents = <Completer<void>>[];
     StreamSubscription<T>? activeSubscription;
 
     controller.onListen = () {
-      final streams = streamsIterable.evaluated;
-      if (streams.isEmpty) {
-        controller.close();
-        return;
-      }
-
-      final length = streams.length;
-      var completed = 0;
-
       void Function() onDone(int index) {
         return () {
-          if (index < length - 1) {
-            completeEvents![index].complete();
-          }
-
-          if (++completed == length) {
+          if (index < subscriptions.length - 1) {
+            completeEvents[index].complete();
+          } else if (index == subscriptions.length - 1) {
             controller.close();
           } else {
-            activeSubscription = subscriptions?[index + 1];
+            activeSubscription = subscriptions[index + 1];
           }
         };
       }
@@ -72,27 +60,28 @@ class ConcatEagerStream<T> extends StreamView<T> {
 
         // pause all subscriptions, except the first, initially
         if (index > 0) {
-          subscription.pause(completeEvents![index - 1].future);
+          final completer = Completer<void>.sync();
+          completeEvents.add(completer);
+          subscription.pause(completer.future);
         }
 
         return subscription;
       }
 
-      completeEvents = List.generate(length - 1, (_) => Completer<void>());
       subscriptions =
           streams.mapIndexed(createSubscription).toList(growable: false);
-
-      // initially, the very first subscription is the active one
-      activeSubscription = subscriptions?.first;
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        // initially, the very first subscription is the active one
+        activeSubscription = subscriptions.first;
+      }
     };
     controller.onPause = () => activeSubscription?.pause();
     controller.onResume = () => activeSubscription?.resume();
     controller.onCancel = () {
-      final future = subscriptions?.cancelAll();
       activeSubscription = null;
-      completeEvents = null;
-      subscriptions = null;
-      return future;
+      return subscriptions.cancelAll();
     };
 
     return controller;
