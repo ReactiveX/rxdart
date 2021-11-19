@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:test/test.dart';
+
+import '../utils.dart';
 
 typedef AsyncVoidCallBack = Future<void> Function();
 
