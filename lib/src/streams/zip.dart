@@ -282,59 +282,55 @@ class ZipStream<T, R> extends StreamView<R> {
     var pendingSubscriptions = <StreamSubscription<T>>[];
 
     controller.onListen = () {
-      try {
-        Completer<List<T>?>? completeCurrent;
-        late final _Window<T> window;
-        var index = 0;
+      Completer<List<T>?>? completeCurrent;
+      late final _Window<T> window;
+      var index = 0;
 
-        // resets variables for the next zip window
-        void next() {
-          completeCurrent?.complete(null);
+      // resets variables for the next zip window
+      void next() {
+        completeCurrent?.complete(null);
 
-          completeCurrent = Completer<List<T>?>();
+        completeCurrent = Completer<List<T>?>();
 
-          pendingSubscriptions = subscriptions.toList();
-        }
+        pendingSubscriptions = subscriptions.toList();
+      }
 
-        void Function(T value) doUpdate(int index) {
-          return (T value) {
-            window.onValue(index, value);
+      void Function(T value) doUpdate(int index) {
+        return (T value) {
+          window.onValue(index, value);
 
-            if (window.isComplete) {
-              // all streams emitted for the current zip index
-              // dispatch event and reset for next
-              try {
-                controller.add(zipper(window.flush()));
-                // reset for next zip event
-                next();
-              } catch (e, s) {
-                controller.addError(e, s);
-              }
-            } else {
-              // other streams are still pending to get to the next
-              // zip event index.
-              // pause this subscription while we await the others
-              //ignore: cancel_subscriptions
-              final subscription = subscriptions[index]
-                ..pause(completeCurrent!.future);
-
-              pendingSubscriptions.remove(subscription);
+          if (window.isComplete) {
+            // all streams emitted for the current zip index
+            // dispatch event and reset for next
+            try {
+              controller.add(zipper(window.flush()));
+              // reset for next zip event
+              next();
+            } catch (e, s) {
+              controller.addError(e, s);
             }
-          };
-        }
+          } else {
+            // other streams are still pending to get to the next
+            // zip event index.
+            // pause this subscription while we await the others
+            //ignore: cancel_subscriptions
+            final subscription = subscriptions[index]
+              ..pause(completeCurrent!.future);
 
-        subscriptions = streams
-            .map((stream) => stream.listen(doUpdate(index++),
-                onError: controller.addError, onDone: controller.close))
-            .toList(growable: false);
-        if (subscriptions.isEmpty) {
-          controller.close();
-        } else {
-          window = _Window<T>(subscriptions.length);
-          next();
-        }
-      } catch (e, s) {
-        controller.addError(e, s);
+            pendingSubscriptions.remove(subscription);
+          }
+        };
+      }
+
+      subscriptions = streams
+          .map((stream) => stream.listen(doUpdate(index++),
+              onError: controller.addError, onDone: controller.close))
+          .toList(growable: false);
+      if (subscriptions.isEmpty) {
+        controller.close();
+      } else {
+        window = _Window<T>(subscriptions.length);
+        next();
       }
     };
     controller.onPause = () => pendingSubscriptions.pauseAll();
