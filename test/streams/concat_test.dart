@@ -104,4 +104,26 @@ void main() {
   test('Rx.concat.empty', () {
     expect(Rx.concat<int>(const []), emitsDone);
   });
+
+  test('Rx.concat.iterate.once', () async {
+    var iteratedCount = 0;
+
+    final stream = Rx.concat<int>(() sync* {
+      ++iteratedCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        1,
+        2,
+        3,
+        emitsDone,
+      ]),
+    );
+    expect(iteratedCount, 1);
+  });
 }

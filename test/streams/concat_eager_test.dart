@@ -160,4 +160,26 @@ void main() {
   test('Rx.concatEager.empty', () {
     expect(Rx.concatEager<int>(const []), emitsDone);
   });
+
+  test('Rx.concatEager.iterate.once', () async {
+    var iteratedCount = 0;
+
+    final stream = Rx.concatEager<int>(() sync* {
+      ++iteratedCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        1,
+        2,
+        3,
+        emitsDone,
+      ]),
+    );
+    expect(iteratedCount, 1);
+  });
 }
