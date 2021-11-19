@@ -25,12 +25,6 @@ extension MapNotNullIterableExtension<T> on Iterable<T> {
       yield transform(index++, e);
     }
   }
-
-  /// Evaluates a lazy iterable.
-  ///
-  /// Known non-lazy types are returned directly instead.
-  Iterable<T> get evaluated =>
-      this is List || this is Set ? this : toList(growable: false);
 }
 
 /// Provides [removeFirstElements] extension method on [Queue].

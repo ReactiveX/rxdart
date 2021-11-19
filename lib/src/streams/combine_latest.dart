@@ -298,7 +298,9 @@ class CombineLatestStream<T, R> extends StreamView<R> {
       var triggered = 0, completed = 0;
 
       void onDone() {
-        if (++completed == subscriptions.length) controller.close();
+        if (++completed == subscriptions.length) {
+          controller.close();
+        }
       }
 
       subscriptions = streams.mapIndexed((index, stream) {
@@ -306,6 +308,10 @@ class CombineLatestStream<T, R> extends StreamView<R> {
 
         return stream.listen(
           (T value) {
+            if (values == null) {
+              return;
+            }
+
             values![index] = value;
 
             if (!hasFirstEvent) {
@@ -313,10 +319,6 @@ class CombineLatestStream<T, R> extends StreamView<R> {
               triggered++;
             }
 
-            if (values == null) {
-              // cancelled
-              return;
-            }
             if (triggered == subscriptions.length) {
               final R combined;
               try {

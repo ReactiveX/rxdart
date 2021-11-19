@@ -37,11 +37,11 @@ class ConcatEagerStream<T> extends StreamView<T> {
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
     final controller = StreamController<T>(sync: true);
     late List<StreamSubscription<T>> subscriptions;
-
-    final completeEvents = <Completer<void>>[];
     StreamSubscription<T>? activeSubscription;
 
     controller.onListen = () {
+      final completeEvents = <Completer<void>>[];
+
       void Function() onDone(int index) {
         return () {
           if (index < subscriptions.length - 1) {

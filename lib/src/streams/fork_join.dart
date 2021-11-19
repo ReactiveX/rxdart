@@ -315,7 +315,7 @@ class ForkJoinStream<T, R> extends StreamView<R> {
         return stream.listen(
           (value) {
             hasValue = true;
-            values![i] = value;
+            values?[i] = value;
           },
           onError: controller.addError,
           onDone: () {
@@ -326,7 +326,6 @@ class ForkJoinStream<T, R> extends StreamView<R> {
             }
 
             if (values == null) {
-              // cancelled
               return;
             }
             if (++completed == subscriptions.length) {
