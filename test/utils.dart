@@ -17,6 +17,4 @@
 /// unless the same future is awaited (or otherwise handled) elsewhere too.
 /// Because of that, `unawaited` should only be used for futures that
 /// are *expected* to complete with a value.
-/// You can use [FutureExtensions.ignore] if you also don't want to know
-/// about errors from this future.
 void unawaited(Future<void> future) {}
