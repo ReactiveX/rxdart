@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
+
+import '../utils.dart';
 
 // ignore_for_file: close_sinks
 

@@ -43,7 +43,7 @@ automatically upgrade your code to support RxDart 0.23.x.
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  const konamiKeyCodes = const <int>[
+  const konamiKeyCodes = <int>[
     KeyCode.UP,
     KeyCode.UP,
     KeyCode.DOWN,
@@ -55,13 +55,14 @@ void main() {
     KeyCode.B,
     KeyCode.A,
   ];
-  final result = querySelector('#result');
+
+  final result = querySelector('#result')!;
 
   document.onKeyUp
-    .map((event) => event.keyCode)
-    .bufferCount(10, 1) // An extension method provided by rxdart
-    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
-    .listen((_) => result.innerHtml = 'KONAMI!');
+      .map((event) => event.keyCode)
+      .bufferCount(10, 1) // An extension method provided by rxdart
+      .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
+      .listen((_) => result.innerHtml = 'KONAMI!');
 }
 ```
 
@@ -215,9 +216,9 @@ Web and command-line examples can be found in the `example` folder.
 In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
-  2. Run `pub get`
-  3. Run `pub run build_runner serve example`
-  4. Navigate to [http://localhost:8080/web/](http://localhost:8080/web/) in your browser
+  2. Run `dart pub get`
+  3. Run `dart pub run build_runner serve example`
+  4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
 
 ### Command Line Examples
 
@@ -251,4 +252,4 @@ To run the flutter example, you must have Flutter installed. For installation in
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/frankpepermans/rxdart/blob/master/CHANGELOG.md) to get all release notes.
+Refer to the [Changelog](https://github.com/ReactiveX/rxdart/blob/master/CHANGELOG.md) to get all release notes.

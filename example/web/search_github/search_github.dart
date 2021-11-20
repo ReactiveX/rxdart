@@ -5,8 +5,12 @@ import 'dart:html';
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  final searchInput = querySelector('#searchInput');
-  final resultsField = querySelector('#resultsField');
+  final searchInput = querySelector('#searchInput')!;
+  final resultsField = querySelector('#resultsField')!;
+
+  void renderItem(Map<String, dynamic> item) =>
+      resultsField.innerHtml = (resultsField.innerHtml ?? '') +
+          "<li>${item['fullName']} (${item['url']})</li>";
 
   searchInput.onKeyUp
       // return the event target
@@ -14,13 +18,13 @@ void main() {
       // cast the event target as InputElement
       .whereType<InputElement>()
       // Use map() to take the value from the input field
-      .map((inputElement) => (inputElement.value))
+      .map((inputElement) => inputElement.value ?? '')
       // Use distinct() to ignore all keystrokes that don't have an impact on
       // the input field's value (brake, ctrl, shift, ..)
       .distinct()
       // Ensure the term has some value before calling the API
       .where((term) => term.isNotEmpty)
-      // Use debounce() to prevent calling the server on fast following
+      // Use debounceTime() to prevent calling the server on fast following
       // keystrokes
       .debounceTime(const Duration(milliseconds: 250))
       // Use doOnData() to clear resultsField
@@ -33,9 +37,8 @@ void main() {
       // entered, switchMap will cancel the previous request, and notify use
       // of the last result that comes in. Normal flatMap() would give us all
       // previous results as well.
-      .switchMap((term) => Stream.fromFuture(_searchGithubFor(term)))
-      .listen((result) => result.forEach((item) => resultsField.innerHtml +=
-          "<li>${item['fullName']} (${item['url']})</li>"));
+      .switchMap((term) => Rx.fromCallable(() => _searchGithubFor(term)))
+      .listen((result) => result.forEach(renderItem));
 }
 
 Future<List<Map<String, String>>> _searchGithubFor(String term) async {
@@ -47,9 +50,10 @@ Future<List<Map<String, String>>> _searchGithubFor(String term) async {
     'https://api.github.com/search/repositories?q=$term',
     requestHeaders: {"Content-Type": "application/json"},
   );
-  final List itemList = json.decode(request.responseText)['items'] as List;
+  final List? itemList =
+      json.decode(request.responseText ?? '{}')['items'] as List?;
   final List<Map<String, dynamic>> items =
-      itemList.cast<Map<String, dynamic>>();
+      itemList?.cast<Map<String, dynamic>>() ?? [];
 
   return items.map((item) {
     return {

@@ -19,7 +19,7 @@ void main() {
     KeyCode.A
   ];
 
-  final result = querySelector('#result');
+  final result = querySelector('#result')!;
 
   document.onKeyUp
       // Use map() to get the keyCode

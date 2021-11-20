@@ -151,14 +151,11 @@ void main() {
 
     final stream = Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).flatMap(
       (value) {
-        return Rx.fromCallable(() {
+        return Rx.defer(() {
           expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
 
           final ms = value.isOdd ? ((10 - value) * 200) : ((11 - value) * 400);
-          return Future.delayed(
-            Duration(milliseconds: ms),
-            () => value,
-          );
+          return Rx.timer(value, Duration(milliseconds: ms));
         }).doOnDone(() => --activeCount);
       },
       maxConcurrent: maxConcurrent,
@@ -174,14 +171,11 @@ void main() {
 
     final stream = Stream.fromIterable([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).flatMap(
       (value) {
-        return Rx.fromCallable(() {
+        return Rx.defer(() {
           expect(++activeCount, lessThanOrEqualTo(maxConcurrent));
 
           final ms = value.isOdd ? ((10 - value) * 240) : ((11 - value) * 360);
-          return Future.delayed(
-            Duration(milliseconds: ms),
-            () => value,
-          );
+          return Rx.timer(value, Duration(milliseconds: ms));
         }).doOnDone(() => --activeCount);
       },
       maxConcurrent: maxConcurrent,
