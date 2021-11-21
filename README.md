@@ -105,7 +105,7 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 - [TimerStream](https://pub.dev/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://pub.dev/documentation/rxdart/latest/rx/Rx/timer.html)
 - [UsingStream](https://pub.dev/documentation/rxdart/latest/rx/UsingStream-class.html) / [Rx.using](https://pub.dev/documentation/rxdart/latest/rx/Rx/using.html)
 - [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
-- ** If you're looking for an [Interval](http://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
+- If you're looking for an [Interval](https://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
 
 ### Extension Methods
 
@@ -248,7 +248,7 @@ To run the flutter example, you must have Flutter installed. For installation in
 
 - [Documentation on the Dart Stream class](https://api.dart.dev/stable/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
-- [ReactiveX (Rx)](http://reactivex.io/)
+- [ReactiveX (Rx)](https://reactivex.io/)
 
 ## Changelog
 
