@@ -3,16 +3,21 @@
 ### Bug fixes
 
 * `flatMap` now creates inner `Stream` lazily.
-* `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` ...
+* `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` iterate over `Iterable<Stream>`s only once
+  when the stream is listened to.
+* Disallow mixing `autoConnect`, `connect` and `refCount` together -> only use one of them
 
 ### Features
 
+* Introduce `AbstractConnectableStream`, base class for the `ConnectableStream` implementations.
 
 ### Documentation
 
-
 ### Code refactoring
 
+* Simplify `takeLast` implementation.
+* Migrate from `pedantic` to `lints` and `flutter_lints`.
+* Refactor `BehaviorSubject`, `ReplaySubject` implementations by using "Sentinel object" instead `ValueWrapper`.
 
 ## 0.27.2 (2021-09-03)
 
