@@ -1,3 +1,19 @@
+## 0.27.3 (2021-11-20)
+
+### Bug fixes
+
+* `flatMap` now creates inner `Stream` lazily.
+* `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` ...
+
+### Features
+
+
+### Documentation
+
+
+### Code refactoring
+
+
 ## 0.27.2 (2021-09-03)
 
 ### Bug fixes
