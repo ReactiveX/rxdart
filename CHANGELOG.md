@@ -1,8 +1,8 @@
-## 0.27.3 (2021-11-20)
+## 0.27.3 (2021-11-21)
 
 ### Bug fixes
 
-* `flatMap` now creates inner `Stream` lazily.
+* `flatMap` now creates inner `Stream`s lazily.
 * `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` iterate over `Iterable<Stream>`s only once
   when the stream is listened to.
 * Disallow mixing `autoConnect`, `connect` and `refCount` together, only one of them should be used.
