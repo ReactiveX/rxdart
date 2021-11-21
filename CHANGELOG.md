@@ -1,3 +1,34 @@
+## 0.27.3 (2021-11-21)
+
+### Bug fixes
+
+* `flatMap` now creates inner `Stream`s lazily.
+* `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` iterate over `Iterable<Stream>`s only once
+  when the stream is listened to.
+* Disallow mixing `autoConnect`, `connect` and `refCount` together, only one of them should be used.
+
+### Features
+
+* Introduce `AbstractConnectableStream`, base class for the `ConnectableStream` implementations.
+* Improve `CompositeSubscription` (thanks to [@BreX900](https://github.com/BreX900))
+  * CompositeSubscription's `dispose`, `clear`, and `remove` methods now return a completion future.
+  * Fixed an issue where a stream not present in CompositeSubscription was canceled.
+  * Added the ability not to cancel the stream when it is removed from CompositeSubscription.
+  * CompositeSubscription implements `StreamSubscription`.
+  * `CompositeSubscription.add` will throw a `StateError` instead of a `String` if this composite was disposed.
+
+### Documentation
+
+* Fix `Connectable` examples.
+* Update Web example to null safety.
+* Fix `Flutter` example: `SearchResultItem.fromJson` type error (thanks to [@WenYeh](https://github.com/wayne900204))
+
+### Code refactoring
+
+* Simplify `takeLast` implementation.
+* Migrate from `pedantic` to `lints` and `flutter_lints`.
+* Refactor `BehaviorSubject`, `ReplaySubject` implementations by using "`Sentinel object`"s instead of `ValueWrapper`s.
+
 ## 0.27.2 (2021-09-03)
 
 ### Bug fixes
