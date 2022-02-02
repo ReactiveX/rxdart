@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
 class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
-  final _stopwatch = Stopwatch();
+  final _stopwatch = clock.stopwatch();
 
   @override
   void onData(S data) {
