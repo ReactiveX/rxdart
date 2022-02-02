@@ -55,6 +55,25 @@ void main() {
         emitsInOrder(expectedOutput));
   });
 
+  test('Rx.withLatestFrom.iterate.once', () async {
+    var iterationCount = 0;
+
+    final combined = Stream.value(1).withLatestFromList(() sync* {
+      ++iterationCount;
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      combined,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.withLatestFrom.reusable', () async {
     final streams = _createTestStreams();
     final transformer = WithLatestFromStreamTransformer.with1<int, int, Pair>(
