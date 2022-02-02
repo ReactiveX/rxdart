@@ -9,7 +9,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
 
-  bool _hasAllValues = false;
+  bool _hasValues = false;
   List<T?>? _latestValues;
   late List<StreamSubscription<T>> _subscriptions;
 
@@ -17,7 +17,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
 
   @override
   void onData(S data) {
-    if (_hasAllValues && _latestValues != null) {
+    if (_hasValues && _latestValues != null) {
       final R combinedValue;
       try {
         combinedValue = _combiner(data, List<T>.unmodifiable(_latestValues!));
@@ -53,7 +53,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
           if (!hasValue) {
             hasValue = true;
             if (++count == _subscriptions.length) {
-              _hasAllValues = true;
+              _hasValues = true;
             }
           }
           _latestValues![index] = value;
@@ -65,7 +65,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
     _subscriptions =
         _latestFromStreams.mapIndexed(mapper).toList(growable: false);
     if (_subscriptions.isEmpty) {
-      return sink.close();
+      _hasValues = true;
     }
     _latestValues = List.filled(_subscriptions.length, null);
   }
