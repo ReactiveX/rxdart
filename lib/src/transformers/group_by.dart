@@ -72,6 +72,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
       subscriptions = null;
       return future;
     }
+    return null;
   }
 
   @override
