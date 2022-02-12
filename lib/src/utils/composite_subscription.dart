@@ -53,11 +53,10 @@ class CompositeSubscription implements StreamSubscription<Never> {
   Future<void>? remove(
     StreamSubscription<dynamic> subscription, {
     bool shouldCancel = true,
-  }) {
-    if (_subscriptionsList.remove(subscription) && shouldCancel) {
-      return subscription.cancel();
-    }
-  }
+  }) =>
+      _subscriptionsList.remove(subscription) && shouldCancel
+          ? subscription.cancel()
+          : null;
 
   /// Cancels all subscriptions added to this composite. Clears subscriptions collection.
   ///
