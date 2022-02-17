@@ -787,9 +787,9 @@ abstract class Rx {
   ///
   /// ### Example
   ///
-  ///     Rx.range(1, 3).listen((i) => print(i); // Prints 1, 2, 3
+  ///     Rx.range(1, 3).listen((i) => print(i)); // Prints 1, 2, 3
   ///
-  ///     Rx.range(3, 1).listen((i) => print(i); // Prints 3, 2, 1
+  ///     Rx.range(3, 1).listen((i) => print(i)); // Prints 3, 2, 1
   static Stream<int> range(int startInclusive, int endInclusive) =>
       RangeStream(startInclusive, endInclusive);
 
@@ -803,7 +803,7 @@ abstract class Rx {
   ///
   ///     RepeatStream((int repeatCount) =>
   ///       Stream.value('repeat index: $repeatCount'), 3)
-  ///         .listen((i) => print(i); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
+  ///         .listen((i) => print(i)); // Prints 'repeat index: 0, repeat index: 1, repeat index: 2'
   static Stream<T> repeat<T>(Stream<T> Function(int repeatIndex) streamFactory,
           [int? count]) =>
       RepeatStream<T>(streamFactory, count);
@@ -946,7 +946,7 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.timer('hi', Duration(minutes: 1))
-  ///         .listen((i) => print(i); // print 'hi' after 1 minute
+  ///         .listen((i) => print(i)); // print 'hi' after 1 minute
   static Stream<T> timer<T>(T value, Duration duration) =>
       TimerStream<T>(value, duration);
 
