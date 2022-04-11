@@ -9,7 +9,7 @@ import 'package:rxdart/src/utils/subscription.dart';
 /// If the provided streams is empty, the resulting sequence completes immediately
 /// without emitting any items.
 ///
-/// [Interactive marble diagram](http://rxmarbles.com/#amb)
+/// [Interactive marble diagram](http://rxmarbles.com/#race)
 ///
 /// ### Example
 ///
