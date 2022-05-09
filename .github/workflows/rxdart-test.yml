@@ -30,7 +30,7 @@ jobs:
         run: dart --version
 
       - name: Install dependencies
-        run: pub get
+        run: dart pub get
 
       - name: Analyze
         if: ${{ matrix.sdk == 'stable' }}
@@ -41,10 +41,10 @@ jobs:
         run: dart format . --set-exit-if-changed
 
       - name: Active coverage
-        run: pub global activate coverage
+        run: dart pub global activate coverage
 
       - name: Run tests
-        run: pub run test test/rxdart_test.dart --chain-stack-traces
+        run: dart pub run test test/rxdart_test.dart --chain-stack-traces
 
       - name: Start Observatory
         run: dart
@@ -55,14 +55,14 @@ jobs:
           test/rxdart_test.dart &
 
       - name: Collect coverage
-        run: nohup pub global run coverage:collect_coverage
+        run: nohup dart pub global run coverage:collect_coverage
           --port=8111
           --out=coverage.json
           --wait-paused
           --resume-isolates
 
       - name: Format coverage
-        run: pub global run coverage:format_coverage
+        run: dart pub global run coverage:format_coverage
           --lcov
           --in=coverage.json
           --out=lcov.info
