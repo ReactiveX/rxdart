@@ -66,7 +66,6 @@ jobs:
           --lcov
           --in=coverage.json
           --out=lcov.info
-          --packages=.packages
           --report-on=lib
 
       - uses: codecov/codecov-action@v2.1.0
