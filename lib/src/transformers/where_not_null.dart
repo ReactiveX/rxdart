@@ -3,15 +3,31 @@ import 'dart:async';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
-class _WhereNotNullStreamSink<T extends Object>
-    with ForwardingSinkMixin<T?, T>
-    implements ForwardingSink<T?, T> {
+class _WhereNotNullStreamSink<T extends Object> extends ForwardingSink<T?, T> {
   @override
-  void add(EventSink<T> sink, T? data) {
+  void onData(T? data) {
     if (data != null) {
       sink.add(data);
     }
   }
+
+  @override
+  FutureOr<void> onCancel() {}
+
+  @override
+  void onDone() => sink.close();
+
+  @override
+  void onError(Object error, StackTrace st) => sink.addError(error, st);
+
+  @override
+  FutureOr<void> onListen() {}
+
+  @override
+  void onPause() {}
+
+  @override
+  void onResume() {}
 }
 
 /// Create a Stream which emits all the non-`null` elements of the Stream,
@@ -32,7 +48,7 @@ class WhereNotNullStreamTransformer<T extends Object>
     extends StreamTransformerBase<T?, T> {
   @override
   Stream<T> bind(Stream<T?> stream) =>
-      forwardStream(stream, _WhereNotNullStreamSink<T>());
+      forwardStream(stream, () => _WhereNotNullStreamSink<T>());
 }
 
 /// Extends the Stream class with the ability to convert the source Stream
@@ -55,5 +71,5 @@ extension WhereNotNullExtension<T extends Object> on Stream<T?> {
   ///     Stream.fromIterable(<int?>[1, 2, 3, null, 4, null])
   ///       .whereType<int>()
   ///       .listen(print); // prints 1, 2, 3, 4
-  Stream<T> whereNotNull() => forwardStream(this, _WhereNotNullStreamSink<T>());
+  Stream<T> whereNotNull() => transform(WhereNotNullStreamTransformer<T>());
 }

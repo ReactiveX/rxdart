@@ -40,28 +40,3 @@ abstract class ForwardingSink<T, R> {
   /// Fires when a subscriber cancels.
   FutureOr<void> onCancel();
 }
-
-/// This [ForwardingSink] mixin implements all [ForwardingSink] members except [add].
-mixin ForwardingSinkMixin<T, R> implements ForwardingSink<T, R> {
-  @override
-  FutureOr<void> onCancel(EventSink<R> sink) {}
-
-  @override
-  void onPause(EventSink<R> sink) {}
-
-  @override
-  void onResume(EventSink<R> sink) {}
-
-  @override
-  void onListen(EventSink<R> sink) {}
-
-  @override
-  void add(EventSink<R> sink, T data);
-
-  @override
-  void addError(EventSink<R> sink, Object error, [StackTrace? st]) =>
-      sink.addError(error, st);
-
-  @override
-  void close(EventSink<R> sink) => sink.close();
-}
