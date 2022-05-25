@@ -15,6 +15,13 @@ void main() {
         }, count: 4));
   });
 
+  test('Rx.delay.zero', () {
+    expect(
+      _getStream().delay(Duration.zero),
+      emitsInOrder(<int>[1, 2, 3, 4]),
+    );
+  });
+
   test('Rx.delay.shouldBeDelayed', () async {
     var value = 1;
     _getStream()
@@ -67,21 +74,6 @@ void main() {
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
-  });
-
-  /// Should also throw if the current [Zone] is unable to install a [Timer]
-  test('Rx.delay.error.shouldThrowB', () async {
-    runZoned(() {
-      final streamWithError =
-          Stream.value(1).delay(const Duration(milliseconds: 200));
-
-      streamWithError.listen(null,
-          onError: expectAsync2(
-              (Exception e, StackTrace s) => expect(e, isException)));
-    },
-        zoneSpecification: ZoneSpecification(
-            createTimer: (self, parent, zone, duration, void Function() f) =>
-                throw Exception('Zone createTimer error')));
   });
 
   test('Rx.delay.pause.resume', () async {

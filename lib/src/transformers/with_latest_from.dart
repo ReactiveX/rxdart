@@ -1,73 +1,80 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/subscription.dart';
 
-class _WithLatestFromStreamSink<S, T, R> implements ForwardingSink<S, R> {
+class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
   final Iterable<Stream<T>> _latestFromStreams;
   final R Function(S t, List<T> values) _combiner;
-  final List<bool> _hasValues;
-  final List<T?> _latestValues;
-  List<StreamSubscription<T>>? _subscriptions;
 
-  _WithLatestFromStreamSink(this._latestFromStreams, this._combiner)
-      : _hasValues = List.filled(_latestFromStreams.length, false),
-        _latestValues = List<T?>.filled(_latestFromStreams.length, null);
+  bool _hasValues = false;
+  List<T?>? _latestValues;
+  late List<StreamSubscription<T>> _subscriptions;
+
+  _WithLatestFromStreamSink(this._latestFromStreams, this._combiner);
 
   @override
-  void add(EventSink<R> sink, S data) {
-    if (_hasValues.every((value) => value)) {
-      sink.add(_combiner(data, List<T>.unmodifiable(_latestValues)));
+  void onData(S data) {
+    if (_hasValues && _latestValues != null) {
+      final R combinedValue;
+      try {
+        combinedValue = _combiner(data, List<T>.unmodifiable(_latestValues!));
+      } catch (e, s) {
+        sink.addError(e, s);
+        return;
+      }
+      sink.add(combinedValue);
     }
   }
 
   @override
-  void addError(EventSink<R> sink, Object e, [StackTrace? st]) =>
-      sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addError(e, st);
 
   @override
-  void close(EventSink<R> sink) {
-    _subscriptions?.forEach((it) => it.cancel());
-    _subscriptions = null;
-    sink.close();
+  void onDone() => sink.close();
+
+  @override
+  Future<void>? onCancel() {
+    _latestValues = null;
+    return _subscriptions.cancelAll();
   }
 
   @override
-  FutureOr onCancel(EventSink<R> sink) {
-    Iterable<Future> futures = <Future>[];
+  void onListen() {
+    var count = 0;
 
-    if (_subscriptions != null && _subscriptions!.isNotEmpty) {
-      futures = _subscriptions!.map((it) => it.cancel());
-    }
+    StreamSubscription<T> mapper(int index, Stream<T> stream) {
+      var hasValue = false;
 
-    return futures.isNotEmpty ? Future.wait<void>(futures) : null;
-  }
-
-  @override
-  void onListen(EventSink<R> sink) {
-    var index = 0;
-
-    final mapper = (Stream<T> stream) {
-      var i = index++;
       return stream.listen(
-        (it) {
-          _hasValues[i] = true;
-          _latestValues[i] = it;
+        (value) {
+          if (!hasValue) {
+            hasValue = true;
+            if (++count == _subscriptions.length) {
+              _hasValues = true;
+            }
+          }
+          _latestValues![index] = value;
         },
         onError: sink.addError,
       );
-    };
+    }
 
-    _subscriptions = _latestFromStreams.map(mapper).toList(growable: false);
+    _subscriptions =
+        _latestFromStreams.mapIndexed(mapper).toList(growable: false);
+    if (_subscriptions.isEmpty) {
+      _hasValues = true;
+    }
+    _latestValues = List.filled(_subscriptions.length, null);
   }
 
   @override
-  void onPause(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.pause());
+  void onPause() => _subscriptions.pauseAll();
 
   @override
-  void onResume(EventSink<R> sink) =>
-      _subscriptions?.forEach((it) => it.resume());
+  void onResume() => _subscriptions.resumeAll();
 }
 
 /// A StreamTransformer that emits when the source stream emits, combining
@@ -369,7 +376,7 @@ class WithLatestFromStreamTransformer<S, T, R>
   @override
   Stream<R> bind(Stream<S> stream) => forwardStream(
         stream,
-        _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
+        () => _WithLatestFromStreamSink<S, T, R>(latestFromStreams, combiner),
       );
 }
 

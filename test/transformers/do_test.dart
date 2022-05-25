@@ -123,7 +123,9 @@ void main() {
     });
 
     test('onData only emits correctly with ReplaySubject', () async {
-      final controller = ReplaySubject<int>(sync: true)..add(1)..add(2);
+      final controller = ReplaySubject<int>(sync: true)
+        ..add(1)
+        ..add(2);
       final actual = <int>[];
 
       await controller.close();
@@ -193,7 +195,10 @@ void main() {
         'calls onListen once when multiple subscribers open, without cancelling',
         () async {
       var onListenCallCount = 0;
-      final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
+      final sc = StreamController<int>.broadcast()
+        ..add(1)
+        ..add(2)
+        ..add(3);
 
       final stream = sc.stream.doOnListen(() => onListenCallCount++);
 
@@ -208,7 +213,10 @@ void main() {
         'calls onListen every time after all previous subscribers have cancelled',
         () async {
       var onListenCallCount = 0;
-      final sc = StreamController<int>.broadcast()..add(1)..add(2)..add(3);
+      final sc = StreamController<int>.broadcast()
+        ..add(1)
+        ..add(2)
+        ..add(3);
 
       final stream = sc.stream.doOnListen(() => onListenCallCount++);
 
@@ -260,7 +268,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -269,7 +277,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -279,7 +287,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
               count: 2,
             ),
           );
@@ -297,7 +305,7 @@ void main() {
               .doOnCancel(
                   () => throw Exception('catch me if you can! doOnCancel'))
               .listen(null)
-                ..cancel();
+              .cancel();
         },
         expectAsync2(
           (Object e, StackTrace s) => expect(e, isException),
@@ -310,7 +318,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
             ),
           );
 
@@ -319,7 +327,7 @@ void main() {
           .listen(
             null,
             onError: expectAsync2(
-              (Exception e, [StackTrace? s]) => expect(e, isException),
+              (Exception e, StackTrace s) => expect(e, isException),
               count: 2,
             ),
           );
@@ -328,18 +336,18 @@ void main() {
           .doOnPause(() => throw Exception('catch me if you can! doOnPause'))
           .listen(null,
               onError: expectAsync2(
-                (Exception e, [StackTrace? s]) => expect(e, isException),
+                (Exception e, StackTrace s) => expect(e, isException),
               ))
-            ..pause()
-            ..resume();
+        ..pause()
+        ..resume();
 
       Stream.value(1)
           .doOnResume(() => throw Exception('catch me if you can! doOnResume'))
           .listen(null,
               onError: expectAsync2(
-                  (Exception e, [StackTrace? s]) => expect(e, isException)))
-            ..pause()
-            ..resume();
+                  (Exception e, StackTrace s) => expect(e, isException)))
+        ..pause()
+        ..resume();
     });
 
     test(
@@ -445,14 +453,14 @@ void main() {
       ];
       late StreamSubscription<int> subscription;
 
-      final addToResult = (String value) {
+      void addToResult(String value) {
         result.add(value);
 
         if (result.length == expectedOutput.length) {
           subscription.cancel();
           completer.complete();
         }
-      };
+      }
 
       subscription = Stream.value(1)
           .exhaustMap((_) => stream.doOnData((data) => addToResult('A: $data')))

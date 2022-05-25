@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:test/test.dart';
 
-typedef AsyncVoidCallBack = Future<Null> Function();
+import '../utils.dart';
+
+typedef AsyncVoidCallBack = Future<void> Function();
 
 void main() {
   group('PublishSubject', () {
@@ -105,7 +106,7 @@ void main() {
       await expectLater(subject.stream, emits(3));
     });
 
-    test('allows items to be added once addStream is completes with an error',
+    test('allows items to be added once addStream completes with an error',
         () async {
       // ignore: close_sinks
       final subject = PublishSubject<int>();
@@ -169,7 +170,7 @@ void main() {
     });
 
     test('returns onListen callback set in constructor', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = PublishSubject<int>(onListen: testOnListen);
 
@@ -177,7 +178,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
       // ignore: close_sinks
       final subject = PublishSubject<int>();
 
@@ -189,7 +190,7 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final onCancel = () => Future<Null>.value(null);
+      Future<void> onCancel() => Future<void>.value(null);
       // ignore: close_sinks
       final subject = PublishSubject<int>(onCancel: onCancel);
 
@@ -197,7 +198,7 @@ void main() {
     });
 
     test('sets onCancel callback', () async {
-      final testOnCancel = () {};
+      void testOnCancel() {}
       // ignore: close_sinks
       final subject = PublishSubject<int>();
 

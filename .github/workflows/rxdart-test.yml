@@ -3,56 +3,69 @@ name: Dart CI
 on:
   push:
     branches: [ master ]
+    paths-ignore: [ '**.md', 'example/**' ]
   pull_request:
     branches: [ master ]
-
+    paths-ignore: [ '**.md', 'example/**' ]
+  schedule:
+    # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
+    - cron: '0 0 */7 * *'
 jobs:
-  build:
-
+  analyze-and-test:
     runs-on: ubuntu-latest
 
-    container:
-      image:  google/dart:beta
+    strategy:
+      matrix:
+        sdk: [ beta, stable, 2.15.0, 2.12.0 ]
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Install dependencies
-      run: pub get
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: ${{ matrix.sdk }}
 
-    - name: Analyze
-      run: dartanalyzer --fatal-infos --fatal-warnings ./lib
+      - name: Print Dart version
+        run: dart --version
 
-    - name: Format code
-      run: dartfmt -n ./lib --set-exit-if-changed
+      - name: Install dependencies
+        run: dart pub get
 
-    - name: Active coverage
-      run: pub global activate coverage
+      - name: Analyze
+        if: ${{ matrix.sdk == 'stable' }}
+        run: dart analyze --fatal-infos --fatal-warnings
 
-    - name: Run tests
-      run: pub run test test/rxdart_test.dart
+      - name: Format code
+        if: ${{ matrix.sdk == 'stable' }}
+        run: dart format . --set-exit-if-changed
 
-    - name: Start Observatory
-      run: dart
-         --disable-service-auth-codes
-         --enable-vm-service=8111
-         --pause-isolates-on-exit
-         --enable-asserts
-         test/rxdart_test.dart &
+      - name: Active coverage
+        run: dart pub global activate coverage
 
-    - name: Collect coverage
-      run: nohup pub global run coverage:collect_coverage
-        --port=8111
-        --out=coverage.json
-        --wait-paused
-        --resume-isolates
+      - name: Run tests
+        run: dart pub run test test/rxdart_test.dart --chain-stack-traces
 
-    - name: Format coverage
-      run: pub global run coverage:format_coverage
-        --lcov
-        --in=coverage.json
-        --out=lcov.info
-        --packages=.packages
-        --report-on=lib
+      - name: Start Observatory
+        run: dart
+          --disable-service-auth-codes
+          --enable-vm-service=8111
+          --pause-isolates-on-exit
+          --enable-asserts
+          test/rxdart_test.dart &
 
-    - uses: codecov/codecov-action@v1
+      - name: Collect coverage
+        run: nohup dart pub global run coverage:collect_coverage
+          --port=8111
+          --out=coverage.json
+          --wait-paused
+          --resume-isolates
+
+      - name: Format coverage
+        run: dart pub global run coverage:format_coverage
+          --lcov
+          --in=coverage.json
+          --out=lcov.info
+          --report-on=lib
+
+      - uses: codecov/codecov-action@v2.1.0

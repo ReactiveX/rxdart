@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
-import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
 import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
@@ -38,214 +36,166 @@ abstract class ConnectableStream<T> extends StreamView<T> {
   Stream<T> refCount();
 }
 
-/// A [ConnectableStream] that converts a single-subscription Stream into
-/// a broadcast [Stream].
-class PublishConnectableStream<T> extends ConnectableStream<T> {
-  final Stream<T> _source;
-  final PublishSubject<T> _subject;
+enum _ConnectableStreamUse {
+  autoConnect,
+  connect,
+  refCount,
+}
 
-  /// Constructs a [Stream] which only begins emitting events when
-  /// the [connect] method is called, this [Stream] acts like a
-  /// [PublishSubject].
-  factory PublishConnectableStream(Stream<T> source, {bool sync = false}) {
-    return PublishConnectableStream<T>._(source, PublishSubject<T>(sync: sync));
+/// Base class for implementations of [ConnectableStream].
+/// [S] is type of the forwarding [Subject].
+/// [R] is return type of [autoConnect] and [refCount] (type constraint: `S extends R`).
+abstract class AbstractConnectableStream<T, S extends Subject<T>,
+    R extends Stream<T>> extends ConnectableStream<T> {
+  final Stream<T> _source;
+  final S _subject;
+  _ConnectableStreamUse? _use;
+
+  /// Constructs a [AbstractConnectableStream] with a source [Stream] and the forwarding [Subject].
+  AbstractConnectableStream(
+    Stream<T> source,
+    S subject,
+  )   : assert(subject is R),
+        _source = source,
+        _subject = subject,
+        super(subject);
+
+  late final _connection = ConnectableStreamSubscription<T>(
+    _source.listen(
+      _subject.add,
+      onError: _subject.addError,
+      onDone: _subject.close,
+    ),
+    _subject,
+  );
+
+  bool _canReuse(_ConnectableStreamUse use) {
+    if (_use != null && _use != use) {
+      throw StateError(
+          'Do not mix autoConnect, connect and refCount together, you should only use one of them!');
+    }
+
+    final canReuse = _use != null && _use == use;
+    _use = use;
+    return canReuse;
   }
 
-  PublishConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
-
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
-
   @override
-  Stream<T> autoConnect({
+  R autoConnect({
     void Function(StreamSubscription<T> subscription)? connection,
   }) {
+    if (_canReuse(_ConnectableStreamUse.autoConnect)) {
+      return _subject as R;
+    }
+
     _subject.onListen = () {
-      final subscription = _connect();
+      final subscription = _connection;
       connection?.call(subscription);
     };
     _subject.onCancel = null;
 
-    return _subject;
+    return _subject as R;
   }
 
   @override
   StreamSubscription<T> connect() {
+    if (_canReuse(_ConnectableStreamUse.connect)) {
+      return _connection;
+    }
+
     _subject.onListen = _subject.onCancel = null;
-    return _connect();
+    return _connection;
   }
 
   @override
-  Stream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
+  R refCount() {
+    if (_canReuse(_ConnectableStreamUse.refCount)) {
+      return _subject as R;
+    }
 
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
+    StreamSubscription<T>? subscription;
+    _subject.onListen = () => subscription = _connection;
+    _subject.onCancel = () => subscription?.cancel();
 
-    return _subject;
+    return _subject as R;
   }
+}
+
+/// A [ConnectableStream] that converts a single-subscription Stream into
+/// a broadcast [Stream].
+class PublishConnectableStream<T>
+    extends AbstractConnectableStream<T, PublishSubject<T>, Stream<T>> {
+  /// Constructs a [Stream] which only begins emitting events when
+  /// the [connect] method is called, this [Stream] acts like a
+  /// [PublishSubject].
+  PublishConnectableStream(Stream<T> source, {bool sync = false})
+      : super(source, PublishSubject<T>(sync: sync));
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast Stream that replays the latest value to any new listener, and
 /// provides synchronous access to the latest emitted value.
-class ValueConnectableStream<T> extends ConnectableStream<T>
+class ValueConnectableStream<T>
+    extends AbstractConnectableStream<T, BehaviorSubject<T>, ValueStream<T>>
     implements ValueStream<T> {
-  final Stream<T> _source;
-  final BehaviorSubject<T> _subject;
-
-  ValueConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
-
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject].
-  factory ValueConnectableStream(Stream<T> source, {bool sync = false}) =>
-      ValueConnectableStream<T>._(
-        source,
-        BehaviorSubject<T>(sync: sync),
-      );
+  ValueConnectableStream(Stream<T> source, {bool sync = false})
+      : super(source, BehaviorSubject<T>(sync: sync));
 
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [BehaviorSubject.seeded].
-  factory ValueConnectableStream.seeded(Stream<T> source, T seedValue,
-          {bool sync = false}) =>
-      ValueConnectableStream<T>._(
-        source,
-        BehaviorSubject<T>.seeded(seedValue, sync: sync),
-      );
-
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
+  ValueConnectableStream.seeded(Stream<T> source, T seedValue,
+      {bool sync = false})
+      : super(source, BehaviorSubject<T>.seeded(seedValue, sync: sync));
 
   @override
-  ValueStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription)? connection,
-  }) {
-    _subject.onListen = () {
-      final subscription = _connect();
-      connection?.call(subscription);
-    };
-    _subject.onCancel = null;
-
-    return _subject;
-  }
+  bool get hasValue => _subject.hasValue;
 
   @override
-  StreamSubscription<T> connect() {
-    _subject.onListen = _subject.onCancel = null;
-    return _connect();
-  }
+  T get value => _subject.value;
 
   @override
-  ValueStream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
-
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
-
-    return _subject;
-  }
+  T? get valueOrNull => _subject.valueOrNull;
 
   @override
-  ErrorAndStackTrace? get errorAndStackTrace => _subject.errorAndStackTrace;
+  Object get error => _subject.error;
 
   @override
-  ValueWrapper<T>? get valueWrapper => _subject.valueWrapper;
+  Object? get errorOrNull => _subject.errorOrNull;
+
+  @override
+  bool get hasError => _subject.hasError;
+
+  @override
+  StackTrace? get stackTrace => _subject.stackTrace;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
 /// a broadcast Stream that replays emitted items to any new listener, and
 /// provides synchronous access to the list of emitted values.
-class ReplayConnectableStream<T> extends ConnectableStream<T>
+class ReplayConnectableStream<T>
+    extends AbstractConnectableStream<T, ReplaySubject<T>, ReplayStream<T>>
     implements ReplayStream<T> {
-  final Stream<T> _source;
-  final ReplaySubject<T> _subject;
-
   /// Constructs a [Stream] which only begins emitting events when
   /// the [connect] method is called, this [Stream] acts like a
   /// [ReplaySubject].
-  factory ReplayConnectableStream(Stream<T> stream,
-      {int? maxSize, bool sync = false}) {
-    return ReplayConnectableStream<T>._(
-      stream,
-      ReplaySubject<T>(maxSize: maxSize, sync: sync),
-    );
-  }
-
-  ReplayConnectableStream._(Stream<T> source, this._subject)
-      : _source = source.isBroadcast
-            ? source
-            : source.asBroadcastStream(onCancel: (s) => s.cancel()),
-        super(_subject);
-
-  ConnectableStreamSubscription<T> _connect() =>
-      ConnectableStreamSubscription<T>(
-        _source.listen(
-          _subject.add,
-          onError: _subject.addError,
-          onDone: _subject.close,
-        ),
-        _subject,
-      );
-
-  @override
-  ReplayStream<T> autoConnect({
-    void Function(StreamSubscription<T> subscription)? connection,
-  }) {
-    _subject.onListen = () {
-      final subscription = _connect();
-      connection?.call(subscription);
-    };
-    _subject.onCancel = null;
-
-    return _subject;
-  }
-
-  @override
-  StreamSubscription<T> connect() {
-    _subject.onListen = _subject.onCancel = null;
-    return _connect();
-  }
-
-  @override
-  ReplayStream<T> refCount() {
-    late ConnectableStreamSubscription<T> subscription;
-
-    _subject.onListen = () => subscription = _connect();
-    _subject.onCancel = () => subscription.cancel();
-
-    return _subject;
-  }
+  ReplayConnectableStream(Stream<T> stream, {int? maxSize, bool sync = false})
+      : super(
+          stream,
+          ReplaySubject<T>(maxSize: maxSize, sync: sync),
+        );
 
   @override
   List<T> get values => _subject.values;
 
   @override
-  List<ErrorAndStackTrace> get errorAndStackTraces =>
-      _subject.errorAndStackTraces;
+  List<Object> get errors => _subject.errors;
+
+  @override
+  List<StackTrace?> get stackTraces => _subject.stackTraces;
 }
 
 /// A special [StreamSubscription] that not only cancels the connection to
@@ -263,25 +213,28 @@ class ConnectableStreamSubscription<T> extends StreamSubscription<T> {
       _source.cancel().then<void>((_) => _subject.close());
 
   @override
-  Future<E> asFuture<E>([E? futureValue]) => _source.asFuture(futureValue);
+  Never asFuture<E>([E? futureValue]) => _unsupportedError();
 
   @override
   bool get isPaused => _source.isPaused;
 
   @override
-  void onData(void Function(T data)? handleData) => _source.onData(handleData);
+  Never onData(void Function(T data)? handleData) => _unsupportedError();
 
   @override
-  void onDone(void Function()? handleDone) => _source.onDone(handleDone);
+  Never onDone(void Function()? handleDone) => _unsupportedError();
 
   @override
-  void onError(Function? handleError) => _source.onError(handleError);
+  Never onError(Function? handleError) => _unsupportedError();
 
   @override
   void pause([Future<void>? resumeSignal]) => _source.pause(resumeSignal);
 
   @override
   void resume() => _source.resume();
+
+  Never _unsupportedError() => throw UnsupportedError(
+      'Cannot change handlers of ConnectableStreamSubscription.');
 }
 
 /// Extends the Stream class with the ability to transform a single-subscription
@@ -306,12 +259,13 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Start listening to the source Stream. Will cause the previous
   /// // line to start printing 1, 2, 3
   /// final subscription = connectable.connect();
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // Subject
   /// subscription.cancel();
   /// ```
-  ConnectableStream<T> publish() =>
+  PublishConnectableStream<T> publish() =>
       PublishConnectableStream<T>(this, sync: true);
 
   /// Convert the current Stream into a [ValueConnectableStream]
@@ -337,6 +291,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Late subscribers will receive the last emitted value
   /// connectable.listen(print); // Prints 3
+  /// await Future(() {});
   ///
   /// // Can access the latest emitted value synchronously. Prints 3
   /// print(connectable.value);
@@ -372,6 +327,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Late subscribers will receive the last emitted value
   /// connectable.listen(print); // Prints 3
+  /// await Future(() {});
   ///
   /// // Can access the latest emitted value synchronously. Prints 3
   /// print(connectable.value);
@@ -407,6 +363,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Late subscribers will receive the emitted value, up to a specified
   /// // maxSize
   /// connectable.listen(print); // Prints 1, 2, 3
+  /// await Future(() {});
   ///
   /// // Can access a list of the emitted values synchronously. Prints [1, 2, 3]
   /// print(connectable.values);
@@ -434,6 +391,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // PublishSubject
@@ -460,6 +418,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Synchronously print the latest value
   /// print(stream.value);
@@ -467,6 +426,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -502,6 +462,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 3 because it receives the last
   /// // emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // BehaviorSubject by cancelling all subscriptions.
@@ -530,6 +491,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   ///
   /// // Start listening to the source Stream. Will start printing 1, 2, 3
   /// final subscription = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Synchronously print the emitted values up to a given maxSize
   /// // Prints [1, 2, 3]
@@ -538,6 +500,7 @@ extension ConnectableStreamExtensions<T> on Stream<T> {
   /// // Subscribe again later. This will print 1, 2, 3 because it receives the
   /// // last emitted value.
   /// final subscription2 = stream.listen(print);
+  /// await Future(() {});
   ///
   /// // Stop emitting items from the source stream and close the underlying
   /// // ReplaySubject by cancelling all subscriptions.

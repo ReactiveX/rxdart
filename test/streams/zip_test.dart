@@ -18,6 +18,36 @@ void main() {
     expect(Rx.zipList<int>([]), emitsDone);
   });
 
+  test('Rx.zip.single', () {
+    expect(
+      Rx.zipList<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[
+        [1],
+        emitsDone
+      ]),
+    );
+  });
+
+  test('Rx.zip.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.zipList<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.zipList', () async {
     expect(
       Rx.zipList([

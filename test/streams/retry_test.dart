@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/streams/retry.dart';
-import 'package:rxdart/src/streams/utils.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -69,25 +67,30 @@ void main() {
     final streamWithError = RetryStream(_getRetryStream(3), 2);
 
     await expectLater(
-        streamWithError,
-        emitsInOrder(
-            <Matcher>[emitsError(TypeMatcher<RetryError>()), emitsDone]));
+      streamWithError,
+      emitsInOrder(
+        <Matcher>[
+          emitsError(isA<Error>()),
+          emitsError(isA<Error>()),
+          emitsError(isA<Error>()),
+          emitsDone,
+        ],
+      ),
+    );
   });
 
-  test('RetryStream.error.capturesErrors', () async {
-    final streamWithError = RetryStream(_getRetryStream(3), 2);
-
-    await expectLater(
-        streamWithError,
-        emitsInOrder(<Matcher>[
-          emitsError(
-            predicate<RetryError>((a) {
-              return a.errors.length == 3 &&
-                  a.errors.every((es) => es.stackTrace != null);
-            }),
-          ),
-          emitsDone,
-        ]));
+  test('RetryStream.error.capturesErrors', () {
+    RetryStream(_getRetryStream(3), 2).listen(
+      expectAsync1((_) {}, count: 0),
+      onError: expectAsync2(
+        (Object e, StackTrace st) {
+          expect(e, isA<Error>());
+          expect(st, isNotNull);
+        },
+        count: 3,
+      ),
+      onDone: expectAsync0(() {}, count: 1),
+    );
   });
 
   test('RetryStream.pause.resume', () async {

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/src/rx.dart';
 import 'package:test/test.dart';
 
 /// creates 5 Streams, deferred from a source Stream, so that they all emit
@@ -56,6 +55,25 @@ void main() {
         emitsInOrder(expectedOutput));
   });
 
+  test('Rx.withLatestFrom.iterate.once', () async {
+    var iterationCount = 0;
+
+    final combined = Stream.value(1).withLatestFromList(() sync* {
+      ++iterationCount;
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      combined,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.withLatestFrom.reusable', () async {
     final streams = _createTestStreams();
     final transformer = WithLatestFromStreamTransformer.with1<int, int, Pair>(
@@ -99,6 +117,19 @@ void main() {
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
+  });
+
+  test('Rx.withLatestFrom.error.shouldThrowB', () async {
+    final streams = _createTestStreams();
+    final stream = streams[1].take(1).withLatestFrom(
+        Stream<int>.value(0), (first, int second) => throw Exception());
+
+    expect(
+        stream,
+        emitsInOrder(<Object>[
+          emitsError(isException),
+          emitsDone,
+        ]));
   });
 
   test('Rx.withLatestFrom.pause.resume', () async {

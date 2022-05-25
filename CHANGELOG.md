@@ -1,3 +1,95 @@
+## 0.27.3 (2021-11-21)
+
+### Bug fixes
+
+* `flatMap` now creates inner `Stream`s lazily.
+* `combineLatest`, `concat`, `concatEager`, `forkJoin`, `merge`, `race`, `zip` iterate over `Iterable<Stream>`s only once
+  when the stream is listened to.
+* Disallow mixing `autoConnect`, `connect` and `refCount` together, only one of them should be used.
+
+### Features
+
+* Introduce `AbstractConnectableStream`, base class for the `ConnectableStream` implementations.
+* Improve `CompositeSubscription` (thanks to [@BreX900](https://github.com/BreX900))
+  * CompositeSubscription's `dispose`, `clear`, and `remove` methods now return a completion future.
+  * Fixed an issue where a stream not present in CompositeSubscription was canceled.
+  * Added the ability not to cancel the stream when it is removed from CompositeSubscription.
+  * CompositeSubscription implements `StreamSubscription`.
+  * `CompositeSubscription.add` will throw a `StateError` instead of a `String` if this composite was disposed.
+
+### Documentation
+
+* Fix `Connectable` examples.
+* Update Web example to null safety.
+* Fix `Flutter` example: `SearchResultItem.fromJson` type error (thanks to [@WenYeh](https://github.com/wayne900204))
+
+### Code refactoring
+
+* Simplify `takeLast` implementation.
+* Migrate from `pedantic` to `lints` and `flutter_lints`.
+* Refactor `BehaviorSubject`, `ReplaySubject` implementations by using "`Sentinel object`"s instead of `ValueWrapper`s.
+
+## 0.27.2 (2021-09-03)
+
+### Bug fixes
+
+* `onErrorReturnWith` now does not drop the remaining data events after the first error.
+* Disallow changing handlers of `ConnectableStreamSubscription`.
+
+### Features
+
+* Add `delayWhen` operator.
+* Add optional parameter `maxConcurrent` to `flatMap`.
+* `groupBy`
+  * Rename `GroupByStream` to `GroupedStream`.
+  * Add optional parameter `durationSelector`, which used to determine how long each group should exist.
+* `ignoreElements`
+  * Remove `@deprecated` annotation (`ignoreElements` should not be marked as deprecated).
+  * Change return type to `Stream<Never>`.
+
+### Documentation
+
+* Update to `PublishSubject`'s docs (thanks to [@AlexanderJohr](https://github.com/AlexanderJohr)).
+
+### Code refactoring
+
+* Refactoring Stream Transformers, using `Stream.multi` internally.
+
+## 0.27.1
+
+* Bugfix: `ForkJoinStream` throws `Null check operator used on a null value` when using nullable-type.
+* Bugfix: `delay` operator
+  *  Pause and resume properly.
+  *  Cancel all timers after it has been cancelled.
+
+## 0.27.0
+  * **BREAKING: ValueStream**
+    * Remove `ValueStreamExtensions`.
+    * `ValueStream.valueWrapper` becomes
+      - `value`.
+      - `valueOrNull`.
+      - `hasValue`.
+    * `ValueStream.errorAndStackTrace` becomes
+      - `error`.
+      - `errorOrNull`.
+      - `hasError`.
+      - `stackTrace`.
+  * Add `skipLast`/`SkipLastStreamTransformer` (thanks [@HannibalKcc](https://github.com/HannibalKcc)).
+  * Update `scan`: change `seed` to required param.
+  * Add `StackTrace` param to `recoveryFn` when using `OnErrorResumeStreamTransformer`/`onErrorResume`/`onErrorReturnWith`.
+  * Internal refactoring `ConnectableStream`.
+
+## 0.26.0
+  * Stable, null-safe release.
+  * Add `takeLast` (thanks [@ThomasKliszowski](https://github.com/ThomasKliszowski)).
+  * Rework for `retry`/`retryWhen`:
+    * Removed `RetryError`.
+    * `retry`: emits all errors if retry fails.
+    * `retryWhen`: emits original error, and error from factory if they are not identical.
+    * `streamFactory` now accepts non-nullable `StackTrace` argument.
+  * Update `ValueStream.requireValue` and `ValueStream.requireError`: throws actual error or a `StateError`,
+    instead of throwing `"Null check operator used on a null value"` error.
+
 ## 0.26.0-nullsafety.1
   * Breaking change: `ValueStream`
     - Add `valueWrapper` to `ValueStream`.

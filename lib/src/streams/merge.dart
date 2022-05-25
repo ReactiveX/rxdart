@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/subscription.dart';
+
 /// Flattens the items emitted by the given streams into a single Stream
 /// sequence.
 ///
@@ -15,51 +17,37 @@ import 'dart:async';
 ///       Stream.fromIterable([2])
 ///     ])
 ///     .listen(print); // prints 2, 1
-class MergeStream<T> extends Stream<T> {
-  final StreamController<T> _controller;
-
+class MergeStream<T> extends StreamView<T> {
   /// Constructs a [Stream] which flattens all events in [streams] and emits
   /// them in a single sequence.
   MergeStream(Iterable<Stream<T>> streams)
-      : _controller = _buildController(streams);
-
-  @override
-  StreamSubscription<T> listen(void Function(T event)? onData,
-          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
-      _controller.stream.listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      : super(_buildController(streams).stream);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams.isEmpty) {
-      return StreamController<T>()..close();
-    }
-
-    final len = streams.length;
+    final controller = StreamController<T>(sync: true);
     late List<StreamSubscription<T>> subscriptions;
-    late StreamController<T> controller;
 
-    controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          var completed = 0;
+    controller.onListen = () {
+      var completed = 0;
 
-          final onDone = () {
-            completed++;
+      void onDone() {
+        if (++completed == subscriptions.length) {
+          controller.close();
+        }
+      }
 
-            if (completed == len) controller.close();
-          };
+      subscriptions = streams
+          .map((s) => s.listen(controller.add,
+              onError: controller.addError, onDone: onDone))
+          .toList(growable: false);
 
-          subscriptions = streams
-              .map((s) => s.listen(controller.add,
-                  onError: controller.addError, onDone: onDone))
-              .toList(growable: false);
-        },
-        onPause: () =>
-            subscriptions.forEach((subscription) => subscription.pause()),
-        onResume: () =>
-            subscriptions.forEach((subscription) => subscription.resume()),
-        onCancel: () => Future.wait(
-            subscriptions.map((subscription) => subscription.cancel())));
+      if (subscriptions.isEmpty) {
+        controller.close();
+      }
+    };
+    controller.onPause = () => subscriptions.pauseAll();
+    controller.onResume = () => subscriptions.resumeAll();
+    controller.onCancel = () => subscriptions.cancelAll();
 
     return controller;
   }

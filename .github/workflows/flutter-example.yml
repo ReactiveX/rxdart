@@ -1,0 +1,45 @@
+name: Build Flutter example
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: [ '**.md' ]
+  pull_request:
+    branches: [ master ]
+    paths-ignore: [ '**.md' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./example/flutter/github_search
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - uses: subosito/flutter-action@v2.4.0
+        with:
+          channel: 'stable'
+
+      - name: Print Dart SDK version
+        run: dart --version
+
+      - name: Print Flutter SDK version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format code
+        run: flutter format lib --set-exit-if-changed
+
+      - name: Analyze
+        run: flutter analyze lib
+
+      - name: Build Debug APK
+        run: flutter build apk --debug --no-shrink

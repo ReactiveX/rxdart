@@ -24,8 +24,8 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .debounceTime(Duration(seconds: 1))
 ///       .listen(print); // prints 4
 class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
-  /// Constructs a [StreamTransformer] which buffers events into a [List] and
-  /// emits this [List] whenever the current [window] fires.
+  /// Constructs a [StreamTransformer] which will only emit items from the source sequence
+  /// if a window has completed, without the source sequence emitting.
   ///
   /// The [window] is reset whenever the [Stream] that is being transformed
   /// emits an event.

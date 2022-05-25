@@ -4,7 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 Stream<int> getDelayedStream(int delay, int value) async* {
-  final completer = Completer<Null>();
+  final completer = Completer<void>();
 
   Timer(Duration(milliseconds: delay), () => completer.complete());
 
@@ -26,6 +26,23 @@ void main() {
       // test to see if the combined output matches
       expect(result.compareTo(expected++), 0);
     }, count: 3));
+  });
+
+  test('Rx.race.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.race<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[1, emitsDone]),
+    );
+    expect(iterationCount, 1);
   });
 
   test('Rx.race.single.subscription', () async {
@@ -52,7 +69,7 @@ void main() {
   });
 
   test('Rx.race.shouldThrowB', () async {
-    final stream = Rx.race([Stream<Null>.error(Exception('oh noes!'))]);
+    final stream = Rx.race([Stream<void>.error(Exception('oh noes!'))]);
 
     // listen twice on same stream
     stream.listen(null,
@@ -73,10 +90,47 @@ void main() {
       subscription.cancel();
     }, count: 1));
 
-    subscription.pause(Future<Null>.delayed(const Duration(milliseconds: 80)));
+    subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
 
   test('Rx.race.empty', () {
     expect(Rx.race<int>(const []), emitsDone);
+  });
+
+  test('Rx.race.single', () {
+    expect(
+      Rx.race<int>([Stream.value(1)]),
+      emitsInOrder(<Object>[
+        1,
+        emitsDone,
+      ]),
+    );
+  });
+
+  test('Rx.race.cancel.throws', () async {
+    Stream<int> stream() {
+      final controller = StreamController<int>();
+      controller.onCancel = () async {
+        throw Exception('Exception when cancelling!');
+      };
+
+      return Rx.race<int>([
+        controller.stream,
+        Rx.concat([
+          Rx.timer(1, const Duration(milliseconds: 100)),
+          Rx.timer(2, const Duration(milliseconds: 100)),
+        ]),
+      ]);
+    }
+
+    await expectLater(
+      stream(),
+      emitsInOrder(<Object>[1, emitsError(isException), 2, emitsDone]),
+    );
+
+    await expectLater(
+      stream().take(1),
+      emitsInOrder(<Object>[1, emitsDone]),
+    );
   });
 }

@@ -50,7 +50,7 @@ void main() {
     test('stops emitting after the connection is cancelled', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).publishValue();
 
-      stream.connect()..cancel(); // ignore: unawaited_futures
+      stream.connect().cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -58,7 +58,7 @@ void main() {
     test('stops emitting after the last subscriber unsubscribes', () async {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
 
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -67,7 +67,7 @@ void main() {
       final stream = Stream.fromIterable(const [1, 2, 3]).shareValue();
 
       stream.listen(null);
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
     });
@@ -91,7 +91,7 @@ void main() {
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
       expect(stream, emitsInOrder(const <int>[1, 2, 3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(3));
     });
@@ -105,7 +105,7 @@ void main() {
       expect(stream, emitsInOrder(const <int>[3]));
       expect(stream, emitsInOrder(const <int>[3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(3));
     });
@@ -119,7 +119,7 @@ void main() {
       expect(stream, emitsInOrder(const <int?>[null]));
       expect(stream, emitsInOrder(const <int?>[null]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emits(null));
     });
@@ -164,12 +164,15 @@ void main() {
 
       stream.listen(
         null,
-        onError: (Object error) {
-          expect(stream.value, isNull);
-          expect(stream.hasValue, isFalse);
-          expect(stream.errorAndStackTrace?.error, error);
+        onError: expectAsync1((Object error) {
+          expect(stream.valueOrNull, 3);
+          expect(stream.value, 3);
+          expect(stream.hasValue, isTrue);
+
+          expect(stream.errorOrNull, error);
+          expect(stream.error, error);
           expect(stream.hasError, isTrue);
-        },
+        }),
       );
     });
 
@@ -226,7 +229,7 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
 
       {
@@ -242,8 +245,51 @@ void main() {
         await Future<void>.delayed(Duration.zero);
         await controller.close();
 
-        expect(isCanceled.future, completes);
+        await expectLater(isCanceled.future, completes);
       }
+    });
+
+    test(
+        'throws StateError when mixing autoConnect, connect and refCount together',
+        () {
+      ValueConnectableStream<int> stream() => Stream.value(1).publishValue();
+
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..connect(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..refCount(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..connect()
+          ..refCount(),
+        throwsStateError,
+      );
+    });
+
+    test('calling autoConnect() multiple times returns the same value', () {
+      final s = Stream.value(1).publishValueSeeded(1);
+      expect(s.autoConnect(), same(s.autoConnect()));
+      expect(s.autoConnect(), same(s.autoConnect()));
+    });
+
+    test('calling connect() multiple times returns the same value', () {
+      final s = Stream.value(1).publishValueSeeded(1);
+      expect(s.connect(), same(s.connect()));
+      expect(s.connect(), same(s.connect()));
+    });
+
+    test('calling refCount() multiple times returns the same value', () {
+      final s = Stream.value(1).publishValueSeeded(1);
+      expect(s.refCount(), same(s.refCount()));
+      expect(s.refCount(), same(s.refCount()));
     });
   });
 }

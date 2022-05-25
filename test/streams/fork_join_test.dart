@@ -34,6 +34,40 @@ void main() {
     );
   });
 
+  test('Rx.forkJoin.nullable', () {
+    expect(
+      ForkJoinStream.combine2(
+        Stream.value(null),
+        Stream.value(1),
+        (a, b) => '$a $b',
+      ),
+      emitsInOrder(<Object>[
+        'null 1',
+        emitsDone,
+      ]),
+    );
+  });
+
+  test('Rx.forkJoin.iterate.once', () async {
+    var iterationCount = 0;
+
+    final stream = Rx.forkJoinList<int>(() sync* {
+      ++iterationCount;
+      yield Stream.value(1);
+      yield Stream.value(2);
+      yield Stream.value(3);
+    }());
+
+    await expectLater(
+      stream,
+      emitsInOrder(<dynamic>[
+        [1, 2, 3],
+        emitsDone,
+      ]),
+    );
+    expect(iterationCount, 1);
+  });
+
   test('Rx.forkJoin.empty', () {
     expect(Rx.forkJoinList<int>([]), emitsDone);
   });
@@ -69,23 +103,15 @@ void main() {
   });
 
   test('Rx.forkJoin3', () async {
-    final stream = Rx.forkJoin3(
-        streamA,
-        streamB,
-        streamC,
-        (int a_value, int b_value, bool c_value) =>
-            '$a_value $b_value $c_value');
+    final stream = Rx.forkJoin3(streamA, streamB, streamC,
+        (int aValue, int bValue, bool cValue) => '$aValue $bValue $cValue');
 
     await expectLater(stream, emitsInOrder(<dynamic>['2 4 true', emitsDone]));
   });
 
   test('Rx.forkJoin3.single.subscription', () async {
-    final stream = Rx.forkJoin3(
-        streamA,
-        streamB,
-        streamC,
-        (int a_value, int b_value, bool c_value) =>
-            '$a_value $b_value $c_value');
+    final stream = Rx.forkJoin3(streamA, streamB, streamC,
+        (int aValue, int bValue, bool cValue) => '$aValue $bValue $cValue');
 
     await expectLater(
       stream,
@@ -312,12 +338,9 @@ void main() {
   });
 
   test('Rx.forkJoin.asBroadcastStream', () async {
-    final stream = Rx.forkJoin3(
-        streamA,
-        streamB,
-        streamC,
-        (int a_value, int b_value, bool c_value) =>
-            '$a_value $b_value $c_value').asBroadcastStream();
+    final stream = Rx.forkJoin3(streamA, streamB, streamC,
+            (int aValue, int bValue, bool cValue) => '$aValue $bValue $cValue')
+        .asBroadcastStream();
 
 // listen twice on same stream
     stream.listen(null);
@@ -332,8 +355,8 @@ void main() {
         Stream.value(1),
         Stream.value(1),
         Stream<int>.error(Exception()),
-        (int a_value, int b_value, int c_value, dynamic _) =>
-            '$a_value $b_value $c_value $_');
+        (int aValue, int bValue, int cValue, dynamic _) =>
+            '$aValue $bValue $cValue $_');
 
     streamWithError.listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -344,7 +367,7 @@ void main() {
   test('Rx.forkJoin.error.shouldThrowB', () async {
     final streamWithError =
         Rx.forkJoin3(Stream.value(1), Stream.value(1), Stream.value(1),
-            (int a_value, int b_value, int c_value) {
+            (int aValue, int bValue, int cValue) {
       throw Exception('oh noes!');
     });
 

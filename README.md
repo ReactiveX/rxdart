@@ -4,10 +4,11 @@
 [![codecov](https://codecov.io/gh/ReactiveX/rxdart/branch/master/graph/badge.svg)](https://codecov.io/gh/ReactiveX/rxdart)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 [![Gitter](https://img.shields.io/gitter/room/ReactiveX/rxdart.svg)](https://gitter.im/ReactiveX/rxdart)
+[![Build Flutter example](https://github.com/ReactiveX/rxdart/actions/workflows/flutter-example.yml/badge.svg)](https://github.com/ReactiveX/rxdart/actions/workflows/flutter-example.yml)
 
 ## About
 
-RxDart adds additional capabilities to Dart
+RxDart extends the capabilities of Dart
 [Streams](https://api.dart.dev/stable/dart-async/Stream-class.html) and
 [StreamControllers](https://api.dart.dev/stable/dart-async/StreamController-class.html).
 
@@ -17,12 +18,12 @@ out-of-the-box; rather than attempting to provide an alternative to this API,
 RxDart adds functionality from the reactive extensions specification on top of
 it. 
 
-RxDart does not provide its own Observable class as a replacement for Dart
-Streams. Rather, it provides a number of additional Stream classes, operators
+RxDart does not provide its Observable class as a replacement for Dart 
+Streams. Instead, it offers several additional Stream classes, operators 
 (extension methods on the Stream class), and Subjects. 
 
 If you are familiar with Observables from other languages, please see [the Rx
-Observables vs Dart Streams comparison chart](#rx-observables-vs-dart-streams)
+Observables vs. Dart Streams comparison chart](#rx-observables-vs-dart-streams)
 for notable distinctions between the two.
 
 ## Upgrading from RxDart 0.22.x to 0.23.x
@@ -43,7 +44,7 @@ automatically upgrade your code to support RxDart 0.23.x.
 import 'package:rxdart/rxdart.dart';
 
 void main() {
-  const konamiKeyCodes = const <int>[
+  const konamiKeyCodes = <int>[
     KeyCode.UP,
     KeyCode.UP,
     KeyCode.DOWN,
@@ -55,13 +56,14 @@ void main() {
     KeyCode.B,
     KeyCode.A,
   ];
-  final result = querySelector('#result');
+
+  final result = querySelector('#result')!;
 
   document.onKeyUp
-    .map((event) => event.keyCode)
-    .bufferCount(10, 1) // An extension method provided by rxdart
-    .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
-    .listen((_) => result.innerHtml = 'KONAMI!');
+      .map((event) => event.keyCode)
+      .bufferCount(10, 1) // An extension method provided by rxdart
+      .where((lastTenKeyCodes) => const IterableEquality<int>().equals(lastTenKeyCodes, konamiKeyCodes))
+      .listen((_) => result.innerHtml = 'KONAMI!');
 }
 ```
 
@@ -69,19 +71,19 @@ void main() {
 
 RxDart adds functionality to Dart Streams in three ways:
 
-  * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams together.
+  * [Stream Classes](#stream-classes) - create Streams with specific capabilities, such as combining or merging many Streams.
   * [Extension Methods](#extension-methods) - transform a source Stream into a new Stream with different capabilities, such as throttling or buffering events.
   * [Subjects](#subjects) - StreamControllers with additional powers 
 
 ### Stream Classes
 
-The Stream class provides different ways to create a Stream: `Stream.fromIterable` or `Stream.periodic`, for example. RxDart provides additional Stream classes for a variety of tasks, such as combining or merging Streams together!
+The Stream class provides different ways to create a Stream: `Stream.fromIterable` or `Stream.periodic`. RxDart provides additional Stream classes for a variety of tasks, such as combining or merging Streams!
 
 You can construct the Streams provided by RxDart in two ways. The following examples are equivalent in terms of functionality:
  
   - Instantiating the Stream class directly. 
     - Example: `final mergedStream = MergeStream([myFirstStream, mySecondStream]);`
-  - Using static factories from the `Rx` class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories simply call the the corresponding Stream constructor. 
+  - Using static factories from the Rx class, which are useful for discovering which types of Streams are provided by RxDart. Under the hood, these factories call the corresponding Stream constructor.  
     - Example: `final mergedStream = Rx.merge([myFirstStream, mySecondStream]);`
 
 #### List of Classes / Static Factories
@@ -104,7 +106,7 @@ You can construct the Streams provided by RxDart in two ways. The following exam
 - [TimerStream](https://pub.dev/documentation/rxdart/latest/rx/TimerStream-class.html) / [Rx.timer](https://pub.dev/documentation/rxdart/latest/rx/Rx/timer.html)
 - [UsingStream](https://pub.dev/documentation/rxdart/latest/rx/UsingStream-class.html) / [Rx.using](https://pub.dev/documentation/rxdart/latest/rx/Rx/using.html)
 - [ZipStream](https://pub.dev/documentation/rxdart/latest/rx/ZipStream-class.html) (zip2, zip3, zip4, ..., zip9) / [Rx.zip](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip2.html)...[Rx.zip9](https://pub.dev/documentation/rxdart/latest/rx/Rx/zip9.html)
-- ** If you're looking for an [Interval](http://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
+- If you're looking for an [Interval](https://reactivex.io/documentation/operators/interval.html) equivalent, check out Dart's [Stream.periodic](https://api.dart.dev/stable/2.7.2/dart-async/Stream/Stream.periodic.html) for similar behavior.
 
 ### Extension Methods
 
@@ -129,6 +131,7 @@ Stream.fromIterable([1, 2, 3])
 - [debounceTime](https://pub.dev/documentation/rxdart/latest/rx/DebounceExtensions/debounceTime.html)
 - [defaultIfEmpty](https://pub.dev/documentation/rxdart/latest/rx/DefaultIfEmptyExtension/defaultIfEmpty.html)
 - [delay](https://pub.dev/documentation/rxdart/latest/rx/DelayExtension/delay.html)
+- [delayWhen](https://pub.dev/documentation/rxdart/latest/rx/DelayWhenExtension/delayWhen.html)
 - [dematerialize](https://pub.dev/documentation/rxdart/latest/rx/DematerializeExtension/dematerialize.html)
 - [distinctUnique](https://pub.dev/documentation/rxdart/latest/rx/DistinctUniqueExtension/distinctUnique.html)
 - [doOnCancel](https://pub.dev/documentation/rxdart/latest/rx/DoExtensions/doOnCancel.html)
@@ -160,6 +163,7 @@ Stream.fromIterable([1, 2, 3])
 - [sample](https://pub.dev/documentation/rxdart/latest/rx/SampleExtensions/sample.html)
 - [sampleTime](https://pub.dev/documentation/rxdart/latest/rx/SampleExtensions/sampleTime.html)
 - [scan](https://pub.dev/documentation/rxdart/latest/rx/ScanExtension/scan.html)
+- [skipLast](https://pub.dev/documentation/rxdart/latest/rx/SkipLastExtension/skipLast.html)
 - [skipUntil](https://pub.dev/documentation/rxdart/latest/rx/SkipUntilExtension/skipUntil.html)
 - [startWith](https://pub.dev/documentation/rxdart/latest/rx/StartWithExtension/startWith.html)
 - [startWithMany](https://pub.dev/documentation/rxdart/latest/rx/StartWithManyExtension/startWithMany.html) 
@@ -190,17 +194,17 @@ Dart provides the [StreamController](https://api.dart.dev/stable/dart-async/Stre
 
 ## Rx Observables vs Dart Streams
 
-In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream api may surprise you. We've included a table below to help folks understand the differences. 
+In many situations, Streams and Observables work the same way. However, if you're used to standard Rx Observables, some features of the Stream API may surprise you. We've included a table below to help folks understand the differences. 
 
 Additional information about the following situations can be found by reading the [Rx class documentation](https://pub.dev/documentation/rxdart/latest/rx/Rx-class.html).
 
 | Situation | Rx Observables  | Dart Streams |
 | ------------- |------------- | ------------- |
 | An error is raised | Observable Terminates with Error  | Error is emitted and Stream continues |
-| Cold Observables  | Multiple subscribers can listen to the same cold Observable, each subscription will receive a unique Stream of data | Single subscriber only | 
+| Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
-| Single/Maybe/Complete ? | Yes | No, uses Dart `Future` |
+| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/single/Single-class.html) (`Completable = Single<void>, Maybe<T> = Single<T?>`) |
 | Support back pressure| Yes | Yes |
 | Can emit null? | Yes, except RxJava | Yes |
 | Sync by default | Yes | No |
@@ -215,9 +219,9 @@ Web and command-line examples can be found in the `example` folder.
 In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
-  2. Run `pub get`
-  3. Run `pub run build_runner serve example`
-  4. Navigate to [http://localhost:8080/web/](http://localhost:8080/web/) in your browser
+  2. Run `dart pub get`
+  3. Run `dart pub run build_runner serve example`
+  4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
 
 ### Command Line Examples
 
@@ -231,7 +235,7 @@ In order to run the command line example, please follow these steps:
   
 #### Install Flutter
 
-In order to run the flutter example, you must have Flutter installed. For installation instructions, view the online
+To run the flutter example, you must have Flutter installed. For installation instructions, view the online
 [documentation](https://flutter.io/).
 
 #### Run the app
@@ -247,8 +251,8 @@ In order to run the flutter example, you must have Flutter installed. For instal
 
 - [Documentation on the Dart Stream class](https://api.dart.dev/stable/dart-async/Stream-class.html)
 - [Tutorial on working with Streams in Dart](https://www.dartlang.org/tutorials/language/streams)
-- [ReactiveX (Rx)](http://reactivex.io/)
+- [ReactiveX (Rx)](https://reactivex.io/)
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/frankpepermans/rxdart/blob/master/CHANGELOG.md) to get all release notes.
+Refer to the [Changelog](https://github.com/ReactiveX/rxdart/blob/master/CHANGELOG.md) to get all release notes.

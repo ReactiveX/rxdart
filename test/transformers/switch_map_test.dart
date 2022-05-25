@@ -151,4 +151,38 @@ void main() {
     await inner.close();
     await outer.close();
   });
+
+  test('Rx.switchMap every subscription triggers a listen on the root Stream',
+      () async {
+    var count = 0;
+    final controller = StreamController<bool>.broadcast();
+    final root =
+        OnSubscriptionTriggerableStream(controller.stream, () => count++);
+    final stream = root.switchMap((event) => Stream.value(event));
+
+    stream.listen((event) {});
+    stream.listen((event) {});
+
+    expect(count, 2);
+
+    await controller.close();
+  });
+}
+
+class OnSubscriptionTriggerableStream<T> extends Stream<T> {
+  final Stream<T> inner;
+  final void Function() onSubscribe;
+
+  OnSubscriptionTriggerableStream(this.inner, this.onSubscribe);
+
+  @override
+  bool get isBroadcast => inner.isBroadcast;
+
+  @override
+  StreamSubscription<T> listen(void Function(T event)? onData,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    onSubscribe();
+    return inner.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
 }

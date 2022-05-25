@@ -8,9 +8,7 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
   _MaterializeStreamSink(this._outputSink);
 
   @override
-  void add(S data) {
-    _outputSink.add(Notification.onData(data));
-  }
+  void add(S data) => _outputSink.add(Notification.onData(data));
 
   @override
   void addError(e, [st]) => _outputSink.add(Notification.onError(e, st));

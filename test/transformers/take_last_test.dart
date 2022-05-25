@@ -19,7 +19,7 @@ void main() {
         Stream.fromIterable(values).doOnData((_) => count++).takeLast(0);
     await expectLater(
       stream,
-      emits(emitsDone),
+      emitsInOrder(<Object>[emitsDone]),
     );
     expect(count, equals(values.length));
   });
@@ -30,13 +30,13 @@ void main() {
   });
 
   test('Rx.takeLast.countCantBeNegative', () async {
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(-1);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(-1);
     expect(stream, throwsA(isArgumentError));
   });
 
   test('Rx.takeLast.reusable', () async {
     final transformer = TakeLastStreamTransformer<int>(3);
-    final stream = () => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3);
+    Stream<int> stream() => Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3);
     var valueA = 3, valueB = 3;
 
     stream().transform(transformer).listen(expectAsync1((result) {
@@ -84,4 +84,18 @@ void main() {
 
     controller.add(1);
   });
+
+  test('Rx.takeLast.cancel', () {
+    final subscription =
+        Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3).listen(null);
+    subscription.onData(
+      expectAsync1(
+        (event) {
+          subscription.cancel();
+          expect(event, 3);
+        },
+        count: 1,
+      ),
+    );
+  }, timeout: const Timeout(Duration(seconds: 1)));
 }

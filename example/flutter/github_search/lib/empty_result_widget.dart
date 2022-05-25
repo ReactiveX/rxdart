@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EmptyWidget extends StatelessWidget {
-  const EmptyWidget({Key key}) : super(key: key);
+  const EmptyWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class EmptyWidget extends StatelessWidget {
             size: 80.0,
           ),
           Container(
-            padding: EdgeInsets.only(top: 16.0),
+            padding: const EdgeInsets.only(top: 16.0),
             child: Text(
               'No results',
               style: TextStyle(color: Colors.yellow[100]),

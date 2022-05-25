@@ -34,10 +34,6 @@ class UsingStream<T, R> extends StreamView<T> {
     Stream<T> Function(R) streamFactory,
     FutureOr<void> Function(R) disposer,
   ) {
-    ArgumentError.checkNotNull(resourceFactory, 'resourceFactory');
-    ArgumentError.checkNotNull(streamFactory, 'streamFactory');
-    ArgumentError.checkNotNull(disposer, 'disposer');
-
     late StreamController<T> controller;
     var resourceCreated = false;
     late R resource;

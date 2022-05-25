@@ -49,7 +49,7 @@ void main() {
       final ConnectableStream<int> stream =
           Stream<int>.fromIterable(<int>[1, 2, 3]).publishReplay();
 
-      stream.connect()..cancel(); // ignore: unawaited_futures
+      stream.connect().cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -58,7 +58,7 @@ void main() {
       final Stream<int> stream =
           Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, neverEmits(anything));
     });
@@ -68,7 +68,7 @@ void main() {
           Stream<int>.fromIterable(<int>[1, 2, 3]).shareReplay();
 
       stream.listen(null);
-      stream.listen(null)..cancel(); // ignore: unawaited_futures
+      stream.listen(null).cancel(); // ignore: unawaited_futures
 
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
     });
@@ -93,7 +93,7 @@ void main() {
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
       expect(stream, emitsInOrder(<int>[1, 2, 3]));
 
-      await Future<Null>.delayed(Duration(milliseconds: 200));
+      await Future<void>.delayed(Duration(milliseconds: 200));
 
       expect(stream, emitsInOrder(<int>[2, 3]));
     });
@@ -179,6 +179,51 @@ void main() {
       await controller.close();
 
       expect(isCanceled.future, completes);
+    });
+
+    test(
+        'throws StateError when mixing autoConnect, connect and refCount together',
+        () {
+      ReplayConnectableStream<int> stream() =>
+          Stream.value(1).publishReplay(maxSize: 1);
+
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..connect(),
+        throwsStateError,
+      );
+      expect(
+        () => stream()
+          ..autoConnect()
+          ..refCount(),
+        throwsStateError,
+      );
+
+      expect(
+        () => stream()
+          ..connect()
+          ..refCount(),
+        throwsStateError,
+      );
+    });
+
+    test('calling autoConnect() multiple times returns the same value', () {
+      final s = Stream.value(1).publishReplay(maxSize: 1);
+      expect(s.autoConnect(), same(s.autoConnect()));
+      expect(s.autoConnect(), same(s.autoConnect()));
+    });
+
+    test('calling connect() multiple times returns the same value', () {
+      final s = Stream.value(1).publishReplay(maxSize: 1);
+      expect(s.connect(), same(s.connect()));
+      expect(s.connect(), same(s.connect()));
+    });
+
+    test('calling refCount() multiple times returns the same value', () {
+      final s = Stream.value(1).publishReplay(maxSize: 1);
+      expect(s.refCount(), same(s.refCount()));
+      expect(s.refCount(), same(s.refCount()));
     });
   });
 }

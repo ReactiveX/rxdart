@@ -19,57 +19,36 @@ import 'dart:async';
 ///       Stream.fromIterable([3])
 ///     ])
 ///     .listen(print); // prints 1, 2, 3
-class ConcatStream<T> extends Stream<T> {
-  final StreamController<T> _controller;
-
+class ConcatStream<T> extends StreamView<T> {
   /// Constructs a [Stream] which emits all events from [streams].
   /// The [Iterable] is traversed upwards, meaning that the current first
   /// [Stream] in the [Iterable] needs to complete, before events from the
   /// next [Stream] will be subscribed to.
   ConcatStream(Iterable<Stream<T>> streams)
-      : _controller = _buildController(streams);
-
-  @override
-  StreamSubscription<T> listen(void Function(T event)? onData,
-          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
-      _controller.stream.listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      : super(_buildController(streams).stream);
 
   static StreamController<T> _buildController<T>(Iterable<Stream<T>> streams) {
-    if (streams.isEmpty) {
-      return StreamController<T>()..close();
-    }
-
-    late StreamController<T> controller;
+    final controller = StreamController<T>(sync: true);
     StreamSubscription<T>? subscription;
 
-    controller = StreamController<T>(
-        sync: true,
-        onListen: () {
-          final len = streams.length;
-          var index = 0;
+    controller.onListen = () {
+      final iterator = streams.iterator;
 
-          void moveNext() {
-            var stream = streams.elementAt(index);
-            subscription?.cancel();
+      void moveNext() {
+        if (!iterator.moveNext()) {
+          controller.close();
+          return;
+        }
+        subscription?.cancel();
+        subscription = iterator.current.listen(controller.add,
+            onError: controller.addError, onDone: moveNext);
+      }
 
-            subscription = stream.listen(controller.add,
-                onError: controller.addError, onDone: () {
-              index++;
-
-              if (index == len) {
-                controller.close();
-              } else {
-                moveNext();
-              }
-            });
-          }
-
-          moveNext();
-        },
-        onPause: () => subscription?.pause(),
-        onResume: () => subscription?.resume(),
-        onCancel: () => subscription?.cancel());
+      moveNext();
+    };
+    controller.onPause = () => subscription?.pause();
+    controller.onResume = () => subscription?.resume();
+    controller.onCancel = () => subscription?.cancel();
 
     return controller;
   }

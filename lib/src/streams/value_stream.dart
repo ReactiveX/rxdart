@@ -1,37 +1,61 @@
-import 'package:rxdart/src/utils/error_and_stacktrace.dart';
-import 'package:rxdart/src/utils/value_wrapper.dart';
-
 /// An [Stream] that provides synchronous access to the last emitted item
 abstract class ValueStream<T> implements Stream<T> {
-  /// Last emitted value wrapped in [ValueWrapper], or null if there has been no emission yet.
-  /// To indicate that the latest value is null, return `ValueWrapper(null)`.
-  /// See [hasValue]
-  ValueWrapper<T>? get valueWrapper;
+  /// Returns the last emitted value, failing if there is no value.
+  /// See [hasValue] to determine whether [value] has already been set.
+  ///
+  /// Throws [ValueStreamError] if this Stream has no value.
+  T get value;
 
-  /// Last emitted error and the corresponding stack trace,
-  /// or null if no error added or value exists.
-  /// See [hasError]
-  ErrorAndStackTrace? get errorAndStackTrace;
+  /// Returns either [value], or `null`, should [value] not yet have been set.
+  T? get valueOrNull;
+
+  /// Returns `true` when [value] is available.
+  bool get hasValue;
+
+  /// Returns last emitted error, failing if there is no error.
+  ///
+  /// Throws [ValueStreamError] if this Stream has no error.
+  Object get error;
+
+  /// Last emitted error, or `null` if no error added.
+  Object? get errorOrNull;
+
+  /// Returns `true` when [error] is available.
+  bool get hasError;
+
+  /// Returns [StackTrace] of the last emitted error,
+  /// or `null` if no error added or the added error has no [StackTrace].
+  StackTrace? get stackTrace;
 }
 
-/// Extensions to access value and error easily.
-extension ValueStreamExtensions<T> on ValueStream<T> {
-  /// A flag that turns true as soon as at least one event has been emitted.
-  bool get hasValue => valueWrapper != null;
+enum _MissingCase {
+  value,
+  error,
+}
 
-  /// Returns last emitted value, or null if there has been no emission yet.
-  T? get value => valueWrapper?.value;
+/// The error throw by [ValueStream.value] or [ValueStream.error].
+class ValueStreamError extends Error {
+  final _MissingCase _missingCase;
 
-  /// Returns last emitted value, or throws `"Null check operator used on a null value"` error
-  /// if there has been no emission yet.
-  T get requireValue => valueWrapper!.value;
+  ValueStreamError._(this._missingCase);
 
-  /// A flag that turns true as soon as at an error event has been emitted.
-  bool get hasError => errorAndStackTrace != null;
+  /// Construct an [ValueStreamError] thrown by [ValueStream.value] when there is no value.
+  factory ValueStreamError.hasNoValue() =>
+      ValueStreamError._(_MissingCase.value);
 
-  /// Last emitted error, or null if no error added or value exists.
-  Object? get error => errorAndStackTrace?.error;
+  /// Construct an [ValueStreamError] thrown by [ValueStream.error] when there is no error.
+  factory ValueStreamError.hasNoError() =>
+      ValueStreamError._(_MissingCase.error);
 
-  /// Last emitted error, or throws `"Null check operator used on a null value"` error if no error added or value exists.
-  Object get requireError => errorAndStackTrace!.error;
+  @override
+  String toString() {
+    switch (_missingCase) {
+      case _MissingCase.value:
+        return 'ValueStream has no value. You should check ValueStream.hasValue '
+            'before accessing ValueStream.value, or use ValueStream.valueOrNull instead.';
+      case _MissingCase.error:
+        return 'ValueStream has no error. You should check ValueStream.hasError '
+            'before accessing ValueStream.error, or use ValueStream.errorOrNull instead.';
+    }
+  }
 }

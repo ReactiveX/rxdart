@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:pedantic/pedantic.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
+
+import '../utils.dart';
 
 // ignore_for_file: close_sinks
 
@@ -135,17 +136,22 @@ void main() {
       await expectLater(subject.values, const <int>[1, 2, 3]);
     });
 
-    test('synchronously get the previous errors', () async {
+    test('synchronously get the previous errors', () {
       final subject = ReplaySubject<int>();
       final e1 = Exception(), e2 = Exception(), e3 = Exception();
+      final stackTrace = StackTrace.fromString('#');
 
       subject.addError(e1);
-      subject.addError(e2);
+      subject.addError(e2, stackTrace);
       subject.addError(e3);
 
-      await expectLater(
-        subject.errorAndStackTraces.map((es) => es.error),
+      expect(
+        subject.errors,
         containsAllInOrder(<Exception>[e1, e2, e3]),
+      );
+      expect(
+        subject.stackTraces,
+        containsAllInOrder(<StackTrace?>[null, stackTrace, null]),
       );
     });
 
@@ -200,7 +206,7 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(const <int>[1, 2, 3]));
     });
 
-    test('allows items to be added once addStream is completes with an error',
+    test('allows items to be added once addStream completes with an error',
         () async {
       final subject = ReplaySubject<int>();
 
@@ -259,7 +265,7 @@ void main() {
     });
 
     test('returns onListen callback set in constructor', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
 
       final subject = ReplaySubject<int>(onListen: testOnListen);
 
@@ -267,7 +273,7 @@ void main() {
     });
 
     test('sets onListen callback', () async {
-      final testOnListen = () {};
+      void testOnListen() {}
 
       final subject = ReplaySubject<int>();
 
@@ -279,7 +285,7 @@ void main() {
     });
 
     test('returns onCancel callback set in constructor', () async {
-      final onCancel = () => Future<void>.value(null);
+      Future<void> onCancel() => Future<void>.value(null);
 
       final subject = ReplaySubject<void>(onCancel: onCancel);
 
@@ -287,7 +293,7 @@ void main() {
     });
 
     test('sets onCancel callback', () async {
-      final testOnCancel = () {};
+      void testOnCancel() {}
 
       final subject = ReplaySubject<void>();
 
@@ -397,7 +403,7 @@ void main() {
       expect(mappedStream.value, equals(2));
 
       await subject.close();
-    });
+    }, skip: true);
 
     test('issue/419: async behavior', () async {
       final subject = ReplaySubject<int>()..add(1);
@@ -406,7 +412,7 @@ void main() {
       mappedStream.listen(null,
           onDone: () => expect(mappedStream.value, equals(1)));
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });
@@ -420,7 +426,7 @@ void main() {
 
       subject.add(2);
 
-      expect(mappedStream.value, equals(isNull));
+      expect(mappedStream.valueOrNull, isNull);
 
       await subject.close();
     });
