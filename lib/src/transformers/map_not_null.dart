@@ -1,38 +1,25 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/forwarding_sink.dart';
-import 'package:rxdart/src/utils/forwarding_stream.dart';
+class _MapNotNullSink<T, R extends Object> implements EventSink<T> {
+  final R? Function(T) _transform;
+  final EventSink<R> _outputSink;
 
-class _MapNotNullSink<T, R extends Object> extends ForwardingSink<T, R> {
-  final R? Function(T) transform;
-
-  _MapNotNullSink(this.transform);
+  _MapNotNullSink(this._outputSink, this._transform);
 
   @override
-  void onData(T data) {
-    final value = transform(data);
+  void add(T event) {
+    final value = _transform(event);
     if (value != null) {
-      sink.add(value);
+      _outputSink.add(value);
     }
   }
 
   @override
-  void onDone() => sink.close();
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _outputSink.addError(error, stackTrace);
 
   @override
-  void onError(Object error, StackTrace st) => sink.addError(error, st);
-
-  @override
-  FutureOr<void> onListen() {}
-
-  @override
-  FutureOr<void> onCancel() {}
-
-  @override
-  void onPause() {}
-
-  @override
-  void onResume() {}
+  void close() => _outputSink.close();
 }
 
 /// Create a Stream containing only the non-`null` results
@@ -60,8 +47,8 @@ class MapNotNullStreamTransformer<T, R extends Object>
   const MapNotNullStreamTransformer(this.transform);
 
   @override
-  Stream<R> bind(Stream<T> stream) =>
-      forwardStream(stream, () => _MapNotNullSink<T, R>(transform));
+  Stream<R> bind(Stream<T> stream) => Stream<R>.eventTransformed(
+      stream, (sink) => _MapNotNullSink<T, R>(sink, transform));
 }
 
 /// Extends the Stream class with the ability to convert the source Stream
