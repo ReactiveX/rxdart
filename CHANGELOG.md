@@ -2,7 +2,7 @@
 
 ### Bug fixes
 
-* `withLatestFrom` iterate over `Iterable<Stream>`s only once when the stream is listened to.
+* `withLatestFrom` should iterate over `Iterable<Stream>`s only once when the stream is listened to.
 * Fix analyzer warning when using `Dart 2.16.0`.
 
 ### Features
