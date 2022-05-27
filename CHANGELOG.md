@@ -1,3 +1,20 @@
+## 0.27.4 (2022-05-28)
+
+### Bug fixes
+
+* `withLatestFrom` iterate over `Iterable<Stream>`s only once when the stream is listened to.
+* Fix analyzer warning when using `Dart 2.16.0`.
+
+### Features
+
+* Add `mapNotNull`/`MapNotNullStreamTransformer`.
+* Add `whereNotNull`/`WhereNotNullStreamTransformer`.
+
+### Documentation
+
+* Fix grammar errors in code examples (thanks to [@fzyzcjy](https://github.com/fzyzcjy)).
+* Update rxmarbles URL for `RaceStream` (thanks to [@Péter Ferenc Gyarmati](https://github.com/peter-gy)).
+
 ## 0.27.3 (2021-11-21)
 
 ### Bug fixes
