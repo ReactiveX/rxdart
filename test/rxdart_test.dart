@@ -63,6 +63,7 @@ import 'transformers/group_by_test.dart' as group_by_test;
 import 'transformers/ignore_elements_test.dart' as ignore_elements_test;
 import 'transformers/interval_test.dart' as interval_test;
 import 'transformers/join_test.dart' as join_test;
+import 'transformers/map_not_null_test.dart' as map_not_null_test;
 import 'transformers/map_to_test.dart' as map_to_test;
 import 'transformers/materialize_test.dart' as materialize_test;
 import 'transformers/merge_with_test.dart' as merge_with_test;
@@ -84,6 +85,7 @@ import 'transformers/take_while_inclusive_test.dart'
 import 'transformers/time_interval_test.dart' as time_interval_test;
 import 'transformers/timeout_test.dart' as timeout_test;
 import 'transformers/timestamp_test.dart' as timestamp_test;
+import 'transformers/where_not_null_test.dart' as where_not_null_test;
 import 'transformers/where_type_test.dart' as where_type_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
@@ -126,6 +128,7 @@ void main() {
   ignore_elements_test.main();
   interval_test.main();
   join_test.main();
+  map_not_null_test.main();
   map_to_test.main();
   materialize_test.main();
   merge_with_test.main();
@@ -146,6 +149,7 @@ void main() {
   timeout_test.main();
   timestamp_test.main();
   timer_test.main();
+  where_not_null_test.main();
   where_type_test.main();
   with_latest_from_test.main();
   zip_with_test.main();
