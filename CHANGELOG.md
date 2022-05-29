@@ -1,4 +1,4 @@
-## 0.27.4 (2022-05-27)
+## 0.27.4 (2022-05-29)
 
 ### Bug fixes
 
@@ -13,7 +13,7 @@
 ### Documentation
 
 * Fix grammar errors in code examples (thanks to [@fzyzcjy](https://github.com/fzyzcjy)).
-* Update rxmarbles URL for `RaceStream` (thanks to [@Péter Ferenc Gyarmati](https://github.com/peter-gy)).
+* Update RxMarbles URL for `RaceStream` (thanks to [@Péter Ferenc Gyarmati](https://github.com/peter-gy)).
 
 ## 0.27.3 (2021-11-21)
 
