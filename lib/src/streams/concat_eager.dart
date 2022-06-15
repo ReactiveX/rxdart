@@ -49,7 +49,7 @@ class ConcatEagerStream<T> extends StreamView<T> {
             activeSubscription = subscriptions[index + 1];
           } else if (index == subscriptions.length - 1) {
             controller.close();
-          } 
+          }
         };
       }
 
