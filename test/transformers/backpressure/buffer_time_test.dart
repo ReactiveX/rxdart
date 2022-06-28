@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 /// yield immediately, then every 100ms
 Stream<int> getStream(int n) async* {
   var k = 1;
@@ -84,5 +86,12 @@ void main() {
         Stream<void>.error(Exception())
             .bufferTime(const Duration(milliseconds: 160)),
         emitsError(isException));
+  });
+
+  test('Rx.bufferTime.nullable', () {
+    testNullable<String, List<String?>>(
+      Stream<String>.value(''),
+      (s) => s.bufferTime(Duration.zero),
+    );
   });
 }

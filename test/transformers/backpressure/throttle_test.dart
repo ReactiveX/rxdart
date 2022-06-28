@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> _stream() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
@@ -148,5 +150,12 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 150)).whenComplete(
         () => subscription
             .pause(Future<void>.delayed(const Duration(milliseconds: 150))));
+  });
+
+  test('Rx.throttle.nullable', () {
+    testNullable<String, String?>(
+      Stream<String>.value(''),
+      (s) => s.throttle((_) => Stream<void>.empty()),
+    );
   });
 }

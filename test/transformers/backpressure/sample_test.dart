@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> _getStream() =>
     Stream<int>.periodic(const Duration(milliseconds: 20), (count) => count)
         .take(5);
@@ -97,5 +99,12 @@ void main() {
 
     subscription.pause();
     subscription.resume();
+  });
+
+  test('Rx.sample.nullable', () {
+    testNullable<String, String?>(
+      Stream<String>.value(''),
+      (s) => s.sample(_getSampleStream()),
+    );
   });
 }

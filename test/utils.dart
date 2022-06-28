@@ -18,3 +18,9 @@
 /// Because of that, `unawaited` should only be used for futures that
 /// are *expected* to complete with a value.
 void unawaited(Future<void> future) {}
+
+void testNullable<T extends Object, R>(
+  Stream<T> stream,
+  Stream<R> Function(Stream<T?> s) transform,
+) =>
+    transform(stream).listen(null);

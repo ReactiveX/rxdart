@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 void main() {
   test('Rx.bufferTest', () async {
     await expectLater(
@@ -55,5 +57,12 @@ void main() {
     await expectLater(
         Stream<int>.error(Exception()).bufferTest((i) => i % 2 == 0),
         emitsError(isException));
+  });
+
+  test('Rx.bufferTest.nullable', () {
+    testNullable<String, List<String?>>(
+      Stream<String>.value(''),
+      (s) => s.bufferTest((i) => true),
+    );
   });
 }

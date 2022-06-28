@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> _getStream() {
   final controller = StreamController<int>();
 
@@ -133,5 +135,12 @@ void main() {
             Stream<void>.fromFuture(
                 Future<void>.delayed(const Duration(milliseconds: 200)))),
         emitsInOrder(<dynamic>[null, emitsDone]));
+  });
+
+  test('Rx.debounce.nullable', () {
+    testNullable<String, String?>(
+      Stream<String>.value(''),
+      (s) => s.debounce((_) => Stream<void>.empty()),
+    );
   });
 }

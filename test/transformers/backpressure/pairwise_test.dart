@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 void main() {
   test('Rx.pairwise', () async {
     const expectedOutput = [
@@ -43,5 +45,12 @@ void main() {
         onError: expectAsync2((Exception e, StackTrace s) {
       expect(e, isException);
     }));
+  });
+
+  test('Rx.pairwise.nullable', () {
+    testNullable<String, Iterable<String?>>(
+      Stream<String>.value(''),
+      (s) => s.pairwise(),
+    );
   });
 }

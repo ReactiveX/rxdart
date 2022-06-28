@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> getStream(int n) async* {
   var k = 0;
 
@@ -111,5 +113,12 @@ void main() {
         Stream<void>.error(Exception())
             .window(Stream<void>.periodic(const Duration(milliseconds: 160))),
         emitsError(isException));
+  });
+
+  test('Rx.window.nullable', () {
+    testNullable<String, Stream<String?>>(
+      Stream<String>.value(''),
+      (s) => s.window(Stream<void>.empty()),
+    );
   });
 }

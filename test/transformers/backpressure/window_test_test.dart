@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 void main() {
   test('Rx.windowTest', () async {
     await expectLater(
@@ -55,5 +57,12 @@ void main() {
     await expectLater(
         Stream<int>.error(Exception()).windowTest((i) => i % 2 == 0),
         emitsError(isException));
+  });
+
+  test('Rx.windowTest.nullable', () {
+    testNullable<String, Stream<String?>>(
+      Stream<String>.value(''),
+      (s) => s.windowTest((_) => true),
+    );
   });
 }
