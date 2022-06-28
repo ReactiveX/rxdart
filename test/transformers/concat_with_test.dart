@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.concatWith', () async {
     final delayedStream = Rx.timer(1, Duration(milliseconds: 10));
@@ -35,5 +37,12 @@ void main() {
 
     expect(concatenatedStream.isBroadcast, isTrue);
     expect(concatenatedStream, emitsInOrder(expected));
+  });
+
+  test('Rx.concatWith.nullable', () {
+    testNullable<String, String?>(
+      Stream<String>.value(''),
+      (s) => s.concatWith([Stream<String>.empty()]),
+    );
   });
 }
