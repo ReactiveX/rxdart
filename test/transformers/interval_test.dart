@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() => Stream.fromIterable(const [0, 1, 2, 3, 4]);
 
 void main() {
@@ -75,5 +77,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.interval.nullable', () {
+    testNullable<String?>(
+      (s) => s.interval(Duration.zero),
+    );
   });
 }

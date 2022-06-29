@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   const num expected = 0;
 
@@ -67,6 +69,12 @@ void main() {
     expect(
       stream,
       emitsInOrder(<Object>[1, -1, 2, 3, -1, 4, emitsDone]),
+    );
+  });
+
+  test('Rx.onErrorReturn.nullable', () {
+    testNullable<String?>(
+      (s) => s.onErrorReturn('String'),
     );
   });
 }

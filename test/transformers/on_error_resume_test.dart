@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() => Stream.fromIterable(const [0, 1, 2, 3]);
 
 const List<int> expected = [0, 1, 2, 3];
@@ -196,6 +198,12 @@ void main() {
     expect(
       stream,
       emitsInOrder(<Object>[1, 2, 3, -1, -2, emitsDone]),
+    );
+  });
+
+  test('Rx.onErrorResumeNext.nullable', () {
+    testNullable<String?>(
+      (s) => s.onErrorResumeNext(Stream.empty()),
     );
   });
 }

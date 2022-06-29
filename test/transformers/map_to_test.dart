@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.mapTo', () async {
     await expectLater(Rx.range(1, 4).mapTo(true),
@@ -55,5 +57,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.mapTo.nullable', () {
+    testNullable<String?>(
+      (s) => s.mapTo('String'),
+    );
   });
 }
