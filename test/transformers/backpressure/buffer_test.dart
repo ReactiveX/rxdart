@@ -111,8 +111,7 @@ void main() {
   });
 
   test('Rx.buffer.nullable', () {
-    testNullable<String, List<String?>>(
-      Stream<String>.value(''),
+    testNullable<List<String?>>(
       (s) => s.buffer(Stream<void>.empty()),
     );
   });

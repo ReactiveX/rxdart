@@ -48,8 +48,7 @@ void main() {
   });
 
   test('Rx.pairwise.nullable', () {
-    testNullable<String, Iterable<String?>>(
-      Stream<String>.value(''),
+    testNullable<Iterable<String?>>(
       (s) => s.pairwise(),
     );
   });

@@ -102,8 +102,7 @@ void main() {
   });
 
   test('Rx.sample.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.sample(_getSampleStream()),
     );
   });

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   group('ExhaustMap', () {
     test('does not create a new Stream while emitting', () async {
@@ -97,6 +99,12 @@ void main() {
       expect(() => stream.listen(null), throwsStateError);
 
       controller.add(1);
+    });
+
+    test('Rx.exhaustMap.nullable', () {
+      testNullable<String?>(
+        (s) => s.exhaustMap((v) => Stream.value(v)),
+      );
     });
   });
 }

@@ -153,8 +153,7 @@ void main() {
   });
 
   test('Rx.throttle.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.throttle((_) => Stream<void>.empty()),
     );
   });

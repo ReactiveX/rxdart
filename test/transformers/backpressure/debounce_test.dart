@@ -138,8 +138,7 @@ void main() {
   });
 
   test('Rx.debounce.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.debounce((_) => Stream<void>.empty()),
     );
   });

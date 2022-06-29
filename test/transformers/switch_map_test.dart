@@ -171,8 +171,7 @@ void main() {
   });
 
   test('Rx.switchMap with nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.switchMap((v) => Stream.value(v)),
     );
   });

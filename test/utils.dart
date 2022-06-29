@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Explicitly ignores a future.
 ///
 /// Not all futures need to be awaited.
@@ -19,8 +21,5 @@
 /// are *expected* to complete with a value.
 void unawaited(Future<void> future) {}
 
-void testNullable<T extends Object, R>(
-  Stream<T> stream,
-  Stream<R> Function(Stream<T?> s) transform,
-) =>
-    transform(stream).listen(null);
+void testNullable<R>(Stream<R> Function(Stream<String?> s) transform) =>
+    transform(Stream<String>.fromIterable(['1', '2', '3'])).listen(null);

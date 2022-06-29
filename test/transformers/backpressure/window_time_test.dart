@@ -92,8 +92,7 @@ void main() {
   });
 
   test('Rx.windowTime.nullable', () {
-    testNullable<String, Stream<String?>>(
-      Stream<String>.value(''),
+    testNullable<Stream<String?>>(
       (s) => s.windowTime(Duration.zero),
     );
   });

@@ -95,8 +95,7 @@ void main() {
   });
 
   test('Rx.throttleTime.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.throttleTime(Duration.zero),
     );
   });

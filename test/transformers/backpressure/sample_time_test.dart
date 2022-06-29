@@ -92,8 +92,7 @@ void main() {
   });
 
   test('Rx.sampleTime.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.sampleTime(Duration.zero),
     );
   });

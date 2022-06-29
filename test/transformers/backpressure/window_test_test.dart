@@ -60,8 +60,7 @@ void main() {
   });
 
   test('Rx.windowTest.nullable', () {
-    testNullable<String, Stream<String?>>(
-      Stream<String>.value(''),
+    testNullable<Stream<String?>>(
       (s) => s.windowTest((_) => true),
     );
   });

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() {
   final controller = StreamController<int>();
 
@@ -105,7 +107,7 @@ void main() {
         }, count: 1));
   });
 
-  test('Rx.flatMap accidental broadcast', () async {
+  test('Rx.ignoreElements accidental broadcast', () async {
     final controller = StreamController<int>();
 
     final stream = controller.stream.ignoreElements();
@@ -114,5 +116,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.ignoreElements.nullable', () {
+    testNullable<Never>(
+      (s) => s.ignoreElements(),
+    );
   });
 }

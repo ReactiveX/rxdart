@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.defaultIfEmpty.whenEmpty', () async {
     Stream<bool>.empty()
@@ -76,5 +78,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.defaultIfEmpty.nullable', () {
+    testNullable<String?>(
+      (s) => s.defaultIfEmpty(null),
+    );
   });
 }

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() => Stream<int>.fromIterable(const <int>[1, 2, 3, 4]);
 
 extension on Duration {
@@ -268,5 +270,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.delayWhen.nullable', () {
+    testNullable<String?>(
+      (s) => s.delayWhen((_) => Duration.zero.asTimerStream()),
+    );
   });
 }

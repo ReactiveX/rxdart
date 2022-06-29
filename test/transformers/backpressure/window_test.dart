@@ -116,8 +116,7 @@ void main() {
   });
 
   test('Rx.window.nullable', () {
-    testNullable<String, Stream<String?>>(
-      Stream<String>.value(''),
+    testNullable<Stream<String?>>(
       (s) => s.window(Stream<void>.empty()),
     );
   });

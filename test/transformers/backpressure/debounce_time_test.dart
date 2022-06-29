@@ -119,8 +119,7 @@ void main() {
   });
 
   test('Rx.debounceTime.nullable', () {
-    testNullable<String, String?>(
-      Stream<String>.value(''),
+    testNullable<String?>(
       (s) => s.debounceTime(Duration.zero),
     );
   });

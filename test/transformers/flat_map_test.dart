@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.flatMap', () async {
     const expectedOutput = [3, 2, 1];
@@ -235,6 +237,12 @@ void main() {
         .take(1)
         .listen(expectAsync1((data) => expect(data, 2), count: 1));
   }, timeout: const Timeout(Duration(milliseconds: 200)));
+
+  test('Rx.flatMap.nullable', () {
+    testNullable<String?>(
+      (s) => s.flatMap((v) => Stream.value(v)),
+    );
+  });
 }
 
 Stream<int> _getStream() => Stream.fromIterable(const [1, 2, 3]);
