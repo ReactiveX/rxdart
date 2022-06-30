@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<Object> _getStream() {
   final controller = StreamController<Object>();
 
@@ -82,5 +84,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.whereType.nullable', () {
+    testNullable<String>(
+      (s) => s.whereType<String>(),
+    );
   });
 }

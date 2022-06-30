@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.takeLast', () async {
     final stream = Stream.fromIterable([1, 2, 3, 4, 5]).takeLast(3);
@@ -98,4 +100,10 @@ void main() {
       ),
     );
   }, timeout: const Timeout(Duration(seconds: 1)));
+
+  test('Rx.takeLast.nullable', () {
+    testNullable<String?>(
+      (s) => s.takeLast(1),
+    );
+  });
 }

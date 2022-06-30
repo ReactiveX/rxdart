@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.scan', () async {
     const expectedOutput = [1, 3, 6, 10];
@@ -16,6 +18,10 @@ void main() {
   });
 
   test('Rx.scan.nullable', () {
+    testNullable<String?>(
+      (s) => s.scan((acc, value, index) => acc, null),
+    );
+
     expect(
       Stream.fromIterable(const [1, 2, 3, 4])
           .scan<int?>((acc, value, index) => (acc ?? 0) + value, null)

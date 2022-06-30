@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.Rx.timestamp', () async {
     const expected = [1, 2, 3];
@@ -93,5 +95,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.timestamp.nullable', () {
+    testNullable<Timestamped<String?>>(
+      (s) => s.timestamp(),
+    );
   });
 }

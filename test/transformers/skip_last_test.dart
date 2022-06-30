@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.skipLast', () async {
     final stream = Stream.fromIterable([1, 2, 3, 4, 5]).skipLast(3);
@@ -98,5 +100,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.skipLast.nullable', () {
+    testNullable<String?>(
+      (s) => s.skipLast(1),
+    );
   });
 }

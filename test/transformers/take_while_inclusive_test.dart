@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.takeWhileInclusive', () async {
     final stream = Stream.fromIterable([2, 3, 4, 5, 6, 1, 2, 3])
@@ -80,5 +82,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.takeWhileInclusive.nullable', () {
+    testNullable<String?>(
+      (s) => s.takeWhileInclusive((_) => true),
+    );
   });
 }

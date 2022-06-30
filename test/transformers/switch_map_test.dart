@@ -170,7 +170,7 @@ void main() {
     await controller.close();
   });
 
-  test('Rx.switchMap with nullable', () {
+  test('Rx.switchMap.nullable', () {
     testNullable<String?>(
       (s) => s.switchMap((v) => Stream.value(v)),
     );

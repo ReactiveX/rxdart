@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.switchIfEmpty.whenEmpty', () async {
     expect(
@@ -84,5 +86,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.switchIfEmpty.nullable', () {
+    testNullable<String?>(
+      (s) => s.switchIfEmpty(Stream.value('String')),
+    );
   });
 }
