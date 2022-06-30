@@ -398,7 +398,8 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 4 (due to the async nature of streams)
   Stream<R> withLatestFrom<S, R>(
           Stream<S> latestFromStream, R Function(T t, S s) fn) =>
-      WithLatestFromStreamTransformer.with1(latestFromStream, fn).bind(this);
+      WithLatestFromStreamTransformer.with1<T, S, R>(latestFromStream, fn)
+          .bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the streams into a list. This is helpful when you need
@@ -421,7 +422,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   ///       ).listen(print); // print [2, 2, 3, 4, 5, 6] (due to the async nature of streams)
   ///
   Stream<List<T>> withLatestFromList(Iterable<Stream<T>> latestFromStreams) =>
-      WithLatestFromStreamTransformer.withList(latestFromStreams).bind(this);
+      WithLatestFromStreamTransformer.withList<T>(latestFromStreams).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the three streams using the provided function.
@@ -445,7 +446,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<B> latestFromStream2,
     R Function(T t, A a, B b) fn,
   ) =>
-      WithLatestFromStreamTransformer.with2(
+      WithLatestFromStreamTransformer.with2<T, A, B, R>(
         latestFromStream1,
         latestFromStream2,
         fn,
@@ -475,7 +476,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<C> latestFromStream3,
     R Function(T t, A a, B b, C c) fn,
   ) =>
-      WithLatestFromStreamTransformer.with3(
+      WithLatestFromStreamTransformer.with3<T, A, B, C, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -508,7 +509,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<D> latestFromStream4,
     R Function(T t, A a, B b, C c, D d) fn,
   ) =>
-      WithLatestFromStreamTransformer.with4(
+      WithLatestFromStreamTransformer.with4<T, A, B, C, D, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -544,7 +545,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<E> latestFromStream5,
     R Function(T t, A a, B b, C c, D d, E e) fn,
   ) =>
-      WithLatestFromStreamTransformer.with5(
+      WithLatestFromStreamTransformer.with5<T, A, B, C, D, E, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -584,7 +585,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<F> latestFromStream6,
     R Function(T t, A a, B b, C c, D d, E e, F f) fn,
   ) =>
-      WithLatestFromStreamTransformer.with6(
+      WithLatestFromStreamTransformer.with6<T, A, B, C, D, E, F, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -627,7 +628,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<G> latestFromStream7,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g) fn,
   ) =>
-      WithLatestFromStreamTransformer.with7(
+      WithLatestFromStreamTransformer.with7<T, A, B, C, D, E, F, G, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -673,7 +674,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<H> latestFromStream8,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h) fn,
   ) =>
-      WithLatestFromStreamTransformer.with8(
+      WithLatestFromStreamTransformer.with8<T, A, B, C, D, E, F, G, H, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -722,7 +723,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<I> latestFromStream9,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i) fn,
   ) =>
-      WithLatestFromStreamTransformer.with9(
+      WithLatestFromStreamTransformer.with9<T, A, B, C, D, E, F, G, H, I, R>(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
