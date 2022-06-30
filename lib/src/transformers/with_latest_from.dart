@@ -398,7 +398,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 4 (due to the async nature of streams)
   Stream<R> withLatestFrom<S, R>(
           Stream<S> latestFromStream, R Function(T t, S s) fn) =>
-      transform(WithLatestFromStreamTransformer.with1(latestFromStream, fn));
+      WithLatestFromStreamTransformer.with1(latestFromStream, fn).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the streams into a list. This is helpful when you need
@@ -421,7 +421,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
   ///       ).listen(print); // print [2, 2, 3, 4, 5, 6] (due to the async nature of streams)
   ///
   Stream<List<T>> withLatestFromList(Iterable<Stream<T>> latestFromStreams) =>
-      transform(WithLatestFromStreamTransformer.withList(latestFromStreams));
+      WithLatestFromStreamTransformer.withList(latestFromStreams).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the three streams using the provided function.
@@ -445,11 +445,11 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<B> latestFromStream2,
     R Function(T t, A a, B b) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with2(
+      WithLatestFromStreamTransformer.with2(
         latestFromStream1,
         latestFromStream2,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the four streams using the provided function.
@@ -475,12 +475,12 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<C> latestFromStream3,
     R Function(T t, A a, B b, C c) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with3(
+      WithLatestFromStreamTransformer.with3(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the five streams using the provided function.
@@ -508,13 +508,13 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<D> latestFromStream4,
     R Function(T t, A a, B b, C c, D d) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with4(
+      WithLatestFromStreamTransformer.with4(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
         latestFromStream4,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the six streams using the provided function.
@@ -544,14 +544,14 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<E> latestFromStream5,
     R Function(T t, A a, B b, C c, D d, E e) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with5(
+      WithLatestFromStreamTransformer.with5(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
         latestFromStream4,
         latestFromStream5,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the seven streams using the provided function.
@@ -584,7 +584,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<F> latestFromStream6,
     R Function(T t, A a, B b, C c, D d, E e, F f) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with6(
+      WithLatestFromStreamTransformer.with6(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -592,7 +592,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
         latestFromStream5,
         latestFromStream6,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the eight streams using the provided function.
@@ -627,7 +627,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<G> latestFromStream7,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with7(
+      WithLatestFromStreamTransformer.with7(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -636,7 +636,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
         latestFromStream6,
         latestFromStream7,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the nine streams using the provided function.
@@ -673,7 +673,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<H> latestFromStream8,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with8(
+      WithLatestFromStreamTransformer.with8(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -683,7 +683,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
         latestFromStream7,
         latestFromStream8,
         fn,
-      ));
+      ).bind(this);
 
   /// Creates a Stream that emits when the source stream emits, combining the
   /// latest values from the ten streams using the provided function.
@@ -722,7 +722,7 @@ extension WithLatestFromExtensions<T> on Stream<T> {
     Stream<I> latestFromStream9,
     R Function(T t, A a, B b, C c, D d, E e, F f, G g, H h, I i) fn,
   ) =>
-      transform(WithLatestFromStreamTransformer.with9(
+      WithLatestFromStreamTransformer.with9(
         latestFromStream1,
         latestFromStream2,
         latestFromStream3,
@@ -733,5 +733,5 @@ extension WithLatestFromExtensions<T> on Stream<T> {
         latestFromStream8,
         latestFromStream9,
         fn,
-      ));
+      ).bind(this);
 }

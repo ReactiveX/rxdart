@@ -63,5 +63,5 @@ extension MaterializeExtension<T> on Stream<T> {
   ///         .materialize()
   ///         .listen((i) => print(i)); // Prints onError Notification
   Stream<Notification<T>> materialize() =>
-      transform(MaterializeStreamTransformer<T>());
+      MaterializeStreamTransformer<T>().bind(this);
 }

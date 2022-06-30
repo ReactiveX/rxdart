@@ -115,5 +115,5 @@ extension SwitchIfEmptyExtension<T> on Stream<T> {
   ///     Stream<Data> getThatData =
   ///         memory.switchIfEmpty(disk).switchIfEmpty(network);
   Stream<T> switchIfEmpty(Stream<T> fallbackStream) =>
-      transform(SwitchIfEmptyStreamTransformer<T>(fallbackStream));
+      SwitchIfEmptyStreamTransformer<T>(fallbackStream).bind(this);
 }

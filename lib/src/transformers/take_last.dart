@@ -79,5 +79,5 @@ extension TakeLastExtension<T> on Stream<T> {
   ///       .takeLast(3)
   ///       .listen(print); // prints 3, 4, 5
   Stream<T> takeLast(int count) =>
-      transform(TakeLastStreamTransformer<T>(count));
+      TakeLastStreamTransformer<T>(count).bind(this);
 }

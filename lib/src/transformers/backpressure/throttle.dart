@@ -53,13 +53,11 @@ extension ThrottleExtensions<T> on Stream<T> {
   ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)));
   Stream<T> throttle(Stream Function(T event) window,
           {bool trailing = false, bool leading = true}) =>
-      transform(
-        ThrottleStreamTransformer<T>(
-          window,
-          trailing: trailing,
-          leading: leading,
-        ),
-      );
+      ThrottleStreamTransformer<T>(
+        window,
+        trailing: trailing,
+        leading: leading,
+      ).bind(this);
 
   /// Emits a value from the source [Stream], then ignores subsequent source values
   /// for a duration, then repeats this process.
@@ -74,12 +72,11 @@ extension ThrottleExtensions<T> on Stream<T> {
   Stream<T> throttleTime(Duration duration,
       {bool trailing = false, bool leading = true}) {
     ArgumentError.checkNotNull(duration, 'duration');
-    return transform(
-      ThrottleStreamTransformer<T>(
-        (_) => TimerStream<bool>(true, duration),
-        trailing: trailing,
-        leading: leading,
-      ),
-    );
+
+    return ThrottleStreamTransformer<T>(
+      (_) => TimerStream<bool>(true, duration),
+      trailing: trailing,
+      leading: leading,
+    ).bind(this);
   }
 }

@@ -61,5 +61,5 @@ extension StartWithExtension<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([2]).startWith(1).listen(print); // prints 1, 2
   Stream<T> startWith(T startValue) =>
-      transform(StartWithStreamTransformer<T>(startValue));
+      StartWithStreamTransformer<T>(startValue).bind(this);
 }

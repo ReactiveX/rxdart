@@ -75,5 +75,5 @@ extension SkipLastExtension<T> on Stream<T> {
   ///       .skipLast(3)
   ///       .listen(print); // prints 1, 2
   Stream<T> skipLast(int count) =>
-      transform(SkipLastStreamTransformer<T>(count));
+      SkipLastStreamTransformer<T>(count).bind(this);
 }

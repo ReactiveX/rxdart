@@ -31,5 +31,5 @@ extension PairwiseExtension<T> on Stream<T> {
   ///     RangeStream(1, 4)
   ///       .pairwise()
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
-  Stream<Iterable<T>> pairwise() => transform(PairwiseStreamTransformer());
+  Stream<Iterable<T>> pairwise() => PairwiseStreamTransformer<T>().bind(this);
 }

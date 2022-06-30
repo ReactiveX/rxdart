@@ -148,6 +148,7 @@ extension GroupByExtension<T> on Stream<T> {
     K Function(T value) grouper, {
     Stream<void> Function(GroupedStream<T, K> grouped)? durationSelector,
   }) =>
-      transform(GroupByStreamTransformer<T, K>(grouper,
-          durationSelector: durationSelector));
+      GroupByStreamTransformer<T, K>(grouper,
+              durationSelector: durationSelector)
+          .bind(this);
 }

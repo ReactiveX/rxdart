@@ -86,6 +86,7 @@ extension DistinctUniqueExtension<T> on Stream<T> {
     bool Function(T e1, T e2)? equals,
     int Function(T e)? hashCode,
   }) =>
-      transform(DistinctUniqueStreamTransformer<T>(
-          equals: equals, hashCodeMethod: hashCode));
+      DistinctUniqueStreamTransformer<T>(
+              equals: equals, hashCodeMethod: hashCode)
+          .bind(this);
 }

@@ -87,5 +87,5 @@ extension IntervalExtension<T> on Stream<T> {
   ///       .interval(Duration(seconds: 1))
   ///       .listen((i) => print('$i sec'); // prints 1 sec, 2 sec, 3 sec
   Stream<T> interval(Duration duration) =>
-      transform(IntervalStreamTransformer<T>(duration));
+      IntervalStreamTransformer<T>(duration).bind(this);
 }

@@ -83,5 +83,5 @@ extension TimeStampExtension<T> on Stream<T> {
   ///        .timestamp()
   ///        .listen((i) => print(i)); // prints 'TimeStamp{timestamp: XXX, value: 1}';
   Stream<Timestamped<T>> timestamp() =>
-      transform(TimestampStreamTransformer<T>());
+      TimestampStreamTransformer<T>().bind(this);
 }

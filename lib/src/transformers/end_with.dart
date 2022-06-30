@@ -48,5 +48,5 @@ extension EndWithExtension<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([2]).endWith(1).listen(print); // prints 2, 1
   Stream<T> endWith(T endValue) =>
-      transform(EndWithStreamTransformer<T>(endValue));
+      EndWithStreamTransformer<T>(endValue).bind(this);
 }

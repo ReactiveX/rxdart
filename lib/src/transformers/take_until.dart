@@ -76,5 +76,5 @@ extension TakeUntilExtension<T> on Stream<T> {
   ///       .takeUntil(TimerStream(3, Duration(seconds: 10)))
   ///       .listen(print); // prints 1
   Stream<T> takeUntil<S>(Stream<S> otherStream) =>
-      transform(TakeUntilStreamTransformer<T, S>(otherStream));
+      TakeUntilStreamTransformer<T, S>(otherStream).bind(this);
 }

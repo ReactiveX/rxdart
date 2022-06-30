@@ -216,7 +216,7 @@ extension DoExtensions<T> on Stream<T> {
   ///
   ///     subscription.cancel(); // prints 'hi'
   Stream<T> doOnCancel(FutureOr<void> Function() onCancel) =>
-      transform(DoStreamTransformer<T>(onCancel: onCancel));
+      DoStreamTransformer<T>(onCancel: onCancel).bind(this);
 
   /// Invokes the given callback function when the stream emits an item. In
   /// other implementations, this is called doOnNext.
@@ -227,7 +227,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .doOnData(print)
   ///       .listen(null); // prints 1, 2, 3
   Stream<T> doOnData(void Function(T event) onData) =>
-      transform(DoStreamTransformer<T>(onData: onData));
+      DoStreamTransformer<T>(onData: onData).bind(this);
 
   /// Invokes the given callback function when the stream finishes emitting
   /// items. In other implementations, this is called doOnComplete(d).
@@ -238,7 +238,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .doOnDone(() => print('all set'))
   ///       .listen(null); // prints 'all set'
   Stream<T> doOnDone(void Function() onDone) =>
-      transform(DoStreamTransformer<T>(onDone: onDone));
+      DoStreamTransformer<T>(onDone: onDone).bind(this);
 
   /// Invokes the given callback function when the stream emits data, emits
   /// an error, or emits done. The callback receives a [Notification] object.
@@ -253,7 +253,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .doOnEach(print)
   ///       .listen(null); // prints Notification{kind: OnData, value: 1, errorAndStackTrace: null}, Notification{kind: OnDone, value: null, errorAndStackTrace: null}
   Stream<T> doOnEach(void Function(Notification<T> notification) onEach) =>
-      transform(DoStreamTransformer<T>(onEach: onEach));
+      DoStreamTransformer<T>(onEach: onEach).bind(this);
 
   /// Invokes the given callback function when the stream emits an error.
   ///
@@ -263,7 +263,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .doOnError((error, stacktrace) => print('oh no'))
   ///       .listen(null); // prints 'Oh no'
   Stream<T> doOnError(void Function(Object, StackTrace) onError) =>
-      transform(DoStreamTransformer<T>(onError: onError));
+      DoStreamTransformer<T>(onError: onError).bind(this);
 
   /// Invokes the given callback function when the stream is first listened to.
   ///
@@ -273,7 +273,7 @@ extension DoExtensions<T> on Stream<T> {
   ///       .doOnListen(() => print('Is someone there?'))
   ///       .listen(null); // prints 'Is someone there?'
   Stream<T> doOnListen(void Function() onListen) =>
-      transform(DoStreamTransformer<T>(onListen: onListen));
+      DoStreamTransformer<T>(onListen: onListen).bind(this);
 
   /// Invokes the given callback function when the stream subscription is
   /// paused.
@@ -286,7 +286,7 @@ extension DoExtensions<T> on Stream<T> {
   ///
   ///     subscription.pause(); // prints 'Gimme a minute please'
   Stream<T> doOnPause(void Function() onPause) =>
-      transform(DoStreamTransformer<T>(onPause: onPause));
+      DoStreamTransformer<T>(onPause: onPause).bind(this);
 
   /// Invokes the given callback function when the stream subscription
   /// resumes receiving items.
@@ -300,5 +300,5 @@ extension DoExtensions<T> on Stream<T> {
   ///     subscription.pause();
   ///     subscription.resume(); 'Let's do this!'
   Stream<T> doOnResume(void Function() onResume) =>
-      transform(DoStreamTransformer<T>(onResume: onResume));
+      DoStreamTransformer<T>(onResume: onResume).bind(this);
 }

@@ -84,5 +84,5 @@ extension DematerializeExtension<T> on Stream<Notification<T>> {
   ///         .fromIterable([Notification.onError(Exception(), null)])
   ///         .dematerialize()
   ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
-  Stream<T> dematerialize() => transform(DematerializeStreamTransformer<T>());
+  Stream<T> dematerialize() => DematerializeStreamTransformer<T>().bind(this);
 }

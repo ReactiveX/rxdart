@@ -56,5 +56,5 @@ extension DefaultIfEmptyExtension<T> on Stream<T> {
   ///
   ///     Stream.empty().defaultIfEmpty(10).listen(print); // prints 10
   Stream<T> defaultIfEmpty(T defaultValue) =>
-      transform(DefaultIfEmptyStreamTransformer<T>(defaultValue));
+      DefaultIfEmptyStreamTransformer<T>(defaultValue).bind(this);
 }

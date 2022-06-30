@@ -165,6 +165,6 @@ extension DelayWhenExtension<T> on Stream<T> {
     Stream<void> Function(T value) itemDelaySelector, {
     Stream<void>? listenDelay,
   }) =>
-      transform(DelayWhenStreamTransformer(itemDelaySelector,
-          listenDelay: listenDelay));
+      DelayWhenStreamTransformer<T>(itemDelaySelector, listenDelay: listenDelay)
+          .bind(this);
 }
