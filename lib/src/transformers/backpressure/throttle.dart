@@ -70,13 +70,10 @@ extension ThrottleExtensions<T> on Stream<T> {
   ///     Stream.fromIterable([1, 2, 3])
   ///       .throttleTime(Duration(seconds: 1));
   Stream<T> throttleTime(Duration duration,
-      {bool trailing = false, bool leading = true}) {
-    ArgumentError.checkNotNull(duration, 'duration');
-
-    return ThrottleStreamTransformer<T>(
-      (_) => TimerStream<bool>(true, duration),
-      trailing: trailing,
-      leading: leading,
-    ).bind(this);
-  }
+          {bool trailing = false, bool leading = true}) =>
+      ThrottleStreamTransformer<T>(
+        (_) => TimerStream<bool>(true, duration),
+        trailing: trailing,
+        leading: leading,
+      ).bind(this);
 }
