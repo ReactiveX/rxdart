@@ -141,7 +141,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
   Stream<Stream<T>> windowTest(bool Function(T event) onTestHandler) =>
-      WindowTestStreamTransformer(onTestHandler).bind(this);
+      WindowTestStreamTransformer<T>(onTestHandler).bind(this);
 
   /// Creates a Stream where each item is a [Stream] containing the items from
   /// the source sequence, sampled on a time frame with [duration].
