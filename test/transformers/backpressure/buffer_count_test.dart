@@ -118,7 +118,7 @@ void main() {
   });
 
   test('Rx.bufferCount.nullable', () {
-    testNullable<List<String?>>(
+    nullableTest<List<String?>>(
       (s) => s.bufferCount(1),
     );
   });

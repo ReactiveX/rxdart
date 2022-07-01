@@ -80,7 +80,7 @@ void main() {
   });
 
   test('Rx.whereNotNull.nullable', () {
-    testNullable<String>(
+    nullableTest<String>(
       (s) => s.whereNotNull(),
     );
   });

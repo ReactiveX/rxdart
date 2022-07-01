@@ -102,7 +102,7 @@ void main() {
     });
 
     test('Rx.exhaustMap.nullable', () {
-      testNullable<String?>(
+      nullableTest<String?>(
         (s) => s.exhaustMap((v) => Stream.value(v)),
       );
     });

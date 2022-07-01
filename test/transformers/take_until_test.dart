@@ -113,7 +113,7 @@ void main() {
   });
 
   test('Rx.takeUntil.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.takeUntil(Stream<void>.empty()),
     );
   });

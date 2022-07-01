@@ -21,5 +21,5 @@ import 'dart:async';
 /// are *expected* to complete with a value.
 void unawaited(Future<void> future) {}
 
-void testNullable<R>(Stream<R> Function(Stream<String?> s) transform) =>
-    transform(Stream<String>.fromIterable(['1', '2', '3'])).listen(null);
+void nullableTest<R>(Stream<R> Function(Stream<String?> s) transform) =>
+    transform(Stream<String>.fromIterable(['1', '2', '3']));

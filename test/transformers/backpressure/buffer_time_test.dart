@@ -89,7 +89,7 @@ void main() {
   });
 
   test('Rx.bufferTime.nullable', () {
-    testNullable<List<String?>>(
+    nullableTest<List<String?>>(
       (s) => s.bufferTime(Duration.zero),
     );
   });

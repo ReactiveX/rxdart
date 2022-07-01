@@ -305,7 +305,7 @@ void main() {
   });
 
   test('Rx.groupBy.nullable', () {
-    testNullable<GroupedStream<String?, String?>>(
+    nullableTest<GroupedStream<String?, String?>>(
       (s) => s.groupBy((v) => v),
     );
   });

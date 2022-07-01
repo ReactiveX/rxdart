@@ -123,7 +123,7 @@ void main() {
   });
 
   test('Rx.skipUntil.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.skipUntil(Stream<void>.empty()),
     );
   });

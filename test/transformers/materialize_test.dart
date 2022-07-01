@@ -92,7 +92,7 @@ void main() {
   });
 
   test('Rx.materialize.nullable', () {
-    testNullable<Notification<String?>>(
+    nullableTest<Notification<String?>>(
       (s) => s.materialize(),
     );
   });

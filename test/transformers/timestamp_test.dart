@@ -98,7 +98,7 @@ void main() {
   });
 
   test('Rx.timestamp.nullable', () {
-    testNullable<Timestamped<String?>>(
+    nullableTest<Timestamped<String?>>(
       (s) => s.timestamp(),
     );
   });

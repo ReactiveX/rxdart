@@ -73,7 +73,7 @@ void main() {
   });
 
   test('Rx.onErrorReturn.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.onErrorReturn('String'),
     );
   });

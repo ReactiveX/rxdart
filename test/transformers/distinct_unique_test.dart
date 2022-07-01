@@ -131,7 +131,7 @@ void main() {
   });
 
   test('Rx.distinctUnique.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.distinctUnique(),
     );
   });

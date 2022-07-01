@@ -27,7 +27,7 @@ void main() {
     });
 
     test('nullable', () {
-      testNullable<String?>(
+      nullableTest<String?>(
         (s) => s.flatMapIterable((v) => Stream.value([v])),
       );
     });

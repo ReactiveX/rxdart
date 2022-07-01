@@ -481,7 +481,7 @@ void main() {
     });
 
     test('doOnData nullable', () {
-      testNullable<String?>(
+      nullableTest<String?>(
         (s) => s.doOnData((d) {}),
       );
     });

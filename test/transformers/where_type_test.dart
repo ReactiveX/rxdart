@@ -87,7 +87,7 @@ void main() {
   });
 
   test('Rx.whereType.nullable', () {
-    testNullable<String>(
+    nullableTest<String>(
       (s) => s.whereType<String>(),
     );
   });

@@ -119,7 +119,7 @@ void main() {
   });
 
   test('Rx.debounceTime.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.debounceTime(Duration.zero),
     );
   });

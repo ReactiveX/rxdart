@@ -119,7 +119,7 @@ void main() {
   });
 
   test('Rx.ignoreElements.nullable', () {
-    testNullable<Never>(
+    nullableTest<Never>(
       (s) => s.ignoreElements(),
     );
   });

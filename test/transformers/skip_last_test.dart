@@ -103,7 +103,7 @@ void main() {
   });
 
   test('Rx.skipLast.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.skipLast(1),
     );
   });

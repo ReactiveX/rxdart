@@ -102,7 +102,7 @@ void main() {
   }, timeout: const Timeout(Duration(seconds: 1)));
 
   test('Rx.takeLast.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.takeLast(1),
     );
   });

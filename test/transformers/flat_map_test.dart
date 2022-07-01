@@ -239,7 +239,7 @@ void main() {
   }, timeout: const Timeout(Duration(milliseconds: 200)));
 
   test('Rx.flatMap.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.flatMap((v) => Stream.value(v)),
     );
   });

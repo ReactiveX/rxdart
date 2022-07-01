@@ -118,7 +118,7 @@ void main() {
   });
 
   test('Rx.windowCount.nullable', () {
-    testNullable<Stream<String?>>(
+    nullableTest<Stream<String?>>(
       (s) => s.windowCount(2),
     );
   });

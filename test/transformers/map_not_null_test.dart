@@ -93,7 +93,7 @@ void main() {
   });
 
   test('Rx.mapNotNull.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.mapNotNull((i) => i),
     );
   });

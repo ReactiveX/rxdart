@@ -60,7 +60,7 @@ void main() {
   });
 
   test('Rx.bufferTest.nullable', () {
-    testNullable<List<String?>>(
+    nullableTest<List<String?>>(
       (s) => s.bufferTest((i) => true),
     );
   });

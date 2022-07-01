@@ -92,7 +92,7 @@ void main() {
   });
 
   test('Rx.sampleTime.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.sampleTime(Duration.zero),
     );
   });

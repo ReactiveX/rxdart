@@ -95,7 +95,7 @@ void main() {
   }, skip: true);
 
   test('Rx.startWith.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.startWith('String'),
     );
   });

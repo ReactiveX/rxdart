@@ -435,7 +435,7 @@ void main() {
   });
 
   test('Rx.withLatestFrom.nullable', () {
-    testNullable<List<String?>>(
+    nullableTest<List<String?>>(
       (s) => s.withLatestFromList([Stream.value('String')]),
     );
   });

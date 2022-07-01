@@ -120,7 +120,7 @@ void main() {
   });
 
   test('Rx.delay.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.delay(Duration.zero),
     );
   });

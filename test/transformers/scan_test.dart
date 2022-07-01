@@ -18,7 +18,7 @@ void main() {
   });
 
   test('Rx.scan.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.scan((acc, value, index) => acc, null),
     );
 

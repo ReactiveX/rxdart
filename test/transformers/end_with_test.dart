@@ -69,7 +69,7 @@ void main() {
   });
 
   test('Rx.endWith.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.endWith('String'),
     );
   });

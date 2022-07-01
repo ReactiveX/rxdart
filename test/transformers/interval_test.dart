@@ -80,7 +80,7 @@ void main() {
   });
 
   test('Rx.interval.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.interval(Duration.zero),
     );
   });

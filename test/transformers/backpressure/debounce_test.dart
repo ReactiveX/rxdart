@@ -138,7 +138,7 @@ void main() {
   });
 
   test('Rx.debounce.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.debounce((_) => Stream<void>.empty()),
     );
   });

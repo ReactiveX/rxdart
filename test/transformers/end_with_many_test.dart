@@ -71,7 +71,7 @@ void main() {
   });
 
   test('Rx.endWithMany.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.endWithMany(['String']),
     );
   });

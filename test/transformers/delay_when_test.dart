@@ -273,7 +273,7 @@ void main() {
   });
 
   test('Rx.delayWhen.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.delayWhen((_) => Duration.zero.asTimerStream()),
     );
   });

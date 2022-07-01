@@ -85,7 +85,7 @@ void main() {
   });
 
   test('Rx.takeWhileInclusive.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.takeWhileInclusive((_) => true),
     );
   });

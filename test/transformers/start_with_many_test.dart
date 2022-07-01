@@ -80,7 +80,7 @@ void main() {
   });
 
   test('Rx.startWithMany.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.startWithMany([]),
     );
   });

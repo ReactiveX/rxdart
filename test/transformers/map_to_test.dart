@@ -60,7 +60,7 @@ void main() {
   });
 
   test('Rx.mapTo.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.mapTo('String'),
     );
   });

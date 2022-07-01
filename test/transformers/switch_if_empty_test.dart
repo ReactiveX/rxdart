@@ -89,7 +89,7 @@ void main() {
   });
 
   test('Rx.switchIfEmpty.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.switchIfEmpty(Stream.value('String')),
     );
   });

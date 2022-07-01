@@ -105,7 +105,7 @@ void main() {
   });
 
   test('Rx.timeInterval.nullable', () {
-    testNullable<TimeInterval<String?>>(
+    nullableTest<TimeInterval<String?>>(
       (s) => s.timeInterval(),
     );
   });

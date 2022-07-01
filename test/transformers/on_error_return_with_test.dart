@@ -75,7 +75,7 @@ void main() {
   });
 
   test('Rx.onErrorReturnWith.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.onErrorReturnWith((e, s) => 'String'),
     );
   });

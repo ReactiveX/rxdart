@@ -202,7 +202,7 @@ void main() {
   });
 
   test('Rx.onErrorResumeNext.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.onErrorResumeNext(Stream.empty()),
     );
   });

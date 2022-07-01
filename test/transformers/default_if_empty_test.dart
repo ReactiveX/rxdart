@@ -81,7 +81,7 @@ void main() {
   });
 
   test('Rx.defaultIfEmpty.nullable', () {
-    testNullable<String?>(
+    nullableTest<String?>(
       (s) => s.defaultIfEmpty(null),
     );
   });
