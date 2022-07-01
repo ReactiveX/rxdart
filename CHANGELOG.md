@@ -17,6 +17,8 @@
   Extension methods were previously implemented via `stream.transform(streamTransformer)`, now
   via `streamTransformer.bind(stream)` to avoid this issue.
 
+* Fix `concatEager`: `activeSubscription` should be changed to next subscription.
+
 ### Features
 
 ### Documentation
