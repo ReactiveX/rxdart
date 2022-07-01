@@ -34,7 +34,7 @@ extension SampleExtensions<T> on Stream<T> {
   ///       .sample(TimerStream(1, Duration(seconds: 1)))
   ///       .listen(print); // prints 3
   Stream<T> sample(Stream<dynamic> sampleStream) =>
-      transform(SampleStreamTransformer<T>((_) => sampleStream));
+      SampleStreamTransformer<T>((_) => sampleStream).bind(this);
 
   /// Emits the most recently emitted item (if any) emitted by the source
   /// [Stream] since the previous emission within the recurring time span,

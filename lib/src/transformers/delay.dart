@@ -94,5 +94,5 @@ extension DelayExtension<T> on Stream<T> {
   ///       .delay(Duration(seconds: 1))
   ///       .listen(print); // [after one second delay] prints 1, 2, 3, 4 immediately
   Stream<T> delay(Duration duration) =>
-      transform(DelayStreamTransformer<T>(duration));
+      DelayStreamTransformer<T>(duration).bind(this);
 }

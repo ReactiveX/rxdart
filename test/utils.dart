@@ -1,3 +1,5 @@
+import 'dart:async';
+
 /// Explicitly ignores a future.
 ///
 /// Not all futures need to be awaited.
@@ -18,3 +20,6 @@
 /// Because of that, `unawaited` should only be used for futures that
 /// are *expected* to complete with a value.
 void unawaited(Future<void> future) {}
+
+void nullableTest<R>(Stream<R> Function(Stream<String?> s) transform) =>
+    transform(Stream<String>.fromIterable(['1', '2', '3']));

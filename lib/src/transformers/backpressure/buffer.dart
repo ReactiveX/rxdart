@@ -99,7 +99,7 @@ extension BufferExtensions<T> on Stream<T> {
   ///       .buffer(Stream.periodic(Duration(milliseconds: 160), (i) => i))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
   Stream<List<T>> buffer(Stream window) =>
-      transform(BufferStreamTransformer((_) => window));
+      BufferStreamTransformer<T>((_) => window).bind(this);
 
   /// Buffers a number of values from the source Stream by [count] then
   /// emits the buffer and clears it, and starts a new buffer each
@@ -123,7 +123,7 @@ extension BufferExtensions<T> on Stream<T> {
   ///       .bufferCount(3, 2)
   ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
   Stream<List<T>> bufferCount(int count, [int startBufferEvery = 0]) =>
-      transform(BufferCountStreamTransformer<T>(count, startBufferEvery));
+      BufferCountStreamTransformer<T>(count, startBufferEvery).bind(this);
 
   /// Creates a Stream where each item is a [List] containing the items
   /// from the source sequence, batched whenever test passes.
@@ -134,7 +134,7 @@ extension BufferExtensions<T> on Stream<T> {
   ///       .bufferTest((i) => i % 2 == 0)
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
   Stream<List<T>> bufferTest(bool Function(T event) onTestHandler) =>
-      transform(BufferTestStreamTransformer<T>(onTestHandler));
+      BufferTestStreamTransformer<T>(onTestHandler).bind(this);
 
   /// Creates a Stream where each item is a [List] containing the items
   /// from the source sequence, sampled on a time frame with [duration].

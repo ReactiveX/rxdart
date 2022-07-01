@@ -62,5 +62,5 @@ extension StartWithManyExtension<T> on Stream<T> {
   ///     Stream.fromIterable([3]).startWithMany([1, 2])
   ///       .listen(print); // prints 1, 2, 3
   Stream<T> startWithMany(List<T> startValues) =>
-      transform(StartWithManyStreamTransformer<T>(startValues));
+      StartWithManyStreamTransformer<T>(startValues).bind(this);
 }

@@ -58,5 +58,5 @@ extension ScanExtension<T> on Stream<T> {
   ///        .listen(print); // prints 1, 3, 6
   Stream<S> scan<S>(
           S Function(S accumulated, T value, int index) accumulator, S seed) =>
-      transform(ScanStreamTransformer<T, S>(accumulator, seed));
+      ScanStreamTransformer<T, S>(accumulator, seed).bind(this);
 }

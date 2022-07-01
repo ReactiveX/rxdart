@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 void main() {
   test('Rx.windowCount.noStartBufferEvery', () async {
     await expectLater(
@@ -113,5 +115,11 @@ void main() {
       () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).windowCount(2, -1),
         throwsArgumentError);
+  });
+
+  test('Rx.windowCount.nullable', () {
+    nullableTest<Stream<String?>>(
+      (s) => s.windowCount(2),
+    );
   });
 }

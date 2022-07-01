@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> _getStream() =>
     Stream<int>.periodic(const Duration(milliseconds: 20), (count) => count)
         .take(5);
@@ -87,5 +89,11 @@ void main() {
 
     await expectLater(
         controller.stream, emitsInOrder(<dynamic>[1, 3, 4, emitsDone]));
+  });
+
+  test('Rx.sampleTime.nullable', () {
+    nullableTest<String?>(
+      (s) => s.sampleTime(Duration.zero),
+    );
   });
 }

@@ -112,5 +112,5 @@ extension SwitchMapExtension<T> on Stream<T> {
   ///         TimerStream(i, Duration(minutes: i)))
   ///       .listen(print); // prints 1
   Stream<S> switchMap<S>(Stream<S> Function(T value) mapper) =>
-      transform(SwitchMapStreamTransformer<T, S>(mapper));
+      SwitchMapStreamTransformer<T, S>(mapper).bind(this);
 }

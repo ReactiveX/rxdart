@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.whereNotNull', () {
     {
@@ -75,5 +77,11 @@ void main() {
         subscription.cancel();
       }))
       ..resume();
+  });
+
+  test('Rx.whereNotNull.nullable', () {
+    nullableTest<String>(
+      (s) => s.whereNotNull(),
+    );
   });
 }

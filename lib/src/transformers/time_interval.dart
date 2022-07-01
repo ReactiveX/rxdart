@@ -107,5 +107,5 @@ extension TimeIntervalExtension<T> on Stream<T> {
   ///       .timeInterval()
   ///       .listen(print); // prints TimeInterval{interval: 0:00:01, value: 1}
   Stream<TimeInterval<T>> timeInterval() =>
-      transform(TimeIntervalStreamTransformer<T>());
+      TimeIntervalStreamTransformer<T>().bind(this);
 }

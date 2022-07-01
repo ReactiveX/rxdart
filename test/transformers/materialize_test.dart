@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.materialize.happyPath', () async {
     final stream = Stream.value(1);
@@ -87,5 +89,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.materialize.nullable', () {
+    nullableTest<Notification<String?>>(
+      (s) => s.materialize(),
+    );
   });
 }

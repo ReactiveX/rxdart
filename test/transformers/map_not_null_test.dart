@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   test('Rx.mapNotNull', () {
     expect(
@@ -88,5 +90,11 @@ void main() {
         subscription.cancel();
       }))
       ..resume();
+  });
+
+  test('Rx.mapNotNull.nullable', () {
+    nullableTest<String?>(
+      (s) => s.mapNotNull((i) => i),
+    );
   });
 }

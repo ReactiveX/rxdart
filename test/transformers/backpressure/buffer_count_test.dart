@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 void main() {
   test('Rx.bufferCount.noStartBufferEvery', () async {
     await expectLater(
@@ -113,5 +115,11 @@ void main() {
       () {
     expect(() => Stream.fromIterable(const [1, 2, 3, 4]).bufferCount(2, -1),
         throwsArgumentError);
+  });
+
+  test('Rx.bufferCount.nullable', () {
+    nullableTest<List<String?>>(
+      (s) => s.bufferCount(1),
+    );
   });
 }

@@ -57,5 +57,5 @@ extension IgnoreElementsExtension<T> on Stream<T> {
   ///     .ignoreElements()
   ///     .listen(print, onError: print); // prints Exception
   Stream<Never> ignoreElements() =>
-      transform(IgnoreElementsStreamTransformer<T>());
+      IgnoreElementsStreamTransformer<T>().bind(this);
 }

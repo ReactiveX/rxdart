@@ -109,5 +109,5 @@ extension ExhaustMapExtension<T> on Stream<T> {
   ///         TimerStream(i, Duration(milliseconds: 75)))
   ///       .listen(print); // prints 0, 2
   Stream<S> exhaustMap<S>(Stream<S> Function(T value) mapper) =>
-      transform(ExhaustMapStreamTransformer<T, S>(mapper));
+      ExhaustMapStreamTransformer<T, S>(mapper).bind(this);
 }

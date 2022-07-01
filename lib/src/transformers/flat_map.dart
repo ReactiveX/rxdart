@@ -124,8 +124,8 @@ extension FlatMapExtension<T> on Stream<T> {
   ///       .listen(print); // prints 1, 2, 3, 4
   Stream<S> flatMap<S>(Stream<S> Function(T value) mapper,
           {int? maxConcurrent}) =>
-      transform(
-          FlatMapStreamTransformer<T, S>(mapper, maxConcurrent: maxConcurrent));
+      FlatMapStreamTransformer<T, S>(mapper, maxConcurrent: maxConcurrent)
+          .bind(this);
 
   /// Converts each item into a Stream. The Stream must return an
   /// Iterable. Then, each item from the Iterable will be emitted one by one.
@@ -141,7 +141,8 @@ extension FlatMapExtension<T> on Stream<T> {
   ///       .listen(print); // prints 1, 2, 3, 4
   Stream<S> flatMapIterable<S>(Stream<Iterable<S>> Function(T value) mapper,
           {int? maxConcurrent}) =>
-      transform(FlatMapStreamTransformer<T, Iterable<S>>(mapper,
-              maxConcurrent: maxConcurrent))
+      FlatMapStreamTransformer<T, Iterable<S>>(mapper,
+              maxConcurrent: maxConcurrent)
+          .bind(this)
           .expand((Iterable<S> iterable) => iterable);
 }

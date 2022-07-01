@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 /// creates 5 Streams, deferred from a source Stream, so that they all emit
 /// under the same Timer interval.
 /// before, tests could fail, since we created 5 separate Streams with each
@@ -430,6 +432,12 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.withLatestFrom.nullable', () {
+    nullableTest<List<String?>>(
+      (s) => s.withLatestFromList([Stream.value('String')]),
+    );
   });
 }
 

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   group('DistinctUniqueStreamTransformer', () {
     test('works with the equals and hascode of the class', () async {
@@ -126,6 +128,12 @@ void main() {
 
       controller.add(1);
     });
+  });
+
+  test('Rx.distinctUnique.nullable', () {
+    nullableTest<String?>(
+      (s) => s.distinctUnique(),
+    );
   });
 }
 

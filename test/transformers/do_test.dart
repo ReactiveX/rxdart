@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 void main() {
   group('DoStreamTranformer', () {
     test('calls onDone when the stream is finished', () async {
@@ -476,6 +478,12 @@ void main() {
       await completer.future;
 
       expect(result, expectedOutput);
+    });
+
+    test('doOnData nullable', () {
+      nullableTest<String?>(
+        (s) => s.doOnData((d) {}),
+      );
     });
   });
 }

@@ -78,5 +78,5 @@ extension SkipUntilExtension<T> on Stream<T> {
   ///       .skipUntil(TimerStream(true, Duration(minutes: 1)))
   ///       .listen(print); // prints 2;
   Stream<T> skipUntil<S>(Stream<S> otherStream) =>
-      transform(SkipUntilStreamTransformer<T, S>(otherStream));
+      SkipUntilStreamTransformer<T, S>(otherStream).bind(this);
 }

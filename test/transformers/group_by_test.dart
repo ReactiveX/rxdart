@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 String _toEventOdd(int value) => value == 0 ? 'even' : 'odd';
 
 void main() {
@@ -299,6 +301,12 @@ void main() {
         ...List.filled(take ~/ g.length, g).expand<String>((e) => e),
         emitsDone,
       ]),
+    );
+  });
+
+  test('Rx.groupBy.nullable', () {
+    nullableTest<GroupedStream<String?, String?>>(
+      (s) => s.groupBy((v) => v),
     );
   });
 }

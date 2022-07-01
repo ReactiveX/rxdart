@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../../utils.dart';
+
 Stream<int> _stream() =>
     Stream.periodic(const Duration(milliseconds: 100), (i) => i + 1).take(10);
 
@@ -90,5 +92,11 @@ void main() {
             .interval(Duration(milliseconds: 25))
             .throttleTime(Duration(milliseconds: 50), trailing: false),
         emitsInOrder(<dynamic>[0, 2, 4, 6, 8, emitsDone]));
+  });
+
+  test('Rx.throttleTime.nullable', () {
+    nullableTest<String?>(
+      (s) => s.throttleTime(Duration.zero),
+    );
   });
 }

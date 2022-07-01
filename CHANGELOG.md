@@ -1,8 +1,31 @@
+## 0.27.5
+
+### Bug fixes
+
+* Fix issue [#683](https://github.com/ReactiveX/rxdart/issues/683): Throws runtime type error when using extension
+  methods on a `Stream<R>` but its type annotation is `Stream<T>`, `R` is a subtype of `T`
+  (covariance issue with `StreamTransformer`).
+  ```Dart
+  Stream<num> s1 = Stream<int>.fromIterable([1, 2, 3]);
+  // throws "type 'SwitchMapStreamTransformer<num, num>' is not a subtype of type 'StreamTransformer<int, num>' of 'streamTransformer'"
+  s1.switchMap((v) => Stream.value(v));
+
+  Stream<int?> s2 = Stream<int>.fromIterable([1, 2, 3]);
+  // throws "type 'SwitchMapStreamTransformer<int?, int?>' is not a subtype of type 'StreamTransformer<int, int?>' of 'streamTransformer'"
+  s2.switchMap((v) => Stream.value(v));
+  ```
+  Extension methods were previously implemented via `stream.transform(streamTransformer)`, now
+  via `streamTransformer.bind(stream)` to avoid this issue.
+
+### Features
+
+### Documentation
+
 ## 0.27.4 (2022-05-29)
 
 ### Bug fixes
 
-* `withLatestFrom` should iterate over `Iterable<Stream>`s only once when the stream is listened to.
+* `withLatestFrom` should iterate over `Iterable<Stream>` only once when the stream is listened to.
 * Fix analyzer warnings when using `Dart 2.16.0`.
 
 ### Features

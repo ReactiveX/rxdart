@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() {
   final controller = StreamController<int>();
 
@@ -166,6 +168,12 @@ void main() {
     expect(count, 2);
 
     await controller.close();
+  });
+
+  test('Rx.switchMap.nullable', () {
+    nullableTest<String?>(
+      (s) => s.switchMap((v) => Stream.value(v)),
+    );
   });
 }
 

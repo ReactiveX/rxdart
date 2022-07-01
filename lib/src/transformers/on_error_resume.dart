@@ -109,7 +109,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .onErrorResumeNext(Stream.fromIterable([1, 2, 3]))
   ///       .listen(print); // prints 1, 2, 3
   Stream<T> onErrorResumeNext(Stream<T> recoveryStream) =>
-      transform(OnErrorResumeStreamTransformer<T>((_, __) => recoveryStream));
+      OnErrorResumeStreamTransformer<T>((_, __) => recoveryStream).bind(this);
 
   /// Intercepts error events and switches to a recovery stream created by the
   /// provided [recoveryFn].
@@ -134,7 +134,7 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 0
   Stream<T> onErrorResume(
           Stream<T> Function(Object error, StackTrace stackTrace) recoveryFn) =>
-      transform(OnErrorResumeStreamTransformer<T>(recoveryFn));
+      OnErrorResumeStreamTransformer<T>(recoveryFn).bind(this);
 
   /// Instructs a Stream to emit a particular item when it encounters an
   /// error, and then terminate normally
@@ -151,8 +151,9 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///     ErrorStream(Exception())
   ///       .onErrorReturn(1)
   ///       .listen(print); // prints 1
-  Stream<T> onErrorReturn(T returnValue) => transform(
-      OnErrorResumeStreamTransformer<T>((_, __) => Stream.value(returnValue)));
+  Stream<T> onErrorReturn(T returnValue) =>
+      OnErrorResumeStreamTransformer<T>((_, __) => Stream.value(returnValue))
+          .bind(this);
 
   /// Instructs a Stream to emit a particular item created by the
   /// [returnFn] when it encounters an error, and then terminate normally.
@@ -175,6 +176,6 @@ extension OnErrorExtensions<T> on Stream<T> {
   ///       .listen(print); // prints 1
   Stream<T> onErrorReturnWith(
           T Function(Object error, StackTrace stackTrace) returnFn) =>
-      transform(OnErrorResumeStreamTransformer<T>(
-          (e, st) => Stream.value(returnFn(e, st))));
+      OnErrorResumeStreamTransformer<T>(
+          (e, st) => Stream.value(returnFn(e, st))).bind(this);
 }

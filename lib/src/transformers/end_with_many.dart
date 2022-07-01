@@ -48,5 +48,5 @@ extension EndWithManyExtension<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([2]).endWithMany([1, 0]).listen(print); // prints 2, 1, 0
   Stream<T> endWithMany(Iterable<T> endValues) =>
-      transform(EndWithManyStreamTransformer<T>(endValues));
+      EndWithManyStreamTransformer<T>(endValues).bind(this);
 }

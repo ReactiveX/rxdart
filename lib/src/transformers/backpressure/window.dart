@@ -104,7 +104,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
   Stream<Stream<T>> window(Stream window) =>
-      transform(WindowStreamTransformer((_) => window));
+      WindowStreamTransformer<T>((_) => window).bind(this);
 
   /// Buffers a number of values from the source Stream by [count] then emits
   /// the buffer as a [Stream] and clears it, and starts a new buffer each
@@ -129,7 +129,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .bufferCount(3, 2)
   ///       .listen(print); // prints [1, 2, 3], [3, 4, 5], [5] done!
   Stream<Stream<T>> windowCount(int count, [int startBufferEvery = 0]) =>
-      transform(WindowCountStreamTransformer(count, startBufferEvery));
+      WindowCountStreamTransformer<T>(count, startBufferEvery).bind(this);
 
   /// Creates a Stream where each item is a [Stream] containing the items from
   /// the source sequence, batched whenever test passes.
@@ -141,7 +141,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0], [1, 2] [3, 4] [5, 6] ...
   Stream<Stream<T>> windowTest(bool Function(T event) onTestHandler) =>
-      transform(WindowTestStreamTransformer(onTestHandler));
+      WindowTestStreamTransformer<T>(onTestHandler).bind(this);
 
   /// Creates a Stream where each item is a [Stream] containing the items from
   /// the source sequence, sampled on a time frame with [duration].

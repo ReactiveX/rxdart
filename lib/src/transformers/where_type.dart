@@ -67,5 +67,5 @@ extension WhereTypeExtension<T> on Stream<T> {
   ///       .where((event) => event is int)
   ///       .cast<int>()
   ///       .listen(print); // prints 1, 3
-  Stream<S> whereType<S>() => transform(WhereTypeStreamTransformer<T, S>());
+  Stream<S> whereType<S>() => WhereTypeStreamTransformer<T, S>().bind(this);
 }

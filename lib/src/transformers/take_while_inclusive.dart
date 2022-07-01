@@ -70,5 +70,5 @@ extension TakeWhileInclusiveExtension<T> on Stream<T> {
   ///       .takeWhileInclusive((i) => i < 4)
   ///       .listen(print); // prints 2, 3, 4
   Stream<T> takeWhileInclusive(bool Function(T) test) =>
-      transform(TakeWhileInclusiveStreamTransformer(test));
+      TakeWhileInclusiveStreamTransformer<T>(test).bind(this);
 }

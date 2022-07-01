@@ -48,5 +48,5 @@ extension MapToExtension<S> on Stream<S> {
   ///     Stream.fromIterable([1, 2, 3, 4])
   ///       .mapTo(true)
   ///       .listen(print); // prints true, true, true, true
-  Stream<T> mapTo<T>(T value) => transform(MapToStreamTransformer(value));
+  Stream<T> mapTo<T>(T value) => MapToStreamTransformer<S, T>(value).bind(this);
 }

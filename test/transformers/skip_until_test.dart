@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
+import '../utils.dart';
+
 Stream<int> _getStream() {
   final controller = StreamController<int>();
 
@@ -118,5 +120,11 @@ void main() {
     expect(() => stream.listen(null), throwsStateError);
 
     controller.add(1);
+  });
+
+  test('Rx.skipUntil.nullable', () {
+    nullableTest<String?>(
+      (s) => s.skipUntil(Stream<void>.empty()),
+    );
   });
 }
