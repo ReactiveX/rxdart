@@ -21,6 +21,10 @@
 
 ### Documentation
 
+### Code refactoring
+
+* Change return type of `pairwise` to `Stream<List<T>>`.
+
 ## 0.27.4 (2022-05-29)
 
 ### Bug fixes
