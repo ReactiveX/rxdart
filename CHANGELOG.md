@@ -3,7 +3,7 @@
 ### Bug fixes
 
 * Fix issue [#683](https://github.com/ReactiveX/rxdart/issues/683): Throws runtime type error when using extension
-  methods on a `Stream<R>` but its declare type is `Stream<T>`, `R` is a subtype of `T`
+  methods on a `Stream<R>` but its type annotation is `Stream<T>`, `R` is a subtype of `T`
   (covariance issue with `StreamTransformer`).
   ```Dart
   Stream<num> s1 = Stream<int>.fromIterable([1, 2, 3]);
