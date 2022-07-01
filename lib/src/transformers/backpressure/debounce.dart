@@ -33,7 +33,7 @@ class DebounceStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
       : super(
           WindowStrategy.everyEvent,
           window,
-          onWindowEnd: (Iterable<T> queue) => queue.last,
+          onWindowEnd: (queue) => queue.last,
           maxLengthQueue: 1,
         );
 }

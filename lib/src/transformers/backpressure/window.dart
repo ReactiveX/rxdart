@@ -22,7 +22,7 @@ class WindowStreamTransformer<T>
   /// The [Stream] is recreated and starts empty upon every [window] event.
   WindowStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
-            onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
+            onWindowEnd: (queue) => Stream.fromIterable(queue),
             ignoreEmptyWindows: false);
 }
 
@@ -61,9 +61,9 @@ class WindowCountStreamTransformer<T>
   /// the previous one reaches a length of [count].
   WindowCountStreamTransformer(int count, [int startBufferEvery = 0])
       : super(WindowStrategy.onHandler, null,
-            onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
+            onWindowEnd: (queue) => Stream.fromIterable(queue),
             startBufferEvery: startBufferEvery,
-            closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
+            closeWindowWhen: (queue) => queue.length == count) {
     if (count < 1) throw ArgumentError.value(count, 'count');
     if (startBufferEvery < 0) {
       throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
@@ -86,8 +86,8 @@ class WindowTestStreamTransformer<T>
   /// emits this [Stream] whenever the [test] Function yields true.
   WindowTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
-            onWindowEnd: (List<T> queue) => Stream.fromIterable(queue),
-            closeWindowWhen: (Iterable<T> queue) => test(queue.last));
+            onWindowEnd: (queue) => Stream.fromIterable(queue),
+            closeWindowWhen: (queue) => test(queue.last));
 }
 
 /// Extends the Stream class with the ability to window
