@@ -16,15 +16,14 @@ void main() {
 
     final stream = Rx.range(1, 4).pairwise();
 
-    stream.listen(expectAsync1((result) {
-      // test to see if the combined output matches
-      final expected = expectedOutput[count];
-
-      expect(expected.length, result.length);
-      expect(expected[0], result.elementAt(0));
-      expect(expected[1], result.elementAt(1));
-      count++;
-    }, count: expectedOutput.length));
+    stream.listen(
+      expectAsync1((result) {
+        // test to see if the combined output matches
+        expect(result, expectedOutput[count++]);
+      }, count: expectedOutput.length),
+      onError: expectAsync2((Object e, StackTrace s) {}, count: 0),
+      onDone: expectAsync0(() {}, count: 1),
+    );
   });
 
   test('Rx.pairwise.empty', () {
