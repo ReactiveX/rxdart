@@ -18,13 +18,37 @@ void main() {
 
     stream.listen(expectAsync1((result) {
       // test to see if the combined output matches
-      expect(expectedOutput[count].length, result.length);
-      expect(expectedOutput[count][0], result.elementAt(0));
-      if (expectedOutput[count].length > 1) {
-        expect(expectedOutput[count][1], result.elementAt(1));
-      }
+      final expected = expectedOutput[count];
+
+      expect(expected.length, result.length);
+      expect(expected[0], result.elementAt(0));
+      expect(expected[1], result.elementAt(1));
       count++;
     }, count: expectedOutput.length));
+  });
+
+  test('Rx.pairwise.empty', () {
+    expect(Stream<int>.empty().pairwise(), emitsDone);
+  });
+
+  test('Rx.pairwise.single', () {
+    expect(Stream.value(1).pairwise(), emitsDone);
+  });
+
+  test('Rx.pairwise.compatible', () {
+    expect(
+      Stream.fromIterable([1, 2]).pairwise(),
+      isA<Stream<Iterable<int>>>(),
+    );
+
+    Stream<Iterable<int>> s = Stream.fromIterable([1, 2]).pairwise();
+    expect(
+      s,
+      emitsInOrder(<Object>[
+        [1, 2],
+        emitsDone
+      ]),
+    );
   });
 
   test('Rx.pairwise.asBroadcastStream', () async {

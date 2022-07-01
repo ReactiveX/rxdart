@@ -21,7 +21,7 @@ class BufferStreamTransformer<T>
   /// The [List] is cleared upon every [window] event.
   BufferStreamTransformer(Stream Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
-            onWindowEnd: (List<T> queue) => queue, ignoreEmptyWindows: false);
+            onWindowEnd: (queue) => queue, ignoreEmptyWindows: false);
 }
 
 /// Buffers a number of values from the source Stream by count then
@@ -58,9 +58,9 @@ class BufferCountStreamTransformer<T>
   /// the previous one reaches a length of [count].
   BufferCountStreamTransformer(int count, [int startBufferEvery = 0])
       : super(WindowStrategy.onHandler, null,
-            onWindowEnd: (List<T> queue) => queue,
+            onWindowEnd: (queue) => queue,
             startBufferEvery: startBufferEvery,
-            closeWindowWhen: (Iterable<T> queue) => queue.length == count) {
+            closeWindowWhen: (queue) => queue.length == count) {
     if (count < 1) throw ArgumentError.value(count, 'count');
     if (startBufferEvery < 0) {
       throw ArgumentError.value(startBufferEvery, 'startBufferEvery');
@@ -82,8 +82,8 @@ class BufferTestStreamTransformer<T>
   /// emits this [List] whenever the [test] Function yields true.
   BufferTestStreamTransformer(bool Function(T value) test)
       : super(WindowStrategy.onHandler, null,
-            onWindowEnd: (List<T> queue) => queue,
-            closeWindowWhen: (Iterable<T> queue) => test(queue.last));
+            onWindowEnd: (queue) => queue,
+            closeWindowWhen: (queue) => test(queue.last));
 }
 
 /// Extends the Stream class with the ability to buffer events in various ways

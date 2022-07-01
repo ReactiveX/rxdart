@@ -10,13 +10,13 @@ import 'package:rxdart/src/transformers/backpressure/backpressure.dart';
 ///       .pairwise()
 ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
 class PairwiseStreamTransformer<T>
-    extends BackpressureStreamTransformer<T, Iterable<T>> {
+    extends BackpressureStreamTransformer<T, List<T>> {
   /// Constructs a [StreamTransformer] which buffers events into pairs as a [List].
   PairwiseStreamTransformer()
       : super(WindowStrategy.firstEventOnly, (_) => NeverStream<void>(),
-            onWindowEnd: (Iterable<T> queue) => queue,
+            onWindowEnd: (queue) => queue,
             startBufferEvery: 1,
-            closeWindowWhen: (Iterable<T> queue) => queue.length == 2,
+            closeWindowWhen: (queue) => queue.length == 2,
             dispatchOnClose: false);
 }
 
@@ -31,5 +31,5 @@ extension PairwiseExtension<T> on Stream<T> {
   ///     RangeStream(1, 4)
   ///       .pairwise()
   ///       .listen(print); // prints [1, 2], [2, 3], [3, 4]
-  Stream<Iterable<T>> pairwise() => PairwiseStreamTransformer<T>().bind(this);
+  Stream<List<T>> pairwise() => PairwiseStreamTransformer<T>().bind(this);
 }
