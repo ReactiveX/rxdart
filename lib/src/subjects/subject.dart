@@ -137,6 +137,11 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 
   void _add(T event) {
+
+    if(isClosed) {
+      return;
+    }
+
     onAdd(event);
 
     _controller.add(event);
