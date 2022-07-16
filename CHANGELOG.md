@@ -19,10 +19,6 @@
 
 * Fix `concatEager`: `activeSubscription` should be changed to next subscription.
 
-### Features
-
-### Documentation
-
 ### Code refactoring
 
 * Change return type of `pairwise` to `Stream<List<T>>`.
