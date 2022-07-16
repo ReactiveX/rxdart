@@ -1,4 +1,4 @@
-## 0.27.5
+## 0.27.5 (2022-07-16)
 
 ### Bug fixes
 
@@ -18,10 +18,6 @@
   via `streamTransformer.bind(stream)` to avoid this issue.
 
 * Fix `concatEager`: `activeSubscription` should be changed to next subscription.
-
-### Features
-
-### Documentation
 
 ### Code refactoring
 
