@@ -42,7 +42,11 @@ class RangeStream extends Stream<int> {
       controller.onPause = subscription!.pause;
       controller.onResume = subscription!.resume;
     };
-    controller.onCancel = () => subscription?.cancel();
+    controller.onCancel = () {
+      final future = subscription?.cancel();
+      subscription = null;
+      return future;
+    };
 
     return controller.stream;
   }
