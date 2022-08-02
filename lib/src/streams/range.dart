@@ -23,11 +23,31 @@ class RangeStream extends Stream<int> {
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 
   static Stream<int> _buildStream(int startInclusive, int endInclusive) {
-    final length = (endInclusive - startInclusive).abs() + 1;
-    int nextValue(int index) => startInclusive > endInclusive
-        ? startInclusive - index
-        : startInclusive + index;
+    final controller = StreamController<int>(sync: true);
+    StreamSubscription<int>? subscription;
 
-    return Stream.fromIterable(Iterable.generate(length, nextValue));
+    controller.onListen = () {
+      final length = (endInclusive - startInclusive).abs() + 1;
+      int nextValue(int index) => startInclusive > endInclusive
+          ? startInclusive - index
+          : startInclusive + index;
+
+      subscription =
+          Stream.fromIterable(Iterable.generate(length, nextValue)).listen(
+        controller.add,
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+
+      controller.onPause = subscription!.pause;
+      controller.onResume = subscription!.resume;
+    };
+    controller.onCancel = () {
+      final future = subscription?.cancel();
+      subscription = null;
+      return future;
+    };
+
+    return controller.stream;
   }
 }
