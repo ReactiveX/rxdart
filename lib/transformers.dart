@@ -10,6 +10,7 @@ export 'src/transformers/default_if_empty.dart';
 export 'src/transformers/delay.dart';
 export 'src/transformers/delay_when.dart';
 export 'src/transformers/dematerialize.dart';
+export 'src/transformers/distinct_by.dart';
 export 'src/transformers/distinct_unique.dart';
 export 'src/transformers/do.dart';
 export 'src/transformers/end_with.dart';
