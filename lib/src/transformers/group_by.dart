@@ -68,8 +68,9 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
     scheduleMicrotask(_closeAll);
 
     if (subscriptions?.isNotEmpty == true) {
-      final future = waitFuturesList(
-          subscriptions!.values.map((s) => s.cancel()).toList(growable: false));
+      final future = waitFuturesList([
+        for (final s in subscriptions!.values) s.cancel(),
+      ]);
       subscriptions?.clear();
       subscriptions = null;
       return future;

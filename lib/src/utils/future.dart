@@ -17,6 +17,6 @@ Future<void>? waitFuturesList(List<Future<void>> futures) {
     case 1:
       return futures[0];
     default:
-      return Future.wait(futures);
+      return Future.wait(futures).then((_) => null);
   }
 }
