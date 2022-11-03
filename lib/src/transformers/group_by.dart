@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/future.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
@@ -67,7 +68,8 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
     scheduleMicrotask(_closeAll);
 
     if (subscriptions?.isNotEmpty == true) {
-      final future = Future.wait(subscriptions!.values.map((s) => s.cancel()));
+      final future = waitFuturesList(
+          subscriptions!.values.map((s) => s.cancel()).toList(growable: false));
       subscriptions?.clear();
       subscriptions = null;
       return future;

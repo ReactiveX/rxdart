@@ -52,6 +52,7 @@ void main() async {
         late FutureOr<MockResource> Function() resourceFactoryThrows;
 
         late FutureOr<void> Function(MockResource) disposer;
+        late FutureOr<void> Function(MockResource) disposerThrows;
 
         setUp(() {
           isResourceCreated = false;
@@ -91,6 +92,18 @@ void main() async {
               case Close.sync:
                 // ignore: unnecessary_cast
                 return resource.closeSync() as FutureOr<void>;
+            }
+          };
+
+          disposerThrows = (resource) {
+            switch (close) {
+              case Close.async:
+                return Future<void>.delayed(
+                  resourceDuration,
+                  () => throw Exception(),
+                );
+              case Close.sync:
+                throw Exception();
             }
           };
         });
@@ -141,6 +154,23 @@ void main() async {
           expect(isResourceCreated, false);
           expect(calledStreamFactory, false);
           expect(callDisposer, false);
+        });
+
+        test('$groupPrefix.disposer.throws', () async {
+          final subscription = Rx.using<int, MockResource>(
+            resourceFactory,
+            (resource) => Rx.timer(0, resourceDuration),
+            disposerThrows,
+          ).listen(null);
+
+          if (create == Create.async) {
+            await Future<void>.delayed(resourceDuration * 1.2);
+          }
+
+          await expectLater(
+            subscription.cancel(),
+            throwsException,
+          );
         });
 
         test('$groupPrefix.streamFactory.throws', () async {

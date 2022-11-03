@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/future.dart';
+
 /// When listener listens to it, creates a resource object from resource factory function,
 /// and creates a [Stream] from the given factory function and resource as argument.
 /// Finally when the stream finishes emitting items or stream subscription
@@ -90,18 +92,10 @@ class UsingStream<T, R> extends StreamView<T> {
       },
       onPause: () => subscription?.pause(),
       onResume: () => subscription?.resume(),
-      onCancel: () async {
+      onCancel: () {
         final futureOr = resourceCreated ? disposer(resource) : null;
         final cancelFuture = subscription?.cancel();
-
-        final futures = [
-          // ignore: unnecessary_cast
-          if (futureOr is Future<void>) futureOr as Future<void>,
-          if (cancelFuture is Future<void>) cancelFuture,
-        ];
-        if (futures.isNotEmpty) {
-          await Future.wait(futures);
-        }
+        return waitTwoFutures(cancelFuture, futureOr);
       },
     );
 
