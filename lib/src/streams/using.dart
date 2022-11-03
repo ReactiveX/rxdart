@@ -24,13 +24,13 @@ class UsingStream<T, R> extends StreamView<T> {
   /// and then creates a [Stream] from [streamFactory] and resource as argument.
   /// When the Stream terminates, call [disposer] on resource object.
   UsingStream(
-    R Function() resourceFactory,
+    FutureOr<R> Function() resourceFactory,
     Stream<T> Function(R) streamFactory,
     FutureOr<void> Function(R) disposer,
   ) : super(_buildStream(resourceFactory, streamFactory, disposer));
 
   static Stream<T> _buildStream<T, R>(
-    R Function() resourceFactory,
+    FutureOr<R> Function() resourceFactory,
     Stream<T> Function(R) streamFactory,
     FutureOr<void> Function(R) disposer,
   ) {
@@ -39,35 +39,57 @@ class UsingStream<T, R> extends StreamView<T> {
     late R resource;
     StreamSubscription<T>? subscription;
 
+    void useResource(R r) {
+      resource = r;
+      resourceCreated = true;
+
+      Stream<T> stream;
+      try {
+        stream = streamFactory(r);
+      } catch (e, s) {
+        controller.addError(e, s);
+        controller.close();
+        return;
+      }
+
+      subscription = stream.listen(
+        controller.add,
+        onError: controller.addError,
+        onDone: controller.close,
+      );
+    }
+
     controller = StreamController<T>(
       sync: true,
       onListen: () {
+        final FutureOr<R> resourceOrFuture;
         try {
-          resource = resourceFactory();
-          resourceCreated = true;
+          resourceOrFuture = resourceFactory();
         } catch (e, s) {
           controller.addError(e, s);
           controller.close();
           return;
         }
 
-        Stream<T> stream;
-        try {
-          stream = streamFactory(resource);
-        } catch (e, s) {
-          controller.addError(e, s);
-          controller.close();
-          return;
+        if (resourceOrFuture is R) {
+          useResource(resourceOrFuture);
+        } else {
+          resourceOrFuture.then((r) {
+            // if the controller was cancelled before the resource is created,
+            // we should dispose the resource
+            if (!controller.hasListener) {
+              disposer(r);
+            } else {
+              useResource(r);
+            }
+          }).onError<Object>((e, s) {
+            controller.addError(e, s);
+            controller.close();
+          });
         }
-
-        subscription = stream.listen(
-          controller.add,
-          onError: controller.addError,
-          onDone: controller.close,
-        );
       },
-      onPause: () => subscription!.pause(),
-      onResume: () => subscription!.resume(),
+      onPause: () => subscription?.pause(),
+      onResume: () => subscription?.resume(),
       onCancel: () async {
         final futureOr = resourceCreated ? disposer(resource) : null;
         final cancelFuture = subscription?.cancel();

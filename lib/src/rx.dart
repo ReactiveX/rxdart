@@ -970,7 +970,7 @@ abstract class Rx {
   ///       (r) => r.clear(),
   ///     ).listen(print); // prints 1, 2, 3
   static Stream<T> using<T, R>(
-    R Function() resourceFactory,
+    FutureOr<R> Function() resourceFactory,
     Stream<T> Function(R) streamFactory,
     FutureOr<void> Function(R) disposer,
   ) =>
