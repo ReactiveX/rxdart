@@ -1,3 +1,10 @@
+## 0.27.6 (2022-11-11)
+
+* `Rx.using`/`UsingStream`: `resourceFactory` can now return a `Future`.
+  This allows for asynchronous resource creation.
+
+* `Rx.range`/`RangeStream`: ensure `RangeStream` is only listened to once.
+
 ## 0.27.5 (2022-07-16)
 
 ### Bug fixes
