@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
+import 'package:rxdart/src/utils/future.dart';
 
 /// @private
 /// Helper method which forwards the events from an incoming [Stream]
@@ -56,7 +57,7 @@ Stream<R> _forwardMulti<T, R>(
 
       final future = subscription?.cancel();
       subscription = null;
-      return _waitFutures(future, sink.onCancel());
+      return waitTwoFutures(future, sink.onCancel());
     };
   }, isBroadcast: true);
 }
@@ -115,16 +116,10 @@ Stream<R> _forward<T, R>(
     final future = subscription?.cancel();
     subscription = null;
 
-    return _waitFutures(future, sink.onCancel());
+    return waitTwoFutures(future, sink.onCancel());
   };
   return controller.stream;
 }
-
-FutureOr<void> _waitFutures(Future<void>? f1, FutureOr<void> f2) => f1 == null
-    ? f2
-    : f2 is Future<void>
-        ? Future.wait([f1, f2])
-        : f1;
 
 class _MultiControllerSink<T> implements EventSink<T> {
   final MultiStreamController<T> controller;

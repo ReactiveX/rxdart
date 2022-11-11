@@ -1,9 +1,12 @@
 import 'dart:async';
-import 'dart:collection';
 
+import 'package:rxdart/src/utils/future.dart';
+
+/// @internal
 /// Extensions for [Iterable] of [StreamSubscription]s.
 extension StreamSubscriptionsIterableExtensions
     on Iterable<StreamSubscription<void>> {
+  /// @internal
   /// Pause all subscriptions.
   void pauseAll([Future<void>? resumeSignal]) {
     for (final s in this) {
@@ -11,6 +14,7 @@ extension StreamSubscriptionsIterableExtensions
     }
   }
 
+  /// @internal
   /// Resume all subscriptions.
   void resumeAll() {
     for (final s in this) {
@@ -19,30 +23,12 @@ extension StreamSubscriptionsIterableExtensions
   }
 }
 
-/// Extensions for [List] of [StreamSubscription]s.
-extension StreamSubscriptionsListExtension on List<StreamSubscription<void>> {
+/// @internal
+/// Extensions for [Iterable] of [StreamSubscription]s.
+extension StreamSubscriptionsIterableExtension
+    on Iterable<StreamSubscription<void>> {
+  /// @internal
   /// Cancel all subscriptions.
-  Future<void>? cancelAll() {
-    if (isEmpty) {
-      return null;
-    }
-    if (length == 1) {
-      return this[0].cancel();
-    }
-    return Future.wait(map((s) => s.cancel())).then((_) => null);
-  }
-}
-
-/// Extensions for [Queue] of [StreamSubscription]s.
-extension StreamSubscriptionsQueueExtension on Queue<StreamSubscription<void>> {
-  /// Cancel all subscriptions.
-  Future<void>? cancelAll() {
-    if (isEmpty) {
-      return null;
-    }
-    if (length == 1) {
-      return first.cancel();
-    }
-    return Future.wait(map((s) => s.cancel())).then((value) => null);
-  }
+  Future<void>? cancelAll() =>
+      waitFuturesList([for (final s in this) s.cancel()]);
 }

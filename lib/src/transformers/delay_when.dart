@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
+import 'package:rxdart/src/utils/future.dart';
 import 'package:rxdart/src/utils/subscription.dart';
 
 class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
@@ -57,7 +58,7 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
     ];
     subscriptions.clear();
 
-    return futures.isNotEmpty ? Future.wait(futures) : null;
+    return waitFuturesList(futures);
   }
 
   @override
