@@ -837,6 +837,28 @@ void main() {
       expect(i, 1);
     });
 
+    test('do not update latest value after closed', () {
+      final seeded = BehaviorSubject.seeded(0);
+      final unseeded = BehaviorSubject<int>();
+
+      seeded.add(1);
+      unseeded.add(1);
+
+      expect(seeded.value, 1);
+      expect(unseeded.value, 1);
+
+      seeded.close();
+      unseeded.close();
+
+      expect(() => seeded.add(2), throwsStateError);
+      expect(() => unseeded.add(2), throwsStateError);
+      expect(() => seeded.addError(Exception()), throwsStateError);
+      expect(() => unseeded.addError(Exception()), throwsStateError);
+
+      expect(seeded.value, 1);
+      expect(unseeded.value, 1);
+    });
+
     group('override built-in', () {
       test('where', () {
         {

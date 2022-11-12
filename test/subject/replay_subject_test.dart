@@ -430,5 +430,18 @@ void main() {
 
       await subject.close();
     });
+
+    test('do not update buffer after closed', () {
+      final subject = ReplaySubject<int>();
+
+      subject.add(1);
+      expect(subject.values, [1]);
+
+      subject.close();
+
+      expect(() => subject.add(2), throwsStateError);
+      expect(() => subject.addError(Exception()), throwsStateError);
+      expect(subject.values, [1]);
+    });
   });
 }

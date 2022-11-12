@@ -1,3 +1,9 @@
+## Unreleased
+
+### Fixed
+
+- Subject: only call `onAdd` and `onError` if the subject is not closed.
+
 ## 0.27.6 (2022-11-11)
 
 * `Rx.using`/`UsingStream`: `resourceFactory` can now return a `Future`.
