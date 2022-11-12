@@ -852,6 +852,8 @@ void main() {
 
       expect(() => seeded.add(2), throwsStateError);
       expect(() => unseeded.add(2), throwsStateError);
+      expect(() => seeded.addError(Exception()), throwsStateError);
+      expect(() => unseeded.addError(Exception()), throwsStateError);
 
       expect(seeded.value, 1);
       expect(unseeded.value, 1);

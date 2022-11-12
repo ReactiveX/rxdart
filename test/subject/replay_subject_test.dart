@@ -440,6 +440,7 @@ void main() {
       subject.close();
 
       expect(() => subject.add(2), throwsStateError);
+      expect(() => subject.addError(Exception()), throwsStateError);
       expect(subject.values, [1]);
     });
   });
