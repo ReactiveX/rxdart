@@ -82,8 +82,12 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 
   void _addError(Object error, [StackTrace? stackTrace]) {
-    onAddError(error, stackTrace);
+    if (!_controller.isClosed) {
+      onAddError(error, stackTrace);
+    }
 
+    // if the controller is closed, calling addError() will throw an StateError.
+    // that is expected behavior.
     _controller.addError(error, stackTrace);
   }
 
@@ -137,8 +141,12 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 
   void _add(T event) {
-    onAdd(event);
+    if (!_controller.isClosed) {
+      onAdd(event);
+    }
 
+    // if the controller is closed, calling add() will throw an StateError.
+    // that is expected behavior.
     _controller.add(event);
   }
 
