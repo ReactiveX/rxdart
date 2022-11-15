@@ -132,7 +132,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
       _wrapper.setError(error, stackTrace);
 
   @override
-  ValueStream<T> get stream => this;
+  ValueStream<T> get stream => _BehaviorSubjectStream(this);
 
   @override
   bool get hasValue => isNotEmpty(_wrapper.value);
@@ -190,4 +190,60 @@ class _Wrapper<T> {
     errorAndStackTrace = ErrorAndStackTrace(error, stackTrace);
     isValue = false;
   }
+}
+
+class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
+  final BehaviorSubject<T> _subject;
+
+  _BehaviorSubjectStream(this._subject);
+
+  // Override == and hashCode so that new streams returned by the same
+  // subject are considered equal.
+  // The subject returns a new stream each time it's queried,
+  // but doesn't have to cache the result.
+
+  @override
+  int get hashCode => _subject.hashCode ^ 0x35323532;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is _BehaviorSubjectStream &&
+        identical(other._subject, _subject);
+  }
+
+  @override
+  StreamSubscription<T> listen(
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) =>
+      _subject.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+
+  @override
+  Object get error => _subject.error;
+
+  @override
+  Object? get errorOrNull => _subject.errorOrNull;
+
+  @override
+  bool get hasError => _subject.hasError;
+
+  @override
+  bool get hasValue => _subject.hasValue;
+
+  @override
+  StackTrace? get stackTrace => _subject.stackTrace;
+
+  @override
+  T get value => _subject.value;
+
+  @override
+  T? get valueOrNull => _subject.valueOrNull;
 }

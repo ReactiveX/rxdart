@@ -140,6 +140,9 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
       .where((event) => event.errorAndStackTrace != null)
       .map((event) => event.errorAndStackTrace!.stackTrace)
       .toList(growable: false);
+
+  @override
+  ReplayStream<T> get stream => _ReplaySubjectStream(this);
 }
 
 class _Event<T> {
@@ -152,4 +155,47 @@ class _Event<T> {
 
   factory _Event.error(ErrorAndStackTrace e) =>
       _Event._(errorAndStackTrace: e, data: EMPTY);
+}
+
+class _ReplaySubjectStream<T> extends Stream<T> implements ReplayStream<T> {
+  final ReplaySubject<T> _subject;
+
+  _ReplaySubjectStream(this._subject);
+
+  @override
+  List<T> get values => _subject.values;
+
+  @override
+  List<Object> get errors => _subject.errors;
+
+  @override
+  List<StackTrace?> get stackTraces => _subject.stackTraces;
+
+  // Override == and hashCode so that new streams returned by the same
+  // subject are considered equal.
+  // The subject returns a new stream each time it's queried,
+  // but doesn't have to cache the result.
+
+  @override
+  int get hashCode => _subject.hashCode ^ 0x35323532;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is _ReplaySubjectStream && identical(other._subject, _subject);
+  }
+
+  @override
+  StreamSubscription<T> listen(
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) =>
+      _subject.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
 }

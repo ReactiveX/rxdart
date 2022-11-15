@@ -33,7 +33,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 
   @override
-  Stream<T> get stream => this;
+  Stream<T> get stream => _SubjectStream(this);
 
   @override
   ControllerCallback get onPause =>
@@ -166,6 +166,41 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
   }
 }
 
+class _SubjectStream<T> extends Stream<T> {
+  final Subject<T> _subject;
+
+  _SubjectStream(this._subject);
+
+  // Override == and hashCode so that new streams returned by the same
+  // subject are considered equal.
+  // The subject returns a new stream each time it's queried,
+  // but doesn't have to cache the result.
+
+  @override
+  int get hashCode => _subject.hashCode ^ 0x35323532;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is _SubjectStream && identical(other._subject, _subject);
+  }
+
+  @override
+  StreamSubscription<T> listen(
+    void Function(T event)? onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) =>
+      _subject.listen(
+        onData,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+}
+
+/// A class that exposes only the [StreamSink] interface of an object.
 class _StreamSinkWrapper<T> implements StreamSink<T> {
   final StreamController<T> _target;
 
