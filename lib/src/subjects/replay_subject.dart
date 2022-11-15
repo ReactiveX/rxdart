@@ -137,8 +137,8 @@ class ReplaySubject<T> extends Subject<T> implements ReplayStream<T> {
 
   @override
   List<StackTrace?> get stackTraces => _queue
-      .where((event) => event.errorAndStackTrace != null)
-      .map((event) => event.errorAndStackTrace!.stackTrace)
+      .mapNotNull((event) => event.errorAndStackTrace)
+      .map((errorAndStackTrace) => errorAndStackTrace.stackTrace)
       .toList(growable: false);
 
   @override
