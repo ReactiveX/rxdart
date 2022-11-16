@@ -105,33 +105,19 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
     _isAddingStreamItems = true;
 
     final completer = Completer<void>();
-    void complete([Object? _]) {
+    void complete() {
       if (!completer.isCompleted) {
         _isAddingStreamItems = false;
         completer.complete();
       }
     }
 
-    StreamSubscription<void>? subscription;
-    subscription = source.listen(
+    source.listen(
       _add,
       onError: (Object e, StackTrace s) {
+        _addError(e, s);
         if (identical(cancelOnError, true)) {
-          final future = subscription?.cancel();
-          subscription = null;
-
-          void sendErrorAndComplete() {
-            _addError(e, s);
-            complete();
-          }
-
-          if (future != null) {
-            future.whenComplete(sendErrorAndComplete);
-          } else {
-            sendErrorAndComplete();
-          }
-        } else {
-          _addError(e, s);
+          complete();
         }
       },
       onDone: complete,
