@@ -116,6 +116,7 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
       _add,
       onError: (Object e, StackTrace s) {
         _addError(e, s);
+
         if (identical(cancelOnError, true)) {
           complete();
         }
