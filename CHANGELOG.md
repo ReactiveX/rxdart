@@ -4,7 +4,7 @@
 
 * `Subject`
   * Only call `onAdd` and `onError` if the subject is not closed.
-    This ensures `BehaviorSubject` and `ReplaySubject` do not update their value(s) after they have been closed.
+    This ensures `BehaviorSubject` and `ReplaySubject` do not update their values after they have been closed.
 
   * `Subject.stream` now returns a **read-only** `Stream`.
     Previously, `Subject.stream` was identical to the Subject, so we could add events to it, for example: `(subject.stream as Sink<T>).add(event)`.
