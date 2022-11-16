@@ -304,7 +304,7 @@ void main() {
       await expectLater(subject.stream, emitsInOrder(<Object>[1]));
 
       expect(identical(subject.stream, subject.stream), isFalse);
-      expect(subject.stream == subject.stream, isFalse);
+      expect(subject.stream == subject.stream, isTrue);
     });
   });
 }
