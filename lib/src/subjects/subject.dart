@@ -118,13 +118,12 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
     source.listen(
       _add,
-      onError: (Object e, StackTrace s) {
-        _addError(e, s);
-
-        if (identical(cancelOnError, true)) {
-          complete();
-        }
-      },
+      onError: identical(cancelOnError, true)
+          ? (Object e, StackTrace s) {
+              _addError(e, s);
+              complete();
+            }
+          : _addError,
       onDone: complete,
       cancelOnError: cancelOnError,
     );
