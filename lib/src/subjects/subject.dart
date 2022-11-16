@@ -17,8 +17,12 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
 
   /// Constructs a [Subject] which wraps the provided [controller].
   /// This constructor is applicable only for classes that extend [Subject].
+  ///
+  /// To guarantee the contract of a [Subject], the [controller] must be
+  /// a broadcast [StreamController] and the [stream] must be a broadcast [Stream] as well.
   Subject(StreamController<T> controller, Stream<T> stream)
       : _controller = controller,
+        assert(stream.isBroadcast, 'Subject requires a broadcast stream'),
         super(stream);
 
   @override
