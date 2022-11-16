@@ -102,30 +102,41 @@ abstract class Subject<T> extends StreamView<T> implements StreamController<T> {
       throw StateError(
           'You cannot add items while items are being added from addStream');
     }
+    _isAddingStreamItems = true;
 
     final completer = Completer<void>();
-    var isOnDoneCalled = false;
-    void complete() {
-      if (!isOnDoneCalled) {
-        isOnDoneCalled = true;
+    void complete([Object? _]) {
+      if (!completer.isCompleted) {
         _isAddingStreamItems = false;
         completer.complete();
       }
     }
 
-    _isAddingStreamItems = true;
+    StreamSubscription<void>? subscription;
+    subscription = source.listen(
+      _add,
+      onError: (Object e, StackTrace s) {
+        if (identical(cancelOnError, true)) {
+          final future = subscription?.cancel();
+          subscription = null;
 
-    source.listen((T event) {
-      _add(event);
-    }, onError: (Object e, StackTrace s) {
-      _addError(e, s);
+          void sendErrorAndComplete() {
+            _addError(e, s);
+            complete();
+          }
 
-      if (identical(cancelOnError, true)) {
-        complete();
-      }
-    }, onDone: () {
-      complete();
-    }, cancelOnError: cancelOnError);
+          if (future != null) {
+            future.whenComplete(sendErrorAndComplete);
+          } else {
+            sendErrorAndComplete();
+          }
+        } else {
+          _addError(e, s);
+        }
+      },
+      onDone: complete,
+      cancelOnError: cancelOnError,
+    );
 
     return completer.future;
   }
