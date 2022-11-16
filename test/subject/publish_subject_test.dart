@@ -6,8 +6,6 @@ import 'package:test/test.dart';
 
 import '../utils.dart';
 
-typedef AsyncVoidCallBack = Future<void> Function();
-
 void main() {
   group('PublishSubject', () {
     test('emits items to every subscriber', () async {
