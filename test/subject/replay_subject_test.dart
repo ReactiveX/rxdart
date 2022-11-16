@@ -447,7 +447,11 @@ void main() {
     test('stream returns a read-only stream', () async {
       final subject = ReplaySubject<int>()..add(1);
 
+      // streams returned by ReplaySubject are read-only stream,
+      // ie. they don't support adding events.
       expect(subject.stream, isNot(isA<ReplaySubject<int>>()));
+      expect(subject.stream, isNot(isA<Sink<int>>()));
+
       expect(
         subject.stream,
         isA<ReplayStream<int>>().having(
@@ -458,6 +462,8 @@ void main() {
       );
       await expectLater(subject.stream, emitsInOrder(<Object>[1]));
 
+      // streams returned by the same subject are considered equal,
+      // but not identical
       expect(identical(subject.stream, subject.stream), isFalse);
       expect(subject.stream == subject.stream, isTrue);
     });
