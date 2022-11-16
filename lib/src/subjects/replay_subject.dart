@@ -163,6 +163,9 @@ class _ReplaySubjectStream<T> extends Stream<T> implements ReplayStream<T> {
   _ReplaySubjectStream(this._subject);
 
   @override
+  bool get isBroadcast => true;
+
+  @override
   List<T> get values => _subject.values;
 
   @override

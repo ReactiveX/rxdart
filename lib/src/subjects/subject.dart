@@ -171,6 +171,9 @@ class _SubjectStream<T> extends Stream<T> {
 
   _SubjectStream(this._subject);
 
+  @override
+  bool get isBroadcast => true;
+
   // Override == and hashCode so that new streams returned by the same
   // subject are considered equal.
   // The subject returns a new stream each time it's queried,

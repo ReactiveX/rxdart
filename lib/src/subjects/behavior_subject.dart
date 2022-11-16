@@ -197,6 +197,9 @@ class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
 
   _BehaviorSubjectStream(this._subject);
 
+  @override
+  bool get isBroadcast => true;
+
   // Override == and hashCode so that new streams returned by the same
   // subject are considered equal.
   // The subject returns a new stream each time it's queried,
