@@ -1220,5 +1220,36 @@ void main() {
         }
       });
     });
+
+    test('stream returns a read-only stream', () async {
+      final subject = BehaviorSubject<int>()..add(1);
+
+      // streams returned by BehaviorSubject are read-only stream,
+      // ie. they don't support adding events.
+      expect(subject.stream, isNot(isA<BehaviorSubject<int>>()));
+      expect(subject.stream, isNot(isA<Sink<int>>()));
+
+      expect(
+        subject.stream,
+        isA<ValueStream<int>>().having(
+          (v) => v.value,
+          'BehaviorSubject.stream.value',
+          1,
+        ),
+      );
+
+      // BehaviorSubject.stream is a broadcast stream
+      {
+        final stream = subject.stream;
+        expect(stream.isBroadcast, isTrue);
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+      }
+
+      // streams returned by the same subject are considered equal,
+      // but not identical
+      expect(identical(subject.stream, subject.stream), isFalse);
+      expect(subject.stream == subject.stream, isTrue);
+    });
   });
 }
