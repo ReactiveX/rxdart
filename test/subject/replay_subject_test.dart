@@ -460,7 +460,14 @@ void main() {
           [1],
         ),
       );
-      await expectLater(subject.stream, emitsInOrder(<Object>[1]));
+
+      // ReplaySubject.stream is a broadcast stream
+      {
+        final stream = subject.stream;
+        expect(stream.isBroadcast, isTrue);
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+      }
 
       // streams returned by the same subject are considered equal,
       // but not identical

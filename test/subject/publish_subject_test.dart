@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
@@ -304,8 +305,17 @@ void main() {
       expect(subject.stream, isNot(isA<PublishSubject<int>>()));
       expect(subject.stream, isNot(isA<Sink<int>>()));
 
-      scheduleMicrotask(() => subject.add(1));
-      await expectLater(subject.stream, emitsInOrder(<Object>[1]));
+      // PublishSubject.stream is a broadcast stream
+      {
+        final stream = subject.stream;
+        expect(stream.isBroadcast, isTrue);
+
+        scheduleMicrotask(() => subject.add(1));
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+
+        scheduleMicrotask(() => subject.add(1));
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+      }
 
       // streams returned by the same subject are considered equal,
       // but not identical
