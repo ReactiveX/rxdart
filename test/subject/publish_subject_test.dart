@@ -295,5 +295,16 @@ void main() {
       expect(subject.isBroadcast, isTrue);
       expect(stream.isBroadcast, isTrue);
     });
+
+    test('stream returns a read-only stream', () async {
+      final subject = PublishSubject<int>();
+
+      expect(subject.stream, isNot(isA<PublishSubject<int>>()));
+      scheduleMicrotask(() => subject.add(1));
+      await expectLater(subject.stream, emitsInOrder(<Object>[1]));
+
+      expect(identical(subject.stream, subject.stream), isFalse);
+      expect(subject.stream == subject.stream, isFalse);
+    });
   });
 }

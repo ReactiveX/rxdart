@@ -1220,5 +1220,23 @@ void main() {
         }
       });
     });
+
+    test('stream returns a read-only stream', () async {
+      final subject = BehaviorSubject<int>()..add(1);
+
+      expect(subject.stream, isNot(isA<BehaviorSubject<int>>()));
+      expect(
+        subject.stream,
+        isA<ValueStream<int>>().having(
+          (v) => v.value,
+          'BehaviorSubject.stream.value',
+          1,
+        ),
+      );
+      await expectLater(subject.stream, emitsInOrder(<Object>[1]));
+
+      expect(identical(subject.stream, subject.stream), isFalse);
+      expect(subject.stream == subject.stream, isFalse);
+    });
   });
 }
