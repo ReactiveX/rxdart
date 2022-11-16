@@ -443,5 +443,36 @@ void main() {
       expect(() => subject.addError(Exception()), throwsStateError);
       expect(subject.values, [1]);
     });
+
+    test('stream returns a read-only stream', () async {
+      final subject = ReplaySubject<int>()..add(1);
+
+      // streams returned by ReplaySubject are read-only stream,
+      // ie. they don't support adding events.
+      expect(subject.stream, isNot(isA<ReplaySubject<int>>()));
+      expect(subject.stream, isNot(isA<Sink<int>>()));
+
+      expect(
+        subject.stream,
+        isA<ReplayStream<int>>().having(
+          (v) => v.values,
+          'ReplaySubject.stream.values',
+          [1],
+        ),
+      );
+
+      // ReplaySubject.stream is a broadcast stream
+      {
+        final stream = subject.stream;
+        expect(stream.isBroadcast, isTrue);
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+        await expectLater(stream, emitsInOrder(<Object>[1]));
+      }
+
+      // streams returned by the same subject are considered equal,
+      // but not identical
+      expect(identical(subject.stream, subject.stream), isFalse);
+      expect(subject.stream == subject.stream, isTrue);
+    });
   });
 }
