@@ -8,7 +8,7 @@ import 'package:rxdart/src/utils/future.dart';
 /// is cancelled (call [StreamSubscription.cancel] or `Stream.listen(cancelOnError: true)`),
 /// call the disposer function on resource object.
 ///
-/// The [UsingStream] is a way you can instruct an Stream to create
+/// The [UsingStream] is a way you can instruct a Stream to create
 /// a resource that exists only during the lifespan of the Stream
 /// and is disposed of when the Stream terminates.
 ///
