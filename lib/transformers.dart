@@ -16,6 +16,7 @@ export 'src/transformers/end_with.dart';
 export 'src/transformers/end_with_many.dart';
 export 'src/transformers/exhaust_map.dart';
 export 'src/transformers/flat_map.dart';
+export 'src/transformers/flat_map_last.dart';
 export 'src/transformers/group_by.dart';
 export 'src/transformers/ignore_elements.dart';
 export 'src/transformers/interval.dart';
