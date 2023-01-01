@@ -1,8 +1,6 @@
 library test.rx;
 
 import 'streams/combine_latest_test.dart' as combine_latest_test;
-import 'streams/composite_subscription_test.dart'
-    as composite_subscription_test;
 import 'streams/concat_eager_test.dart' as concat_eager_test;
 import 'streams/concat_test.dart' as concat_test;
 import 'streams/defer_test.dart' as defer_test;
@@ -89,6 +87,8 @@ import 'transformers/where_not_null_test.dart' as where_not_null_test;
 import 'transformers/where_type_test.dart' as where_type_test;
 import 'transformers/with_latest_from_test.dart' as with_latest_from_test;
 import 'transformers/zip_with_test.dart' as zip_with_test;
+import 'utils/composite_subscription_test.dart' as composite_subscription_test;
+import 'utils/notification_test.dart' as notification_test;
 
 void main() {
   // Streams
@@ -183,4 +183,5 @@ void main() {
 
   // Utilities
   composite_subscription_test.main();
+  notification_test.main();
 }

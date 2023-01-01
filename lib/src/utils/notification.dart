@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'package:rxdart/src/utils/empty.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
@@ -32,6 +34,7 @@ class Notification<T> {
   /// Constructs a [Notification] which, depending on the [kind], wraps either
   /// [value], or [errorAndStackTrace], or neither if it is just a
   /// [Kind.onData] event.
+  @Deprecated('Use factory constructors instead. Will be removed in v0.28.0')
   const Notification(this.kind, this._value, this.errorAndStackTrace);
 
   /// Constructs a [Notification] with [Kind.onData] and wraps a [value]
@@ -60,8 +63,17 @@ class Notification<T> {
       kind.hashCode ^ _value.hashCode ^ errorAndStackTrace.hashCode;
 
   @override
-  String toString() =>
-      'Notification{kind: $kind, value: $_value, errorAndStackTrace: $errorAndStackTrace}';
+  String toString() {
+    switch (kind) {
+      case Kind.onData:
+        return 'Notification.onData{value: $_value}';
+      case Kind.onDone:
+        return 'Notification.onDone';
+      case Kind.onError:
+        final errorAndSt = errorAndStackTrace!;
+        return 'Notification.onError{error: ${errorAndSt.error}, stackTrace: ${errorAndSt.stackTrace}}';
+    }
+  }
 
   /// A test to determine if this [Notification] wraps an onData event
   bool get isOnData => kind == Kind.onData;
