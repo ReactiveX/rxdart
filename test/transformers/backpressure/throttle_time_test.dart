@@ -15,6 +15,26 @@ void main() {
         emitsInOrder(<dynamic>[1, 4, 7, emitsDone]));
   });
 
+  test('Rx.throttleTime.trailing.empty', () async {
+    await expectLater(
+      Stream<int>.empty().throttleTime(
+        const Duration(milliseconds: 250),
+        leading: false,
+        trailing: true,
+      ),
+      emitsDone,
+    );
+
+    await expectLater(
+      Stream<int>.empty().throttleTime(
+        const Duration(milliseconds: 250),
+        leading: true,
+        trailing: true,
+      ),
+      emitsDone,
+    );
+  });
+
   test('Rx.throttleTime.trailing', () async {
     await expectLater(
         _stream()
@@ -98,5 +118,14 @@ void main() {
     nullableTest<String?>(
       (s) => s.throttleTime(Duration.zero),
     );
+  });
+
+  test('issue/709 throttled stream closes', () async {
+    final c = StreamController<String>();
+    unawaited(Future<void>.delayed(Duration(milliseconds: 500))
+        .then<void>((f) => c.close()));
+
+    final s = c.stream.throttleTime(Duration(milliseconds: 100));
+    await for (var _ in s) {}
   });
 }

@@ -54,7 +54,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   @override
   void onData(S data) {
     _hasData = true;
-    maybeCreateWindow(data, sink);
+    maybeCreateWindow(data);
 
     if (skip == 0) {
       queue.add(data);
@@ -68,7 +68,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
       skip--;
     }
 
-    maybeCloseWindow(sink);
+    maybeCloseWindow();
   }
 
   @override
@@ -79,20 +79,27 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     _mainClosed = true;
 
     if (_strategy == WindowStrategy.eventAfterLastWindow) {
+      resolveWindowEnd(isControllerClosing: true, isWindowClosed: false);
       return;
     }
 
     // treat the final event as a Window that opens
     // and immediately closes again
     if (_dispatchOnClose && queue.isNotEmpty) {
-      resolveWindowStart(queue.last, sink);
+      resolveWindowStart(queue.last);
     }
 
-    resolveWindowEnd(sink, true);
+    resolveWindowEnd(isControllerClosing: true, isWindowClosed: false);
 
+    clearAndClose();
+  }
+
+  void clearAndClose() {
     queue.clear();
 
     _windowSubscription?.cancel();
+    _windowSubscription = null;
+
     sink.close();
   }
 
@@ -108,33 +115,33 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   @override
   void onResume() => _windowSubscription?.resume();
 
-  void maybeCreateWindow(S event, EventSink<T> sink) {
+  void maybeCreateWindow(S event) {
     switch (_strategy) {
       // for example throttle
       case WindowStrategy.eventAfterLastWindow:
         if (_windowSubscription != null) return;
 
-        _windowSubscription = singleWindow(event, sink);
+        _windowSubscription = singleWindow(event);
 
-        resolveWindowStart(event, sink);
+        resolveWindowStart(event);
 
         break;
       // for example scan
       case WindowStrategy.firstEventOnly:
         if (_windowSubscription != null) return;
 
-        _windowSubscription = multiWindow(event, sink);
+        _windowSubscription = multiWindow(event);
 
-        resolveWindowStart(event, sink);
+        resolveWindowStart(event);
 
         break;
       // for example debounce
       case WindowStrategy.everyEvent:
         _windowSubscription?.cancel();
 
-        _windowSubscription = singleWindow(event, sink);
+        _windowSubscription = singleWindow(event);
 
-        resolveWindowStart(event, sink);
+        resolveWindowStart(event);
 
         break;
       case WindowStrategy.onHandler:
@@ -142,29 +149,31 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     }
   }
 
-  void maybeCloseWindow(EventSink<T> sink) {
+  void maybeCloseWindow() {
     if (_closeWindowWhen != null && _closeWindowWhen!(unmodifiableQueue)) {
-      resolveWindowEnd(sink);
+      resolveWindowEnd(isControllerClosing: false, isWindowClosed: false);
     }
   }
 
-  StreamSubscription<dynamic> singleWindow(S event, EventSink<T> sink) =>
-      buildStream(event, sink).take(1).listen(
+  StreamSubscription<dynamic> singleWindow(S event) =>
+      buildStream(event).take(1).listen(
             null,
             onError: sink.addError,
-            onDone: () => resolveWindowEnd(sink, _mainClosed),
+            onDone: () => resolveWindowEnd(
+                isControllerClosing: _mainClosed, isWindowClosed: true),
           );
 
   // opens a new Window which is kept open until the main Stream
   // closes.
-  StreamSubscription<dynamic> multiWindow(S event, EventSink<T> sink) =>
-      buildStream(event, sink).listen(
-        (dynamic _) => resolveWindowEnd(sink),
+  StreamSubscription<dynamic> multiWindow(S event) => buildStream(event).listen(
+        (dynamic _) => resolveWindowEnd(
+            isControllerClosing: _mainClosed, isWindowClosed: false),
         onError: sink.addError,
-        onDone: () => resolveWindowEnd(sink),
+        onDone: () => resolveWindowEnd(
+            isControllerClosing: _mainClosed, isWindowClosed: true),
       );
 
-  Stream<dynamic> buildStream(S event, EventSink<T> sink) {
+  Stream<dynamic> buildStream(S event) {
     Stream stream;
 
     _windowSubscription?.cancel();
@@ -174,27 +183,38 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     return stream;
   }
 
-  void resolveWindowStart(S event, EventSink<T> sink) {
+  void resolveWindowStart(S event) {
     if (_onWindowStart != null) {
       sink.add(_onWindowStart!(event));
     }
   }
 
-  void resolveWindowEnd(EventSink<T> sink, [bool isControllerClosing = false]) {
+  void resolveWindowEnd({
+    required bool isControllerClosing,
+    required bool isWindowClosed,
+  }) {
     if (isControllerClosing &&
         _strategy == WindowStrategy.eventAfterLastWindow) {
-      if (_dispatchOnClose &&
-          _hasData &&
-          queue.length > 1 &&
-          _onWindowEnd != null) {
+      // has no last data, close immediately
+      if (!_hasData || queue.length == 1) {
+        clearAndClose();
+        return;
+      }
+
+      // once the Stream has emitted done event, there may still be a pending data
+      // waiting to be emitted. If so, wait for the window to end and then
+      // emit it.
+      if (!isWindowClosed) {
+        // defer until the window closes
+        return;
+      }
+
+      // send the last event
+      if (_dispatchOnClose && _onWindowEnd != null) {
         sink.add(_onWindowEnd!(unmodifiableQueue));
       }
 
-      queue.clear();
-      _windowSubscription?.cancel();
-      _windowSubscription = null;
-
-      sink.close();
+      clearAndClose();
       return;
     }
 
