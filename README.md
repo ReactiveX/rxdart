@@ -117,7 +117,7 @@ The extension methods provided by RxDart can be used on any `Stream`. They conve
 ```dart
 Stream.fromIterable([1, 2, 3])
   .throttleTime(Duration(seconds: 1))
-  .listen(print); // prints 3
+  .listen(print); // prints 1
 ``` 
 
 #### List of Extension Methods
