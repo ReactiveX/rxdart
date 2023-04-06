@@ -11,7 +11,8 @@ dependencies:
     sdk: flutter
   rxdart:
     path: ../../../
-  http: ^0.13.3
+  http: ^0.13.4
+  flutter_spinkit: ^5.1.0
 
 dev_dependencies:
   flutter_lints: ^1.0.4
