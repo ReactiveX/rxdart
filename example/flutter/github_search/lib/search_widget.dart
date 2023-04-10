@@ -51,31 +51,36 @@ class SearchScreenState extends State<SearchScreen> {
         final state = snapshot.requireData;
 
         return Scaffold(
-          body: Stack(
-            children: <Widget>[
-              Flex(direction: Axis.vertical, children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
+          appBar: AppBar(
+            title: const Text('Search on Github'),
+            centerTitle: true,
+          ),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       hintText: 'Search Github...',
-                    ),
-                    style: const TextStyle(
-                      fontSize: 36.0,
-                      fontFamily: 'Hind',
-                      decoration: TextDecoration.none,
-                    ),
-                    onChanged: bloc.onTextChanged.add,
+                      contentPadding: const EdgeInsets.all(14),
+                      prefixIcon: const Icon(Icons.search)),
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontFamily: 'Hind',
+                    decoration: TextDecoration.none,
                   ),
+                  onChanged: bloc.onTextChanged.add,
                 ),
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _buildChild(state),
-                  ),
-                )
-              ])
+              ),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _buildChild(state),
+                ),
+              ),
             ],
           ),
         );
