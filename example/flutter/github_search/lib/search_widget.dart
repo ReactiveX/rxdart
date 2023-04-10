@@ -75,7 +75,6 @@ class SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
