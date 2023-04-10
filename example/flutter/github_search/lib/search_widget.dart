@@ -49,37 +49,68 @@ class SearchScreenState extends State<SearchScreen> {
       initialData: SearchNoTerm(),
       builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
         final state = snapshot.requireData;
-
         return Scaffold(
-          body: Stack(
-            children: <Widget>[
-              Flex(direction: Axis.vertical, children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 4.0),
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Search Github...',
-                    ),
-                    style: const TextStyle(
-                      fontSize: 36.0,
-                      fontFamily: 'Hind',
-                      decoration: TextDecoration.none,
-                    ),
-                    onChanged: bloc.onTextChanged.add,
-                  ),
+          appBar: AppBar(
+            title: const Text('RxDart Github Search'),
+            centerTitle: true,
+          ),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: _buildSearchBar(),
+              ),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _buildChild(state),
                 ),
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _buildChild(state),
-                  ),
-                )
-              ])
+              ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 10,
+          ),
+          const Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: TextField(
+              textAlignVertical: TextAlignVertical.center,
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontFamily: 'Hind',
+                decoration: TextDecoration.none,
+              ),
+              decoration: const InputDecoration.collapsed(
+                border: InputBorder.none,
+                hintText: 'Search Github...',
+              ),
+              onChanged: bloc.onTextChanged.add,
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+      ),
     );
   }
 
