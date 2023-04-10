@@ -22,7 +22,7 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
 
-      - uses: subosito/flutter-action@v2.4.0
+      - uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
 
