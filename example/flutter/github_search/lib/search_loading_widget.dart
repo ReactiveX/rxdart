@@ -9,7 +9,7 @@ class LoadingWidget extends StatelessWidget {
     return Container(
       alignment: FractionalOffset.center,
       child: SpinKitCircle(
-        color: Colors.green[100],
+        color: Theme.of(context).colorScheme.secondary,
       ),
     );
   }
