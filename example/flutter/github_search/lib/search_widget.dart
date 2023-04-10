@@ -49,7 +49,6 @@ class SearchScreenState extends State<SearchScreen> {
       initialData: SearchNoTerm(),
       builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
         final state = snapshot.requireData;
-
         return Scaffold(
           appBar: AppBar(
             title: const Text('RxDart Github Search'),
@@ -59,21 +58,7 @@ class SearchScreenState extends State<SearchScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(12),
-                child: TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      hintText: 'Search Github...',
-                      contentPadding: const EdgeInsets.all(15),
-                      prefixIcon: const Icon(Icons.search)),
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontFamily: 'Hind',
-                    decoration: TextDecoration.none,
-                  ),
-                  onChanged: bloc.onTextChanged.add,
-                ),
+                child: _buildSearchBar(),
               ),
               Expanded(
                 child: AnimatedSwitcher(
@@ -85,6 +70,47 @@ class SearchScreenState extends State<SearchScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      height: 50,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 10,
+          ),
+          const Icon(
+            Icons.person_search,
+            color: Colors.white,
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: TextFormField(
+              textAlignVertical: TextAlignVertical.center,
+              textInputAction: TextInputAction.search,
+              style: const TextStyle(
+                fontSize: 14.0,
+                fontFamily: 'Hind',
+                decoration: TextDecoration.none,
+              ),
+              decoration: const InputDecoration.collapsed(
+                border: InputBorder.none,
+                hintText: 'Search Github...',
+              ),
+              onChanged: bloc.onTextChanged.add,
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+      ),
     );
   }
 
