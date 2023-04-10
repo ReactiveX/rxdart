@@ -75,7 +75,7 @@ class SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      height: 50,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -83,18 +83,18 @@ class SearchScreenState extends State<SearchScreen> {
             width: 10,
           ),
           const Icon(
-            Icons.person_search,
+            Icons.search,
             color: Colors.white,
           ),
           const SizedBox(
             width: 10,
           ),
           Expanded(
-            child: TextFormField(
+            child: TextField(
               textAlignVertical: TextAlignVertical.center,
               textInputAction: TextInputAction.search,
               style: const TextStyle(
-                fontSize: 14.0,
+                fontSize: 18.0,
                 fontFamily: 'Hind',
                 decoration: TextDecoration.none,
               ),
