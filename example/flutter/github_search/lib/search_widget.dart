@@ -52,7 +52,7 @@ class SearchScreenState extends State<SearchScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Search on Github'),
+            title: const Text('RxDart Github Search'),
             centerTitle: true,
           ),
           body: Column(
@@ -65,7 +65,7 @@ class SearchScreenState extends State<SearchScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       hintText: 'Search Github...',
-                      contentPadding: const EdgeInsets.all(14),
+                      contentPadding: const EdgeInsets.all(15),
                       prefixIcon: const Icon(Icons.search)),
                   style: const TextStyle(
                     fontSize: 16.0,
