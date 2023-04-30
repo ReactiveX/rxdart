@@ -191,7 +191,7 @@ Dart provides the [StreamController](https://api.dart.dev/stable/dart-async/Stre
  
 - [BehaviorSubject](https://pub.dev/documentation/rxdart/latest/rx/BehaviorSubject-class.html) - A broadcast StreamController that caches the latest added value or error. When a new listener subscribes to the Stream, the latest value or error will be emitted to the listener. Furthermore, you can synchronously read the last emitted value. 
 - [ReplaySubject](https://pub.dev/documentation/rxdart/latest/rx/ReplaySubject-class.html) - A broadcast StreamController that caches the added values. When a new listener subscribes to the Stream, the cached values will be emitted to the listener.
-- [PublishSubject](https://pub.dev/documentation/rxdart/latest/rx/PublishSubject-class.html) - A broadcast StreamController that emits data only to active listeners. When a new listener subscribes to the Stream, it will only receive values added to the PublishSubject after the subscription. Previous values added to the PublishSubject before the subscription will not be emitted to the new listener.
+- [PublishSubject](https://pub.dev/documentation/rxdart/latest/rx/PublishSubject-class.html) - A broadcast StreamController that emits values only to active listeners. When a new listener subscribes to the Stream, it will only receive values added to the PublishSubject after the subscription. Previous values added to the PublishSubject before the subscription will not be emitted to the new listener.
 
 
 ## Rx Observables vs Dart Streams
