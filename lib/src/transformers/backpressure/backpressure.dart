@@ -25,7 +25,7 @@ enum WindowStrategy {
 
 class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   final WindowStrategy _strategy;
-  final Stream<dynamic> Function(S event)? _windowStreamFactory;
+  final Stream<void> Function(S event)? _windowStreamFactory;
   final T Function(S event)? _onWindowStart;
   final T Function(List<S> queue)? _onWindowEnd;
   final int _startBufferEvery;
@@ -164,8 +164,8 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
         onDone: () => resolveWindowEnd(sink),
       );
 
-  Stream<dynamic> buildStream(S event, EventSink<T> sink) {
-    Stream stream;
+  Stream<void> buildStream(S event, EventSink<T> sink) {
+    Stream<void> stream;
 
     _windowSubscription?.cancel();
 

@@ -20,7 +20,7 @@ class WindowStreamTransformer<T>
   /// emits this [Stream] whenever [window] fires an event.
   ///
   /// The [Stream] is recreated and starts empty upon every [window] event.
-  WindowStreamTransformer(Stream Function(T event) window)
+  WindowStreamTransformer(Stream<void> Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (queue) => Stream.fromIterable(queue),
             ignoreEmptyWindows: false);
@@ -103,7 +103,7 @@ extension WindowExtensions<T> on Stream<T> {
   ///       .window(Stream.periodic(Duration(milliseconds: 160), (i) => i))
   ///       .asyncMap((stream) => stream.toList())
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Stream<Stream<T>> window(Stream window) =>
+  Stream<Stream<T>> window(Stream<void> window) =>
       WindowStreamTransformer<T>((_) => window).bind(this);
 
   /// Buffers a number of values from the source Stream by [count] then emits

@@ -18,7 +18,7 @@ class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   void onDone() => sink.close();
 
   @override
-  FutureOr onCancel() {}
+  FutureOr<void> onCancel() {}
 
   @override
   void onListen() {

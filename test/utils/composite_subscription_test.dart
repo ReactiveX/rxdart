@@ -62,7 +62,7 @@ void main() {
         final done = composite.clear();
 
         expect(stream, neverEmits(anything));
-        expect(done, isA<Future>());
+        expect(done, isA<Future<void>>());
       });
 
       test(
@@ -88,7 +88,7 @@ void main() {
         final done = composite.dispose();
 
         expect(stream, neverEmits(anything));
-        expect(done, isA<Future>());
+        expect(done, isA<Future<void>>());
       });
 
       test('should cancel all subscriptions when calling cancel()', () {
@@ -103,7 +103,7 @@ void main() {
         final done = composite.cancel();
 
         expect(stream, neverEmits(anything));
-        expect(done, isA<Future>());
+        expect(done, isA<Future<void>>());
       });
 
       test(
@@ -160,7 +160,7 @@ void main() {
         final done = composite.remove(subscription);
 
         expect(stream, neverEmits(anything));
-        expect(done, isA<Future>());
+        expect(done, isA<Future<void>>());
       });
 
       test(

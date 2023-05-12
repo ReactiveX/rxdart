@@ -48,7 +48,7 @@ class _ExhaustMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr onCancel() => _mapperSubscription?.cancel();
+  FutureOr<void> onCancel() => _mapperSubscription?.cancel();
 
   @override
   void onListen() {}

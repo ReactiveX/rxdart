@@ -19,7 +19,7 @@ class BufferStreamTransformer<T>
   /// emits this [List] whenever [window] fires an event.
   ///
   /// The [List] is cleared upon every [window] event.
-  BufferStreamTransformer(Stream Function(T event) window)
+  BufferStreamTransformer(Stream<void> Function(T event) window)
       : super(WindowStrategy.firstEventOnly, window,
             onWindowEnd: (queue) => queue, ignoreEmptyWindows: false);
 }
@@ -98,7 +98,7 @@ extension BufferExtensions<T> on Stream<T> {
   ///     Stream.periodic(Duration(milliseconds: 100), (i) => i)
   ///       .buffer(Stream.periodic(Duration(milliseconds: 160), (i) => i))
   ///       .listen(print); // prints [0, 1] [2, 3] [4, 5] ...
-  Stream<List<T>> buffer(Stream window) =>
+  Stream<List<T>> buffer(Stream<void> window) =>
       BufferStreamTransformer<T>((_) => window).bind(this);
 
   /// Buffers a number of values from the source Stream by [count] then
