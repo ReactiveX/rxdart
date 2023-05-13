@@ -23,7 +23,7 @@ class ThrottleStreamTransformer<T> extends BackpressureStreamTransformer<T, T> {
   /// If [leading] is true, then the first item in each window is emitted.
   /// If [trailing] is true, then the last item in each window is emitted.
   ThrottleStreamTransformer(
-    Stream Function(T event) window, {
+    Stream<void> Function(T event) window, {
     bool trailing = false,
     bool leading = true,
   }) : super(
@@ -51,7 +51,7 @@ extension ThrottleExtensions<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1, 2, 3])
   ///       .throttle((_) => TimerStream(true, Duration(seconds: 1)));
-  Stream<T> throttle(Stream Function(T event) window,
+  Stream<T> throttle(Stream<void> Function(T event) window,
           {bool trailing = false, bool leading = true}) =>
       ThrottleStreamTransformer<T>(
         window,

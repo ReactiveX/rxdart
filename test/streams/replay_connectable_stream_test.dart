@@ -158,7 +158,7 @@ void main() {
           StreamController<void>(onCancel: () => isCanceled = true);
       final stream = controller.stream.shareReplay();
 
-      StreamSubscription subscription;
+      StreamSubscription<void> subscription;
       subscription = stream.listen(null);
 
       await subscription.cancel();

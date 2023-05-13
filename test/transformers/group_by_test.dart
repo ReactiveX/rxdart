@@ -159,7 +159,7 @@ void main() {
   test('Rx.groupBy.pause.resume', () async {
     {
       var count = 0;
-      late StreamSubscription subscription;
+      late StreamSubscription<void> subscription;
 
       subscription = Stream.fromIterable([1, 2, 3, 4])
           .groupBy((value) => value)
@@ -177,7 +177,7 @@ void main() {
 
     {
       var count = 0;
-      late StreamSubscription subscription;
+      late StreamSubscription<void> subscription;
 
       subscription = Stream.fromIterable([1, 2, 3, 4])
           .groupBy(

@@ -29,7 +29,7 @@ class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
   void onDone() => sink.close();
 
   @override
-  FutureOr onCancel() {}
+  FutureOr<void> onCancel() {}
 
   @override
   void onListen() => _stopwatch.start();

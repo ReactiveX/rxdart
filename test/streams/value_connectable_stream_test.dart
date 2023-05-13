@@ -193,7 +193,7 @@ void main() {
             StreamController<void>(onCancel: () => isCanceled = true);
         final stream = controller.stream.shareValue();
 
-        StreamSubscription subscription;
+        StreamSubscription<void> subscription;
         subscription = stream.listen(null);
 
         await subscription.cancel();
@@ -207,7 +207,7 @@ void main() {
             StreamController<void>(onCancel: () => isCanceled = true);
         final stream = controller.stream.shareValueSeeded(null);
 
-        StreamSubscription subscription;
+        StreamSubscription<void> subscription;
         subscription = stream.listen(null);
 
         await subscription.cancel();

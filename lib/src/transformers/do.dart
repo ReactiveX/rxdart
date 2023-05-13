@@ -71,7 +71,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
   }
 
   @override
-  FutureOr onCancel() => _onCancel?.call();
+  FutureOr<void> onCancel() => _onCancel?.call();
 
   @override
   void onListen() {
