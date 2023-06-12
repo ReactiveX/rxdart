@@ -1251,5 +1251,41 @@ void main() {
       expect(identical(subject.stream, subject.stream), isFalse);
       expect(subject.stream == subject.stream, isTrue);
     });
+
+    test('isLatestValue returns false for an unseeded subject after addError', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      subject.add(1);
+      subject.addError('error');
+
+      expect(subject.isLatestValue, isFalse);
+    });
+
+    test('isLatestValue returns false for a seeded subject after addError', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(1);
+
+      subject.addError('error');
+
+      expect(subject.isLatestValue, isFalse);
+    });
+
+    test('isLatestValue returns true for an seeded subject', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>.seeded(1);
+
+      expect(subject.isLatestValue, isTrue);
+    });
+
+    test('isLatestValue returns true after data event', () {
+      // ignore: close_sinks
+      final subject = BehaviorSubject<int>();
+
+      subject.addError('error');
+      subject.add(1);
+
+      expect(subject.isLatestValue, isTrue);
+    });
   });
 }

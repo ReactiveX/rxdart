@@ -12,6 +12,9 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Returns `true` when [value] is available.
   bool get hasValue;
 
+  /// Returns `true` when last emitted data in the [ValueStream] was [value]
+  bool get isLatestValue;
+
   /// Returns last emitted error, failing if there is no error.
   ///
   /// Throws [ValueStreamError] if this Stream has no error.

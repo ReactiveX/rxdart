@@ -138,6 +138,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   bool get hasValue => isNotEmpty(_wrapper.value);
 
   @override
+  bool get isLatestValue => _wrapper.isValue;
+
+  @override
   T get value {
     final value = _wrapper.value;
     if (isNotEmpty(value)) {
@@ -240,6 +243,9 @@ class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
 
   @override
   bool get hasValue => _subject.hasValue;
+
+  @override
+  bool get isLatestValue => _subject.isLatestValue;
 
   @override
   StackTrace? get stackTrace => _subject.stackTrace;

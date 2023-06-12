@@ -155,6 +155,9 @@ class ValueConnectableStream<T>
   bool get hasValue => _subject.hasValue;
 
   @override
+  bool get isLatestValue => _subject.isLatestValue;
+
+  @override
   T get value => _subject.value;
 
   @override

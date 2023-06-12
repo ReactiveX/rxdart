@@ -169,6 +169,8 @@ void main() {
           expect(stream.value, 3);
           expect(stream.hasValue, isTrue);
 
+          expect(stream.isLatestValue, isFalse);
+
           expect(stream.errorOrNull, error);
           expect(stream.error, error);
           expect(stream.hasError, isTrue);
