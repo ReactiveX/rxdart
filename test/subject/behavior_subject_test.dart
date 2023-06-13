@@ -1251,5 +1251,92 @@ void main() {
       expect(identical(subject.stream, subject.stream), isFalse);
       expect(subject.stream == subject.stream, isTrue);
     });
+
+    group('lastEventOrNull', () {
+      test('empty subject', () {
+        final s = BehaviorSubject<int>();
+        expect(s.lastEventOrNull, isNull);
+        expect(s.isLastEventValue, isFalse);
+        expect(s.isLastEventError, isFalse);
+      });
+
+      test('subject with value', () {
+        final s = BehaviorSubject<int>.seeded(42);
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.isLastEventValue, isTrue);
+        expect(s.isLastEventError, isFalse);
+      });
+
+      test('subject with error', () {
+        final s = BehaviorSubject<int>();
+        final exception = Exception();
+        s.addError(exception, StackTrace.empty);
+
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.isLastEventValue, isFalse);
+        expect(s.isLastEventError, isTrue);
+      });
+
+      test('add error and then value', () {
+        final s = BehaviorSubject<int>();
+        final exception = Exception();
+        s.addError(exception, StackTrace.empty);
+        s.add(42);
+
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.isLastEventValue, isTrue);
+        expect(s.isLastEventError, isFalse);
+      });
+
+      test('add value and then error', () {
+        final s = BehaviorSubject<int>();
+        s.add(42);
+        final exception = Exception();
+        s.addError(exception, StackTrace.empty);
+
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.isLastEventValue, isFalse);
+        expect(s.isLastEventError, isTrue);
+      });
+
+      test('add value and then close', () async {
+        final s = BehaviorSubject<int>();
+        s.add(42);
+        await s.close();
+
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.isLastEventValue, isTrue);
+        expect(s.isLastEventError, isFalse);
+      });
+
+      test('add error and then close', () async {
+        final s = BehaviorSubject<int>();
+        final exception = Exception();
+        s.addError(exception, StackTrace.empty);
+        await s.close();
+
+        expect(
+          s.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.isLastEventValue, isFalse);
+        expect(s.isLastEventError, isTrue);
+      });
+    });
   });
 }

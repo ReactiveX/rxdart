@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/src/streams/replay_stream.dart';
 import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/src/utils/notification.dart';
 import 'package:rxdart/subjects.dart';
 
 /// A ConnectableStream resembles an ordinary Stream, except that it
@@ -171,6 +172,9 @@ class ValueConnectableStream<T>
 
   @override
   StackTrace? get stackTrace => _subject.stackTrace;
+
+  @override
+  Notification<T>? get lastEventOrNull => _subject.lastEventOrNull;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into

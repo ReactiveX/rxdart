@@ -1,3 +1,5 @@
+import 'package:rxdart/rxdart.dart';
+
 /// An [Stream] that provides synchronous access to the last emitted item
 abstract class ValueStream<T> implements Stream<T> {
   /// Returns the last emitted value, failing if there is no value.
@@ -26,6 +28,19 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Returns [StackTrace] of the last emitted error,
   /// or `null` if no error added or the added error has no [StackTrace].
   StackTrace? get stackTrace;
+
+  /// Returns the last emitted event (either data/value or error),
+  /// or `null` if no event has been emitted yet.
+  Notification<T>? get lastEventOrNull;
+}
+
+/// Extension methods on [ValueStream] related to [lastEventOrNull].
+extension ValueStreamLastEventExtensions<T> on ValueStream<T> {
+  /// Returns `true` if the last emitted event is an data (an value).
+  bool get isLastEventValue => lastEventOrNull?.isOnData ?? false;
+
+  /// Returns `true` if the last emitted event is an error.
+  bool get isLastEventError => lastEventOrNull?.isOnError ?? false;
 }
 
 enum _MissingCase {
