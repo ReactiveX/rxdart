@@ -181,7 +181,7 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
     // error event
     final errorAndSt = _wrapper.errorAndStackTrace;
     if (errorAndSt != null) {
-      return Notification.onError(errorAndSt.error, errorAndSt.stackTrace);
+      return Notification.onErrorFrom(errorAndStackTrace: errorAndSt);
     }
 
     // no event

@@ -1,4 +1,4 @@
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart/src/utils/notification.dart';
 
 /// A [Stream] that provides synchronous access to the last emitted value (aka. data event).
 abstract class ValueStream<T> implements Stream<T> {
