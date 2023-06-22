@@ -1,45 +1,55 @@
 import 'package:rxdart/rxdart.dart';
 
-/// An [Stream] that provides synchronous access to the last emitted item
+/// A [Stream] that provides synchronous access to the last emitted value (aka. data event).
 abstract class ValueStream<T> implements Stream<T> {
   /// Returns the last emitted value, failing if there is no value.
   /// See [hasValue] to determine whether [value] has already been set.
   ///
   /// Throws [ValueStreamError] if this Stream has no value.
+  ///
+  /// See also [valueOrNull].
   T get value;
 
-  /// Returns either [value], or `null`, should [value] not yet have been set.
+  /// Returns the last emitted value, or `null` if value events haven't yet been emitted.
   T? get valueOrNull;
 
-  /// Returns `true` when [value] is available.
+  /// Returns `true` when [value] is available,
+  /// meaning this Stream has emitted at least one value.
   bool get hasValue;
 
   /// Returns last emitted error, failing if there is no error.
+  /// See [hasError] to determine whether [error] has already been set.
   ///
   /// Throws [ValueStreamError] if this Stream has no error.
+  ///
+  /// See also [errorOrNull].
   Object get error;
 
-  /// Last emitted error, or `null` if no error added.
+  /// Returns the last emitted error, or `null` if error events haven't yet been emitted.
   Object? get errorOrNull;
 
-  /// Returns `true` when [error] is available.
+  /// Returns `true` when [error] is available,
+  /// meaning this Stream has emitted at least one error.
   bool get hasError;
 
-  /// Returns [StackTrace] of the last emitted error,
-  /// or `null` if no error added or the added error has no [StackTrace].
+  /// Returns [StackTrace] of the last emitted error.
+  ///
+  /// If error events haven't yet been emitted,
+  /// or the last emitted error didn't have a stack trace,
+  /// the returned value is `null`.
   StackTrace? get stackTrace;
 
-  /// Returns the last emitted event (either data/value or error),
-  /// or `null` if no event has been emitted yet.
+  /// Returns the last emitted event (either data/value or error event).
+  /// `null` if no value or error events have been emitted yet.
   Notification<T>? get lastEventOrNull;
 }
 
 /// Extension methods on [ValueStream] related to [lastEventOrNull].
-extension ValueStreamLastEventExtensions<T> on ValueStream<T> {
-  /// Returns `true` if the last emitted event is an data (an value).
+extension LastEventValueStreamExtensions<T> on ValueStream<T> {
+  /// Returns `true` if the last emitted event is a data event (aka. a value event).
   bool get isLastEventValue => lastEventOrNull?.isOnData ?? false;
 
-  /// Returns `true` if the last emitted event is an error.
+  /// Returns `true` if the last emitted event is an error event.
   bool get isLastEventError => lastEventOrNull?.isOnError ?? false;
 }
 
