@@ -15,13 +15,17 @@ enum Kind {
   onError
 }
 
+/// This is an alias for [RxNotification].
+@Deprecated('Use RxNotification<T> instead. Will be removed in v0.29.0')
+typedef Notification<T> = RxNotification<T>;
+
 /// A class that encapsulates the [Kind] of event, value of the event in case of
 /// onData, or the Error in the case of onError.
 
 /// A container object that wraps the [Kind] of event (OnData, OnDone, OnError),
 /// and the item or error that was emitted. In the case of onDone, no data is
 /// emitted as part of the [Notification].
-class Notification<T> {
+class RxNotification<T> {
   /// References the [Kind] of this [Notification] event.
   final Kind kind;
 
@@ -31,31 +35,37 @@ class Notification<T> {
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace? errorAndStackTrace;
 
-  const Notification._(this.kind, this._value, this.errorAndStackTrace);
+  const RxNotification._(this.kind, this._value, this.errorAndStackTrace);
+
+  /// Constructs a [Notification] which, depending on the [kind].
+  /// This is an internal constructor, and should not be used directly.
+  /// Use factory constructors instead. Will be removed in v0.29.0.
+  @Deprecated('Use factory constructors instead. Will be removed in v0.29.0')
+  const RxNotification(this.kind, this._value, this.errorAndStackTrace);
 
   /// Constructs a [Notification] with [Kind.onData] and wraps a [value]
-  factory Notification.onData(T value) =>
-      Notification<T>._(Kind.onData, value, null);
+  factory RxNotification.onData(T value) =>
+      RxNotification<T>._(Kind.onData, value, null);
 
   /// Constructs a [Notification] with [Kind.onDone].
-  factory Notification.onDone() =>
-      const Notification<Never>._(Kind.onDone, EMPTY, null);
+  factory RxNotification.onDone() =>
+      RxNotification<Never>._(Kind.onDone, EMPTY, null);
 
   /// Constructs a [Notification] with [Kind.onError] and wraps an [error] and [stackTrace]
-  factory Notification.onError(Object error, StackTrace? stackTrace) =>
-      Notification<Never>._(
+  factory RxNotification.onError(Object error, StackTrace? stackTrace) =>
+      RxNotification<Never>._(
           Kind.onError, EMPTY, ErrorAndStackTrace(error, stackTrace));
 
   /// @internal
   /// Constructs a [Notification] with [Kind.onError] and wraps an [errorAndStackTrace].
-  factory Notification.onErrorFrom(
+  factory RxNotification.onErrorFrom(
           {required ErrorAndStackTrace errorAndStackTrace}) =>
-      Notification<T>._(Kind.onError, EMPTY, errorAndStackTrace);
+      RxNotification<Never>._(Kind.onError, EMPTY, errorAndStackTrace);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Notification &&
+      other is RxNotification &&
           runtimeType == other.runtimeType &&
           kind == other.kind &&
           _value == other._value &&

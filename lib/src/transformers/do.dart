@@ -8,7 +8,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
   final FutureOr<void> Function()? _onCancel;
   final void Function(S event)? _onData;
   final void Function()? _onDone;
-  final void Function(Notification<S> notification)? _onEach;
+  final void Function(RxNotification<S> notification)? _onEach;
   final void Function(Object, StackTrace)? _onError;
   final void Function()? _onListen;
   final void Function()? _onPause;
@@ -33,7 +33,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(Notification.onData(data));
+      _onEach?.call(RxNotification.onData(data));
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -48,7 +48,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(Notification.onError(e, st));
+      _onEach?.call(RxNotification.onError(e, st));
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -63,7 +63,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(Notification.onDone());
+      _onEach?.call(RxNotification.onDone());
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -119,10 +119,10 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
 ///   - onResume
 ///
 /// In addition, the `onEach` argument is called at `onData`, `onDone`, and
-/// `onError` with a [Notification] passed in. The [Notification] argument
+/// `onError` with a [RxNotification] passed in. The [RxNotification] argument
 /// contains the [Kind] of event (OnData, OnDone, OnError), and the item or
 /// error that was emitted. In the case of onDone, no data is emitted as part
-/// of the [Notification].
+/// of the [RxNotification].
 ///
 /// If no callbacks are passed in, a runtime error will be thrown in dev mode
 /// in order to 'fail fast' and alert the developer that the transformer should
@@ -147,7 +147,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
   final void Function()? onDone;
 
   /// fires on data, close and error
-  final void Function(Notification<S> notification)? onEach;
+  final void Function(RxNotification<S> notification)? onEach;
 
   /// fires on errors
   final void Function(Object, StackTrace)? onError;
@@ -241,18 +241,18 @@ extension DoExtensions<T> on Stream<T> {
       DoStreamTransformer<T>(onDone: onDone).bind(this);
 
   /// Invokes the given callback function when the stream emits data, emits
-  /// an error, or emits done. The callback receives a [Notification] object.
+  /// an error, or emits done. The callback receives a [RxNotification] object.
   ///
-  /// The [Notification] object contains the [Kind] of event (OnData, onDone,
+  /// The [RxNotification] object contains the [Kind] of event (OnData, onDone,
   /// or OnError), and the item or error that was emitted. In the case of
-  /// onDone, no data is emitted as part of the [Notification].
+  /// onDone, no data is emitted as part of the [RxNotification].
   ///
   /// ### Example
   ///
   ///     Stream.fromIterable([1])
   ///       .doOnEach(print)
-  ///       .listen(null); // prints Notification{kind: OnData, value: 1, errorAndStackTrace: null}, Notification{kind: OnDone, value: null, errorAndStackTrace: null}
-  Stream<T> doOnEach(void Function(Notification<T> notification) onEach) =>
+  ///       .listen(null); // prints RxNotification{kind: OnData, value: 1, errorAndStackTrace: null}, RxNotification{kind: OnDone, value: null, errorAndStackTrace: null}
+  Stream<T> doOnEach(void Function(RxNotification<T> notification) onEach) =>
       DoStreamTransformer<T>(onEach: onEach).bind(this);
 
   /// Invokes the given callback function when the stream emits an error.

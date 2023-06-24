@@ -8,48 +8,48 @@ import '../utils.dart';
 void main() {
   test('Rx.materialize.happyPath', () async {
     final stream = Stream.value(1);
-    final notifications = <Notification<int>>[];
+    final notifications = <RxNotification<int>>[];
 
     stream.materialize().listen(notifications.add, onDone: expectAsync0(() {
-      expect(
-          notifications, [Notification.onData(1), Notification<int>.onDone()]);
+      expect(notifications,
+          [RxNotification.onData(1), RxNotification<int>.onDone()]);
     }));
   });
 
   test('Rx.materialize.reusable', () async {
     final transformer = MaterializeStreamTransformer<int>();
     final stream = Stream.value(1).asBroadcastStream();
-    final notificationsA = <Notification<int>>[],
-        notificationsB = <Notification<int>>[];
+    final notificationsA = <RxNotification<int>>[],
+        notificationsB = <RxNotification<int>>[];
 
     stream.transform(transformer).listen(notificationsA.add,
         onDone: expectAsync0(() {
-      expect(
-          notificationsA, [Notification.onData(1), Notification<int>.onDone()]);
+      expect(notificationsA,
+          [RxNotification.onData(1), RxNotification<int>.onDone()]);
     }));
 
     stream.transform(transformer).listen(notificationsB.add,
         onDone: expectAsync0(() {
-      expect(
-          notificationsB, [Notification.onData(1), Notification<int>.onDone()]);
+      expect(notificationsB,
+          [RxNotification.onData(1), RxNotification<int>.onDone()]);
     }));
   });
 
   test('materializeTransformer.happyPath', () async {
     final stream = Stream.fromIterable(const [1]);
-    final notifications = <Notification<int>>[];
+    final notifications = <RxNotification<int>>[];
 
     stream
         .transform(MaterializeStreamTransformer<int>())
         .listen(notifications.add, onDone: expectAsync0(() {
-      expect(
-          notifications, [Notification.onData(1), Notification<int>.onDone()]);
+      expect(notifications,
+          [RxNotification.onData(1), RxNotification<int>.onDone()]);
     }));
   });
 
   test('materializeTransformer.sadPath', () async {
     final stream = Stream<int>.error(Exception());
-    final notifications = <Notification<int>>[];
+    final notifications = <RxNotification<int>>[];
 
     stream
         .transform(MaterializeStreamTransformer<int>())
@@ -66,14 +66,14 @@ void main() {
 
   test('materializeTransformer.onPause.onResume', () async {
     final stream = Stream.fromIterable(const [1]);
-    final notifications = <Notification<int>>[];
+    final notifications = <RxNotification<int>>[];
 
     stream
         .transform(MaterializeStreamTransformer<int>())
         .listen(notifications.add, onDone: expectAsync0(() {
-      expect(notifications, <Notification<int>>[
-        Notification.onData(1),
-        Notification<int>.onDone()
+      expect(notifications, <RxNotification<int>>[
+        RxNotification.onData(1),
+        RxNotification<int>.onDone()
       ]);
     }))
       ..pause()
@@ -92,7 +92,7 @@ void main() {
   });
 
   test('Rx.materialize.nullable', () {
-    nullableTest<Notification<String?>>(
+    nullableTest<RxNotification<String?>>(
       (s) => s.materialize(),
     );
   });

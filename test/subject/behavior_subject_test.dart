@@ -1269,7 +1269,7 @@ void main() {
         final s = BehaviorSubject<int>.seeded(42);
         expect(
           s.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
@@ -1277,7 +1277,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.stream.isLastEventValue, isTrue);
         expect(s.stream.isLastEventError, isFalse);
@@ -1290,7 +1290,7 @@ void main() {
 
         expect(
           s.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
@@ -1298,7 +1298,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.stream.isLastEventValue, isFalse);
         expect(s.stream.isLastEventError, isTrue);
@@ -1312,7 +1312,7 @@ void main() {
 
         expect(
           s.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
@@ -1320,7 +1320,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.stream.isLastEventValue, isTrue);
         expect(s.stream.isLastEventError, isFalse);
@@ -1334,7 +1334,7 @@ void main() {
 
         expect(
           s.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
@@ -1342,7 +1342,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.stream.isLastEventValue, isFalse);
         expect(s.stream.isLastEventError, isTrue);
@@ -1355,7 +1355,7 @@ void main() {
 
         expect(
           s.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
@@ -1363,7 +1363,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onData(42),
+          RxNotification<int>.onData(42),
         );
         expect(s.stream.isLastEventValue, isTrue);
         expect(s.stream.isLastEventError, isFalse);
@@ -1377,7 +1377,7 @@ void main() {
 
         expect(
           s.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
@@ -1385,7 +1385,7 @@ void main() {
         // the stream has the same value as the subject
         expect(
           s.stream.lastEventOrNull,
-          Notification<int>.onError(exception, StackTrace.empty),
+          RxNotification<int>.onError(exception, StackTrace.empty),
         );
         expect(s.stream.isLastEventValue, isFalse);
         expect(s.stream.isLastEventError, isTrue);

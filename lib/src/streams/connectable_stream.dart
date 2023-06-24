@@ -174,7 +174,7 @@ class ValueConnectableStream<T>
   StackTrace? get stackTrace => _subject.stackTrace;
 
   @override
-  Notification<T>? get lastEventOrNull => _subject.lastEventOrNull;
+  RxNotification<T>? get lastEventOrNull => _subject.lastEventOrNull;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
