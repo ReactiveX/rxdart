@@ -54,7 +54,7 @@ extension LastEventValueStreamExtensions<T> on ValueStream<T> {
   bool get isLastEventError => lastEventOrNull?.isOnError ?? false;
 }
 
-/// Extension methods on [ValueStream] to access the last emitted [ErrorAndStackTrace].
+/// Extension method on [ValueStream] to access the last emitted [ErrorAndStackTrace].
 extension ErrorAndStackTraceValueStreamExtension<T> on ValueStream<T> {
   /// Returns the last emitted [ErrorAndStackTrace],
   /// or `null` if no error events have been emitted yet.

@@ -1452,7 +1452,7 @@ void main() {
         expect(s.stream.errorAndStackTraceOrNull, isNull);
       });
 
-      test('subject with error', () {
+      test('error and close', () {
         final s = BehaviorSubject<int>();
         final exception = Exception();
         s
