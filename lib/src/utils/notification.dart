@@ -31,29 +31,26 @@ class Notification<T> {
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace? errorAndStackTrace;
 
-  /// Constructs a [Notification] which, depending on the [kind], wraps either
-  /// [value], or [errorAndStackTrace], or neither if it is just a
-  /// [Kind.onData] event.
-  @Deprecated('Use factory constructors instead. Will be removed in v0.28.0')
-  const Notification(this.kind, this._value, this.errorAndStackTrace);
+  const Notification._(this.kind, this._value, this.errorAndStackTrace);
 
   /// Constructs a [Notification] with [Kind.onData] and wraps a [value]
   factory Notification.onData(T value) =>
-      Notification<T>(Kind.onData, value, null);
+      Notification<T>._(Kind.onData, value, null);
 
   /// Constructs a [Notification] with [Kind.onDone]
-  factory Notification.onDone() => const Notification(Kind.onDone, EMPTY, null);
+  factory Notification.onDone() =>
+      const Notification._(Kind.onDone, EMPTY, null);
 
   /// Constructs a [Notification] with [Kind.onError] and wraps an [error] and [stackTrace]
   factory Notification.onError(Object error, StackTrace? stackTrace) =>
-      Notification<T>(
+      Notification<T>._(
           Kind.onError, EMPTY, ErrorAndStackTrace(error, stackTrace));
 
   /// @internal
   /// Constructs a [Notification] with [Kind.onError] and wraps an [errorAndStackTrace].
   factory Notification.onErrorFrom(
           {required ErrorAndStackTrace errorAndStackTrace}) =>
-      Notification<T>(Kind.onError, EMPTY, errorAndStackTrace);
+      Notification<T>._(Kind.onError, EMPTY, errorAndStackTrace);
 
   @override
   bool operator ==(Object other) =>
