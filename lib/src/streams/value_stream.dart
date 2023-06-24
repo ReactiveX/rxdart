@@ -1,3 +1,4 @@
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 /// A [Stream] that provides synchronous access to the last emitted value (aka. data event).
@@ -51,6 +52,16 @@ extension LastEventValueStreamExtensions<T> on ValueStream<T> {
 
   /// Returns `true` if the last emitted event is an error event.
   bool get isLastEventError => lastEventOrNull?.isOnError ?? false;
+}
+
+/// Extension methods on [ValueStream] to access the last emitted [ErrorAndStackTrace].
+extension ErrorAndStackTraceValueStreamExtension<T> on ValueStream<T> {
+  /// Returns the last emitted [ErrorAndStackTrace],
+  /// or `null` if no error events have been emitted yet.
+  ErrorAndStackTrace? get errorAndStackTrace {
+    final error = errorOrNull;
+    return error == null ? null : ErrorAndStackTrace(error, stackTrace);
+  }
 }
 
 enum _MissingCase {
