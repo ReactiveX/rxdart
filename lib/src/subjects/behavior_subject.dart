@@ -7,6 +7,7 @@ import 'package:rxdart/src/transformers/start_with.dart';
 import 'package:rxdart/src/transformers/start_with_error.dart';
 import 'package:rxdart/src/utils/empty.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+import 'package:rxdart/src/utils/notification.dart';
 
 /// A special StreamController that captures the latest item that has been
 /// added to the controller, and emits that as the first item to any new
@@ -169,17 +170,36 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
 
   @override
   StackTrace? get stackTrace => _wrapper.errorAndStackTrace?.stackTrace;
+
+  @override
+  Notification<T>? get lastEventOrNull {
+    // data event
+    if (_wrapper.isValue) {
+      return Notification.onData(_wrapper.value as T);
+    }
+
+    // error event
+    final errorAndSt = _wrapper.errorAndStackTrace;
+    if (errorAndSt != null) {
+      return Notification.onErrorFrom(errorAndStackTrace: errorAndSt);
+    }
+
+    // no event
+    return null;
+  }
 }
 
 class _Wrapper<T> {
-  bool isValue;
+  var isValue = false;
   var value = EMPTY;
   ErrorAndStackTrace? errorAndStackTrace;
 
   /// Non-seeded constructor
   _Wrapper() : isValue = false;
 
-  _Wrapper.seeded(this.value) : isValue = true;
+  _Wrapper.seeded(T v) {
+    setValue(v);
+  }
 
   void setValue(T event) {
     value = event;
@@ -249,4 +269,7 @@ class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
 
   @override
   T? get valueOrNull => _subject.valueOrNull;
+
+  @override
+  Notification<T>? get lastEventOrNull => _subject.lastEventOrNull;
 }
