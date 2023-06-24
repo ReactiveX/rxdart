@@ -1392,7 +1392,7 @@ void main() {
       });
     });
 
-    group('errorAndStackTrace', () {
+    group('errorAndStackTraceOrNull', () {
       test('empty subject', () {
         final s = BehaviorSubject<int>();
         expect(s.errorAndStackTraceOrNull, isNull);
