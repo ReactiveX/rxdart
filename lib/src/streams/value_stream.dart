@@ -58,7 +58,7 @@ extension LastEventValueStreamExtensions<T> on ValueStream<T> {
 extension ErrorAndStackTraceValueStreamExtension<T> on ValueStream<T> {
   /// Returns the last emitted [ErrorAndStackTrace],
   /// or `null` if no error events have been emitted yet.
-  ErrorAndStackTrace? get errorAndStackTrace {
+  ErrorAndStackTrace? get errorAndStackTraceOrNull {
     final error = errorOrNull;
     return error == null ? null : ErrorAndStackTrace(error, stackTrace);
   }

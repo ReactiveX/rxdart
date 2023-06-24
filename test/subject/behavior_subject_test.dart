@@ -1395,18 +1395,18 @@ void main() {
     group('errorAndStackTrace', () {
       test('empty subject', () {
         final s = BehaviorSubject<int>();
-        expect(s.errorAndStackTrace, isNull);
+        expect(s.errorAndStackTraceOrNull, isNull);
 
         // the stream has the same value as the subject
-        expect(s.stream.errorAndStackTrace, isNull);
+        expect(s.stream.errorAndStackTraceOrNull, isNull);
       });
 
       test('seeded subject', () {
         final s = BehaviorSubject<int>.seeded(42);
-        expect(s.errorAndStackTrace, isNull);
+        expect(s.errorAndStackTraceOrNull, isNull);
 
         // the stream has the same value as the subject
-        expect(s.stream.errorAndStackTrace, isNull);
+        expect(s.stream.errorAndStackTraceOrNull, isNull);
       });
 
       test('subject with error and stack trace', () {
@@ -1415,13 +1415,13 @@ void main() {
         s.addError(exception, StackTrace.empty);
 
         expect(
-          s.errorAndStackTrace,
+          s.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, StackTrace.empty),
         );
 
         // the stream has the same value as the subject
         expect(
-          s.stream.errorAndStackTrace,
+          s.stream.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, StackTrace.empty),
         );
       });
@@ -1432,13 +1432,13 @@ void main() {
         s.addError(exception);
 
         expect(
-          s.errorAndStackTrace,
+          s.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, null),
         );
 
         // the stream has the same value as the subject
         expect(
-          s.stream.errorAndStackTrace,
+          s.stream.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, null),
         );
       });
@@ -1446,10 +1446,10 @@ void main() {
       test('seeded subject and close', () {
         final s = BehaviorSubject<int>.seeded(42)..close();
 
-        expect(s.errorAndStackTrace, isNull);
+        expect(s.errorAndStackTraceOrNull, isNull);
 
         // the stream has the same value as the subject
-        expect(s.stream.errorAndStackTrace, isNull);
+        expect(s.stream.errorAndStackTraceOrNull, isNull);
       });
 
       test('subject with error', () {
@@ -1460,13 +1460,13 @@ void main() {
           ..close();
 
         expect(
-          s.errorAndStackTrace,
+          s.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, null),
         );
 
         // the stream has the same value as the subject
         expect(
-          s.stream.errorAndStackTrace,
+          s.stream.errorAndStackTraceOrNull,
           ErrorAndStackTrace(exception, null),
         );
       });
