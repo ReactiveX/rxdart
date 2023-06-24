@@ -1258,6 +1258,11 @@ void main() {
         expect(s.lastEventOrNull, isNull);
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isFalse);
+
+        // the stream has the same value as the subject
+        expect(s.stream.lastEventOrNull, isNull);
+        expect(s.stream.isLastEventValue, isFalse);
+        expect(s.stream.isLastEventError, isFalse);
       });
 
       test('subject with value', () {
@@ -1268,6 +1273,14 @@ void main() {
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.stream.isLastEventValue, isTrue);
+        expect(s.stream.isLastEventError, isFalse);
       });
 
       test('subject with error', () {
@@ -1281,6 +1294,14 @@ void main() {
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.stream.isLastEventValue, isFalse);
+        expect(s.stream.isLastEventError, isTrue);
       });
 
       test('add error and then value', () {
@@ -1295,6 +1316,14 @@ void main() {
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.stream.isLastEventValue, isTrue);
+        expect(s.stream.isLastEventError, isFalse);
       });
 
       test('add value and then error', () {
@@ -1309,6 +1338,14 @@ void main() {
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.stream.isLastEventValue, isFalse);
+        expect(s.stream.isLastEventError, isTrue);
       });
 
       test('add value and then close', () async {
@@ -1322,6 +1359,14 @@ void main() {
         );
         expect(s.isLastEventValue, isTrue);
         expect(s.isLastEventError, isFalse);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onData(42),
+        );
+        expect(s.stream.isLastEventValue, isTrue);
+        expect(s.stream.isLastEventError, isFalse);
       });
 
       test('add error and then close', () async {
@@ -1336,6 +1381,14 @@ void main() {
         );
         expect(s.isLastEventValue, isFalse);
         expect(s.isLastEventError, isTrue);
+
+        // the stream has the same value as the subject
+        expect(
+          s.stream.lastEventOrNull,
+          Notification<int>.onError(exception, StackTrace.empty),
+        );
+        expect(s.stream.isLastEventValue, isFalse);
+        expect(s.stream.isLastEventError, isTrue);
       });
     });
   });
