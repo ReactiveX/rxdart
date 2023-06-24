@@ -37,13 +37,13 @@ class Notification<T> {
   factory Notification.onData(T value) =>
       Notification<T>._(Kind.onData, value, null);
 
-  /// Constructs a [Notification] with [Kind.onDone]
+  /// Constructs a [Notification] with [Kind.onDone].
   factory Notification.onDone() =>
-      const Notification._(Kind.onDone, EMPTY, null);
+      const Notification<Never>._(Kind.onDone, EMPTY, null);
 
   /// Constructs a [Notification] with [Kind.onError] and wraps an [error] and [stackTrace]
   factory Notification.onError(Object error, StackTrace? stackTrace) =>
-      Notification<T>._(
+      Notification<Never>._(
           Kind.onError, EMPTY, ErrorAndStackTrace(error, stackTrace));
 
   /// @internal
