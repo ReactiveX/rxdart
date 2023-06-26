@@ -1,8 +1,30 @@
 import 'dart:collection';
+import 'dart:math';
 
 /// @internal
-/// Provides [mapNotNull] extension method on [Iterable].
-extension MapNotNullIterableExtension<T> on Iterable<T> {
+/// @nodoc
+/// Provides extension methods on [List].
+extension ListExtensions<T> on List<T> {
+  /// @internal
+  /// Returns a list of values built from the elements of this list
+  /// and the other list with the same index
+  /// using the provided transform function applied to each pair of elements.
+  /// The returned list has length of the shortest list.
+  List<R> zipWith<R, S>(
+    List<S> other,
+    R Function(T, S) transform, {
+    bool growable = true,
+  }) =>
+      List.generate(
+        min(length, other.length),
+        (index) => transform(this[index], other[index]),
+        growable: growable,
+      );
+}
+
+/// @internal
+/// Provides extension methods on [Iterable].
+extension IterableExtensions<T> on Iterable<T> {
   /// @internal
   /// The non-`null` results of calling [transform] on the elements of [this].
   ///
