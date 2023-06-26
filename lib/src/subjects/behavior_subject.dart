@@ -175,13 +175,13 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   RxNotification<T>? get lastEventOrNull {
     // data event
     if (_wrapper.isValue) {
-      return RxNotification.onData(_wrapper.value as T);
+      return RxNotification.data(_wrapper.value as T);
     }
 
     // error event
     final errorAndSt = _wrapper.errorAndStackTrace;
     if (errorAndSt != null) {
-      return RxNotification.onErrorFrom(errorAndStackTrace: errorAndSt);
+      return ErrorNotification(errorAndSt);
     }
 
     // no event

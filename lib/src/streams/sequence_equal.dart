@@ -60,18 +60,19 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
             if (s.kind != t.kind) {
               return false;
             }
+
             switch (s.kind) {
-              case Kind.onData:
+              case NotificationKind.data:
                 return dataEquals!(
-                  s.requireData,
-                  t.requireData,
+                  s.requireDataValue,
+                  t.requireDataValue,
                 );
-              case Kind.onDone:
+              case NotificationKind.done:
                 return true;
-              case Kind.onError:
+              case NotificationKind.error:
                 return errorEquals!(
-                  s.errorAndStackTrace!,
-                  t.errorAndStackTrace!,
+                  s.requireErrorAndStackTrace,
+                  t.requireErrorAndStackTrace,
                 );
             }
           }

@@ -33,7 +33,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(RxNotification.onData(data));
+      _onEach?.call(RxNotification.data(data));
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -48,7 +48,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(RxNotification.onError(e, st));
+      _onEach?.call(RxNotification.error(e, st));
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -63,7 +63,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
       sink.addError(e, s);
     }
     try {
-      _onEach?.call(RxNotification.onDone());
+      _onEach?.call(RxNotification.done());
     } catch (e, s) {
       sink.addError(e, s);
     }
@@ -120,7 +120,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
 ///
 /// In addition, the `onEach` argument is called at `onData`, `onDone`, and
 /// `onError` with a [RxNotification] passed in. The [RxNotification] argument
-/// contains the [Kind] of event (OnData, OnDone, OnError), and the item or
+/// contains the [NotificationKind] of event (OnData, OnDone, OnError), and the item or
 /// error that was emitted. In the case of onDone, no data is emitted as part
 /// of the [RxNotification].
 ///
@@ -243,7 +243,7 @@ extension DoExtensions<T> on Stream<T> {
   /// Invokes the given callback function when the stream emits data, emits
   /// an error, or emits done. The callback receives a [RxNotification] object.
   ///
-  /// The [RxNotification] object contains the [Kind] of event (OnData, onDone,
+  /// The [RxNotification] object contains the [NotificationKind] of event (OnData, onDone,
   /// or OnError), and the item or error that was emitted. In the case of
   /// onDone, no data is emitted as part of the [RxNotification].
   ///

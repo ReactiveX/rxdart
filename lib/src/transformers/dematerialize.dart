@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
 class _DematerializeStreamSink<S> implements EventSink<RxNotification<S>> {
@@ -8,19 +9,11 @@ class _DematerializeStreamSink<S> implements EventSink<RxNotification<S>> {
   _DematerializeStreamSink(this._outputSink);
 
   @override
-  void add(RxNotification<S> data) {
-    if (data.isOnData) {
-      _outputSink.add(data.requireData);
-    } else if (data.isOnDone) {
-      _outputSink.close();
-    } else if (data.isOnError) {
-      final errorAndStackTrace = data.errorAndStackTrace!;
-      _outputSink.addError(
-        errorAndStackTrace.error,
-        errorAndStackTrace.stackTrace,
+  void add(RxNotification<S> data) => data.when(
+        data: _outputSink.add,
+        done: _outputSink.close,
+        error: _outputSink.addErrorAndStackTrace,
       );
-    }
-  }
 
   @override
   void addError(e, [st]) => _outputSink.addError(e, st);

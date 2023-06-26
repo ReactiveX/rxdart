@@ -13,7 +13,7 @@ class ErrorAndStackTrace {
 
   @override
   String toString() =>
-      'ErrorAndStackTrace{error: $error, stacktrace: $stackTrace}';
+      'ErrorAndStackTrace{error: $error, stackTrace: $stackTrace}';
 
   @override
   bool operator ==(Object other) =>

@@ -11,55 +11,55 @@ void main() {
       final st2 = StackTrace.current;
 
       expect(
-        RxNotification.onData(value1).hashCode,
-        RxNotification.onData(value1).hashCode,
+        RxNotification.data(value1).hashCode,
+        RxNotification.data(value1).hashCode,
       );
       expect(
-        RxNotification.onData(value1).hashCode,
-        RxNotification<num>.onData(value1).hashCode,
+        RxNotification.data(value1).hashCode,
+        RxNotification<num>.data(value1).hashCode,
       );
       expect(
-        RxNotification.onData(value1).hashCode,
-        isNot(RxNotification.onData(value2).hashCode),
-      );
-
-      expect(
-        RxNotification<int>.onDone().hashCode,
-        RxNotification<int>.onDone().hashCode,
-      );
-      expect(
-        RxNotification<int>.onDone().hashCode,
-        RxNotification<String>.onDone().hashCode,
+        RxNotification.data(value1).hashCode,
+        isNot(RxNotification.data(value2).hashCode),
       );
 
       expect(
-        RxNotification<int>.onError(value1, st1).hashCode,
-        RxNotification<int>.onError(value1, st1).hashCode,
+        RxNotification<int>.done().hashCode,
+        RxNotification<int>.done().hashCode,
       );
       expect(
-        RxNotification<int>.onError(value1, st1).hashCode,
-        isNot(RxNotification<int>.onError(value2, st1).hashCode),
-      );
-      expect(
-        RxNotification<int>.onError(value1, st1).hashCode,
-        isNot(RxNotification<int>.onError(value1, st2).hashCode),
-      );
-      expect(
-        RxNotification<int>.onError(value1, st1).hashCode,
-        isNot(RxNotification<int>.onError(value2, st2).hashCode),
+        RxNotification<int>.done().hashCode,
+        RxNotification<String>.done().hashCode,
       );
 
       expect(
-        RxNotification.onData(value1).hashCode,
-        isNot(RxNotification<int>.onDone().hashCode),
+        RxNotification<int>.error(value1, st1).hashCode,
+        RxNotification<int>.error(value1, st1).hashCode,
       );
       expect(
-        RxNotification.onData(value1).hashCode,
-        isNot(RxNotification<int>.onError(value1, st1).hashCode),
+        RxNotification<int>.error(value1, st1).hashCode,
+        isNot(RxNotification<int>.error(value2, st1).hashCode),
       );
       expect(
-        RxNotification<int>.onDone().hashCode,
-        isNot(RxNotification<int>.onError(value1, st1).hashCode),
+        RxNotification<int>.error(value1, st1).hashCode,
+        isNot(RxNotification<int>.error(value1, st2).hashCode),
+      );
+      expect(
+        RxNotification<int>.error(value1, st1).hashCode,
+        isNot(RxNotification<int>.error(value2, st2).hashCode),
+      );
+
+      expect(
+        RxNotification.data(value1).hashCode,
+        isNot(RxNotification<int>.done().hashCode),
+      );
+      expect(
+        RxNotification.data(value1).hashCode,
+        isNot(RxNotification<int>.error(value1, st1).hashCode),
+      );
+      expect(
+        RxNotification<int>.done().hashCode,
+        isNot(RxNotification<int>.error(value1, st1).hashCode),
       );
     });
 
@@ -71,156 +71,156 @@ void main() {
       final st2 = StackTrace.current;
 
       expect(
-        RxNotification.onData(value1),
-        RxNotification.onData(value1),
+        RxNotification.data(value1),
+        RxNotification.data(value1),
       );
       expect(
-        RxNotification.onData(value1),
-        isNot(RxNotification<num>.onData(value1)),
+        RxNotification.data(value1),
+        isNot(RxNotification<num>.data(value1)),
       );
       expect(
-        RxNotification.onData(value1),
-        isNot(RxNotification.onData(value2)),
-      );
-
-      expect(
-        RxNotification<int>.onDone(),
-        RxNotification<int>.onDone(),
-      );
-      expect(
-        RxNotification<int>.onDone(),
-        RxNotification<String>.onDone(),
+        RxNotification.data(value1),
+        isNot(RxNotification.data(value2)),
       );
 
       expect(
-        RxNotification<int>.onError(value1, st1),
-        RxNotification<int>.onError(value1, st1),
+        RxNotification<int>.done(),
+        RxNotification<int>.done(),
       );
       expect(
-        RxNotification<int>.onError(value1, st1),
-        isNot(RxNotification<int>.onError(value2, st1)),
-      );
-      expect(
-        RxNotification<int>.onError(value1, st1),
-        isNot(RxNotification<int>.onError(value1, st2)),
-      );
-      expect(
-        RxNotification<int>.onError(value1, st1),
-        isNot(RxNotification<int>.onError(value2, st2)),
+        RxNotification<int>.done(),
+        RxNotification<String>.done(),
       );
 
       expect(
-        RxNotification.onData(value1),
-        isNot(RxNotification<int>.onDone()),
+        RxNotification<int>.error(value1, st1),
+        RxNotification<int>.error(value1, st1),
       );
       expect(
-        RxNotification.onData(value1),
-        isNot(RxNotification<int>.onError(value1, st1)),
+        RxNotification<int>.error(value1, st1),
+        isNot(RxNotification<int>.error(value2, st1)),
       );
       expect(
-        RxNotification<int>.onDone(),
-        isNot(RxNotification<int>.onError(value1, st1)),
+        RxNotification<int>.error(value1, st1),
+        isNot(RxNotification<int>.error(value1, st2)),
+      );
+      expect(
+        RxNotification<int>.error(value1, st1),
+        isNot(RxNotification<int>.error(value2, st2)),
+      );
+
+      expect(
+        RxNotification.data(value1),
+        isNot(RxNotification<int>.done()),
+      );
+      expect(
+        RxNotification.data(value1),
+        isNot(RxNotification<int>.error(value1, st1)),
+      );
+      expect(
+        RxNotification<int>.done(),
+        isNot(RxNotification<int>.error(value1, st1)),
       );
     });
 
     test('toString', () {
       expect(
-        RxNotification.onData(1).toString(),
-        'RxNotification.onData{value: 1}',
+        RxNotification.data(1).toString(),
+        'DataNotification{value: 1}',
       );
 
       expect(
-        RxNotification<int>.onDone().toString(),
-        'RxNotification.onDone',
+        RxNotification<int>.done().toString(),
+        'DoneNotification{}',
       );
 
       expect(
-        RxNotification<int>.onError(2, StackTrace.empty).toString(),
-        'RxNotification.onError{error: 2, stackTrace: }',
+        RxNotification<int>.error(2, StackTrace.empty).toString(),
+        'ErrorNotification{error: 2, stackTrace: }',
       );
     });
 
     test('requireData', () {
       expect(
-        RxNotification.onData(1).requireData,
+        RxNotification.data(1).requireDataValue,
         1,
       );
 
       expect(
-        () => RxNotification<int>.onDone().requireData,
-        throwsStateError,
+        () => RxNotification<int>.done().requireDataValue,
+        throwsA(isA<TypeError>()),
       );
 
       expect(
-        () => RxNotification<int>.onError(2, StackTrace.empty).requireData,
-        throwsStateError,
+        () => RxNotification<int>.error(2, StackTrace.empty).requireDataValue,
+        throwsA(isA<TypeError>()),
       );
     });
 
-    test('errorAndStackTrace', () {
+    test('errorAndStackTraceOrNull', () {
       expect(
-        RxNotification.onData(1).errorAndStackTrace,
+        RxNotification.data(1).errorAndStackTraceOrNull,
         isNull,
       );
 
       expect(
-        RxNotification<int>.onDone().errorAndStackTrace,
+        RxNotification<int>.done().errorAndStackTraceOrNull,
         isNull,
       );
 
       expect(
-        RxNotification<int>.onError(2, StackTrace.empty).errorAndStackTrace,
+        RxNotification<int>.error(2, StackTrace.empty).errorAndStackTraceOrNull,
         ErrorAndStackTrace(2, StackTrace.empty),
       );
     });
 
     test('isOnData', () {
       expect(
-        RxNotification.onData(1).isOnData,
+        RxNotification.data(1).isData,
         isTrue,
       );
 
       expect(
-        RxNotification<int>.onDone().isOnData,
+        RxNotification<int>.done().isData,
         isFalse,
       );
 
       expect(
-        RxNotification<int>.onError(2, StackTrace.empty).isOnData,
+        RxNotification<int>.error(2, StackTrace.empty).isData,
         isFalse,
       );
     });
 
     test('isOnDone', () {
       expect(
-        RxNotification.onData(1).isOnDone,
+        RxNotification.data(1).isDone,
         isFalse,
       );
 
       expect(
-        RxNotification<int>.onDone().isOnDone,
+        RxNotification<int>.done().isDone,
         isTrue,
       );
 
       expect(
-        RxNotification<int>.onError(2, StackTrace.empty).isOnDone,
+        RxNotification<int>.error(2, StackTrace.empty).isDone,
         isFalse,
       );
     });
 
     test('isOnError', () {
       expect(
-        RxNotification.onData(1).isOnError,
+        RxNotification.data(1).isError,
         isFalse,
       );
 
       expect(
-        RxNotification<int>.onDone().isOnError,
+        RxNotification<int>.done().isError,
         isFalse,
       );
 
       expect(
-        RxNotification<int>.onError(2, StackTrace.empty).isOnError,
+        RxNotification<int>.error(2, StackTrace.empty).isError,
         isTrue,
       );
     });

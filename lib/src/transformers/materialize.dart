@@ -8,14 +8,14 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
   _MaterializeStreamSink(this._outputSink);
 
   @override
-  void add(S data) => _outputSink.add(RxNotification.onData(data));
+  void add(S data) => _outputSink.add(RxNotification.data(data));
 
   @override
-  void addError(e, [st]) => _outputSink.add(RxNotification.onError(e, st));
+  void addError(e, [st]) => _outputSink.add(RxNotification.error(e, st));
 
   @override
   void close() {
-    _outputSink.add(RxNotification.onDone());
+    _outputSink.add(RxNotification.done());
     _outputSink.close();
   }
 }
@@ -23,7 +23,7 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
 /// Converts the onData, on Done, and onError events into [RxNotification]
 /// objects that are passed into the downstream onData listener.
 ///
-/// The [RxNotification] object contains the [Kind] of event (OnData, onDone, or
+/// The [RxNotification] object contains the [NotificationKind] of event (OnData, onDone, or
 /// OnError), and the item or error that was emitted. In the case of onDone,
 /// no data is emitted as part of the [RxNotification].
 ///
@@ -50,7 +50,7 @@ extension MaterializeExtension<T> on Stream<T> {
   /// Converts the onData, on Done, and onError events into [RxNotification]
   /// objects that are passed into the downstream onData listener.
   ///
-  /// The [RxNotification] object contains the [Kind] of event (OnData, onDone, or
+  /// The [RxNotification] object contains the [NotificationKind] of event (OnData, onDone, or
   /// OnError), and the item or error that was emitted. In the case of onDone,
   /// no data is emitted as part of the [RxNotification].
   ///
