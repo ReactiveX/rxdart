@@ -143,7 +143,7 @@ void main() {
 
     test('emits onEach Notifications for Data, Error, and Done', () async {
       StackTrace? stacktrace;
-      final actual = <RxNotification<int>>[];
+      final actual = <StreamNotification<int>>[];
       final exception = Exception();
       final stream = Stream.value(1)
           .concatWith([Stream<int>.error(exception)]).doOnEach((notification) {
@@ -158,9 +158,9 @@ void main() {
           emitsInOrder(<dynamic>[1, emitsError(isException), emitsDone]));
 
       await expectLater(actual, [
-        RxNotification.data(1),
-        RxNotification<int>.error(exception, stacktrace),
-        RxNotification<int>.done()
+        StreamNotification.data(1),
+        StreamNotification<int>.error(exception, stacktrace),
+        StreamNotification<int>.done()
       ]);
     });
 

@@ -2,7 +2,7 @@
 
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
-/// The type of event used in [RxNotification]
+/// The type of event used in [StreamNotification]
 enum NotificationKind {
   /// Specifies a data event
   data,
@@ -19,55 +19,60 @@ enum NotificationKind {
 
 /// A container object that wraps the [NotificationKind] of event (OnData, OnDone, OnError),
 /// and the item or error that was emitted. In the case of onDone, no data is
-/// emitted as part of the [RxNotification].
-abstract class RxNotification<T> {
-  /// References the [NotificationKind] of this [RxNotification] event.
+/// emitted as part of the [StreamNotification].
+abstract class StreamNotification<T> {
+  /// References the [NotificationKind] of this [StreamNotification] event.
   final NotificationKind kind;
 
-  const RxNotification._(this.kind);
+  const StreamNotification._(this.kind);
 
-  /// Constructs a [RxNotification] with [NotificationKind.data] and wraps a [value]
-  factory RxNotification.data(T value) => DataNotification<T>(value);
+  /// Constructs a [StreamNotification] with [NotificationKind.data] and wraps a [value]
+  factory StreamNotification.data(T value) => DataNotification<T>(value);
 
-  /// Constructs a [RxNotification] with [NotificationKind.done].
-  factory RxNotification.done() => DoneNotification();
+  /// Constructs a [StreamNotification] with [NotificationKind.done].
+  factory StreamNotification.done() => DoneNotification();
 
-  /// Constructs a [RxNotification] with [NotificationKind.error] and wraps an [error] and [stackTrace]
-  factory RxNotification.error(Object error, StackTrace? stackTrace) =>
+  /// Constructs a [StreamNotification] with [NotificationKind.error] and wraps an [error] and [stackTrace]
+  factory StreamNotification.error(Object error, StackTrace? stackTrace) =>
       ErrorNotification.from(error, stackTrace);
 }
 
-/// TODO
-extension RxNotificationExtensions<T> on RxNotification<T> {
-  /// A test to determine if this [RxNotification] wraps a data event
+/// Provides extension methods on [StreamNotification].
+extension StreamNotificationExtensions<T> on StreamNotification<T> {
+  /// A test to determine if this [StreamNotification] wraps a data event.
   bool get isData => kind == NotificationKind.data;
 
-  /// A test to determine if this [RxNotification] wraps a done event
+  /// A test to determine if this [StreamNotification] wraps a done event.
   bool get isDone => kind == NotificationKind.done;
 
-  /// A test to determine if this [RxNotification] wraps an error event
+  /// A test to determine if this [StreamNotification] wraps an error event.
   bool get isError => kind == NotificationKind.error;
 
-  /// Returns data if [kind] is [NotificationKind.data], otherwise throws a [StateError] error.
+  /// Returns data if [kind] is [NotificationKind.data],
+  /// otherwise throws a [TypeError] error.
+  /// See also [dataValueOrNull].
   T get requireDataValue => (this as DataNotification<T>).value;
 
-  /// TODO
+  /// Returns data if [kind] is [NotificationKind.data],
+  /// otherwise returns null.
   T? get dataValueOrNull {
     final self = this;
     return self is DataNotification<T> ? self.value : null;
   }
 
-  /// TODO
+  /// Returns error and stack trace if [kind] is [NotificationKind.error],
+  /// otherwise throws a [TypeError] error.
   ErrorAndStackTrace get requireErrorAndStackTrace =>
       (this as ErrorNotification).errorAndStackTrace;
 
-  /// TODO
+  /// Returns error and stack trace if [kind] is [NotificationKind.error],
+  /// otherwise returns null.
   ErrorAndStackTrace? get errorAndStackTraceOrNull {
     final self = this;
     return self is ErrorNotification ? self.errorAndStackTrace : null;
   }
 
-  /// TODO
+  /// Invokes the appropriate function on the [StreamNotification] based on the [kind].
   @pragma('vm:prefer-inline')
   @pragma('dart2js:prefer-inline')
   R when<R>({
@@ -93,7 +98,7 @@ extension RxNotificationExtensions<T> on RxNotification<T> {
 }
 
 /// TODO
-class DataNotification<T> extends RxNotification<T> {
+class DataNotification<T> extends StreamNotification<T> {
   /// TODO
   final T value;
 
@@ -115,7 +120,7 @@ class DataNotification<T> extends RxNotification<T> {
 }
 
 /// TODO
-class DoneNotification extends RxNotification<Never> {
+class DoneNotification extends StreamNotification<Never> {
   /// TODO
   const DoneNotification() : super._(NotificationKind.done);
 
@@ -132,7 +137,7 @@ class DoneNotification extends RxNotification<Never> {
 }
 
 /// TODO
-class ErrorNotification extends RxNotification<Never> {
+class ErrorNotification extends StreamNotification<Never> {
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace errorAndStackTrace;
 

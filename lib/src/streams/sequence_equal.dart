@@ -56,7 +56,7 @@ class SequenceEqualStream<S, T> extends Stream<bool> {
             ..add(value)
             ..close();
 
-          bool compare(RxNotification<S> s, RxNotification<T> t) {
+          bool compare(StreamNotification<S> s, StreamNotification<T> t) {
             if (s.kind != t.kind) {
               return false;
             }

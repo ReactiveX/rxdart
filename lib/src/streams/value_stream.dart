@@ -42,7 +42,7 @@ abstract class ValueStream<T> implements Stream<T> {
 
   /// Returns the last emitted event (either data/value or error event).
   /// `null` if no value or error events have been emitted yet.
-  RxNotification<T>? get lastEventOrNull;
+  StreamNotification<T>? get lastEventOrNull;
 }
 
 /// Extension methods on [ValueStream] related to [lastEventOrNull].
