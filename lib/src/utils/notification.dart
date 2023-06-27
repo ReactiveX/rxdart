@@ -30,7 +30,7 @@ abstract class StreamNotification<T> {
   factory StreamNotification.data(T value) => DataNotification<T>(value);
 
   /// Constructs a [StreamNotification] with [NotificationKind.done].
-  factory StreamNotification.done() => DoneNotification();
+  const factory StreamNotification.done() = DoneNotification;
 
   /// Constructs a [StreamNotification] with [NotificationKind.error] and wraps an [error] and [stackTrace]
   factory StreamNotification.error(Object error, StackTrace? stackTrace) =>

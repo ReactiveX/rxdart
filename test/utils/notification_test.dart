@@ -88,6 +88,10 @@ void main() {
         StreamNotification<int>.done(),
       );
       expect(
+        const StreamNotification<int>.done(),
+        StreamNotification<int>.done(),
+      );
+      expect(
         StreamNotification<int>.done(),
         StreamNotification<String>.done(),
       );
