@@ -33,8 +33,8 @@ abstract class StreamNotification<T> {
   const factory StreamNotification.done() = DoneNotification;
 
   /// Constructs a [StreamNotification] with [NotificationKind.error] and wraps an [error] and [stackTrace]
-  factory StreamNotification.error(Object error, StackTrace? stackTrace) =>
-      ErrorNotification.from(error, stackTrace);
+  factory StreamNotification.error(Object error, [StackTrace? stackTrace]) =>
+      ErrorNotification._internal(error, stackTrace);
 }
 
 /// Provides extension methods on [StreamNotification].
@@ -97,12 +97,12 @@ extension StreamNotificationExtensions<T> on StreamNotification<T> {
   }
 }
 
-/// TODO
+/// A notification representing a data event from a [Stream].
 class DataNotification<T> extends StreamNotification<T> {
-  /// TODO
+  /// The value of the data event.
   final T value;
 
-  /// TODO
+  /// Constructs a [DataNotification] with the provided [value].
   const DataNotification(this.value) : super._(NotificationKind.data);
 
   @override
@@ -119,9 +119,9 @@ class DataNotification<T> extends StreamNotification<T> {
   String toString() => 'DataNotification{value: $value}';
 }
 
-/// TODO
+/// A notification representing a done event from a [Stream].
 class DoneNotification extends StreamNotification<Never> {
-  /// TODO
+  /// Constructs a [DoneNotification].
   const DoneNotification() : super._(NotificationKind.done);
 
   @override
@@ -136,23 +136,23 @@ class DoneNotification extends StreamNotification<Never> {
   String toString() => 'DoneNotification{}';
 }
 
-/// TODO
+/// A notification representing an error event from a [Stream].
 class ErrorNotification extends StreamNotification<Never> {
   /// The wrapped error and stack trace, if applicable
   final ErrorAndStackTrace errorAndStackTrace;
 
-  /// TODO
+  /// The error of the error event.
   Object get error => errorAndStackTrace.error;
 
-  /// TODO
+  /// The stack trace of the error event, if available.
   StackTrace? get stackTrace => errorAndStackTrace.stackTrace;
 
-  /// TODO
+  /// Constructs an [ErrorNotification] with the provided [errorAndStackTrace].
   const ErrorNotification(this.errorAndStackTrace)
       : super._(NotificationKind.error);
 
-  /// TODO
-  factory ErrorNotification.from(Object error, StackTrace? stackTrace) =>
+  /// Constructs an [ErrorNotification] with the provided [error] and [stackTrace].
+  factory ErrorNotification._internal(Object error, StackTrace? stackTrace) =>
       ErrorNotification(ErrorAndStackTrace(error, stackTrace));
 
   @override
