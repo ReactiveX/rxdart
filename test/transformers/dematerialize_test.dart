@@ -50,8 +50,10 @@ void main() {
 
   test('dematerializeTransformer.happyPath', () async {
     const expectedValue = 1;
-    final stream = Stream.fromIterable(
-        [Notification.onData(expectedValue), Notification<int>.onDone()]);
+    final stream = Stream.fromIterable([
+      StreamNotification.data(expectedValue),
+      StreamNotification<int>.done()
+    ]);
 
     stream.transform(DematerializeStreamTransformer()).listen(
         expectAsync1((value) {
@@ -64,7 +66,7 @@ void main() {
 
   test('dematerializeTransformer.sadPath', () async {
     final stream = Stream.fromIterable(
-        [Notification<int>.onError(Exception(), Chain.current())]);
+        [StreamNotification<int>.error(Exception(), Chain.current())]);
 
     stream.transform(DematerializeStreamTransformer()).listen(null,
         onError: expectAsync2((Exception e, StackTrace s) {
@@ -74,8 +76,10 @@ void main() {
 
   test('dematerializeTransformer.onPause.onResume', () async {
     const expectedValue = 1;
-    final stream = Stream.fromIterable(
-        [Notification.onData(expectedValue), Notification<int>.onDone()]);
+    final stream = Stream.fromIterable([
+      StreamNotification.data(expectedValue),
+      StreamNotification<int>.done()
+    ]);
 
     stream.transform(DematerializeStreamTransformer()).listen(
         expectAsync1((value) {

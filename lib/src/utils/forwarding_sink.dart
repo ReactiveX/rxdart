@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/utils/error_and_stacktrace.dart';
+
 /// A [Sink] that supports event hooks.
 ///
 /// This makes it suitable for certain rx transformers that need to
@@ -39,4 +41,13 @@ abstract class ForwardingSink<T, R> {
 
   /// Fires when a subscriber cancels.
   FutureOr<void> onCancel();
+}
+
+/// @internal
+/// @nodoc
+extension EventSinkExtension<T> on EventSink<T> {
+  /// @internal
+  /// @nodoc
+  void addErrorAndStackTrace(ErrorAndStackTrace errorAndSt) =>
+      addError(errorAndSt.error, errorAndSt.stackTrace);
 }

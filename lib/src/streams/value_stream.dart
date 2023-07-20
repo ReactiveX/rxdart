@@ -42,16 +42,16 @@ abstract class ValueStream<T> implements Stream<T> {
 
   /// Returns the last emitted event (either data/value or error event).
   /// `null` if no value or error events have been emitted yet.
-  Notification<T>? get lastEventOrNull;
+  StreamNotification<T>? get lastEventOrNull;
 }
 
 /// Extension methods on [ValueStream] related to [lastEventOrNull].
 extension LastEventValueStreamExtensions<T> on ValueStream<T> {
   /// Returns `true` if the last emitted event is a data event (aka. a value event).
-  bool get isLastEventValue => lastEventOrNull?.isOnData ?? false;
+  bool get isLastEventValue => lastEventOrNull?.isData ?? false;
 
   /// Returns `true` if the last emitted event is an error event.
-  bool get isLastEventError => lastEventOrNull?.isOnError ?? false;
+  bool get isLastEventError => lastEventOrNull?.isError ?? false;
 }
 
 /// Extension method on [ValueStream] to access the last emitted [ErrorAndStackTrace].

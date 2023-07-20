@@ -172,16 +172,16 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
   StackTrace? get stackTrace => _wrapper.errorAndStackTrace?.stackTrace;
 
   @override
-  Notification<T>? get lastEventOrNull {
+  StreamNotification<T>? get lastEventOrNull {
     // data event
     if (_wrapper.isValue) {
-      return Notification.onData(_wrapper.value as T);
+      return StreamNotification.data(_wrapper.value as T);
     }
 
     // error event
     final errorAndSt = _wrapper.errorAndStackTrace;
     if (errorAndSt != null) {
-      return Notification.onErrorFrom(errorAndStackTrace: errorAndSt);
+      return ErrorNotification(errorAndSt);
     }
 
     // no event
@@ -271,5 +271,5 @@ class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
   T? get valueOrNull => _subject.valueOrNull;
 
   @override
-  Notification<T>? get lastEventOrNull => _subject.lastEventOrNull;
+  StreamNotification<T>? get lastEventOrNull => _subject.lastEventOrNull;
 }

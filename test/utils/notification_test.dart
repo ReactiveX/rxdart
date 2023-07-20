@@ -2,7 +2,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Notification', () {
+  group('StreamNotification', () {
     test('hashCode', () {
       final value1 = 1;
       final value2 = 2;
@@ -11,55 +11,55 @@ void main() {
       final st2 = StackTrace.current;
 
       expect(
-        Notification.onData(value1).hashCode,
-        Notification.onData(value1).hashCode,
+        StreamNotification.data(value1).hashCode,
+        StreamNotification.data(value1).hashCode,
       );
       expect(
-        Notification.onData(value1).hashCode,
-        Notification<num>.onData(value1).hashCode,
+        StreamNotification.data(value1).hashCode,
+        StreamNotification<num>.data(value1).hashCode,
       );
       expect(
-        Notification.onData(value1).hashCode,
-        isNot(Notification.onData(value2).hashCode),
-      );
-
-      expect(
-        Notification<int>.onDone().hashCode,
-        Notification<int>.onDone().hashCode,
-      );
-      expect(
-        Notification<int>.onDone().hashCode,
-        Notification<String>.onDone().hashCode,
+        StreamNotification.data(value1).hashCode,
+        isNot(StreamNotification.data(value2).hashCode),
       );
 
       expect(
-        Notification<int>.onError(value1, st1).hashCode,
-        Notification<int>.onError(value1, st1).hashCode,
+        StreamNotification<int>.done().hashCode,
+        StreamNotification<int>.done().hashCode,
       );
       expect(
-        Notification<int>.onError(value1, st1).hashCode,
-        isNot(Notification<int>.onError(value2, st1).hashCode),
-      );
-      expect(
-        Notification<int>.onError(value1, st1).hashCode,
-        isNot(Notification<int>.onError(value1, st2).hashCode),
-      );
-      expect(
-        Notification<int>.onError(value1, st1).hashCode,
-        isNot(Notification<int>.onError(value2, st2).hashCode),
+        StreamNotification<int>.done().hashCode,
+        StreamNotification<String>.done().hashCode,
       );
 
       expect(
-        Notification.onData(value1).hashCode,
-        isNot(Notification<int>.onDone().hashCode),
+        StreamNotification<int>.error(value1, st1).hashCode,
+        StreamNotification<int>.error(value1, st1).hashCode,
       );
       expect(
-        Notification.onData(value1).hashCode,
-        isNot(Notification<int>.onError(value1, st1).hashCode),
+        StreamNotification<int>.error(value1, st1).hashCode,
+        isNot(StreamNotification<int>.error(value2, st1).hashCode),
       );
       expect(
-        Notification<int>.onDone().hashCode,
-        isNot(Notification<int>.onError(value1, st1).hashCode),
+        StreamNotification<int>.error(value1, st1).hashCode,
+        isNot(StreamNotification<int>.error(value1, st2).hashCode),
+      );
+      expect(
+        StreamNotification<int>.error(value1, st1).hashCode,
+        isNot(StreamNotification<int>.error(value2, st2).hashCode),
+      );
+
+      expect(
+        StreamNotification.data(value1).hashCode,
+        isNot(StreamNotification<int>.done().hashCode),
+      );
+      expect(
+        StreamNotification.data(value1).hashCode,
+        isNot(StreamNotification<int>.error(value1, st1).hashCode),
+      );
+      expect(
+        StreamNotification<int>.done().hashCode,
+        isNot(StreamNotification<int>.error(value1, st1).hashCode),
       );
     });
 
@@ -71,156 +71,162 @@ void main() {
       final st2 = StackTrace.current;
 
       expect(
-        Notification.onData(value1),
-        Notification.onData(value1),
+        StreamNotification.data(value1),
+        StreamNotification.data(value1),
       );
       expect(
-        Notification.onData(value1),
-        isNot(Notification<num>.onData(value1)),
+        StreamNotification.data(value1),
+        isNot(StreamNotification<num>.data(value1)),
       );
       expect(
-        Notification.onData(value1),
-        isNot(Notification.onData(value2)),
-      );
-
-      expect(
-        Notification<int>.onDone(),
-        Notification<int>.onDone(),
-      );
-      expect(
-        Notification<int>.onDone(),
-        Notification<String>.onDone(),
+        StreamNotification.data(value1),
+        isNot(StreamNotification.data(value2)),
       );
 
       expect(
-        Notification<int>.onError(value1, st1),
-        Notification<int>.onError(value1, st1),
+        StreamNotification<int>.done(),
+        StreamNotification<int>.done(),
       );
       expect(
-        Notification<int>.onError(value1, st1),
-        isNot(Notification<int>.onError(value2, st1)),
+        const StreamNotification<int>.done(),
+        StreamNotification<int>.done(),
       );
       expect(
-        Notification<int>.onError(value1, st1),
-        isNot(Notification<int>.onError(value1, st2)),
-      );
-      expect(
-        Notification<int>.onError(value1, st1),
-        isNot(Notification<int>.onError(value2, st2)),
+        StreamNotification<int>.done(),
+        StreamNotification<String>.done(),
       );
 
       expect(
-        Notification.onData(value1),
-        isNot(Notification<int>.onDone()),
+        StreamNotification<int>.error(value1, st1),
+        StreamNotification<int>.error(value1, st1),
       );
       expect(
-        Notification.onData(value1),
-        isNot(Notification<int>.onError(value1, st1)),
+        StreamNotification<int>.error(value1, st1),
+        isNot(StreamNotification<int>.error(value2, st1)),
       );
       expect(
-        Notification<int>.onDone(),
-        isNot(Notification<int>.onError(value1, st1)),
+        StreamNotification<int>.error(value1, st1),
+        isNot(StreamNotification<int>.error(value1, st2)),
+      );
+      expect(
+        StreamNotification<int>.error(value1, st1),
+        isNot(StreamNotification<int>.error(value2, st2)),
+      );
+
+      expect(
+        StreamNotification.data(value1),
+        isNot(StreamNotification<int>.done()),
+      );
+      expect(
+        StreamNotification.data(value1),
+        isNot(StreamNotification<int>.error(value1, st1)),
+      );
+      expect(
+        StreamNotification<int>.done(),
+        isNot(StreamNotification<int>.error(value1, st1)),
       );
     });
 
     test('toString', () {
       expect(
-        Notification.onData(1).toString(),
-        'Notification.onData{value: 1}',
+        StreamNotification.data(1).toString(),
+        'DataNotification{value: 1}',
       );
 
       expect(
-        Notification<int>.onDone().toString(),
-        'Notification.onDone',
+        StreamNotification<int>.done().toString(),
+        'DoneNotification{}',
       );
 
       expect(
-        Notification<int>.onError(2, StackTrace.empty).toString(),
-        'Notification.onError{error: 2, stackTrace: }',
+        StreamNotification<int>.error(2, StackTrace.empty).toString(),
+        'ErrorNotification{error: 2, stackTrace: }',
       );
     });
 
     test('requireData', () {
       expect(
-        Notification.onData(1).requireData,
+        StreamNotification.data(1).requireDataValue,
         1,
       );
 
       expect(
-        () => Notification<int>.onDone().requireData,
-        throwsStateError,
+        () => StreamNotification<int>.done().requireDataValue,
+        throwsA(isA<TypeError>()),
       );
 
       expect(
-        () => Notification<int>.onError(2, StackTrace.empty).requireData,
-        throwsStateError,
+        () =>
+            StreamNotification<int>.error(2, StackTrace.empty).requireDataValue,
+        throwsA(isA<TypeError>()),
       );
     });
 
-    test('errorAndStackTrace', () {
+    test('errorAndStackTraceOrNull', () {
       expect(
-        Notification.onData(1).errorAndStackTrace,
+        StreamNotification.data(1).errorAndStackTraceOrNull,
         isNull,
       );
 
       expect(
-        Notification<int>.onDone().errorAndStackTrace,
+        StreamNotification<int>.done().errorAndStackTraceOrNull,
         isNull,
       );
 
       expect(
-        Notification<int>.onError(2, StackTrace.empty).errorAndStackTrace,
+        StreamNotification<int>.error(2, StackTrace.empty)
+            .errorAndStackTraceOrNull,
         ErrorAndStackTrace(2, StackTrace.empty),
       );
     });
 
     test('isOnData', () {
       expect(
-        Notification.onData(1).isOnData,
+        StreamNotification.data(1).isData,
         isTrue,
       );
 
       expect(
-        Notification<int>.onDone().isOnData,
+        StreamNotification<int>.done().isData,
         isFalse,
       );
 
       expect(
-        Notification<int>.onError(2, StackTrace.empty).isOnData,
+        StreamNotification<int>.error(2, StackTrace.empty).isData,
         isFalse,
       );
     });
 
     test('isOnDone', () {
       expect(
-        Notification.onData(1).isOnDone,
+        StreamNotification.data(1).isDone,
         isFalse,
       );
 
       expect(
-        Notification<int>.onDone().isOnDone,
+        StreamNotification<int>.done().isDone,
         isTrue,
       );
 
       expect(
-        Notification<int>.onError(2, StackTrace.empty).isOnDone,
+        StreamNotification<int>.error(2, StackTrace.empty).isDone,
         isFalse,
       );
     });
 
     test('isOnError', () {
       expect(
-        Notification.onData(1).isOnError,
+        StreamNotification.data(1).isError,
         isFalse,
       );
 
       expect(
-        Notification<int>.onDone().isOnError,
+        StreamNotification<int>.done().isError,
         isFalse,
       );
 
       expect(
-        Notification<int>.onError(2, StackTrace.empty).isOnError,
+        StreamNotification<int>.error(2, StackTrace.empty).isError,
         isTrue,
       );
     });
