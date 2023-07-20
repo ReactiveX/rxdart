@@ -32,16 +32,16 @@ class _DematerializeStreamSink<S> implements EventSink<StreamNotification<S>> {
 /// ### Example
 ///
 ///     Stream<StreamNotification<int>>
-///         .fromIterable([StreamNotification.onData(1), StreamNotification.onDone()])
+///         .fromIterable([StreamNotification.data(1), StreamNotification.done()])
 ///         .transform(DematerializeStreamTransformer())
-///         .listen((i) => print(i)); // Prints 1
+///         .listen(print); // Prints 1
 ///
 /// ### Error example
 ///
 ///     Stream<StreamNotification<int>>
-///         .fromIterable([StreamNotification.onError(Exception(), null)])
+///         .fromIterable([StreamNotification.error(Exception(), null)])
 ///         .transform(DematerializeStreamTransformer())
-///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
+///         .listen(null, onError: (e, s) => print(e)); // Prints Exception
 class DematerializeStreamTransformer<S>
     extends StreamTransformerBase<StreamNotification<S>, S> {
   /// Constructs a [StreamTransformer] which converts the onData, onDone, and
@@ -67,15 +67,15 @@ extension DematerializeExtension<T> on Stream<StreamNotification<T>> {
   /// ### Example
   ///
   ///     Stream<StreamNotification<int>>
-  ///         .fromIterable([StreamNotification.onData(1), StreamNotification.onDone()])
+  ///         .fromIterable([StreamNotification.data(1), StreamNotification.done()])
   ///         .dematerialize()
-  ///         .listen((i) => print(i)); // Prints 1
+  ///         .listen(print); // Prints 1
   ///
   /// ### Error example
   ///
   ///     Stream<StreamNotification<int>>
-  ///         .fromIterable([StreamNotification.onError(Exception(), null)])
+  ///         .fromIterable([StreamNotification.error(Exception(), null)])
   ///         .dematerialize()
-  ///         .listen(null, onError: (e, s) { print(e) }); // Prints Exception
+  ///         .listen(null, onError: (e, s) => print(e)); // Prints Exception
   Stream<T> dematerialize() => DematerializeStreamTransformer<T>().bind(this);
 }
