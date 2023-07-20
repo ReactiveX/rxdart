@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
 /// The type of event used in [StreamNotification]

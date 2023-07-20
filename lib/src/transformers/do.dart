@@ -251,7 +251,7 @@ extension DoExtensions<T> on Stream<T> {
   ///
   ///     Stream.fromIterable([1])
   ///       .doOnEach(print)
-  ///       .listen(null); // prints StreamNotification{kind: OnData, value: 1, errorAndStackTrace: null}, StreamNotification{kind: OnDone, value: null, errorAndStackTrace: null}
+  ///       .listen(null); // Prints DataNotification{value: 1}, DoneNotification{}
   Stream<T> doOnEach(
           void Function(StreamNotification<T> notification) onEach) =>
       DoStreamTransformer<T>(onEach: onEach).bind(this);

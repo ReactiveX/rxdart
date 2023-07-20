@@ -31,7 +31,7 @@ class _MaterializeStreamSink<S> implements EventSink<S> {
 ///
 ///     Stream<int>.fromIterable([1])
 ///         .transform(MaterializeStreamTransformer())
-///         .listen((i) => print(i)); // Prints onData & onDone StreamNotification
+///         .listen(print); // Prints DataNotification{value: 1}, DoneNotification{}
 class MaterializeStreamTransformer<S>
     extends StreamTransformerBase<S, StreamNotification<S>> {
   /// Constructs a [StreamTransformer] which transforms the onData, on Done,
@@ -58,11 +58,11 @@ extension MaterializeExtension<T> on Stream<T> {
   /// Example:
   ///     Stream<int>.fromIterable([1])
   ///         .materialize()
-  ///         .listen((i) => print(i)); // Prints onData & onDone StreamNotification
+  ///         .listen(print); // Prints DataNotification{value: 1}, DoneNotification{}
   ///
   ///     Stream<int>.error(Exception())
   ///         .materialize()
-  ///         .listen((i) => print(i)); // Prints onError StreamNotification
+  ///         .listen(print); // Prints ErrorNotification{error: Exception, stackTrace: }, DoneNotification{}
   Stream<StreamNotification<T>> materialize() =>
       MaterializeStreamTransformer<T>().bind(this);
 }
