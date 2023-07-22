@@ -22,7 +22,7 @@
     * `Kind.onData` to `NotificationKind.data`.
     * `Kind.onError` to `NotificationKind.error`.
     * `Kind.onDone` to `NotificationKind.done`.
-  * Introduce `DataNotification`, `ErrorNotification`, `DoneNotification` as the subclasses of `StreamNotification`.
+  * Introduce `DataNotification`, `ErrorNotification` and `DoneNotification` as the subclasses of `StreamNotification`.
   * Convert `isOnData`, `isOnError`, `isOnDone`, `requireData` to extension getters on `StreamNotification`,
     now they are now named `isData`, `isError`, `isDone` and `requireDataValue`.
   * Add extensions on `StreamNotification`: `dataValueOrNull`, `requireErrorAndStackTrace`, `errorAndStackTraceOrNull` getters and `when` method.
