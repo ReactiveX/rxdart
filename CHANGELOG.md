@@ -15,6 +15,7 @@
 * Rename `Notification` and `Kind` to better reflect their purpose,
   and to avoid confusion with [Flutter's Notification class](https://api.flutter.dev/flutter/widgets/Notification-class.html).
   * Rename `Notification` to `StreamNotification`
+    * `Notification.onData` to `StreamNotification.data`. 
     * `Notification.onDone` to `StreamNotification.done`.
     * `Notification.onError` to `StreamNotification.error`.
   * Rename `Kind` to `NotificationKind`
