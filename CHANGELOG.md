@@ -14,11 +14,10 @@
 
 * Rename `Notification` and `Kind` to better reflect their purpose,
   and to avoid confusion with [Flutter's Notification class](https://api.flutter.dev/flutter/widgets/Notification-class.html).
-  * `Notification` to `StreamNotification`, also rename constructors
-    * `Notification.onData` to `StreamNotification.data`.
+  * Rename `Notification` to `StreamNotification`
     * `Notification.onDone` to `StreamNotification.done`.
     * `Notification.onError` to `StreamNotification.error`.
-  * `Kind` to `NotificationKind`, also rename enum values
+  * Rename `Kind` to `NotificationKind`
     * `Kind.onData` to `NotificationKind.data`.
     * `Kind.onError` to `NotificationKind.error`.
     * `Kind.onDone` to `NotificationKind.done`.
