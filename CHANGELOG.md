@@ -1,3 +1,44 @@
+## 0.28.0-dev.0 (2023-07-26)
+
+Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
+
+### New
+
+* ValueStream:
+  * Add `lastEventOrNull` getter to `ValueStream`,
+    which returns the last emitted event (either data/value or error event), or `null`.
+  * Add `isLastEventValue`, `isLastEventError` and `errorAndStackTraceOrNull`
+    extension getters to `ValueStream`, to check the kind of the last emitted event is data/value or error.
+  * Update documentation.
+
+* ReplayStream:
+  * Add `errorAndStackTraces` to `ReplayStream`, which returns a list of emitted `ErrorAndStackTrace`s.
+
+* Rename `Notification` and `Kind` to better reflect their purpose,
+  and to avoid confusion with [Flutter's Notification class](https://api.flutter.dev/flutter/widgets/Notification-class.html).
+  * Rename `Notification` to `StreamNotification`
+    * `Notification.onData` to `StreamNotification.data`. 
+    * `Notification.onDone` to `StreamNotification.done`.
+    * `Notification.onError` to `StreamNotification.error`.
+  * Rename `Kind` to `NotificationKind`
+    * `Kind.onData` to `NotificationKind.data`.
+    * `Kind.onError` to `NotificationKind.error`.
+    * `Kind.onDone` to `NotificationKind.done`.
+  * Introduce `DataNotification`, `ErrorNotification` and `DoneNotification` as the subclasses of `StreamNotification`.
+  * Convert `isOnData`, `isOnError`, `isOnDone`, `requireData` to extension getters on `StreamNotification`,
+    they are now named `isData`, `isError`, `isDone` and `requireDataValue`.
+  * Add extensions on `StreamNotification`: `dataValueOrNull`, `requireErrorAndStackTrace`, `errorAndStackTraceOrNull` getters and `when` method.
+
+### Changed
+
+* Accept Dart SDK versions above 3.0.
+
+### Documentation
+
+* Update and fix documentation.
+* Fix README example (thanks to [@wurikiji](https://github.com/wurikiji)).
+* Update Flutter example (thanks to [@hoangchungk53qx1](https://github.com/hoangchungk53qx1)).
+
 ## 0.27.7 (2022-11-16)
 
 ### Fixed
