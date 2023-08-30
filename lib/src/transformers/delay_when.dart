@@ -10,7 +10,7 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   final Stream<void>? listenDelay;
 
   final subscriptions = <StreamSubscription<void>>[];
-  StreamSubscription<void>? subscription;
+  StreamSubscription<void>? delaySubscription;
   var closed = false;
 
   _DelayWhenStreamSink(this.itemDelaySelector, this.listenDelay);
@@ -45,8 +45,8 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   Future<void>? onCancel() {
-    final future = subscription?.cancel();
-    subscription = null;
+    final future = delaySubscription?.cancel();
+    delaySubscription = null;
 
     if (subscriptions.isEmpty) {
       return future;
@@ -68,16 +68,16 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
     }
 
     final completer = Completer<void>.sync();
-    subscription = listenDelay!.take(1).listen(
+    delaySubscription = listenDelay!.take(1).listen(
       null,
       onError: (Object e, StackTrace s) {
-        subscription?.cancel();
-        subscription = null;
+        delaySubscription?.cancel();
+        delaySubscription = null;
         completer.completeError(e, s);
       },
       onDone: () {
-        subscription?.cancel();
-        subscription = null;
+        delaySubscription?.cancel();
+        delaySubscription = null;
         completer.complete(null);
       },
     );
@@ -86,13 +86,13 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   void onPause() {
-    subscription?.pause();
+    delaySubscription?.pause();
     subscriptions.pauseAll();
   }
 
   @override
   void onResume() {
-    subscription?.resume();
+    delaySubscription?.resume();
     subscriptions.resumeAll();
   }
 }

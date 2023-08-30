@@ -7,6 +7,7 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   final Stream<T> Function(S value) _mapper;
   StreamSubscription<T>? _mapperSubscription;
   bool _inputClosed = false;
+  bool _isCancelled = false;
 
   _SwitchMapStreamSink(this._mapper);
 
@@ -20,7 +21,33 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
       return;
     }
 
-    _mapperSubscription?.cancel();
+    final mapperSubscription = _mapperSubscription;
+
+    if (mapperSubscription == null) {
+      listenToInner(mappedStream);
+      return;
+    }
+
+    _mapperSubscription = null;
+    pause();
+    mapperSubscription.cancel().onError<Object>((e, s) {
+      if (!_isCancelled) {
+        sink.addError(e, s);
+      }
+    }).whenComplete(() => resumeAndListenToInner(mappedStream));
+  }
+
+  void resumeAndListenToInner(Stream<T> mappedStream) {
+    if (_isCancelled) {
+      return;
+    }
+
+    resume();
+    listenToInner(mappedStream);
+  }
+
+  void listenToInner(Stream<T> mappedStream) {
+    assert(_mapperSubscription == null);
 
     _mapperSubscription = mappedStream.listen(
       sink.add,
@@ -33,6 +60,14 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
         }
       },
     );
+
+    // https://github.com/dart-lang/stream_transform/blob/9743578b0119de6a8badd30bb16ef15d79bd3b15/lib/src/switch.dart#L71-L74
+    // If a pause happens during an _mapperSubscription.cancel,
+    // we still listen to the next stream when the cancel is done.
+    // Then we immediately pause it again here.
+    if (sink.isPaused) {
+      _mapperSubscription?.pause();
+    }
   }
 
   @override
@@ -46,7 +81,11 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  FutureOr<void> onCancel() => _mapperSubscription?.cancel();
+  FutureOr<void> onCancel() {
+    _isCancelled = true;
+
+    return _mapperSubscription?.cancel();
+  }
 
   @override
   void onListen() {}
