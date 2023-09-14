@@ -220,7 +220,7 @@ In order to run the web examples, please follow these steps:
 
   1. Clone this repo and enter the directory
   2. Run `dart pub get`
-  3. Run `dart pub run build_runner serve example`
+  3. Run `dart run build_runner serve example`
   4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
 
 ### Command Line Examples
