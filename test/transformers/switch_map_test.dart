@@ -175,6 +175,49 @@ void main() {
       (s) => s.switchMap((v) => Stream.value(v)),
     );
   });
+
+  test(
+    'Rx.switch pauses subscription when cancelling inner subscription, then resume',
+    () async {
+      final controller = StreamController<StreamController<int>>();
+
+      var b = false;
+
+      final completer1 = Completer<void>();
+      final c1 = StreamController<int>();
+      c1.add(1);
+      c1.add(2);
+      c1.onCancel = () => completer1.future.then((_) => b = true);
+      controller.add(c1);
+
+      final completer2 = Completer<void>();
+      final c2 = StreamController<int>();
+      c2.add(3);
+      c2.add(4);
+      c2.onListen = () {
+        if (!b) {
+          throw Exception('should be paused');
+        }
+      };
+      c2.onCancel = () => completer2.future;
+
+      final stream = controller.stream.switchMap((c) => c.stream);
+
+      stream.listen(
+        expectAsync1(
+          (v) async {
+            print(v);
+            if (v == 2) {
+              controller.add(c2);
+              await Future<void>.delayed(const Duration(milliseconds: 1000));
+              completer1.complete(null);
+            }
+          },
+          count: 4,
+        ),
+      );
+    },
+  );
 }
 
 class OnSubscriptionTriggerableStream<T> extends Stream<T> {
