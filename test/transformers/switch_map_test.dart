@@ -179,38 +179,45 @@ void main() {
   test(
     'Rx.switch pauses subscription when cancelling inner subscription, then resume',
     () async {
-      final controller = StreamController<StreamController<int>>();
+      var controller1Cancelled = false;
+      final cancelCompleter1 = Completer<void>.sync();
+      final controller1 = StreamController<int>()
+        ..add(0)
+        ..add(1)
+        ..onCancel = () async {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await cancelCompleter1.future;
+          controller1Cancelled = true;
+        };
 
-      var b = false;
+      final controller2 = StreamController<int>()
+        ..add(2)
+        ..add(3)
+        ..onListen = () {
+          expect(
+            controller1Cancelled,
+            true,
+            reason:
+                'controller1 should be cancelled before controller2 is listened to',
+          );
+        };
 
-      final completer1 = Completer<void>();
-      final c1 = StreamController<int>();
-      c1.add(1);
-      c1.add(2);
-      c1.onCancel = () => completer1.future.then((_) => b = true);
-      controller.add(c1);
-
-      final completer2 = Completer<void>();
-      final c2 = StreamController<int>();
-      c2.add(3);
-      c2.add(4);
-      c2.onListen = () {
-        if (!b) {
-          throw Exception('should be paused');
-        }
-      };
-      c2.onCancel = () => completer2.future;
-
+      final controller = StreamController<StreamController<int>>()
+        ..add(controller1);
       final stream = controller.stream.switchMap((c) => c.stream);
 
+      var expected = 0;
       stream.listen(
         expectAsync1(
           (v) async {
-            print(v);
-            if (v == 2) {
-              controller.add(c2);
-              await Future<void>.delayed(const Duration(milliseconds: 1000));
-              completer1.complete(null);
+            expect(v, expected++);
+
+            if (v == 1) {
+              // switch to controller2.stream
+              controller.add(controller2);
+
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              cancelCompleter1.complete(null);
             }
           },
           count: 4,
