@@ -320,7 +320,7 @@ void main() {
               // pauses the subscription while cancelling the controller1
               subscription.pause();
 
-              // let the controller1 cancel complete
+              // let the cancellation of controller1 complete
               cancelCompleter1.complete(null);
 
               // make sure the controller2.stream is added to the controller
