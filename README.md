@@ -9,9 +9,10 @@
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 [![Pub Version (including pre-releases)](https://img.shields.io/pub/v/rxdart?include_prereleases&color=%23A0147B)](https://pub.dartlang.org/packages/rxdart)
 [![Gitter](https://img.shields.io/gitter/room/ReactiveX/rxdart.svg)](https://gitter.im/ReactiveX/rxdart)
+[![Flutter website](https://img.shields.io/badge/flutter-website-deepskyblue.svg)](https://docs.flutter.dev/data-and-backend/state-mgmt/options#bloc--rx)
 [![Build Flutter example](https://github.com/ReactiveX/rxdart/actions/workflows/flutter-example.yml/badge.svg)](https://github.com/ReactiveX/rxdart/actions/workflows/flutter-example.yml)
 [![License](https://img.shields.io/github/license/ReactiveX/rxdart)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Flutter website](https://img.shields.io/badge/flutter-website-deepskyblue.svg)](https://docs.flutter.dev/data-and-backend/state-mgmt/options#bloc--rx)
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FReactiveX%2Frxdart&count_bg=%23D71092&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 ## About
 
