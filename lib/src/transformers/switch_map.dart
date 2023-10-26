@@ -29,7 +29,7 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
     }
 
     _mapperSubscription = null;
-    pause();
+    pauseSubscription();
     mapperSubscription.cancel().onError<Object>((e, s) {
       if (!_isCancelled) {
         sink.addError(e, s);
@@ -42,7 +42,7 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
       return;
     }
 
-    resume();
+    resumeSubscription();
     listenToInner(mappedStream);
   }
 

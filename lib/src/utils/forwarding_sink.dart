@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
-/// TODO
+/// A enhanced [EventSink] that allows to check if the sink is paused.
 abstract class EnhancedEventSink<T> implements EventSink<T> {
-  /// TODO
+  /// Whether the subscription would need to buffer events.
   bool get isPaused;
 }
 
@@ -22,25 +22,30 @@ abstract class ForwardingSink<T, R> {
 
   /// The output sink.
   /// @nonVirtual
+  /// @internal
   EnhancedEventSink<R> get sink =>
       _sink ?? (throw StateError('Must call setSink(sink) before accessing!'));
 
   /// Set the output sink.
   /// @nonVirtual
+  /// @internal
   void setSink(EnhancedEventSink<R> sink) => _sink = sink;
 
   /// Set the upstream subscription
   /// @nonVirtual
+  /// @internal
   void setSubscription(StreamSubscription<T>? subscription) =>
       _subscription = subscription;
 
-  /// Pause the subscription.
-  /// @nonVirtual
-  void pause() => _subscription?.pause();
+  /// --------------------------------------------------------------------------
 
-  /// Resume the subscription.
+  /// Pause the upstream subscription.
   /// @nonVirtual
-  void resume() => _subscription?.resume();
+  void pauseSubscription() => _subscription?.pause();
+
+  /// Resume the upstream subscription.
+  /// @nonVirtual
+  void resumeSubscription() => _subscription?.resume();
 
   /// --------------------------------------------------------------------------
 
