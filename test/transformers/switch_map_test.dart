@@ -175,6 +175,169 @@ void main() {
       (s) => s.switchMap((v) => Stream.value(v)),
     );
   });
+
+  test(
+    'Rx.switchMap pauses subscription when cancelling inner subscription, then resume',
+    () async {
+      var isController1Cancelled = false;
+      final cancelCompleter1 = Completer<void>.sync();
+      final controller1 = StreamController<int>()
+        ..add(0)
+        ..add(1)
+        ..onCancel = () async {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await cancelCompleter1.future;
+          isController1Cancelled = true;
+        };
+
+      final controller2 = StreamController<int>()
+        ..add(2)
+        ..add(3)
+        ..onListen = () {
+          expect(
+            isController1Cancelled,
+            true,
+            reason:
+                'controller1 should be cancelled before controller2 is listened to',
+          );
+        };
+
+      final controller = StreamController<StreamController<int>>()
+        ..add(controller1);
+      final stream = controller.stream.switchMap((c) => c.stream);
+
+      var expected = 0;
+      stream.listen(
+        expectAsync1(
+          (v) async {
+            expect(v, expected++);
+
+            if (v == 1) {
+              // switch to controller2.stream
+              controller.add(controller2);
+
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+              cancelCompleter1.complete(null);
+            }
+          },
+          count: 4,
+        ),
+      );
+    },
+  );
+
+  test('Rx.switchMap forwards errors from the cancel()', () {
+    var isController1Cancelled = false;
+
+    final controller1 = StreamController<int>()
+      ..add(0)
+      ..add(1)
+      ..onCancel = () async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        isController1Cancelled = true;
+        throw Exception('cancel error');
+      };
+
+    final controller2 = StreamController<int>()
+      ..add(2)
+      ..add(3)
+      ..onListen = () {
+        expect(
+          isController1Cancelled,
+          true,
+          reason:
+              'controller1 should be cancelled before controller2 is listened to',
+        );
+      };
+
+    final controller = StreamController<StreamController<int>>()
+      ..add(controller1);
+    final stream = controller.stream.switchMap((c) => c.stream);
+
+    var expected = 0;
+    stream.listen(
+      expectAsync1(
+        (v) async {
+          expect(v, expected++);
+
+          if (v == 1) {
+            // switch to controller2.stream
+            controller.add(controller2);
+          }
+        },
+        count: 4,
+      ),
+      onError: expectAsync1(
+        (Object error) => expect(error, isException),
+        count: 1,
+      ),
+    );
+  });
+
+  test(
+    'Rx.switchMap pauses the next inner StreamSubscription when pausing while cancelling the previous inner Stream',
+    () {
+      var isController1Cancelled = false;
+      final cancelCompleter1 = Completer<void>.sync();
+      final controller1 = StreamController<int>()
+        ..add(0)
+        ..add(1)
+        ..onCancel = () async {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+          await cancelCompleter1.future;
+          isController1Cancelled = true;
+        };
+
+      final controller2 = StreamController<int>()
+        ..add(2)
+        ..add(3)
+        ..onListen = () {
+          expect(
+            isController1Cancelled,
+            true,
+            reason:
+                'controller1 should be cancelled before controller2 is listened to',
+          );
+        };
+
+      final controller = StreamController<StreamController<int>>()
+        ..add(controller1);
+      final stream = controller.stream.switchMap((c) => c.stream);
+
+      var expected = 0;
+      late StreamSubscription<void> subscription;
+      subscription = stream.listen(
+        expectAsync1(
+          (v) async {
+            expect(v, expected++);
+
+            if (v == 1) {
+              // switch to controller2.stream
+              controller.add(controller2);
+
+              await Future<void>.delayed(const Duration(milliseconds: 10));
+
+              // pauses the subscription while cancelling the controller1
+              subscription.pause();
+
+              // let the cancellation of controller1 complete
+              cancelCompleter1.complete(null);
+
+              // make sure the controller2.stream is added to the controller
+              await pumpEventQueue();
+
+              // controller2.stream should be paused
+              expect(controller2.isPaused, true);
+
+              // resume the subscription to continue the rest of the stream
+              subscription.resume();
+            }
+          },
+          count: 4,
+        ),
+      );
+    },
+  );
 }
 
 class OnSubscriptionTriggerableStream<T> extends Stream<T> {

@@ -38,6 +38,7 @@ Stream<R> _forwardMulti<T, R>(
         onError: sink.onError,
         onDone: sink.onDone,
       );
+      sink.setSubscription(subscription);
     }
 
     final futureOrVoid = sink.onListen();
@@ -57,6 +58,8 @@ Stream<R> _forwardMulti<T, R>(
 
       final future = subscription?.cancel();
       subscription = null;
+      sink.setSubscription(null);
+
       return waitTwoFutures(future, sink.onCancel());
     };
   }, isBroadcast: true);
@@ -84,6 +87,7 @@ Stream<R> _forward<T, R>(
         onError: sink.onError,
         onDone: sink.onDone,
       );
+      sink.setSubscription(subscription);
 
       if (!stream.isBroadcast) {
         controller.onPause = () {
@@ -97,7 +101,7 @@ Stream<R> _forward<T, R>(
       }
     }
 
-    sink.setSink(controller);
+    sink.setSink(_EnhancedEventSink(controller));
     final futureOrVoid = sink.onListen();
     if (futureOrVoid is Future<void>) {
       futureOrVoid.then(listenToUpstream).onError<Object>((e, s) {
@@ -115,13 +119,14 @@ Stream<R> _forward<T, R>(
 
     final future = subscription?.cancel();
     subscription = null;
+    sink.setSubscription(null);
 
     return waitTwoFutures(future, sink.onCancel());
   };
   return controller.stream;
 }
 
-class _MultiControllerSink<T> implements EventSink<T> {
+class _MultiControllerSink<T> implements EventSink<T>, EnhancedEventSink<T> {
   final MultiStreamController<T> controller;
 
   _MultiControllerSink(this.controller);
@@ -135,4 +140,26 @@ class _MultiControllerSink<T> implements EventSink<T> {
 
   @override
   void close() => controller.closeSync();
+
+  @override
+  bool get isPaused => controller.isPaused;
+}
+
+class _EnhancedEventSink<T> implements EnhancedEventSink<T> {
+  final StreamController<T> _controller;
+
+  _EnhancedEventSink(this._controller);
+
+  @override
+  void add(T event) => _controller.add(event);
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _controller.addError(error, stackTrace);
+
+  @override
+  void close() => _controller.close();
+
+  @override
+  bool get isPaused => _controller.isPaused;
 }

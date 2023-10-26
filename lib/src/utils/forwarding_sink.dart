@@ -2,6 +2,12 @@ import 'dart:async';
 
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
+/// A enhanced [EventSink] that allows to check if the sink is paused.
+abstract class EnhancedEventSink<T> implements EventSink<T> {
+  /// Whether the subscription would need to buffer events.
+  bool get isPaused;
+}
+
 /// A [Sink] that supports event hooks.
 ///
 /// This makes it suitable for certain rx transformers that need to
@@ -11,14 +17,37 @@ import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 /// [Stream]s. See, for example, [Stream.eventTransformed] which uses
 /// `EventSink`s to transform events.
 abstract class ForwardingSink<T, R> {
-  EventSink<R>? _sink;
+  EnhancedEventSink<R>? _sink;
+  StreamSubscription<T>? _subscription;
 
   /// The output sink.
-  EventSink<R> get sink =>
+  /// @nonVirtual
+  /// @internal
+  EnhancedEventSink<R> get sink =>
       _sink ?? (throw StateError('Must call setSink(sink) before accessing!'));
 
   /// Set the output sink.
-  void setSink(EventSink<R> sink) => _sink = sink;
+  /// @nonVirtual
+  /// @internal
+  void setSink(EnhancedEventSink<R> sink) => _sink = sink;
+
+  /// Set the upstream subscription
+  /// @nonVirtual
+  /// @internal
+  void setSubscription(StreamSubscription<T>? subscription) =>
+      _subscription = subscription;
+
+  /// --------------------------------------------------------------------------
+
+  /// Pause the upstream subscription.
+  /// @nonVirtual
+  void pauseSubscription() => _subscription?.pause();
+
+  /// Resume the upstream subscription.
+  /// @nonVirtual
+  void resumeSubscription() => _subscription?.resume();
+
+  /// --------------------------------------------------------------------------
 
   /// Handle data event
   void onData(T data);
