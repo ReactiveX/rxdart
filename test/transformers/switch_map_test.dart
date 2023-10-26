@@ -177,9 +177,9 @@ void main() {
   });
 
   test(
-    'Rx.switch pauses subscription when cancelling inner subscription, then resume',
+    'Rx.switchMap pauses subscription when cancelling inner subscription, then resume',
     () async {
-      var controller1Cancelled = false;
+      var isController1Cancelled = false;
       final cancelCompleter1 = Completer<void>.sync();
       final controller1 = StreamController<int>()
         ..add(0)
@@ -187,7 +187,7 @@ void main() {
         ..onCancel = () async {
           await Future<void>.delayed(const Duration(milliseconds: 10));
           await cancelCompleter1.future;
-          controller1Cancelled = true;
+          isController1Cancelled = true;
         };
 
       final controller2 = StreamController<int>()
@@ -195,7 +195,7 @@ void main() {
         ..add(3)
         ..onListen = () {
           expect(
-            controller1Cancelled,
+            isController1Cancelled,
             true,
             reason:
                 'controller1 should be cancelled before controller2 is listened to',
@@ -225,6 +225,54 @@ void main() {
       );
     },
   );
+
+  test('Rx.switchMap forwards errors from the cancel()', () {
+    var isController1Cancelled = false;
+
+    final controller1 = StreamController<int>()
+      ..add(0)
+      ..add(1)
+      ..onCancel = () async {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        isController1Cancelled = true;
+        throw Exception('cancel error');
+      };
+
+    final controller2 = StreamController<int>()
+      ..add(2)
+      ..add(3)
+      ..onListen = () {
+        expect(
+          isController1Cancelled,
+          true,
+          reason:
+              'controller1 should be cancelled before controller2 is listened to',
+        );
+      };
+
+    final controller = StreamController<StreamController<int>>()
+      ..add(controller1);
+    final stream = controller.stream.switchMap((c) => c.stream);
+
+    var expected = 0;
+    stream.listen(
+      expectAsync1(
+        (v) async {
+          expect(v, expected++);
+
+          if (v == 1) {
+            // switch to controller2.stream
+            controller.add(controller2);
+          }
+        },
+        count: 4,
+      ),
+      onError: expectAsync1(
+        (Object error) => expect(error, isException),
+        count: 1,
+      ),
+    );
+  });
 }
 
 class OnSubscriptionTriggerableStream<T> extends Stream<T> {
