@@ -21,10 +21,10 @@ jobs:
         sdk: [ beta, stable, 2.17.0, 2.15.0, 2.12.0 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup Dart
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1.6.0
         with:
           sdk: ${{ matrix.sdk }}
 
@@ -70,4 +70,4 @@ jobs:
           --out=lcov.info
           --report-on=lib
 
-      - uses: codecov/codecov-action@v2.1.0
+      - uses: codecov/codecov-action@v3.1.4
