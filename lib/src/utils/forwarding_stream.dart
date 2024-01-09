@@ -37,6 +37,7 @@ Stream<R> _forwardMulti<T, R>(
         sink.onData,
         onError: sink.onError,
         onDone: sink.onDone,
+        cancelOnError: true,
       );
       sink.setSubscription(subscription);
     }
@@ -86,6 +87,7 @@ Stream<R> _forward<T, R>(
         sink.onData,
         onError: sink.onError,
         onDone: sink.onDone,
+        cancelOnError: true,
       );
       sink.setSubscription(subscription);
 
