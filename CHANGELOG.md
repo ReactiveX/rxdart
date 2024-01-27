@@ -1,4 +1,4 @@
-## 0.28.0-dev.1 (TBD)
+## 0.28.0-dev.1 (2024-01-27)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
 
@@ -8,6 +8,10 @@ Feedback on this change appreciated as this is a dev release before 0.28.0 stabl
   `switchMap` will pause the outer subscription and and wait for the inner subscription to be completely canceled.
   It will then resume the outer subscription, and listen to the next inner Stream.
   Any errors from canceling the previous inner subscription will now be forwarded to the resulting Stream.
+
+### Documentation
+
+* Replace deprecated "dart pub run" with "dart run" (thanks to [@tatsuyafujisaki](https://github.com/tatsuyafujisaki)).
 
 ## 0.28.0-dev.0 (2023-07-26)
 
