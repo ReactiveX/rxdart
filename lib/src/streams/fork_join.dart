@@ -59,7 +59,7 @@ import 'package:rxdart/src/utils/subscription.dart';
 /// types information for the value of each Stream, use the
 /// [join2] - [join9] operators.
 ///
-///     ForkJoinStream.forkJoin2(
+///     ForkJoinStream.join2(
 ///       Stream.fromIterable([1]),
 ///       Stream.fromIterable([2, 3]),
 ///       (a, b) => a + b,
