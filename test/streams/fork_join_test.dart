@@ -36,7 +36,7 @@ void main() {
 
   test('Rx.forkJoin.nullable', () {
     expect(
-      ForkJoinStream.combine2(
+      ForkJoinStream.join2(
         Stream.value(null),
         Stream.value(1),
         (a, b) => '$a $b',

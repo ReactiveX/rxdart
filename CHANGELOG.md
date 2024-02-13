@@ -1,3 +1,9 @@
+## 0.28.0-dev.2 (TBD)
+
+### Changed
+
+- **Breaking**: Rename `ForkJoinStream.combine2`..`combine9` to `ForkJoinStream.join2`..`join9`.
+
 ## 0.28.0-dev.1 (2024-01-27)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
