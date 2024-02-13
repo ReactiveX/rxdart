@@ -622,8 +622,8 @@ abstract class Rx {
           Stream<F> streamF,
           Stream<G> streamG,
           T Function(A a, B b, C c, D d, E e, F f, G g) combiner) =>
-      ForkJoinStream.join7(streamA, streamB, streamC, streamD, streamE,
-          streamF, streamG, combiner);
+      ForkJoinStream.join7(streamA, streamB, streamC, streamD, streamE, streamF,
+          streamG, combiner);
 
   /// Merges the given Streams into a single Stream sequence by using the
   /// [combiner] function when all of the stream sequences emits their
