@@ -2,7 +2,10 @@
 
 ### Changed
 
-- **Breaking**: Rename `ForkJoinStream.combine2`..`combine9` to `ForkJoinStream.join2`..`join9`.
+* **Breaking**: Rename `ForkJoinStream.combine2`..`combine9` to `ForkJoinStream.join2`..`join9`.
+* **Breaking**: `Rx.using`/`UsingStream`
+  * Convert all _required positional_ parameters to _required named_ parameters.
+  * The `disposer` is now called after the future returned from `StreamSubscription.cancel` completes.
 
 ## 0.28.0-dev.1 (2024-01-27)
 
