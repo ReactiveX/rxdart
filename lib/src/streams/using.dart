@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:rxdart/src/utils/future.dart';
-
 /// When listener listens to it, creates a resource object from resource factory function,
 /// and creates a [Stream] from the given factory function and resource as argument.
 /// Finally when the stream finishes emitting items or stream subscription
@@ -25,11 +23,11 @@ class UsingStream<T, R> extends StreamView<T> {
   /// Construct a [UsingStream] that creates a resource object from [resourceFactory],
   /// and then creates a [Stream] from [streamFactory] and resource as argument.
   /// When the Stream terminates, call [disposer] on resource object.
-  UsingStream(
-    FutureOr<R> Function() resourceFactory,
-    Stream<T> Function(R) streamFactory,
-    FutureOr<void> Function(R) disposer,
-  ) : super(_buildStream(resourceFactory, streamFactory, disposer));
+  UsingStream({
+    required FutureOr<R> Function() resourceFactory,
+    required Stream<T> Function(R) streamFactory,
+    required FutureOr<void> Function(R) disposer,
+  }) : super(_buildStream(resourceFactory, streamFactory, disposer));
 
   static Stream<T> _buildStream<T, R>(
     FutureOr<R> Function() resourceFactory,
@@ -93,9 +91,13 @@ class UsingStream<T, R> extends StreamView<T> {
       onPause: () => subscription?.pause(),
       onResume: () => subscription?.resume(),
       onCancel: () {
-        final futureOr = resourceCreated ? disposer(resource) : null;
         final cancelFuture = subscription?.cancel();
-        return waitTwoFutures(cancelFuture, futureOr);
+        subscription = null;
+
+        return cancelFuture == null
+            ? (resourceCreated ? disposer(resource) : null)
+            : cancelFuture
+                .then((_) => resourceCreated ? disposer(resource) : null);
       },
     );
 

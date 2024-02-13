@@ -110,10 +110,10 @@ void main() async {
 
         test('$groupPrefix.done', () async {
           final stream = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Stream.value(resource)
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Stream.value(resource)
                 .flatMap((_) => Stream.fromIterable([1, 2, 3])),
-            disposer,
+            disposer: disposer,
           );
 
           await expectLater(
@@ -135,12 +135,12 @@ void main() async {
           var callDisposer = false;
 
           final stream = Rx.using<int, MockResource>(
-            resourceFactoryThrows,
-            (resource) {
+            resourceFactory: resourceFactoryThrows,
+            streamFactory: (resource) {
               calledStreamFactory = true;
               return Rx.range(0, 3);
             },
-            (resource) {
+            disposer: (resource) {
               callDisposer = true;
               return disposer(resource);
             },
@@ -158,9 +158,9 @@ void main() async {
 
         test('$groupPrefix.disposer.throws', () async {
           final subscription = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Rx.timer(0, resourceDuration),
-            disposerThrows,
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Rx.timer(0, resourceDuration),
+            disposer: disposerThrows,
           ).listen(null);
 
           if (create == Create.async) {
@@ -175,9 +175,9 @@ void main() async {
 
         test('$groupPrefix.streamFactory.throws', () async {
           final stream = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => throw Exception(),
-            disposer,
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => throw Exception(),
+            disposer: disposer,
           );
 
           await expectLater(
@@ -191,9 +191,9 @@ void main() async {
 
         test('$groupPrefix.streamFactory.errors', () async {
           final stream = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Stream.error(Exception()),
-            disposer,
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Stream.error(Exception()),
+            disposer: disposer,
           );
 
           await expectLater(
@@ -209,12 +209,12 @@ void main() async {
           const duration = Duration(milliseconds: 200);
 
           final subscription = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Rx.concat([
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Rx.concat([
               Rx.timer(0, duration),
               Stream.error(Exception()),
             ]),
-            disposer,
+            disposer: disposer,
           ).listen(
             null,
             cancelOnError: false,
@@ -231,12 +231,12 @@ void main() async {
 
         test('$groupPrefix.cancel.immediately', () async {
           final subscription = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Rx.concat([
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Rx.concat([
               Rx.timer(0, const Duration(milliseconds: 10)),
               Stream.error(Exception()),
             ]),
-            disposer,
+            disposer: disposer,
           ).listen(
             expectAsync1((v) => expect(true, false), count: 0),
             onError: expectAsync2(
@@ -255,12 +255,12 @@ void main() async {
 
         test('$groupPrefix.errors.continueOnError', () async {
           Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Rx.concat([
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Rx.concat([
               Rx.timer(0, resourceDuration * 2),
               Stream<int>.error(Exception())
             ]),
-            disposer,
+            disposer: disposer,
           ).listen(
             null,
             onError: (Object e, StackTrace s) {},
@@ -274,9 +274,9 @@ void main() async {
 
         test('$groupPrefix.errors.cancelOnError', () async {
           Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Stream.error(Exception()),
-            disposer,
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Stream.error(Exception()),
+            disposer: disposer,
           ).listen(
             null,
             onError: (Object e, StackTrace s) {},
@@ -290,9 +290,9 @@ void main() async {
 
         test('$groupPrefix.single.subscription', () async {
           final stream = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Rx.range(0, 3),
-            disposer,
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Rx.range(0, 3),
+            disposer: disposer,
           );
           stream.listen(null);
           expect(() => stream.listen(null), throwsStateError);
@@ -300,12 +300,12 @@ void main() async {
 
         test('$groupPrefix.asBroadcastStream', () async {
           final stream = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Stream.periodic(
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Stream.periodic(
               const Duration(milliseconds: 50),
               (i) => i,
             ),
-            disposer,
+            disposer: disposer,
           ).asBroadcastStream(onCancel: (s) => s.cancel());
 
           final s1 = stream.listen(null);
@@ -324,12 +324,12 @@ void main() async {
           late StreamSubscription<int> subscription;
 
           subscription = Rx.using<int, MockResource>(
-            resourceFactory,
-            (resource) => Stream.periodic(
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) => Stream.periodic(
               const Duration(milliseconds: 20),
               (i) => i,
             ),
-            disposer,
+            disposer: disposer,
           ).listen(
             expectAsync1(
               (value) {
