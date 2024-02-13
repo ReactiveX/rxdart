@@ -5,6 +5,7 @@ import 'dart:async';
 /// Finally when the stream finishes emitting items or stream subscription
 /// is cancelled (call [StreamSubscription.cancel] or `Stream.listen(cancelOnError: true)`),
 /// call the disposer function on resource object.
+/// The disposer is called after the future returned from [StreamSubscription.cancel] completes.
 ///
 /// The [UsingStream] is a way you can instruct a Stream to create
 /// a resource that exists only during the lifespan of the Stream
