@@ -969,12 +969,16 @@ abstract class Rx {
   ///       (r) => Stream.fromIterable(r),
   ///       (r) => r.clear(),
   ///     ).listen(print); // prints 1, 2, 3
-  static Stream<T> using<T, R>(
-    FutureOr<R> Function() resourceFactory,
-    Stream<T> Function(R) streamFactory,
-    FutureOr<void> Function(R) disposer,
-  ) =>
-      UsingStream(resourceFactory, streamFactory, disposer);
+  static Stream<T> using<T, R>({
+    required FutureOr<R> Function() resourceFactory,
+    required Stream<T> Function(R) streamFactory,
+    required FutureOr<void> Function(R) disposer,
+  }) =>
+      UsingStream(
+        resourceFactory: resourceFactory,
+        streamFactory: streamFactory,
+        disposer: disposer,
+      );
 
   /// Merges the specified streams into one stream sequence using the given
   /// zipper function whenever all of the stream sequences have produced
