@@ -343,6 +343,34 @@ void main() async {
           subscription
               .pause(Future<void>.delayed(const Duration(milliseconds: 50)));
         });
+
+        test('$groupPrefix.disposer.order', () async {
+          final stream = Rx.using<int, MockResource>(
+            resourceFactory: resourceFactory,
+            streamFactory: (resource) {
+              final controller = StreamController<int>(sync: true);
+
+              controller.onListen = () {
+                controller.add(1);
+                controller.close();
+              };
+
+              controller.onCancel = () async {
+                expect(resource.isClosed, false);
+                await Future<void>.delayed(resourceDuration * 5);
+                expect(resource.isClosed, false);
+              };
+
+              return controller.stream;
+            },
+            disposer: disposer,
+          );
+
+          await expectLater(
+            stream,
+            emitsInOrder(<Object>[1, emitsDone]),
+          );
+        });
       });
     }
   }
