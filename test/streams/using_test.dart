@@ -348,23 +348,24 @@ void main() async {
           final stream = Rx.using<int, MockResource>(
             resourceFactory: resourceFactory,
             streamFactory: (resource) {
-              final controller = StreamController<int>(sync: true);
+              final controller = StreamController<int>();
 
               controller.onListen = () {
                 controller.add(1);
+                controller.add(2);
                 controller.close();
               };
 
               controller.onCancel = () async {
                 expect(resource.isClosed, false);
-                await Future<void>.delayed(resourceDuration * 5);
+                await Future<void>.delayed(resourceDuration * 10);
                 expect(resource.isClosed, false);
               };
 
               return controller.stream;
             },
             disposer: disposer,
-          );
+          ).take(1);
 
           await expectLater(
             stream,
