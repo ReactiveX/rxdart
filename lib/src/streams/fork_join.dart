@@ -41,7 +41,8 @@ import 'package:rxdart/src/utils/subscription.dart';
 ///
 /// ### Example with combiner
 ///
-/// If you wish to combine the list of values into a new object before you
+/// If you wish to combine the list of values into a new object before emitting,
+/// you can provide the `combiner` function to the constructor.
 ///
 ///     ForkJoinStream(
 ///       [
