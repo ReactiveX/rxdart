@@ -492,7 +492,7 @@ class _Tuple {
   ]);
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         other is _Tuple &&
             item1 == other.item1 &&
