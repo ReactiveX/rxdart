@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
+
 /// Emits the given value after a specified amount of time.
 ///
 /// ### Example
@@ -25,7 +27,7 @@ class TimerStream<T> extends Stream<T> {
   }
 
   static StreamController<T> _buildController<T>(T value, Duration duration) {
-    final watch = Stopwatch();
+    final watch = clock.stopwatch();
     Timer? timer;
     late StreamController<T> controller;
     Duration? totalElapsed = Duration.zero;
