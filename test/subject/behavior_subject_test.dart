@@ -803,6 +803,7 @@ void main() {
       final a = BehaviorSubject.seeded('a');
       final b = BehaviorSubject.seeded('b');
       final bug =
+          // ignore: no_leading_underscores_for_local_identifiers
           Rx.combineLatest2(a, b, (String _a, String _b) => 'ab').shareValue();
       expect(await bug.first, 'ab');
       expect(await bug.first, 'ab');
