@@ -7,6 +7,7 @@ class _Empty {
 
 /// @internal
 /// Sentinel object used to represent a missing value (distinct from `null`).
+// ignore: unnecessary_nullable_for_final_variable_declarations
 const Object? EMPTY = _Empty(); // ignore: constant_identifier_names
 
 /// @internal
