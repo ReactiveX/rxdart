@@ -13,7 +13,7 @@ Feedback on this change appreciated as this is a dev release before 0.28.0 stabl
   * Convert all _required positional_ parameters to _required named_ parameters.
   * The `disposer` is now called after the future returned from `StreamSubscription.cancel` completes.
 
-## 0.28.0-dev.1 (2024-01-27)
+## [0.28.0-dev.1] (2024-01-27)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
 
@@ -28,7 +28,7 @@ Feedback on this change appreciated as this is a dev release before 0.28.0 stabl
 
 * Replace deprecated "dart pub run" with "dart run" (thanks to [@tatsuyafujisaki](https://github.com/tatsuyafujisaki)).
 
-## 0.28.0-dev.0 (2023-07-26)
+## [0.28.0-dev.0] (2023-07-26)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
 
@@ -723,3 +723,5 @@ for example: combineThreeLatest becomes combineLatest3
 
 [Unreleased]: https://github.com/ReactiveX/rxdart/compare/0.28.0-dev.2...HEAD
 [0.28.0-dev.2]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.2
+[0.28.0-dev.1]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.1
+[0.28.0-dev.0]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.0
