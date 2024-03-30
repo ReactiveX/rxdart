@@ -1,4 +1,4 @@
-## 0.28.0-dev.2 (TBD)
+## 0.28.0-dev.2 (2024-03-30)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
 
