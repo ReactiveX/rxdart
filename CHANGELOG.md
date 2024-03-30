@@ -1,4 +1,8 @@
-## 0.28.0-dev.2 (2024-03-30)
+# Changelog
+
+## [Unreleased] - TBD
+
+## [0.28.0-dev.2] (2024-03-30)
 
 Feedback on this change appreciated as this is a dev release before 0.28.0 stable!
 
@@ -717,3 +721,5 @@ for example: combineThreeLatest becomes combineLatest3
 
 * As of this version, rxdart depends on SDK v1.21.0, to support the newly added generic method type syntax
 
+[Unreleased]: https://github.com/ReactiveX/rxdart/compare/0.28.0-dev.2...HEAD
+[0.28.0-dev.2]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.2
