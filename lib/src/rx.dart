@@ -965,9 +965,9 @@ abstract class Rx {
   /// ### Example
   ///
   ///     Rx.using<int, Queue<int>>(
-  ///       () => Queue.of([1, 2, 3]),
-  ///       (r) => Stream.fromIterable(r),
-  ///       (r) => r.clear(),
+  ///       resourceFactory: () => Queue.of([1, 2, 3]),
+  ///       streamFactory: (r) => Stream.fromIterable(r),
+  ///       disposer: (r) => r.clear(),
   ///     ).listen(print); // prints 1, 2, 3
   static Stream<T> using<T, R>({
     required FutureOr<R> Function() resourceFactory,
