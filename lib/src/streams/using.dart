@@ -16,9 +16,9 @@ import 'dart:async';
 /// ### Example
 ///
 ///     UsingStream<int, Queue<int>>(
-///       () => Queue.of([1, 2, 3]),
-///       (r) => Stream.fromIterable(r),
-///       (r) => r.clear(),
+///       resourceFactory: () => Queue.of([1, 2, 3]),
+///       streamFactory: (r) => Stream.fromIterable(r),
+///       disposer: (r) => r.clear(),
 ///     ).listen(print); // prints 1, 2, 3
 class UsingStream<T, R> extends StreamView<T> {
   /// Construct a [UsingStream] that creates a resource object from [resourceFactory],
