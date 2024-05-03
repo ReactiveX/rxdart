@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
+
 class _TimestampStreamSink<S> implements EventSink<S> {
   final EventSink<Timestamped<S>> _outputSink;
 
@@ -7,7 +9,7 @@ class _TimestampStreamSink<S> implements EventSink<S> {
 
   @override
   void add(S data) {
-    _outputSink.add(Timestamped(DateTime.now(), data));
+    _outputSink.add(Timestamped(clock.now(), data));
   }
 
   @override
