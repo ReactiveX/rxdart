@@ -31,9 +31,6 @@ jobs:
       - name: Install melos
         run: dart pub global activate melos
 
-      - name: Melos Boostrap
-        run: melos bootstrap
-
       - name: Print Dart version
         run: dart --version
 
