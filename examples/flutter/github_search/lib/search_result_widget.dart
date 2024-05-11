@@ -15,6 +15,7 @@ class SearchResultWidget extends StatelessWidget {
         final item = items[index];
 
         return InkWell(
+          key: ValueKey(item.url),
           onTap: () => showItem(context, item),
           child: Container(
             alignment: FractionalOffset.center,

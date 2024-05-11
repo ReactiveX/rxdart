@@ -115,18 +115,17 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildChild(SearchState state) {
-    if (state is SearchNoTerm) {
-      return const SearchIntro();
-    } else if (state is SearchEmpty) {
-      return const EmptyWidget();
-    } else if (state is SearchLoading) {
-      return const LoadingWidget();
-    } else if (state is SearchError) {
-      return const SearchErrorWidget();
-    } else if (state is SearchPopulated) {
-      return SearchResultWidget(items: state.result.items);
+    switch (state) {
+      case SearchNoTerm():
+        return const SearchIntro();
+      case SearchEmpty():
+        return const EmptyWidget();
+      case SearchLoading():
+        return const LoadingWidget();
+      case SearchError():
+        return const SearchErrorWidget();
+      case SearchPopulated():
+        return SearchResultWidget(items: state.result.items);
     }
-
-    throw Exception('${state.runtimeType} is not supported');
   }
 }

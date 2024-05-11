@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import 'github_api.dart';
 
 // The State represents the data the View requires. The View consumes a Stream
@@ -9,7 +11,8 @@ import 'github_api.dart';
 //
 // The State Stream responds to input from the View by accepting a
 // Stream<String>. We call this Stream the onTextChanged "intent".
-class SearchState {}
+@immutable
+sealed class SearchState {}
 
 class SearchLoading extends SearchState {}
 
