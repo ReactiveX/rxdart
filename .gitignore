@@ -3,7 +3,6 @@
 .dart_tool/
 .pub/
 build/
-packages
 *.packages
 .idea/
 web/experimental
