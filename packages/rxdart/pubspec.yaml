@@ -1,7 +1,7 @@
 name: rxdart
 version: 0.28.0-dev.2
 description: >
-  RxDart is an implementation of the popular reactiveX api for asynchronous
+  RxDart is an implementation of the popular ReactiveX api for asynchronous
   programming, leveraging the native Dart Streams api.
 repository: https://github.com/ReactiveX/rxdart
 
