@@ -17,6 +17,7 @@ doc
 
 # Include when developing application packages.
 coverage*
+lcov.info
 
 # https://melos.invertase.dev/~melos-latest/getting-started#configure-the-workspace
 pubspec_overrides.yaml
