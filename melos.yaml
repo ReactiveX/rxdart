@@ -1,7 +1,7 @@
 name: rxdart
 
 packages:
-  - example/**
+  - examples/**
   - packages/**
 
 scripts:
