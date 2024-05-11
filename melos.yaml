@@ -1,0 +1,5 @@
+name: rxdart
+
+packages:
+  - example/**
+  - packages/**
