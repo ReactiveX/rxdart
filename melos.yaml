@@ -9,6 +9,12 @@ scripts:
     run: melos exec --no-private -- dart analyze .
   analyze:
     run: melos exec -- dart analyze .
+  format-no-private:
+    run: melos exec --no-private -- dart format . --set-exit-if-changed
+  format:
+    run: melos exec -- dart format . --set-exit-if-changed
+  pub-get-no-private:
+    run: melos exec --no-private -- dart pub get
   test-rxdart:
     run: |
       cd \$MELOS_ROOT_PATH/packages/rxdart

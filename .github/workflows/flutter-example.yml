@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./example/flutter/github_search
+        working-directory: ./examples/flutter/github_search
     steps:
       - uses: actions/checkout@v4
 

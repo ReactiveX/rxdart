@@ -237,7 +237,7 @@ In order to run the command line example, please follow these steps:
 
   1. Clone this repo and enter the directory
   2. Run `pub get`
-  3. Run `dart example/example.dart 10`
+  3. Run `dart examples/fibonacci/lib/example.dart 10`
   
 ### Flutter Example
   
@@ -250,7 +250,7 @@ To run the flutter example, you must have Flutter installed. For installation in
 
   1. Open up an Android Emulator, the iOS Simulator, or connect an appropriate mobile device for debugging.
   2. Open up a terminal
-  3. `cd` into the `example/flutter/github_search` directory
+  3. `cd` into the `examples/flutter/github_search` directory
   4. Run `flutter doctor` to ensure you have all Flutter dependencies working.
   5. Run `flutter packages get`
   6. Run `flutter run`

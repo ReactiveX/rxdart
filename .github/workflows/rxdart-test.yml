@@ -3,15 +3,15 @@ name: Dart CI
 on:
   push:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   pull_request:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   schedule:
     # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
     - cron: '0 0 */7 * *'
   workflow_dispatch:
-    
+
 jobs:
   analyze-and-test:
     runs-on: ubuntu-latest
@@ -28,25 +28,28 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
 
+      - name: Install melos
+        run: dart pub global activate melos
+
       - name: Print Dart version
         run: dart --version
 
       - name: Install dependencies
-        run: dart pub get
+        run: melos run pub-get-no-private
 
       - name: Analyze
         if: ${{ matrix.sdk == 'stable' }}
-        run: dart analyze --fatal-infos --fatal-warnings
+        run: melos run analyze-no-private
 
       - name: Format code
         if: ${{ matrix.sdk == 'stable' }}
-        run: dart format . --set-exit-if-changed
+        run: melos run format-no-private
 
       - name: Active coverage
         run: dart pub global activate coverage
 
       - name: Run tests
-        run: dart pub run test test/rxdart_test.dart --chain-stack-traces
+        run: melos run test-rxdart
 
       - name: Start Observatory
         run: dart
