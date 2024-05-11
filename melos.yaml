@@ -9,8 +9,10 @@ scripts:
     run: melos exec --no-private -- dart analyze .
   analyze:
     run: melos exec -- dart analyze .
-  test:
-    run: melos exec --dir-exists="test" --no-private -- flutter test --coverage
+  test-rxdart:
+    run: |
+      cd \$MELOS_ROOT_PATH/packages/rxdart
+      dart pub run test test/rxdart_test.dart --chain-stack-traces
   combine_coverage:
     run: melos exec -- "\$MELOS_ROOT_PATH/scripts/combine_coverage.sh"
   generate:
