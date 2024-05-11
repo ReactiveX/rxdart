@@ -16,7 +16,6 @@ doc
 *.js.map
 
 # Include when developing application packages.
-pubspec.lock
 coverage*
 
 # https://melos.invertase.dev/~melos-latest/getting-started#configure-the-workspace
