@@ -26,6 +26,12 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Install melos
+        run: dart pub global activate melos
+
+      - name: Melos Boostrap
+        run: melos bootstrap
+
       - name: Print Dart SDK version
         run: dart --version
 
