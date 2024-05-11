@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SearchIntro extends StatelessWidget {
-  const SearchIntro({Key? key}) : super(key: key);
+  const SearchIntro({super.key});
 
   @override
   Widget build(BuildContext context) {

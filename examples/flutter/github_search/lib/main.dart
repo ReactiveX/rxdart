@@ -8,7 +8,7 @@ void main() => runApp(SearchApp(api: GithubApi()));
 class SearchApp extends StatelessWidget {
   final GithubApi api;
 
-  const SearchApp({Key? key, required this.api}) : super(key: key);
+  const SearchApp({super.key, required this.api});
 
   @override
   Widget build(BuildContext context) {

@@ -18,7 +18,7 @@ import 'search_state.dart';
 class SearchScreen extends StatefulWidget {
   final GithubApi api;
 
-  const SearchScreen({Key? key, required this.api}) : super(key: key);
+  const SearchScreen({super.key, required this.api});
 
   @override
   SearchScreenState createState() {
@@ -76,6 +76,10 @@ class SearchScreenState extends State<SearchScreen> {
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -106,10 +110,6 @@ class SearchScreenState extends State<SearchScreen> {
             ),
           ),
         ],
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).cardColor,
       ),
     );
   }
