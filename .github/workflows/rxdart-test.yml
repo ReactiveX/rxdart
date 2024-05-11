@@ -51,26 +51,4 @@ jobs:
       - name: Run tests
         run: melos run test-rxdart
 
-      - name: Start Observatory
-        run: dart
-          --disable-service-auth-codes
-          --enable-vm-service=8111
-          --pause-isolates-on-exit
-          --enable-asserts
-          test/rxdart_test.dart &
-
-      - name: Collect coverage
-        run: nohup dart pub global run coverage:collect_coverage
-          --port=8111
-          --out=coverage.json
-          --wait-paused
-          --resume-isolates
-
-      - name: Format coverage
-        run: dart pub global run coverage:format_coverage
-          --lcov
-          --in=coverage.json
-          --out=lcov.info
-          --report-on=lib
-
       - uses: codecov/codecov-action@v3.1.6
