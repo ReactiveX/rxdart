@@ -1,0 +1,14 @@
+name: rxdart_web_example
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  rxdart:
+    path: ../../packages/rxdart
+
+dev_dependencies:
+  lints: ^4.0.0
+  build_runner: ^2.4.9
+  build_web_compilers: ^4.0.10

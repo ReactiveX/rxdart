@@ -3,3 +3,16 @@ name: rxdart
 packages:
   - example/**
   - packages/**
+
+scripts:
+  analyze-no-private:
+    run: melos exec --no-private -- dart analyze .
+  analyze:
+    run: melos exec -- dart analyze .
+  test:
+    run: melos exec --dir-exists="test" --no-private -- flutter test --coverage
+  combine_coverage:
+    run: melos exec -- "\$MELOS_ROOT_PATH/scripts/combine_coverage.sh"
+  generate:
+    run: melos exec --depends-on=build_runner -- "dart run build_runner build -d"
+    description: Build all generated files for Dart & Flutter packages in this project.

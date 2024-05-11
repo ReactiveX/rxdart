@@ -3,22 +3,22 @@ publish_to: 'none'
 description: Flutter Github Search RxDart Example.
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
-  flutter: ">=2.5.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   rxdart:
-    path: ../../../
+    path: ../../packages/rxdart
   http: ^0.13.3
   flutter_spinkit: ^5.1.0
 
 dev_dependencies:
-  flutter_lints: ^1.0.4
+  flutter_lints: ^4.0.0
   test: ^1.17.10
-  mockito: ^5.0.15
-  build_runner: ^2.1.2
+  mockito: ^5.4.4
+  build_runner: ^2.4.9
   flutter_test:
     sdk: flutter
 
