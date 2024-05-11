@@ -18,7 +18,7 @@ import 'search_state.dart';
 class SearchScreen extends StatefulWidget {
   final GithubApi api;
 
-  const SearchScreen({super.key, required this.api});
+  const SearchScreen({Key? key, required this.api}) : super(key: key);
 
   @override
   SearchScreenState createState() {
@@ -76,10 +76,6 @@ class SearchScreenState extends State<SearchScreen> {
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).cardColor,
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -111,21 +107,26 @@ class SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).cardColor,
+      ),
     );
   }
 
   Widget _buildChild(SearchState state) {
-    switch (state) {
-      case SearchNoTerm():
-        return const SearchIntro();
-      case SearchEmpty():
-        return const EmptyWidget();
-      case SearchLoading():
-        return const LoadingWidget();
-      case SearchError():
-        return const SearchErrorWidget();
-      case SearchPopulated():
-        return SearchResultWidget(items: state.result.items);
+    if (state is SearchNoTerm) {
+      return const SearchIntro();
+    } else if (state is SearchEmpty) {
+      return const EmptyWidget();
+    } else if (state is SearchLoading) {
+      return const LoadingWidget();
+    } else if (state is SearchError) {
+      return const SearchErrorWidget();
+    } else if (state is SearchPopulated) {
+      return SearchResultWidget(items: state.result.items);
     }
+
+    throw Exception('${state.runtimeType} is not supported');
   }
 }

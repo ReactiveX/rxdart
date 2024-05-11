@@ -3,6 +3,7 @@
 .dart_tool/
 .pub/
 build/
+packages
 *.packages
 .idea/
 web/experimental
@@ -16,26 +17,5 @@ doc
 *.js.map
 
 # Include when developing application packages.
+pubspec.lock
 coverage*
-lcov.info
-
-# https://melos.invertase.dev/~melos-latest/getting-started#configure-the-workspace
-pubspec_overrides.yaml
-
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
