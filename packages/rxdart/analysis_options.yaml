@@ -4,8 +4,6 @@ analyzer:
   language:
     strict-casts: true
     strict-raw-types: true
-  exclude:
-    - 'example/**'
 
 linter:
   rules:

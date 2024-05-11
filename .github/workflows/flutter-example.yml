@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./example/flutter/github_search
+        working-directory: ./examples/flutter/github_search
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +25,12 @@ jobs:
       - uses: subosito/flutter-action@v2.4.0
         with:
           channel: 'stable'
+
+      - name: Install melos
+        run: dart pub global activate melos
+
+      - name: Melos Boostrap
+        run: melos bootstrap
 
       - name: Print Dart SDK version
         run: dart --version

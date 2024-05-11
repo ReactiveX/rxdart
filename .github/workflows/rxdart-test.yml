@@ -3,15 +3,15 @@ name: Dart CI
 on:
   push:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   pull_request:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   schedule:
     # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
     - cron: '0 0 */7 * *'
   workflow_dispatch:
-    
+
 jobs:
   analyze-and-test:
     runs-on: ubuntu-latest
@@ -28,46 +28,27 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
 
+      - name: Install melos
+        run: dart pub global activate melos
+
       - name: Print Dart version
         run: dart --version
 
       - name: Install dependencies
-        run: dart pub get
+        run: melos run pub-get-no-private
 
       - name: Analyze
         if: ${{ matrix.sdk == 'stable' }}
-        run: dart analyze --fatal-infos --fatal-warnings
+        run: melos run analyze-no-private
 
       - name: Format code
         if: ${{ matrix.sdk == 'stable' }}
-        run: dart format . --set-exit-if-changed
+        run: melos run format-no-private
 
       - name: Active coverage
         run: dart pub global activate coverage
 
       - name: Run tests
-        run: dart pub run test test/rxdart_test.dart --chain-stack-traces
-
-      - name: Start Observatory
-        run: dart
-          --disable-service-auth-codes
-          --enable-vm-service=8111
-          --pause-isolates-on-exit
-          --enable-asserts
-          test/rxdart_test.dart &
-
-      - name: Collect coverage
-        run: nohup dart pub global run coverage:collect_coverage
-          --port=8111
-          --out=coverage.json
-          --wait-paused
-          --resume-isolates
-
-      - name: Format coverage
-        run: dart pub global run coverage:format_coverage
-          --lcov
-          --in=coverage.json
-          --out=lcov.info
-          --report-on=lib
+        run: melos run test-rxdart
 
       - uses: codecov/codecov-action@v3.1.6

@@ -5,7 +5,7 @@ import 'github_api.dart';
 class SearchResultWidget extends StatelessWidget {
   final List<SearchResultItem> items;
 
-  const SearchResultWidget({Key? key, required this.items}) : super(key: key);
+  const SearchResultWidget({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +15,7 @@ class SearchResultWidget extends StatelessWidget {
         final item = items[index];
 
         return InkWell(
+          key: ValueKey(item.url),
           onTap: () => showItem(context, item),
           child: Container(
             alignment: FractionalOffset.center,
