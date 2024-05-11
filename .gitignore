@@ -20,3 +20,21 @@ coverage*
 
 # https://melos.invertase.dev/~melos-latest/getting-started#configure-the-workspace
 pubspec_overrides.yaml
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
