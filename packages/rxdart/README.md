@@ -263,7 +263,7 @@ To run the flutter example, you must have Flutter installed. For installation in
 
 ## Changelog
 
-Refer to the [Changelog](https://github.com/ReactiveX/rxdart/blob/master/CHANGELOG.md) to get all release notes.
+Refer to the [Changelog](https://github.com/ReactiveX/rxdart/blob/master/packages/rxdart/CHANGELOG.md) to get all release notes.
 
 ## Extensions
 
