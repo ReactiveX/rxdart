@@ -21,3 +21,7 @@ dev_dependencies:
   lints: ^1.0.1
   stack_trace: ^1.10.0
   test: ^1.17.12
+
+screenshots:
+  - description: The RxDart package logo.
+    path: screenshots/logo.png
