@@ -410,6 +410,13 @@ packages:
       relative: true
     source: path
     version: "0.28.0-dev.2"
+  rxdart_flutter:
+    dependency: "direct main"
+    description:
+      path: "../../../packages/rxdart_flutter"
+      relative: true
+    source: path
+    version: "0.0.1"
   shelf:
     dependency: transitive
     description:
