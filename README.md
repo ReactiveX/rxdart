@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-<img src="https://github.com/ReactiveX/rxdart/blob/master/packages/rxdart/screenshots/logo.png?raw=true" height="200" alt="RxDart" />
+<img src="https://github.com/ReactiveX/rxdart/blob/master/assets/logo.png?raw=true" height="200" alt="RxDart" />
 </p>
 
 [![Build Status](https://github.com/ReactiveX/rxdart/workflows/Dart%20CI/badge.svg)](https://github.com/ReactiveX/rxdart/actions)
