@@ -45,7 +45,7 @@ class SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RxStreamBuilder<SearchState>(
+    return ValueStreamBuilder<SearchState>(
       stream: bloc.state,
       builder: (context, state) {
         return Scaffold(
