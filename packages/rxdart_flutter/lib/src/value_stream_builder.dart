@@ -102,6 +102,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
 class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   late T currentData;
   StreamSubscription<T>? subscription;
+  Object? error;
 
   @override
   void initState() {
@@ -125,7 +126,12 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   }
 
   @override
-  Widget build(BuildContext context) => widget._builder(context, currentData);
+  Widget build(BuildContext context) {
+    if (error != null) {
+      throw error!;
+    }
+    return widget._builder(context, currentData);
+  }
 
   @pragma('vm:notify-debugger-on-exception')
   void subscribe() {
@@ -133,10 +139,11 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
 
     try {
       currentData = stream.value;
+      error = null;
     } on ValueStreamError catch (e, s) {
       FlutterError.reportError(
         FlutterErrorDetails(
-          exception: ValueStreamHasNoValueError(stream),
+          exception: error = ValueStreamHasNoValueError(stream),
           stack: s,
           library: 'rxdart_flutter',
         ),
@@ -145,7 +152,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
     } catch (e, s) {
       FlutterError.reportError(
         FlutterErrorDetails(
-          exception: e,
+          exception: error = e,
           stack: s,
           library: 'rxdart_flutter',
         ),
@@ -166,11 +173,12 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
       onError: (Object e, StackTrace s) {
         FlutterError.reportError(
           FlutterErrorDetails(
-            exception: UnhandledStreamError(e),
+            exception: error = UnhandledStreamError(e),
             stack: s,
             library: 'rxdart_flutter',
           ),
         );
+        setState(_emptyFn);
       },
     );
   }
@@ -200,7 +208,8 @@ class UnhandledStreamError extends Error {
 
   @override
   String toString() {
-    return '''Unhandled error from Stream: $error.
+    return '''Unhandled error from ValueStream: $error.
+ValueStreamBuilder requires ValueStream never to emit error events.
 You should use one of following methods to handle error before passing stream to ValueStreamBuilder:
   * stream.handleError((e, s) { })
   * stream.onErrorReturn(value)
