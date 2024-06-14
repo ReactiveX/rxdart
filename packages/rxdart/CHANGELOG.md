@@ -1,6 +1,53 @@
 # Changelog
 
-## [Unreleased] - TBD
+## [0.28.0] (2024-06-14)
+
+### New
+
+* ValueStream:
+    * Add `lastEventOrNull` getter to `ValueStream`,
+      which returns the last emitted event (either data/value or error event), or `null`.
+    * Add `isLastEventValue`, `isLastEventError` and `errorAndStackTraceOrNull`
+      extension getters to `ValueStream`, to check the kind of the last emitted event is data/value or error.
+    * Update documentation.
+
+* ReplayStream:
+    * Add `errorAndStackTraces` to `ReplayStream`, which returns a list of emitted `ErrorAndStackTrace`s.
+
+* Rename `Notification` and `Kind` to better reflect their purpose,
+  and to avoid confusion with [Flutter's Notification class](https://api.flutter.dev/flutter/widgets/Notification-class.html).
+    * Rename `Notification` to `StreamNotification`
+        * `Notification.onData` to `StreamNotification.data`.
+        * `Notification.onDone` to `StreamNotification.done`.
+        * `Notification.onError` to `StreamNotification.error`.
+    * Rename `Kind` to `NotificationKind`
+        * `Kind.onData` to `NotificationKind.data`.
+        * `Kind.onError` to `NotificationKind.error`.
+        * `Kind.onDone` to `NotificationKind.done`.
+    * Introduce `DataNotification`, `ErrorNotification` and `DoneNotification` as the subclasses of `StreamNotification`.
+    * Convert `isOnData`, `isOnError`, `isOnDone`, `requireData` to extension getters on `StreamNotification`,
+      they are now named `isData`, `isError`, `isDone` and `requireDataValue`.
+    * Add extensions on `StreamNotification`: `dataValueOrNull`, `requireErrorAndStackTrace`, `errorAndStackTraceOrNull` getters and `when` method.
+
+### Changed
+
+* Accept Dart SDK versions above 3.0.
+* `switchMap`: when cancelling the previous inner subscription,
+  `switchMap` will pause the outer subscription and and wait for the inner subscription to be completely canceled.
+  It will then resume the outer subscription, and listen to the next inner Stream.
+  Any errors from canceling the previous inner subscription will now be forwarded to the resulting Stream.
+
+* **Breaking**: Rename `ForkJoinStream.combine2`..`combine9` to `ForkJoinStream.join2`..`join9`.
+* **Breaking**: `Rx.using`/`UsingStream`
+    * Convert all _required positional_ parameters to _required named_ parameters.
+    * The `disposer` is now called after the future returned from `StreamSubscription.cancel` completes.
+
+### Documentation
+
+* Update and fix documentation.
+* Fix README example (thanks to [@wurikiji](https://github.com/wurikiji)).
+* Update Flutter example (thanks to [@hoangchungk53qx1](https://github.com/hoangchungk53qx1)).
+* Replace deprecated "dart pub run" with "dart run" (thanks to [@tatsuyafujisaki](https://github.com/tatsuyafujisaki)).
 
 ## [0.28.0-dev.2] (2024-03-30)
 
@@ -721,7 +768,8 @@ for example: combineThreeLatest becomes combineLatest3
 
 * As of this version, rxdart depends on SDK v1.21.0, to support the newly added generic method type syntax
 
-[Unreleased]: https://github.com/ReactiveX/rxdart/compare/0.28.0-dev.2...HEAD
+[Unreleased]: https://github.com/ReactiveX/rxdart/compare/0.28.0...HEAD
+[0.28.0]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0
 [0.28.0-dev.2]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.2
 [0.28.0-dev.1]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.1
 [0.28.0-dev.0]: https://github.com/ReactiveX/rxdart/releases/tag/0.28.0-dev.0
