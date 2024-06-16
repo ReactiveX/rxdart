@@ -216,7 +216,7 @@ Additional information about the following situations can be found by reading th
 | Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
-| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/single/Single-class.html) (`Completable = Single<void>, Maybe<T> = Single<T?>`) |
+| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/rxdart_ext/Single-class.html) (`Completable == Single<void>` and `Maybe<T> == Single<T?>`) |
 | Support back pressure| Yes | Yes |
 | Can emit null? | Yes, except RxJava | Yes |
 | Sync by default | Yes | No |
