@@ -5,5 +5,5 @@ environment:
   sdk: '>=2.12.0 <4.0.0'
 
 dev_dependencies:
-  lints: ^1.0.1
+  lints: ^4.0.0
   melos: ^6.0.0
