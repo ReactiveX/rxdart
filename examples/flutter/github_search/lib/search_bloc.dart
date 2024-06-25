@@ -7,7 +7,7 @@ import 'search_state.dart';
 
 class SearchBloc {
   final Sink<String> onTextChanged;
-  final Stream<SearchState> state;
+  final ValueStream<SearchState> state;
 
   factory SearchBloc(GithubApi api) {
     final onTextChanged = PublishSubject<String>();
@@ -23,7 +23,9 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .startWith(SearchNoTerm());
+        .startWith(SearchNoTerm())
+        .publishValueSeeded(SearchNoTerm())
+      ..connect();
 
     return SearchBloc._(onTextChanged, state);
   }
