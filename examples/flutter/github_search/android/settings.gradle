@@ -22,4 +22,10 @@ plugins {
     id "org.jetbrains.kotlin.android" version "2.0.20" apply false
 }
 
+
+rootProject.name = "github_search"
 include ":app"
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version("0.8.0")
+}
