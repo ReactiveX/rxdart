@@ -115,17 +115,12 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildChild(SearchState state) {
-    switch (state) {
-      case SearchNoTerm():
-        return const SearchIntro();
-      case SearchEmpty():
-        return const EmptyWidget();
-      case SearchLoading():
-        return const LoadingWidget();
-      case SearchError():
-        return const SearchErrorWidget();
-      case SearchPopulated():
-        return SearchResultWidget(items: state.result.items);
-    }
+    return switch (state) {
+      SearchNoTerm() => const SearchIntro(),
+      SearchEmpty() => const EmptyWidget(),
+      SearchLoading() => const LoadingWidget(),
+      SearchError() => const SearchErrorWidget(),
+      SearchPopulated() => SearchResultWidget(items: state.result.items)
+    };
   }
 }
