@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'empty_result_widget.dart';
-import 'github_api.dart';
-import 'search_bloc.dart';
-import 'search_error_widget.dart';
-import 'search_intro_widget.dart';
-import 'search_loading_widget.dart';
-import 'search_result_widget.dart';
-import 'search_state.dart';
+import 'api/github_api.dart';
+import 'bloc/search_bloc.dart';
+import 'bloc/search_state.dart';
+import 'widget/empty_result_widget.dart';
+import 'widget/search_error_widget.dart';
+import 'widget/search_intro_widget.dart';
+import 'widget/search_loading_widget.dart';
+import 'widget/search_result_widget.dart';
 
 // The View in a Stream-based architecture takes two arguments: The State Stream
 // and the onTextChanged callback. In our case, the onTextChanged callback will

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart_ext/state_stream.dart';
 
-import 'github_api.dart';
+import '../api/github_api.dart';
 import 'search_state.dart';
 
 class SearchBloc {

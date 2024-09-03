@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-import 'github_api.dart';
+import '../api/github_api.dart';
 
 // The State represents the data the View requires. The View consumes a Stream
 // of States. The view rebuilds every time the Stream emits a new State!
