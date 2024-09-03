@@ -8,9 +8,8 @@ void main() {
   final searchInput = querySelector('#searchInput')!;
   final resultsField = querySelector('#resultsField')!;
 
-  void renderItem(Map<String, dynamic> item) =>
-      resultsField.innerHtml = (resultsField.innerHtml ?? '') +
-          "<li>${item['fullName']} (${item['url']})</li>";
+  void renderItem(Map<String, dynamic> item) => resultsField.innerHtml =
+      "${resultsField.innerHtml ?? ''}<li>${item['fullName']} (${item['url']})</li>";
 
   searchInput.onKeyUp
       // return the event target
@@ -48,17 +47,17 @@ Future<List<Map<String, String>>> _searchGithubFor(String term) async {
 
   final request = await HttpRequest.request(
     'https://api.github.com/search/repositories?q=$term',
-    requestHeaders: {"Content-Type": "application/json"},
+    requestHeaders: {'Content-Type': 'application/json'},
   );
-  final List? itemList =
-      json.decode(request.responseText ?? '{}')['items'] as List?;
+  final List<dynamic>? itemList =
+      json.decode(request.responseText ?? '{}')['items'] as List<dynamic>?;
   final List<Map<String, dynamic>> items =
-      itemList?.cast<Map<String, dynamic>>() ?? [];
+      itemList?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
 
   return items.map((item) {
     return {
-      "fullName": item['full_name'].toString(),
-      "url": item["html_url"].toString()
+      'fullName': item['full_name'].toString(),
+      'url': item['html_url'].toString()
     };
-  }).toList();
+  }).toList(growable: false);
 }

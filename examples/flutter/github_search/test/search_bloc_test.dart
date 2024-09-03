@@ -6,6 +6,7 @@ import 'package:github_search/search_bloc.dart';
 import 'package:github_search/search_state.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:rxdart_ext/state_stream.dart';
 
 import 'search_bloc_test.mocks.dart';
 
@@ -18,7 +19,7 @@ void main() {
       final bloc = SearchBloc(api);
 
       expect(
-        bloc.state,
+        bloc.state.startWith(bloc.state.value),
         emitsInOrder([noTerm]),
       );
     });
@@ -28,14 +29,14 @@ void main() {
       final bloc = SearchBloc(api);
 
       when(api.search('T')).thenAnswer(
-          (_) async => SearchResult([SearchResultItem('A', 'B', 'C')]));
+          (_) async => const SearchResult([SearchResultItem('A', 'B', 'C')]));
 
       scheduleMicrotask(() {
         bloc.onTextChanged.add('T');
       });
 
       expect(
-        bloc.state,
+        bloc.state.startWith(bloc.state.value),
         emitsInOrder([noTerm, loading, populated]),
       );
     });
@@ -49,8 +50,8 @@ void main() {
       });
 
       expect(
-        bloc.state,
-        emitsInOrder([noTerm, noTerm]),
+        bloc.state.startWith(bloc.state.value),
+        emitsInOrder([noTerm]),
       );
     });
 
@@ -58,14 +59,14 @@ void main() {
       final api = MockGithubApi();
       final bloc = SearchBloc(api);
 
-      when(api.search('T')).thenAnswer((_) async => SearchResult([]));
+      when(api.search('T')).thenAnswer((_) async => const SearchResult([]));
 
       scheduleMicrotask(() {
         bloc.onTextChanged.add('T');
       });
 
       expect(
-        bloc.state,
+        bloc.state.startWith(bloc.state.value),
         emitsInOrder([noTerm, loading, empty]),
       );
     });
@@ -81,7 +82,7 @@ void main() {
       });
 
       expect(
-        bloc.state,
+        bloc.state.startWith(bloc.state.value),
         emitsInOrder([noTerm, loading, error]),
       );
     });
@@ -95,7 +96,7 @@ void main() {
       });
 
       expect(
-        bloc.state,
+        bloc.state.startWith(bloc.state.value),
         emitsInOrder([noTerm, emitsDone]),
       );
     });

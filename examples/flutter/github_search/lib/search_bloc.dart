@@ -25,7 +25,7 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .publishState(SearchNoTerm());
+        .publishState(const SearchNoTerm());
 
     final subscription = state.connect();
 
@@ -40,10 +40,10 @@ class SearchBloc {
   }
 
   static Stream<SearchState> _search(String term, GithubApi api) => term.isEmpty
-      ? Stream.value(SearchNoTerm())
+      ? Stream.value(const SearchNoTerm())
       : Rx.fromCallable(() => api.search(term))
           .map((result) =>
-              result.isEmpty ? SearchEmpty() : SearchPopulated(result))
-          .startWith(SearchLoading())
-          .onErrorReturn(SearchError());
+              result.isEmpty ? const SearchEmpty() : SearchPopulated(result))
+          .startWith(const SearchLoading())
+          .onErrorReturn(const SearchError());
 }

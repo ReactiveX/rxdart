@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 import 'github_api.dart';
@@ -12,18 +13,43 @@ import 'github_api.dart';
 // The State Stream responds to input from the View by accepting a
 // Stream<String>. We call this Stream the onTextChanged "intent".
 @immutable
-sealed class SearchState {}
+sealed class SearchState extends Equatable {
+  const SearchState();
+}
 
-class SearchLoading extends SearchState {}
+class SearchLoading extends SearchState {
+  const SearchLoading();
 
-class SearchError extends SearchState {}
+  @override
+  List<Object?> get props => [];
+}
 
-class SearchNoTerm extends SearchState {}
+class SearchError extends SearchState {
+  const SearchError() : super();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class SearchNoTerm extends SearchState {
+  const SearchNoTerm();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class SearchPopulated extends SearchState {
   final SearchResult result;
 
-  SearchPopulated(this.result);
+  const SearchPopulated(this.result);
+
+  @override
+  List<Object?> get props => [result];
 }
 
-class SearchEmpty extends SearchState {}
+class SearchEmpty extends SearchState {
+  const SearchEmpty();
+
+  @override
+  List<Object?> get props => [];
+}
