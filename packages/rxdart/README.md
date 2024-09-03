@@ -230,10 +230,11 @@ Web and command-line examples can be found in the `example` folder.
  
 In order to run the web examples, please follow these steps:
 
-  1. Clone this repo and enter the directory
+  1. Clone this repo and enter the directory `examples/web`
   2. Run `dart pub get`
-  3. Run `dart run build_runner serve example`
-  4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
+  3. Run `dart pub global activate webdev`
+  4. Run `webdev serve`
+  5. Navigate to http://localhost:8080/ in your browser
 
 ### Command Line Examples
 
