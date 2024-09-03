@@ -3,6 +3,6 @@ targets:
     builders:
       build_web_compilers:entrypoint:
         generate_for:
-          - web/**
+          - web/**.dart
         options:
-          compiler: dart2js
+          compiler: dartdevc
