@@ -51,6 +51,7 @@ Future<List<Map<String, String>>> _searchGithubFor(String term) async {
   );
   final List<dynamic>? itemList =
       json.decode(request.responseText ?? '{}')['items'] as List<dynamic>?;
+
   final List<Map<String, dynamic>> items =
       itemList?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
 

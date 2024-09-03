@@ -33,8 +33,9 @@ class GithubApi {
   Future<SearchResult> _fetchResults(String term) async {
     final response = await client.get(Uri.parse('$baseUrl$term'));
     final results = json.decode(response.body);
+    final items = (results['items'] as List<dynamic>?) ?? [];
 
-    return SearchResult.fromJson(results['items']);
+    return SearchResult.fromJson(items.cast<Map<String, dynamic>>());
   }
 }
 
@@ -43,11 +44,8 @@ class SearchResult extends Equatable {
 
   const SearchResult(this.items);
 
-  factory SearchResult.fromJson(dynamic json) {
-    final items = (json as List)
-        .map((item) => SearchResultItem.fromJson(item))
-        .toList(growable: false);
-
+  factory SearchResult.fromJson(List<Map<String, dynamic>> json) {
+    final items = json.map(SearchResultItem.fromJson).toList(growable: false);
     return SearchResult(items);
   }
 
