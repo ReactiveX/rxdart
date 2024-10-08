@@ -165,10 +165,10 @@ packages:
     dependency: "direct dev"
     description:
       name: melos
-      sha256: a3f06ed871e0348cb99909ad5ddf5f8b53cc61d894c302b5417d2db1ee7ec381
+      sha256: a62abfa8c7826cec927f8585572bb9adf591be152150494d879ca2c75118809d
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.0"
+    version: "6.2.0"
   meta:
     dependency: transitive
     description:
