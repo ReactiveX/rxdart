@@ -6,4 +6,4 @@ environment:
 
 dev_dependencies:
   lints: ^5.1.1
-  melos: ^6.3.1
+  melos: ^6.3.2
