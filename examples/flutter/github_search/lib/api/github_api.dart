@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 
 class GithubApi {
@@ -32,35 +33,36 @@ class GithubApi {
   Future<SearchResult> _fetchResults(String term) async {
     final response = await client.get(Uri.parse('$baseUrl$term'));
     final results = json.decode(response.body);
+    final items = (results['items'] as List<dynamic>?) ?? [];
 
-    return SearchResult.fromJson(results['items']);
+    return SearchResult.fromJson(items.cast<Map<String, dynamic>>());
   }
 }
 
-class SearchResult {
+class SearchResult extends Equatable {
   final List<SearchResultItem> items;
 
-  SearchResult(this.items);
+  const SearchResult(this.items);
 
-  factory SearchResult.fromJson(dynamic json) {
-    final items = (json as List)
-        .map((item) => SearchResultItem.fromJson(item))
-        .toList(growable: false);
-
+  factory SearchResult.fromJson(List<Map<String, dynamic>> json) {
+    final items = json.map(SearchResultItem.fromJson).toList(growable: false);
     return SearchResult(items);
   }
 
   bool get isPopulated => items.isNotEmpty;
 
   bool get isEmpty => items.isEmpty;
+
+  @override
+  List<Object?> get props => [items];
 }
 
-class SearchResultItem {
+class SearchResultItem extends Equatable {
   final String fullName;
   final String url;
   final String avatarUrl;
 
-  SearchResultItem(this.fullName, this.url, this.avatarUrl);
+  const SearchResultItem(this.fullName, this.url, this.avatarUrl);
 
   factory SearchResultItem.fromJson(Map<String, dynamic> json) {
     return SearchResultItem(
@@ -69,4 +71,7 @@ class SearchResultItem {
       (json['owner'] as Map<String, dynamic>)['avatar_url'] as String,
     );
   }
+
+  @override
+  List<Object?> get props => [fullName, url, avatarUrl];
 }

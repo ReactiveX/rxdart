@@ -1,4 +1,4 @@
-name: Publish Github Release
+name: Publish GitHub Release
 
 on:
   push:
@@ -18,6 +18,8 @@ jobs:
       - name: Extract release notes
         id: release_notes
         uses: ffurrer2/extract-release-notes@v2
+        with:
+          changelog_file: ${{ github.workspace }}/packages/rxdart/CHANGELOG.md
 
       - name: Create release
         uses: softprops/action-gh-release@v2

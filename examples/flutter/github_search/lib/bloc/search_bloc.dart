@@ -1,13 +1,15 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/state_stream.dart';
 
-import 'github_api.dart';
+import '../api/github_api.dart';
 import 'search_state.dart';
 
 class SearchBloc {
   final Sink<String> onTextChanged;
-  final ValueStream<SearchState> state;
+  final StateStream<SearchState> state;
+
+  final StreamSubscription<void> _subscription;
 
   factory SearchBloc(GithubApi api) {
     final onTextChanged = PublishSubject<String>();
@@ -23,24 +25,25 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .startWith(SearchNoTerm())
-        .publishValueSeeded(SearchNoTerm())
-      ..connect();
+        .publishState(const SearchNoTerm());
 
-    return SearchBloc._(onTextChanged, state);
+    final subscription = state.connect();
+
+    return SearchBloc._(onTextChanged, state, subscription);
   }
 
-  SearchBloc._(this.onTextChanged, this.state);
+  SearchBloc._(this.onTextChanged, this.state, this._subscription);
 
   void dispose() {
+    _subscription.cancel();
     onTextChanged.close();
   }
 
   static Stream<SearchState> _search(String term, GithubApi api) => term.isEmpty
-      ? Stream.value(SearchNoTerm())
+      ? Stream.value(const SearchNoTerm())
       : Rx.fromCallable(() => api.search(term))
           .map((result) =>
-              result.isEmpty ? SearchEmpty() : SearchPopulated(result))
-          .startWith(SearchLoading())
-          .onErrorReturn(SearchError());
+              result.isEmpty ? const SearchEmpty() : SearchPopulated(result))
+          .startWith(const SearchLoading())
+          .onErrorReturn(const SearchError());
 }

@@ -216,7 +216,7 @@ Additional information about the following situations can be found by reading th
 | Cold Observables  | Multiple subscribers can listen to the same cold Observable, and each subscription will receive a unique Stream of data | Single subscriber only | 
 | Hot Observables  | Yes | Yes, known as Broadcast Streams | 
 | Is {Publish, Behavior, Replay}Subject hot? | Yes | Yes |
-| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/single/Single-class.html) (`Completable = Single<void>, Maybe<T> = Single<T?>`) |
+| Single/Maybe/Completable ? | Yes | Yes, uses [rxdart_ext Single](https://pub.dev/documentation/rxdart_ext/latest/rxdart_ext/Single-class.html) (`Completable == Single<void>` and `Maybe<T> == Single<T?>`) |
 | Support back pressure| Yes | Yes |
 | Can emit null? | Yes, except RxJava | Yes |
 | Sync by default | Yes | No |
@@ -230,10 +230,11 @@ Web and command-line examples can be found in the `example` folder.
  
 In order to run the web examples, please follow these steps:
 
-  1. Clone this repo and enter the directory
+  1. Clone this repo and enter the directory `examples/web`
   2. Run `dart pub get`
-  3. Run `dart run build_runner serve example`
-  4. Navigate to [http://localhost:8080/web/index.html](http://localhost:8080/web/index.html) in your browser
+  3. Run `dart pub global activate webdev`
+  4. Run `webdev serve`
+  5. Navigate to http://localhost:8080/ in your browser
 
 ### Command Line Examples
 

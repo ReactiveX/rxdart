@@ -1,6 +1,6 @@
 name: github_search
 publish_to: 'none'
-description: Flutter Github Search RxDart Example.
+description: Flutter GitHub Search RxDart Example.
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -15,6 +15,8 @@ dependencies:
     path: ../../../packages/rxdart_flutter
   http: ^0.13.3
   flutter_spinkit: ^5.1.0
+  rxdart_ext: ^0.3.0
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_lints: ^4.0.0

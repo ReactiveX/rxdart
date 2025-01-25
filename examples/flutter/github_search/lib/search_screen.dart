@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart_flutter/rxdart_flutter.dart';
 
-import 'empty_result_widget.dart';
-import 'github_api.dart';
-import 'search_bloc.dart';
-import 'search_error_widget.dart';
-import 'search_intro_widget.dart';
-import 'search_loading_widget.dart';
-import 'search_result_widget.dart';
-import 'search_state.dart';
+import 'api/github_api.dart';
+import 'bloc/search_bloc.dart';
+import 'bloc/search_state.dart';
+import 'widget/empty_result_widget.dart';
+import 'widget/search_error_widget.dart';
+import 'widget/search_intro_widget.dart';
+import 'widget/search_loading_widget.dart';
+import 'widget/search_result_widget.dart';
 
 // The View in a Stream-based architecture takes two arguments: The State Stream
 // and the onTextChanged callback. In our case, the onTextChanged callback will
@@ -114,17 +114,12 @@ class SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildChild(SearchState state) {
-    switch (state) {
-      case SearchNoTerm():
-        return const SearchIntro();
-      case SearchEmpty():
-        return const EmptyWidget();
-      case SearchLoading():
-        return const LoadingWidget();
-      case SearchError():
-        return const SearchErrorWidget();
-      case SearchPopulated():
-        return SearchResultWidget(items: state.result.items);
-    }
+    return switch (state) {
+      SearchNoTerm() => const SearchIntro(),
+      SearchEmpty() => const EmptyWidget(),
+      SearchLoading() => const LoadingWidget(),
+      SearchError() => const SearchErrorWidget(),
+      SearchPopulated() => SearchResultWidget(items: state.result.items)
+    };
   }
 }
