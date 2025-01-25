@@ -18,31 +18,42 @@ jobs:
 
     strategy:
       matrix:
-        sdk: [ beta, stable, 2.17.0, 2.15.0, 2.12.0 ]
+        #        sdk: [ beta, stable, 2.17.0, 2.15.0, 2.12.0 ]
+        flutter: [ beta, stable, 3.0.0, 2.8.0, 2.0.1 ]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1.6.0
+      - name: Setup Stable/Beta Flutter/Dart
+        if: ${{ matrix.flutter == 'stable' || matrix.flutter == 'beta' }}
+        uses: subosito/flutter-action@v2.18.0
         with:
-          sdk: ${{ matrix.sdk }}
+          channel: ${{ matrix.flutter }}
+
+      - name: Setup Older Flutter/Dart
+        if: ${{ matrix.flutter != 'stable' && matrix.flutter != 'beta' }}
+        uses: subosito/flutter-action@v2.18.0
+        with:
+          flutter-version: ${{ matrix.flutter }}
 
       - name: Install melos
         run: dart pub global activate melos
 
-      - name: Print Dart version
+      - name: Print Dart SDK version
         run: dart --version
+
+      - name: Print Flutter SDK version
+        run: flutter --version
 
       - name: Install dependencies
         run: melos run pub-get-no-private
 
       - name: Analyze
-        if: ${{ matrix.sdk == 'stable' }}
+        if: ${{ matrix.flutter == 'stable' }}
         run: melos run analyze-no-private
 
       - name: Format code
-        if: ${{ matrix.sdk == 'stable' }}
+        if: ${{ matrix.flutter == 'stable' }}
         run: melos run format-no-private
 
       - name: Active coverage
@@ -52,4 +63,4 @@ jobs:
         run: melos run test-rxdart
 
       - uses: codecov/codecov-action@v3.1.6
-        if: ${{ matrix.sdk == 'stable' }}
+        if: ${{ matrix.flutter == 'stable' }}

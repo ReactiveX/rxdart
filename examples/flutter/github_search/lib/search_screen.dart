@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rxdart_flutter/rxdart_flutter.dart';
 
 import 'api/github_api.dart';
 import 'bloc/search_bloc.dart';
@@ -44,11 +45,9 @@ class SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<SearchState>(
+    return ValueStreamBuilder<SearchState>(
       stream: bloc.state,
-      initialData: bloc.state.value,
-      builder: (BuildContext context, AsyncSnapshot<SearchState> snapshot) {
-        final state = snapshot.requireData;
+      builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('RxDart Github Search'),

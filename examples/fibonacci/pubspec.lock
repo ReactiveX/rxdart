@@ -15,6 +15,6 @@ packages:
       path: "../../packages/rxdart"
       relative: true
     source: path
-    version: "0.28.0-dev.2"
+    version: "0.28.0"
 sdks:
   dart: ">=3.1.0 <4.0.0"
