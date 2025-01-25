@@ -157,11 +157,12 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
 
     assert(subscription == null, 'Stream already subscribed');
     subscription = stream.listen(
-      (data) {
-        if (buildWhen?.call(currentData, data) ?? true) {
+      (newData) {
+        final previousData = currentData;
+        currentData = newData;
+        if (buildWhen == null || buildWhen(previousData, newData)) {
           setState(_emptyFn);
         }
-        currentData = data;
       },
       onError: (Object e, StackTrace s) {
         error = ErrorAndStackTrace(UnhandledStreamError(e), s);
