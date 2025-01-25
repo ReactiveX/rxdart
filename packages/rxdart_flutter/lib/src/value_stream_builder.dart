@@ -16,14 +16,16 @@ typedef ValueStreamWidgetBuilder<T> = Widget Function(
 typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 
 /// {@template value_stream_builder}
-/// Similar to [StreamBuilder], but works with [ValueStream],
-/// and with only-data events, not error events.
+/// Similar to [StreamBuilder], but works with [ValueStream].
+/// [ValueStreamBuilder] requires [stream.hasValue] to always be `true`,
+/// and does not emit any error events.
 ///
 /// [ValueStreamBuilder] handles building a widget in response to new `data`.
 /// [ValueStreamBuilder] is analogous to [StreamBuilder] but has simplified API to
 /// reduce the amount of boilerplate code needed as well as [ValueStream]-specific
 /// performance improvements.
 ///
+/// ### Example
 /// ```dart
 /// final valueStream = BehaviorSubject<int>.seeded(0);
 ///
@@ -51,6 +53,7 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 ///
 /// [buildWhen] is optional and if omitted, it will default to `true`.
 ///
+/// ### Example
 /// ```dart
 /// ValueStreamBuilder<Data>(
 ///   buildWhen: (previous, current) {
@@ -102,7 +105,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
 class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   late T currentData;
   StreamSubscription<T>? subscription;
-  Object? error;
+  ErrorAndStackTrace? error;
 
   @override
   void initState() {
@@ -128,7 +131,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   @override
   Widget build(BuildContext context) {
     if (error != null) {
-      throw error!;
+      return ErrorWidget(error!.error);
     }
     return widget._builder(context, currentData);
   }
@@ -141,22 +144,12 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
       currentData = stream.value;
       error = null;
     } on ValueStreamError catch (e, s) {
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error = ValueStreamHasNoValueError(stream),
-          stack: s,
-          library: 'rxdart_flutter',
-        ),
-      );
+      error = ErrorAndStackTrace(ValueStreamHasNoValueError(stream), s);
+      reportError();
       return;
     } catch (e, s) {
-      FlutterError.reportError(
-        FlutterErrorDetails(
-          exception: error = e,
-          stack: s,
-          library: 'rxdart_flutter',
-        ),
-      );
+      error = ErrorAndStackTrace(e, s);
+      reportError();
       return;
     }
 
@@ -166,18 +159,13 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
     subscription = stream.listen(
       (data) {
         if (buildWhen?.call(currentData, data) ?? true) {
-          currentData = data;
           setState(_emptyFn);
         }
+        currentData = data;
       },
       onError: (Object e, StackTrace s) {
-        FlutterError.reportError(
-          FlutterErrorDetails(
-            exception: error = UnhandledStreamError(e),
-            stack: s,
-            library: 'rxdart_flutter',
-          ),
-        );
+        error = ErrorAndStackTrace(UnhandledStreamError(e), s);
+        reportError();
         setState(_emptyFn);
       },
     );
@@ -192,15 +180,33 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(DiagnosticsProperty.lazy('currentData', () => currentData));
+    properties.add(DiagnosticsProperty('error', error));
     properties.add(DiagnosticsProperty('subscription', subscription));
   }
 
   static void _emptyFn() {}
+
+  void reportError() {
+    final error = this.error;
+    if (error == null) {
+      return;
+    }
+    FlutterError.reportError(
+      FlutterErrorDetails(
+        exception: error.error,
+        stack: error.stackTrace,
+        library: 'rxdart_flutter',
+      ),
+    );
+  }
 }
 
-/// Error emitted from [Stream] when using [ValueStreamBuilder].
+const _bullet = ' • ';
+const _indent = '   ';
+
+/// Error emitted from [ValueStream] when using [ValueStreamBuilder].
 class UnhandledStreamError extends Error {
-  /// Error emitted from [Stream].
+  /// Error emitted from [ValueStream].
   final Object error;
 
   /// Create an [UnhandledStreamError] from [error].
@@ -208,19 +214,21 @@ class UnhandledStreamError extends Error {
 
   @override
   String toString() {
-    return '''Unhandled error from ValueStream: $error.
-ValueStreamBuilder requires ValueStream never to emit error events.
-You should use one of following methods to handle error before passing stream to ValueStreamBuilder:
-  * stream.handleError((e, s) { })
-  * stream.onErrorReturn(value)
-  * stream.onErrorReturnWith((e) => value)
-  * stream.onErrorResumeNext(otherStream)
-  * stream.onErrorResume((e) => otherStream)
-  * stream.transform(
-        StreamTransformer.fromHandlers(handleError: (e, s, sink) {}))
-  ...
-If none of these solutions work, please file a bug at:
-https://github.com/ReactiveX/rxdart/issues/new
+    return '''${_bullet}Unhandled error from the ValueStream: "$error".
+
+${_bullet}ValueStreamBuilder requires the ValueStream never to emit any error events.
+${_indent}You should use one of following methods to handle error before passing stream to ValueStreamBuilder:
+$_indent  $_bullet stream.handleError((e, s) { })
+$_indent  $_bullet stream.onErrorReturn(value)
+$_indent  $_bullet stream.onErrorReturnWith((e) => value)
+$_indent  $_bullet stream.onErrorResumeNext(otherStream)
+$_indent  $_bullet stream.onErrorResume((e) => otherStream)
+$_indent  $_bullet stream.transform(
+$_indent  $_indent     StreamTransformer.fromHandlers(handleError: (e, s, sink) {}))
+$_indent ...
+
+${_bullet}If none of these solutions work, please file a bug at:
+${_indent}https://github.com/ReactiveX/rxdart/issues/new
 ''';
   }
 }
@@ -233,11 +241,14 @@ class ValueStreamHasNoValueError<T> extends Error {
 
   @override
   String toString() {
-    return '''ValueStreamBuilder requires hasValue of $stream to be `true`.
-You can use BehaviorSubject.seeded(value), or publishValueSeeded(value)/shareValueSeeded(value) to create a ValueStream with an initial value.
-Otherwise, you should check stream.hasValue before using ValueStreamBuilder.
-If none of these solutions work, please file a bug at:
-https://github.com/ReactiveX/rxdart/issues/new
-    ''';
+    return '''${_bullet}ValueStreamBuilder requires `hasValue` of "$stream" to be true.
+${_indent}You can use BehaviorSubject.seeded(value), publishValueSeeded(value) or shareValueSeeded(value)
+${_indent}to create a ValueStream with an initial value.
+
+${_bullet}Otherwise, you should check `stream.hasValue` before using ValueStreamBuilder.
+
+${_bullet}If none of these solutions work, please file a bug at:
+${_indent}https://github.com/ReactiveX/rxdart/issues/new
+''';
   }
 }
