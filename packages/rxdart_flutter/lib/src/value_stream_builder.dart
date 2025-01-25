@@ -18,7 +18,7 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 /// {@template value_stream_builder}
 /// Similar to [StreamBuilder], but works with [ValueStream].
 /// [ValueStreamBuilder] requires [stream.hasValue] to always be `true`,
-/// and does not emit any error events.
+/// and the [stream] does not emit any error events.
 ///
 /// [ValueStreamBuilder] handles building a widget in response to new `data`.
 /// [ValueStreamBuilder] is analogous to [StreamBuilder] but has simplified API to
