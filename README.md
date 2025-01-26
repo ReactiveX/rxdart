@@ -23,6 +23,7 @@ programming, leveraging the native Dart Streams api.
 
 ## Packages
 
-| Package                     | Pub                                                                                         |
-|-----------------------------|---------------------------------------------------------------------------------------------|
-| [`rxdart`](packages/rxdart) | [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart) |
+| Package                                     | Pub                                                                                                         |
+|---------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| [`rxdart`](packages/rxdart)                 | [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)                 |
+| [`rxdart_flutter`](packages/rxdart_flutter) | [![Pub](https://img.shields.io/pub/v/rxdart_flutter.svg)](https://pub.dartlang.org/packages/rxdart_flutter) |
