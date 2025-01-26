@@ -155,7 +155,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
 
     final buildWhen = widget._buildWhen;
 
-    assert(subscription == null, 'Stream already subscribed');
+    assert(subscription == null, 'The stream is already listened to!');
     subscription = stream.listen(
       (newData) {
         final previousData = currentData;
@@ -180,7 +180,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty.lazy('currentData', () => currentData));
+    properties.add(DiagnosticsProperty.lazy('data', () => currentData));
     properties.add(DiagnosticsProperty('error', error));
     properties.add(DiagnosticsProperty('subscription', subscription));
   }
