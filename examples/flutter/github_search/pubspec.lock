@@ -464,7 +464,7 @@ packages:
       path: "../../../packages/rxdart_flutter"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.1-dev.1"
   shelf:
     dependency: transitive
     description:
