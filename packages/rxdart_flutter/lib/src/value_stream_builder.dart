@@ -218,7 +218,11 @@ class UnhandledStreamError extends Error {
     return '''${_bullet}Unhandled error from the ValueStream: "$error".
 
 ${_bullet}ValueStreamBuilder requires the ValueStream never to emit any error events.
-${_indent}You should use one of following methods to handle error before passing stream to ValueStreamBuilder:
+
+${_bullet}If you are using BehaviorSubjects, you should only call subject.add(data),
+${_indent}and never call subject.addError(error).
+
+${_indent}You can use one of following methods to handle error before passing stream to ValueStreamBuilder:
 $_indent  $_bullet stream.handleError((e, s) { })
 $_indent  $_bullet stream.onErrorReturn(value)
 $_indent  $_bullet stream.onErrorReturnWith((e) => value)
@@ -243,7 +247,10 @@ class ValueStreamHasNoValueError<T> extends Error {
   @override
   String toString() {
     return '''${_bullet}ValueStreamBuilder requires `hasValue` of "$stream" to be true.
-${_indent}You can use BehaviorSubject.seeded(value), publishValueSeeded(value) or shareValueSeeded(value)
+${_indent}If you are using BehaviorSubjects, you can use BehaviorSubject.seeded(value),
+or call subject.add(value) before using ValueStreamBuilder.
+
+${_indent}Another option is using stream.publishValueSeeded(value) or stream.shareValueSeeded(value)
 ${_indent}to create a ValueStream with an initial value.
 
 ${_bullet}Otherwise, you should check `stream.hasValue` before using ValueStreamBuilder.
