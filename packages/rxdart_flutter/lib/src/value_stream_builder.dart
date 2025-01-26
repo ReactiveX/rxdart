@@ -17,8 +17,10 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 
 /// {@template value_stream_builder}
 /// Similar to [StreamBuilder], but works with [ValueStream].
+///
 /// [ValueStreamBuilder] requires [stream.hasValue] to always be `true`,
-/// and the [stream] does not emit any error events.
+/// and the [stream] does not emit any error events. See [ValueStreamHasNoValueError]
+/// and [UnhandledStreamError] for more information.
 ///
 /// [ValueStreamBuilder] handles building a widget in response to new `data`.
 /// [ValueStreamBuilder] is analogous to [StreamBuilder] but has simplified API to
@@ -161,13 +163,13 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
         final previousData = currentData;
         currentData = newData;
         if (buildWhen == null || buildWhen(previousData, newData)) {
-          setState(_emptyFn);
+          setState(emptyFn);
         }
       },
       onError: (Object e, StackTrace s) {
         error = ErrorAndStackTrace(UnhandledStreamError(e), s);
         reportError();
-        setState(_emptyFn);
+        setState(emptyFn);
       },
     );
   }
@@ -185,7 +187,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
     properties.add(DiagnosticsProperty('subscription', subscription));
   }
 
-  static void _emptyFn() {}
+  static void emptyFn() {}
 
   void reportError() {
     final error = this.error;
@@ -215,18 +217,22 @@ class UnhandledStreamError extends Error {
 
   @override
   String toString() {
-    return '''${_bullet}Unhandled error from the ValueStream: "$error".
+    return '''${_bullet}Unhandled error emitted from the ValueStream: "$error".
 
-${_bullet}ValueStreamBuilder requires the ValueStream never to emit any error events.
-${_indent}You should use one of following methods to handle error before passing stream to ValueStreamBuilder:
-$_indent  $_bullet stream.handleError((e, s) { })
+${_bullet}The ValueStreamBuilder requires the ValueStream to never emit any error events.
+
+${_bullet}If you are using a BehaviorSubject, ensure you only call subject.add(data),
+${_indent}and never call subject.addError(error).
+
+${_indent}To handle errors before passing the stream to ValueStreamBuilder, you can use one of the following methods:
+$_indent  $_bullet stream.handleError((error, stackTrace) { })
 $_indent  $_bullet stream.onErrorReturn(value)
-$_indent  $_bullet stream.onErrorReturnWith((e) => value)
+$_indent  $_bullet stream.onErrorReturnWith((error, stackTrace) => value)
 $_indent  $_bullet stream.onErrorResumeNext(otherStream)
-$_indent  $_bullet stream.onErrorResume((e) => otherStream)
+$_indent  $_bullet stream.onErrorResume((error, stackTrace) => otherStream)
 $_indent  $_bullet stream.transform(
-$_indent  $_indent     StreamTransformer.fromHandlers(handleError: (e, s, sink) {}))
-$_indent ...
+$_indent  $_indent     StreamTransformer.fromHandlers(handleError: (error, stackTrace, sink) {}))
+$_indent  ...
 
 ${_bullet}If none of these solutions work, please file a bug at:
 ${_indent}https://github.com/ReactiveX/rxdart/issues/new
@@ -243,10 +249,22 @@ class ValueStreamHasNoValueError<T> extends Error {
   @override
   String toString() {
     return '''${_bullet}ValueStreamBuilder requires `hasValue` of "$stream" to be true.
-${_indent}You can use BehaviorSubject.seeded(value), publishValueSeeded(value) or shareValueSeeded(value)
-${_indent}to create a ValueStream with an initial value.
+${_indent}This means the ValueStream must always have the value.
 
-${_bullet}Otherwise, you should check `stream.hasValue` before using ValueStreamBuilder.
+${_indent}If you are using a BehaviorSubject, use `BehaviorSubject.seeded(value)` 
+or call `subject.add(value)` to provide an initial value before using ValueStreamBuilder.
+
+${_indent}Alternatively, you can create a ValueStream with an initial value using:
+$_indent  $_bullet stream.publishValueSeeded(value)
+$_indent  $_bullet stream.shareValueSeeded(value)
+$_indent  ...
+
+${_bullet}Lastly, you can check if the ValueStream has a value before using ValueStreamBuilder, for example:
+$_indent if (valueStream.hasValue) {
+$_indent   return ValueStreamBuilder(...);
+$_indent } else {
+$_indent   return FallBackWidget();
+$_indent }
 
 ${_bullet}If none of these solutions work, please file a bug at:
 ${_indent}https://github.com/ReactiveX/rxdart/issues/new
