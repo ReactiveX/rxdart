@@ -161,13 +161,13 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
         final previousData = currentData;
         currentData = newData;
         if (buildWhen == null || buildWhen(previousData, newData)) {
-          setState(_emptyFn);
+          setState(emptyFn);
         }
       },
       onError: (Object e, StackTrace s) {
         error = ErrorAndStackTrace(UnhandledStreamError(e), s);
         reportError();
-        setState(_emptyFn);
+        setState(emptyFn);
       },
     );
   }
@@ -185,7 +185,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
     properties.add(DiagnosticsProperty('subscription', subscription));
   }
 
-  static void _emptyFn() {}
+  static void emptyFn() {}
 
   void reportError() {
     final error = this.error;
