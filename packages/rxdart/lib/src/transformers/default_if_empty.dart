@@ -47,7 +47,8 @@ class DefaultIfEmptyStreamTransformer<S> extends StreamTransformerBase<S, S> {
       stream, (sink) => _DefaultIfEmptyStreamSink<S>(sink, defaultValue));
 }
 
-///
+/// Extend the Stream class with the ability to emit a single default item if the
+/// source Stream emits nothing.
 extension DefaultIfEmptyExtension<T> on Stream<T> {
   /// Emit items from the source Stream, or a single default item if the source
   /// Stream emits nothing.
