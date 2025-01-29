@@ -88,10 +88,14 @@ ErrorAndStackTrace? validateValueStreamInitialValue<T>(ValueStream<T> stream) {
   if (!stream.hasValue) {
     if (stream.hasError) {
       error = ErrorAndStackTrace(
-          UnhandledStreamError(stream.error), StackTrace.current);
+        UnhandledStreamError(stream.error),
+        stream.stackTrace ?? StackTrace.current,
+      );
     } else {
       error = ErrorAndStackTrace(
-          ValueStreamHasNoValueError(stream), StackTrace.current);
+        ValueStreamHasNoValueError(stream),
+        stream.stackTrace ?? StackTrace.current,
+      );
     }
   }
 
