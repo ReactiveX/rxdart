@@ -118,13 +118,11 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
 
     if (!_initialized) {
       _currentValue = stream.value;
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _notifyListener(stream.value);
-      });
     }
 
-    _subscription = stream.skip(1).listen(
+    final skipCount = _initialized ? 0 : 1;
+
+    _subscription = stream.skip(skipCount).listen(
       (value) {
         if (!mounted) return;
         _notifyListener(value);
