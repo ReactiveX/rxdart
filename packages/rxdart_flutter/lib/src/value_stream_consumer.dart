@@ -152,7 +152,7 @@ class _ValueStreamConsumerState<T> extends State<ValueStreamConsumer<T>> {
           });
         }
       },
-      child: widget.builder(context, _currentValue!),
+      child: widget.builder(context, _currentValue),
     );
   }
 }
