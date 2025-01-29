@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:flutter/widgets.dart';
 
-import '../rxdart_flutter.dart';
 import 'errors.dart';
+import 'value_stream_listener.dart';
 
 /// Signature for the `builder` function which takes the `BuildContext` and the current `value`
 /// and is responsible for returning a widget which is to be rendered.
