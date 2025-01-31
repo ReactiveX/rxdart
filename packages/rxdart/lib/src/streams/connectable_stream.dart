@@ -175,6 +175,9 @@ class ValueConnectableStream<T>
 
   @override
   StreamNotification<T>? get lastEventOrNull => _subject.lastEventOrNull;
+
+  @override
+  bool get isReplayValueStream => _subject.isReplayValueStream;
 }
 
 /// A [ConnectableStream] that converts a single-subscription Stream into
