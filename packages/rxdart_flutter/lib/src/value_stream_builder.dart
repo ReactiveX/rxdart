@@ -94,6 +94,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     required this.builder,
     this.buildWhen,
     this.child,
+    this.isReplayValueStream = true,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamBuilder] will interact with.
@@ -119,6 +120,12 @@ class ValueStreamBuilder<T> extends StatefulWidget {
   /// would be no useful [child].
   final Widget? child;
 
+  /// Whether or not the [stream] emits the last value
+  /// like [BehaviorSubject] does.
+  ///
+  /// Defaults to `true`.
+  final bool isReplayValueStream;
+
   @override
   State<ValueStreamBuilder<T>> createState() => _ValueStreamBuilderState();
 
@@ -127,6 +134,8 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
+      ..add(
+          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamBuilderCondition<T>?>.has(
         'buildWhen',
         buildWhen,
@@ -160,6 +169,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
     }
     return ValueStreamListener<T>(
       stream: widget.stream,
+      isReplayValueStream: widget.isReplayValueStream,
       listener: (context, previous, current) {
         if (widget.buildWhen?.call(previous, current) ?? true) {
           setState(() {

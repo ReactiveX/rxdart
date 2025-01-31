@@ -483,7 +483,7 @@ void main() {
     testWidgets('provides debug properties for diagnostics', (tester) async {
       final builder = DiagnosticPropertiesBuilder();
 
-      ValueStreamConsumer(
+      ValueStreamConsumer<int>(
         stream: BehaviorSubject<int>.seeded(0),
         builder: (context, value, child) => const SizedBox(),
         listener: (context, previous, current) {},
@@ -500,6 +500,7 @@ void main() {
         description,
         <String>[
           "stream: Instance of 'BehaviorSubject<int>'",
+          'isReplayValueStream: true',
           'has builder',
           'has buildWhen',
           'has listener',
@@ -929,7 +930,7 @@ void main() {
     testWidgets('provides debug properties for diagnostics', (tester) async {
       final builder = DiagnosticPropertiesBuilder();
 
-      ValueStreamConsumer(
+      ValueStreamConsumer<int?>(
         stream: BehaviorSubject<int?>.seeded(null),
         builder: (context, value, child) => const SizedBox(),
         listener: (context, previous, current) {},
@@ -946,6 +947,7 @@ void main() {
         description,
         <String>[
           "stream: Instance of 'BehaviorSubject<int?>'",
+          'isReplayValueStream: true',
           'has builder',
           'has buildWhen',
           'has listener',

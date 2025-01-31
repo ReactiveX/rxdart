@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:rxdart_flutter/rxdart_flutter.dart';
 import 'package:rxdart_flutter/src/errors.dart';
 
@@ -52,6 +53,7 @@ class _ListenerAppState<T> extends State<ListenerApp<T>> {
   Widget build(BuildContext context) {
     return ValueStreamListener<T>(
       stream: stream,
+      isReplayValueStream: false,
       listener: widget.listener,
       child: MaterialApp(
         key: ListenerApp.materialAppKey,
@@ -72,7 +74,7 @@ class _ListenerAppState<T> extends State<ListenerApp<T>> {
 void main() {
   group('ValueStreamListener - T Non Nullable', () {
     testWidgets('does not call listener with initial value', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numCalls = 0;
 
       await tester.pumpWidget(
@@ -88,7 +90,7 @@ void main() {
     });
 
     testWidgets('calls listener when stream emits new values', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numCalls = 0;
       final previousValues = <int>[];
       final currentValues = <int>[];
@@ -119,8 +121,8 @@ void main() {
 
     testWidgets('calls listener with correct values when switching streams',
         (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
-      final stream2 = BehaviorSubject<int>.seeded(100);
+      final stream1 = ValueSubject<int>(0);
+      final stream2 = ValueSubject<int>(100);
       var numCalls = 0;
       final previousValues = <int>[];
       final currentValues = <int>[];
@@ -208,7 +210,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       final stream2 = BehaviorSubject<int>();
 
       await tester.pumpWidget(
@@ -238,7 +240,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       final stream2 = BehaviorSubject<int>();
       stream2.addError(Exception());
 
@@ -268,7 +270,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
 
       await tester.pumpWidget(
         ListenerApp<int>(
@@ -293,7 +295,8 @@ void main() {
       final builder = DiagnosticPropertiesBuilder();
 
       ValueStreamListener<int>(
-        stream: BehaviorSubject<int>.seeded(0),
+        stream: ValueSubject<int>(0),
+        isReplayValueStream: false,
         listener: (context, previous, current) {},
         child: const SizedBox(),
       ).debugFillProperties(builder);
@@ -306,8 +309,8 @@ void main() {
       expect(
         description,
         <String>[
-          "stream: Instance of 'BehaviorSubject<int>'",
-          'isReplayValueStream: true',
+          "stream: Instance of 'ValueSubject<int>'",
+          'isReplayValueStream: false',
           'has listener',
           'has child',
         ],
@@ -317,7 +320,7 @@ void main() {
 
   group('ValueStreamListener - T Nullable', () {
     testWidgets('does not call listener with initial value', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numCalls = 0;
 
       await tester.pumpWidget(
@@ -333,7 +336,7 @@ void main() {
     });
 
     testWidgets('calls listener when stream emits new values', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numCalls = 0;
       final previousValues = <int?>[];
       final currentValues = <int?>[];
@@ -364,8 +367,8 @@ void main() {
 
     testWidgets('calls listener with correct values when switching streams',
         (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
-      final stream2 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
+      final stream2 = ValueSubject<int?>(null);
       var numCalls = 0;
       final previousValues = <int?>[];
       final currentValues = <int?>[];
@@ -453,7 +456,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       final stream2 = BehaviorSubject<int?>();
 
       await tester.pumpWidget(
@@ -483,7 +486,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       final stream2 = BehaviorSubject<int?>();
       stream2.addError(Exception());
 
@@ -513,7 +516,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
 
       await tester.pumpWidget(
         ListenerApp<int?>(
@@ -538,7 +541,8 @@ void main() {
       final builder = DiagnosticPropertiesBuilder();
 
       ValueStreamListener<int?>(
-        stream: BehaviorSubject<int?>.seeded(null),
+        stream: ValueSubject<int?>(null),
+        isReplayValueStream: false,
         listener: (context, previous, current) {},
         child: const SizedBox(),
       ).debugFillProperties(builder);
@@ -551,8 +555,8 @@ void main() {
       expect(
         description,
         <String>[
-          "stream: Instance of 'BehaviorSubject<int?>'",
-          'isReplayValueStream: true',
+          "stream: Instance of 'ValueSubject<int?>'",
+          'isReplayValueStream: false',
           'has listener',
           'has child',
         ],

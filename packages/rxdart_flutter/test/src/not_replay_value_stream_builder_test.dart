@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:rxdart_flutter/rxdart_flutter.dart';
 import 'package:rxdart_flutter/src/errors.dart';
 
@@ -54,6 +55,7 @@ class _BuilderAppState<T> extends State<BuilderApp<T>> {
   Widget build(BuildContext context) {
     return ValueStreamBuilder<T>(
       stream: stream,
+      isReplayValueStream: false,
       buildWhen: widget.buildWhen,
       child: widget.child,
       builder: (context, value, child) {
@@ -81,7 +83,7 @@ void main() {
   group('ValueStreamBuilder', () {
     testWidgets('renders initial value from stream - T Non Nullable',
         (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int>(stream1: stream1, onBuild: () => numBuilds++),
@@ -92,7 +94,7 @@ void main() {
     });
 
     testWidgets('rebuilds widget when stream emits new values', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int>(stream1: stream1, onBuild: () => numBuilds++),
@@ -110,7 +112,7 @@ void main() {
     });
 
     testWidgets('passes child parameter to builder', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       const child = Text('child');
 
       await tester.pumpWidget(
@@ -131,7 +133,7 @@ void main() {
     });
 
     testWidgets('skips rebuild when buildWhen returns false', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int>(
@@ -161,7 +163,7 @@ void main() {
     });
 
     testWidgets('rebuilds when buildWhen returns true', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int>(
@@ -191,8 +193,8 @@ void main() {
     });
 
     testWidgets('rebuilds when switching between streams', (tester) async {
-      final stream1 = BehaviorSubject<int>.seeded(0);
-      final stream2 = BehaviorSubject<int>.seeded(100);
+      final stream1 = ValueSubject<int>(0);
+      final stream2 = ValueSubject<int>(100);
 
       var numBuilds = 0;
 
@@ -269,7 +271,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       final stream2 = BehaviorSubject<int>();
 
       await tester.pumpWidget(
@@ -298,7 +300,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
       final stream2 = BehaviorSubject<int>();
       stream2.addError(Exception());
 
@@ -327,7 +329,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int>.seeded(0);
+      final stream1 = ValueSubject<int>(0);
 
       await tester.pumpWidget(
         BuilderApp<int>(
@@ -351,7 +353,8 @@ void main() {
       final builder = DiagnosticPropertiesBuilder();
 
       ValueStreamBuilder<int>(
-        stream: BehaviorSubject<int>.seeded(0),
+        stream: ValueSubject<int>(0),
+        isReplayValueStream: false,
         builder: (context, value, child) => const SizedBox(),
         buildWhen: (previous, current) => previous != current,
         child: const SizedBox(),
@@ -366,8 +369,8 @@ void main() {
         description,
         <String>[
           'stream: Instance of '
-              "'BehaviorSubject<int>'",
-          'isReplayValueStream: true',
+              "'ValueSubject<int>'",
+          'isReplayValueStream: false',
           'has buildWhen',
           'has builder',
           'has child',
@@ -379,7 +382,7 @@ void main() {
   group('ValueStreamBuilder - T Nullable', () {
     testWidgets('renders initial value from stream - T Nullable',
         (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int?>(stream1: stream1, onBuild: () => numBuilds++),
@@ -390,7 +393,7 @@ void main() {
     });
 
     testWidgets('rebuilds widget when stream emits new values', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int?>(stream1: stream1, onBuild: () => numBuilds++),
@@ -408,7 +411,7 @@ void main() {
     });
 
     testWidgets('passes child parameter to builder', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       const child = Text('child');
 
       await tester.pumpWidget(
@@ -429,7 +432,7 @@ void main() {
     });
 
     testWidgets('skips rebuild when buildWhen returns false', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int?>(
@@ -464,7 +467,7 @@ void main() {
     });
 
     testWidgets('rebuilds when buildWhen returns true', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       var numBuilds = 0;
       await tester.pumpWidget(
         BuilderApp<int?>(
@@ -499,8 +502,8 @@ void main() {
     });
 
     testWidgets('rebuilds when switching between streams', (tester) async {
-      final stream1 = BehaviorSubject<int?>.seeded(null);
-      final stream2 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
+      final stream2 = ValueSubject<int?>(null);
 
       var numBuilds = 0;
 
@@ -577,7 +580,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       final stream2 = BehaviorSubject<int?>();
 
       await tester.pumpWidget(
@@ -606,7 +609,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
       final stream2 = BehaviorSubject<int?>();
       stream2.addError(Exception());
 
@@ -635,7 +638,7 @@ void main() {
       FlutterError.onError = (errorDetails) {
         completer.complete(errorDetails.exception);
       };
-      final stream1 = BehaviorSubject<int?>.seeded(null);
+      final stream1 = ValueSubject<int?>(null);
 
       await tester.pumpWidget(
         BuilderApp<int?>(
@@ -659,7 +662,8 @@ void main() {
       final builder = DiagnosticPropertiesBuilder();
 
       ValueStreamBuilder<int?>(
-        stream: BehaviorSubject<int?>.seeded(null),
+        stream: ValueSubject<int?>(null),
+        isReplayValueStream: false,
         builder: (context, value, child) => const SizedBox(),
         buildWhen: (previous, current) => previous != current,
         child: const SizedBox(),
@@ -673,8 +677,8 @@ void main() {
       expect(
         description,
         <String>[
-          "stream: Instance of 'BehaviorSubject<int?>'",
-          'isReplayValueStream: true',
+          "stream: Instance of 'ValueSubject<int?>'",
+          'isReplayValueStream: false',
           'has buildWhen',
           'has builder',
           'has child',

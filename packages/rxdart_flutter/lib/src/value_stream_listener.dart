@@ -51,6 +51,7 @@ class ValueStreamListener<T> extends StatefulWidget {
     required this.stream,
     required this.listener,
     required this.child,
+    this.isReplayValueStream = true,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
@@ -64,6 +65,12 @@ class ValueStreamListener<T> extends StatefulWidget {
   /// [ValueStreamListener].
   final Widget child;
 
+  /// Whether or not the [stream] emits the last value
+  /// like [BehaviorSubject] does.
+  ///
+  /// Defaults to `true`.
+  final bool isReplayValueStream;
+
   @override
   State<ValueStreamListener<T>> createState() => _ValueStreamListenerState<T>();
 
@@ -72,6 +79,8 @@ class ValueStreamListener<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
+      ..add(
+          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamWidgetListener<T>>.has(
           'listener', listener))
       ..add(ObjectFlagProperty<Widget>.has('child', child));
@@ -118,7 +127,18 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
       _currentValue = stream.value;
     }
 
-    final skipCount = _initialized ? 0 : 1;
+    final int skipCount;
+
+    if (widget.isReplayValueStream) {
+      skipCount = _initialized ? 0 : 1;
+    } else {
+      skipCount = 0;
+      if (_initialized) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _notifyListener(stream.value);
+        });
+      }
+    }
 
     _subscription = stream.skip(skipCount).listen(
       (value) {
