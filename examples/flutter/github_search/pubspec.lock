@@ -169,14 +169,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  dart_either:
-    dependency: transitive
-    description:
-      name: dart_either
-      sha256: "928895b8266ac5906eb4e2993fead563a73b17fc86eec6b40172100d56ca2507"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   dart_style:
     dependency: transitive
     description:
@@ -450,14 +442,6 @@ packages:
       relative: true
     source: path
     version: "0.28.0"
-  rxdart_ext:
-    dependency: "direct main"
-    description:
-      name: rxdart_ext
-      sha256: "95df7e8b13140e2c3fdb3b943569a51f18090e82aaaf6ca6e8e6437e434a6fb0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0"
   rxdart_flutter:
     dependency: "direct main"
     description:

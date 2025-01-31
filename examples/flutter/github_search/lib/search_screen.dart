@@ -47,6 +47,7 @@ class SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return ValueStreamBuilder<SearchState>(
       stream: bloc.state,
+      buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(

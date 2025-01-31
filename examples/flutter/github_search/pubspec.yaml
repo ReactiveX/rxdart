@@ -15,7 +15,6 @@ dependencies:
     path: ../../../packages/rxdart_flutter
   http: ^0.13.3
   flutter_spinkit: ^5.1.0
-  rxdart_ext: ^0.3.0
   equatable: ^2.0.5
 
 dev_dependencies:
