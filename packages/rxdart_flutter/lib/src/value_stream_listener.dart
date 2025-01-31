@@ -140,7 +140,9 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
       }
     }
 
-    _subscription = stream.skip(skipCount).listen(
+    final streamToListen = skipCount > 0 ? stream.skip(skipCount) : stream;
+
+    _subscription = streamToListen.listen(
       (value) {
         if (!mounted) return;
         _notifyListener(value);
