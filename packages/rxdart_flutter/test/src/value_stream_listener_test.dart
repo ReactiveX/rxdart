@@ -16,8 +16,8 @@ class ListenerApp<T> extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  final BehaviorSubject<T> stream1;
-  final BehaviorSubject<T>? stream2;
+  final ValueStream<T> stream1;
+  final ValueStream<T>? stream2;
   final ValueStreamWidgetListener<T> listener;
 
   static const materialAppKey = Key('material_app');
@@ -28,19 +28,12 @@ class ListenerApp<T> extends StatefulWidget {
 }
 
 class _ListenerAppState<T> extends State<ListenerApp<T>> {
-  late BehaviorSubject<T> stream;
+  late ValueStream<T> stream;
 
   @override
   void initState() {
     super.initState();
     stream = widget.stream1;
-  }
-
-  @override
-  void dispose() {
-    widget.stream1.close();
-    widget.stream2?.close();
-    super.dispose();
   }
 
   void toggleStream() {

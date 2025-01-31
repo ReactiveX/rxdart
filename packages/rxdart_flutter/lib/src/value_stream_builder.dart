@@ -11,6 +11,7 @@ import 'value_stream_listener.dart';
 typedef ValueStreamWidgetBuilder<T> = Widget Function(
   BuildContext context,
   T value,
+  Widget? child,
 );
 
 /// Signature for the `buildWhen` function which takes the previous and
@@ -42,9 +43,10 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 /// ```dart
 /// ValueStreamBuilder<T>(
 ///   stream: valueStream,
-///   builder: (context, value) {
+///   builder: (context, value, child) {
 ///     // return widget here based on valueStream's value
-///   }
+///   },
+///   child: const SizedBox(), // Optional child widget that remains stable
 /// );
 /// ```
 /// {@endtemplate}
@@ -64,6 +66,9 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 ///
 /// [buildWhen] is optional and if omitted, it will default to `true`.
 ///
+/// [child] is optional but is good practice to use if part of
+/// the widget subtree does not depend on the value of the [stream].
+///
 /// **Example**
 ///
 /// ```dart
@@ -73,9 +78,10 @@ typedef ValueStreamBuilderCondition<S> = bool Function(S previous, S current);
 ///     // return true/false to determine whether or not
 ///     // to rebuild the widget with valueStream's value
 ///   },
-///   builder: (context, value) {
+///   builder: (context, value, child) {
 ///     // return widget here based on valueStream's value
-///   }
+///   },
+///   child: const SizedBox(), // Optional child widget that remains stable
 /// )
 /// ```
 /// {@endtemplate}
@@ -87,6 +93,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     required this.stream,
     required this.builder,
     this.buildWhen,
+    this.child,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamBuilder] will interact with.
@@ -103,6 +110,15 @@ class ValueStreamBuilder<T> extends StatefulWidget {
   /// [builder] with the current `value`.
   final ValueStreamBuilderCondition<T>? buildWhen;
 
+  /// A [ValueStream]-independent widget which is passed back to the [builder].
+  ///
+  /// This argument is optional and can be null if the entire widget subtree the
+  /// [builder] builds depends on the value of the [stream]. For
+  /// example, in the case where the [stream] is a [String] and the
+  /// [builder] returns a [Text] widget with the current [String] value, there
+  /// would be no useful [child].
+  final Widget? child;
+
   @override
   State<ValueStreamBuilder<T>> createState() => _ValueStreamBuilderState();
 
@@ -111,16 +127,15 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
-      ..add(
-        ObjectFlagProperty<ValueStreamBuilderCondition<T>?>.has(
-          'buildWhen',
-          buildWhen,
-        ),
-      )
+      ..add(ObjectFlagProperty<ValueStreamBuilderCondition<T>?>.has(
+        'buildWhen',
+        buildWhen,
+      ))
       ..add(ObjectFlagProperty<ValueStreamWidgetBuilder<T>>.has(
         'builder',
         builder,
-      ));
+      ))
+      ..add(ObjectFlagProperty<Widget?>.has('child', child));
   }
 }
 
@@ -152,7 +167,7 @@ class _ValueStreamBuilderState<T> extends State<ValueStreamBuilder<T>> {
           });
         }
       },
-      child: widget.builder(context, _currentValue),
+      child: widget.builder(context, _currentValue, widget.child),
     );
   }
 }

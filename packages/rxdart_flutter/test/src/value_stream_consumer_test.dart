@@ -13,15 +13,16 @@ class ConsumerApp<T> extends StatefulWidget {
     this.buildWhen,
     required this.listener,
     this.onBuild,
+    this.child,
     Key? key,
   }) : super(key: key);
 
-  final BehaviorSubject<T> stream1;
-  final BehaviorSubject<T>? stream2;
+  final ValueStream<T> stream1;
+  final ValueStream<T>? stream2;
   final ValueStreamBuilderCondition<T>? buildWhen;
   final ValueStreamWidgetListener<T> listener;
   final void Function()? onBuild;
-
+  final Widget? child;
   static const materialAppKey = Key('material_app');
   static const toggleStreamButtonKey = Key('toggle_stream_button');
 
@@ -30,19 +31,12 @@ class ConsumerApp<T> extends StatefulWidget {
 }
 
 class _ConsumerAppState<T> extends State<ConsumerApp<T>> {
-  late BehaviorSubject<T> stream;
+  late ValueStream<T> stream;
 
   @override
   void initState() {
     super.initState();
     stream = widget.stream1;
-  }
-
-  @override
-  void dispose() {
-    widget.stream1.close();
-    widget.stream2?.close();
-    super.dispose();
   }
 
   void toggleStream() {
@@ -63,13 +57,15 @@ class _ConsumerAppState<T> extends State<ConsumerApp<T>> {
       stream: stream,
       buildWhen: widget.buildWhen,
       listener: widget.listener,
-      builder: (context, value) {
+      child: widget.child,
+      builder: (context, value, child) {
         widget.onBuild?.call();
         return MaterialApp(
           key: ConsumerApp.materialAppKey,
           home: Column(
             children: [
               Text('$value'),
+              if (child != null) child,
               TextButton(
                 key: ConsumerApp.toggleStreamButtonKey,
                 child: const Text('Toggle Stream'),
@@ -122,6 +118,28 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('2'), findsOneWidget);
       expect(numBuilds, 3);
+    });
+
+    testWidgets('passes child parameter to builder', (tester) async {
+      final stream1 = BehaviorSubject<int>.seeded(0);
+      const child = Text('child');
+
+      await tester.pumpWidget(
+        ConsumerApp<int>(
+          stream1: stream1,
+          child: child,
+          listener: (_, __, ___) {},
+        ),
+      );
+
+      expect(find.text('0'), findsOneWidget);
+      expect(find.text('child'), findsOneWidget);
+
+      stream1.add(1);
+      await tester.pumpAndSettle();
+
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('child'), findsOneWidget);
     });
 
     testWidgets('skips rebuild when buildWhen returns false', (tester) async {
@@ -467,9 +485,10 @@ void main() {
 
       ValueStreamConsumer(
         stream: BehaviorSubject<int>.seeded(0),
-        builder: (context, value) => const SizedBox(),
+        builder: (context, value, child) => const SizedBox(),
         listener: (context, previous, current) {},
         buildWhen: (previous, current) => previous != current,
+        child: const SizedBox(),
       ).debugFillProperties(builder);
 
       final description = builder.properties
@@ -484,6 +503,7 @@ void main() {
           'has builder',
           'has buildWhen',
           'has listener',
+          'has child',
         ],
       );
     });
@@ -527,6 +547,28 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('null'), findsOneWidget);
       expect(numBuilds, 3);
+    });
+
+    testWidgets('passes child parameter to builder', (tester) async {
+      final stream1 = BehaviorSubject<int?>.seeded(null);
+      const child = Text('child');
+
+      await tester.pumpWidget(
+        ConsumerApp<int?>(
+          stream1: stream1,
+          child: child,
+          listener: (_, __, ___) {},
+        ),
+      );
+
+      expect(find.text('null'), findsOneWidget);
+      expect(find.text('child'), findsOneWidget);
+
+      stream1.add(1);
+      await tester.pumpAndSettle();
+
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('child'), findsOneWidget);
     });
 
     testWidgets('skips rebuild when buildWhen returns false', (tester) async {
@@ -889,9 +931,10 @@ void main() {
 
       ValueStreamConsumer(
         stream: BehaviorSubject<int?>.seeded(null),
-        builder: (context, value) => const SizedBox(),
+        builder: (context, value, child) => const SizedBox(),
         listener: (context, previous, current) {},
         buildWhen: (previous, current) => previous != current,
+        child: const SizedBox(),
       ).debugFillProperties(builder);
 
       final description = builder.properties
@@ -906,6 +949,7 @@ void main() {
           'has builder',
           'has buildWhen',
           'has listener',
+          'has child',
         ],
       );
     });

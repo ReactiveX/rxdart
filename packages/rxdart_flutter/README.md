@@ -50,12 +50,18 @@ final counterStream = BehaviorSubject<int>.seeded(0); // Initial value required
 ValueStreamBuilder<int>(
   stream: counterStream,
   buildWhen: (previous, current) => current != previous, // Optional rebuild condition
-  builder: (context, value) {
-    return Text(
-      'Counter: $value',
-      style: Theme.of(context).textTheme.headlineMedium,
+  builder: (context, value, child) {
+    return Column(
+      children: [
+        Text(
+          'Counter: $value',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+        if (child != null) child, // Use the stable child widget if provided
+      ],
     );
   },
+  child: const Text('This widget remains stable'), // Optional stable child widget
 )
 ```
 
@@ -69,6 +75,7 @@ ValueStreamBuilder<int>(
 - No rebuilds on value changes (unlike ValueStreamBuilder)
 - Child widget is preserved across stream updates
 - Guaranteed to only call listener once per value change
+- Optional `child` for stable widgets that remain unchanged across stream updates
 
 ### Example
 
@@ -98,6 +105,7 @@ ValueStreamListener<AuthState>(
 - Optional `buildWhen` condition for controlling rebuilds
 - Access to previous and current values in listener
 - Efficient handling of both UI updates and side effects
+- Optional `child` for stable widgets that remain unchanged across stream updates
 
 ### Example
 
@@ -114,14 +122,16 @@ ValueStreamConsumer<Cart>(
       );
     }
   },
-  builder: (context, cart) {
+  builder: (context, cart, child) {
     return Column(
       children: [
         Text('Total items: ${cart.itemCount}'),
         Text('Total price: \$${cart.totalPrice}'),
+        if (child != null) child, // Use the stable child widget if provided
       ],
     );
   },
+  child: const Text('This widget remains stable'), // Optional stable child widget
 )
 ```
 

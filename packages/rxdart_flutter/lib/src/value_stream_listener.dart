@@ -74,9 +74,7 @@ class ValueStreamListener<T> extends StatefulWidget {
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
       ..add(ObjectFlagProperty<ValueStreamWidgetListener<T>>.has(
           'listener', listener))
-      ..add(
-        ObjectFlagProperty<Widget>.has('child', child),
-      );
+      ..add(ObjectFlagProperty<Widget>.has('child', child));
   }
 }
 

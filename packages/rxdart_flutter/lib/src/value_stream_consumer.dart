@@ -34,9 +34,10 @@ import 'value_stream_listener.dart';
 ///     // do stuff here based on valueStream's
 ///     // previous and current values
 ///   },
-///   builder: (context, value) {
+///   builder: (context, value, child) {
 ///     // Build widget based on valueStream's value
-///   }
+///   },
+///   child: const SizedBox(), // Optional child widget that remains stable
 /// )
 /// ```
 ///
@@ -52,6 +53,9 @@ import 'value_stream_listener.dart';
 /// [buildWhen] is optional and if it isn't implemented,
 /// it will default to `true`.
 ///
+/// [child] is optional but is good practice to use if part of
+/// the widget subtree does not depend on the value of the [stream].
+///
 /// **Example**
 ///
 /// ```dart
@@ -65,9 +69,10 @@ import 'value_stream_listener.dart';
 ///     // return true/false to determine whether or not
 ///     // to rebuild the widget with valueStream's value
 ///   },
-///   builder: (context, value) {
+///   builder: (context, value, child) {
 ///     // Build widget based on valueStream's value
-///   }
+///   },
+///   child: const SizedBox(), // Optional child widget that remains stable
 /// )
 /// ```
 /// {@endtemplate}
@@ -79,6 +84,7 @@ class ValueStreamConsumer<T> extends StatefulWidget {
     required this.listener,
     required this.builder,
     this.buildWhen,
+    this.child,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
@@ -99,6 +105,15 @@ class ValueStreamConsumer<T> extends StatefulWidget {
   /// [builder] with the current `value`.
   final ValueStreamBuilderCondition<T>? buildWhen;
 
+  /// A [ValueStream]-independent widget which is passed back to the [builder].
+  ///
+  /// This argument is optional and can be null if the entire widget subtree the
+  /// [builder] builds depends on the value of the [stream]. For
+  /// example, in the case where the [stream] is a [String] and the
+  /// [builder] returns a [Text] widget with the current [String] value, there
+  /// would be no useful [child].
+  final Widget? child;
+
   @override
   State<ValueStreamConsumer<T>> createState() => _ValueStreamConsumerState<T>();
 
@@ -118,7 +133,8 @@ class ValueStreamConsumer<T> extends StatefulWidget {
       ..add(ObjectFlagProperty<ValueStreamWidgetListener<T>>.has(
         'listener',
         listener,
-      ));
+      ))
+      ..add(ObjectFlagProperty<Widget?>.has('child', child));
   }
 }
 
@@ -152,7 +168,7 @@ class _ValueStreamConsumerState<T> extends State<ValueStreamConsumer<T>> {
           });
         }
       },
-      child: widget.builder(context, _currentValue),
+      child: widget.builder(context, _currentValue, widget.child),
     );
   }
 }

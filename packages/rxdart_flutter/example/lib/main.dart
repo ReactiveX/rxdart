@@ -98,7 +98,7 @@ Current: $current''';
                   ValueStreamConsumer(
                     stream: valueStream,
                     listener: _valueStreamConsumerListener,
-                    builder: (context, value) {
+                    builder: (context, value, child) {
                       return ValueCard(
                         title: 'ValueStreamConsumer.builder for any value',
                         value: value,
@@ -108,7 +108,7 @@ Current: $current''';
                   ValueStreamBuilder(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isEven,
-                    builder: (context, value) {
+                    builder: (context, value, child) {
                       return ValueCard(
                         title: 'ValueStreamBuilder.builder when value is even',
                         value: value,
@@ -118,7 +118,7 @@ Current: $current''';
                   ValueStreamBuilder(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isOdd,
-                    builder: (context, value) {
+                    builder: (context, value, child) {
                       return ValueCard(
                         title: 'ValueStreamBuilder.builder when value is odd',
                         value: value,
