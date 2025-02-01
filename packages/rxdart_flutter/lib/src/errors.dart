@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:meta/meta.dart';
 
 const _bullet = ' • ';
 const _indent = '   ';
@@ -71,6 +72,7 @@ ${_indent}https://github.com/ReactiveX/rxdart/issues/new
   }
 }
 
+@internal
 void reportError(ErrorAndStackTrace error) {
   FlutterError.reportError(
     FlutterErrorDetails(
@@ -81,7 +83,7 @@ void reportError(ErrorAndStackTrace error) {
   );
 }
 
-// @pragma('vm:notify-debugger-on-exception')
+@internal
 ErrorAndStackTrace? validateValueStreamInitialValue<T>(ValueStream<T> stream) {
   ErrorAndStackTrace? error;
 

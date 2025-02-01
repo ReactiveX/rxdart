@@ -134,7 +134,7 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
     } else {
       skipCount = 0;
       if (_initialized) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        _ambiguate(WidgetsBinding.instance)!.addPostFrameCallback((_) {
           _notifyListener(stream.value);
         });
       }
@@ -174,3 +174,13 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
     return widget.child;
   }
 }
+
+/// Reference: https://docs.flutter.dev/release/release-notes/release-notes-3.0.0#your-code
+///
+/// This allows a value of type T or T?
+/// to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become
+/// non-nullable can still be used with `!` and `?`
+/// to support older versions of the API as well.
+T? _ambiguate<T>(T? value) => value;
