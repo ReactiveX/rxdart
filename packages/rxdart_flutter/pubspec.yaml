@@ -16,7 +16,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.4
-  rxdart_ext: >= 0.1.1
+  rxdart_ext: >=0.1.1
 
 topics:
   - rxdart
