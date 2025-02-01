@@ -59,8 +59,11 @@ jobs:
       - name: Active coverage
         run: dart pub global activate coverage
 
-      - name: Run tests
+      - name: Run rxdart tests
         run: melos run test-rxdart
 
       - uses: codecov/codecov-action@v3.1.6
         if: ${{ matrix.flutter == 'stable' }}
+
+      - name: Run rxdart_flutter tests
+        run: melos run test-rxdart-flutter

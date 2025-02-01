@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rxdart_ext/rxdart_ext.dart';
 import 'package:rxdart_flutter/rxdart_flutter.dart';
 import 'package:rxdart_flutter/src/errors.dart';
+
+import 'rxdart_ext/value_subject.dart';
 
 class BuilderApp<T> extends StatefulWidget {
   const BuilderApp({
