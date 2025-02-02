@@ -48,7 +48,7 @@ class SearchScreenState extends State<SearchScreen> {
     return ValueStreamBuilder<SearchState>(
       stream: bloc.state,
       buildWhen: (previous, current) => previous != current,
-      builder: (context, state) {
+      builder: (context, state, child) {
         return Scaffold(
           appBar: AppBar(
             title: const Text('RxDart Github Search'),

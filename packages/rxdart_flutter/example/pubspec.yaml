@@ -1,0 +1,19 @@
+name: rxdart_flutter_example
+description: example for rxdart_flutter
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rxdart_flutter:
+    path: ../
+
+dev_dependencies:
+  flutter_lints: ^1.0.4
+
+flutter:
+  uses-material-design: true
