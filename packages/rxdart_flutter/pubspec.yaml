@@ -17,6 +17,11 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^1.0.4
 
+# TODO: Remove this
+dependency_overrides:
+  rxdart:
+    path: ../rxdart
+
 topics:
   - rxdart
   - reactive-programming
