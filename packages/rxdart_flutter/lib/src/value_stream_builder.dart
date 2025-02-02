@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:flutter/widgets.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'errors.dart';
 import 'value_stream_listener.dart';
@@ -94,7 +94,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     required this.builder,
     this.buildWhen,
     this.child,
-    this.isReplayValueStream = true,
+    this.isReplayValueStream,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamBuilder] will interact with.
@@ -122,9 +122,12 @@ class ValueStreamBuilder<T> extends StatefulWidget {
 
   /// Whether or not the [stream] emits the last value
   /// like [BehaviorSubject] does.
+  /// See [ValueStream.isReplayValueStream] for more information.
   ///
-  /// Defaults to `true`.
-  final bool isReplayValueStream;
+  /// If this argument is `null`, the [ValueStream.isReplayValueStream] is used instead.
+  ///
+  /// Defaults to `null`.
+  final bool? isReplayValueStream;
 
   @override
   State<ValueStreamBuilder<T>> createState() => _ValueStreamBuilderState();
@@ -134,8 +137,8 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
-      ..add(
-          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
+      ..add(DiagnosticsProperty<bool>('isReplayValueStream',
+          isReplayValueStream ?? stream.isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamBuilderCondition<T>?>.has(
         'buildWhen',
         buildWhen,
