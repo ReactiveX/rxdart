@@ -137,8 +137,8 @@ class ValueStreamBuilder<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
-      ..add(
-          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
+      ..add(DiagnosticsProperty<bool>('isReplayValueStream',
+          isReplayValueStream ?? stream.isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamBuilderCondition<T>?>.has(
         'buildWhen',
         buildWhen,
