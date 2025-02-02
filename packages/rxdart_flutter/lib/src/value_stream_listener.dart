@@ -51,7 +51,7 @@ class ValueStreamListener<T> extends StatefulWidget {
     required this.stream,
     required this.listener,
     required this.child,
-    this.isReplayValueStream = true,
+    this.isReplayValueStream,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
@@ -67,9 +67,12 @@ class ValueStreamListener<T> extends StatefulWidget {
 
   /// Whether or not the [stream] emits the last value
   /// like [BehaviorSubject] does.
+  /// See [ValueStream.isReplayValueStream] for more information.
   ///
-  /// Defaults to `true`.
-  final bool isReplayValueStream;
+  /// If this argument is `null`, the [ValueStream.isReplayValueStream] is used instead.
+  ///
+  /// Defaults to `null`.
+  final bool? isReplayValueStream;
 
   @override
   State<ValueStreamListener<T>> createState() => _ValueStreamListenerState<T>();
@@ -129,7 +132,7 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
 
     final int skipCount;
 
-    if (widget.isReplayValueStream) {
+    if (widget.isReplayValueStream ?? stream.isReplayValueStream) {
       skipCount = _initialized ? 0 : 1;
     } else {
       skipCount = 0;

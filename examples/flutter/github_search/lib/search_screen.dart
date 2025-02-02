@@ -22,9 +22,7 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.api});
 
   @override
-  SearchScreenState createState() {
-    return SearchScreenState();
-  }
+  SearchScreenState createState() => SearchScreenState();
 }
 
 class SearchScreenState extends State<SearchScreen> {
