@@ -18,10 +18,10 @@ class _DelayStreamSink<S> extends ForwardingSink<S, S> {
     final subscription = Rx.timer<void>(null, _duration).listen((_) {
       _subscriptions.removeFirst();
 
-      sink.add(data);
+      sink.addSync(data);
 
       if (_inputClosed && _subscriptions.isEmpty) {
-        sink.close();
+        sink.closeSync();
       }
     });
 
@@ -29,14 +29,14 @@ class _DelayStreamSink<S> extends ForwardingSink<S, S> {
   }
 
   @override
-  void onError(Object error, StackTrace st) => sink.addError(error, st);
+  void onError(Object error, StackTrace st) => sink.addErrorSync(error, st);
 
   @override
   void onDone() {
     _inputClosed = true;
 
     if (_subscriptions.isEmpty) {
-      sink.close();
+      sink.closeSync();
     }
   }
 

@@ -17,15 +17,16 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
 
   @override
   void onData(T data) {
-    final subscription =
-        itemDelaySelector(data).take(1).listen(null, onError: sink.addError);
+    final subscription = itemDelaySelector(data)
+        .take(1)
+        .listen(null, onError: sink.addErrorSync);
 
     subscription.onDone(() {
       subscriptions.remove(subscription);
 
-      sink.add(data);
+      sink.addSync(data);
       if (subscriptions.isEmpty && closed) {
-        sink.close();
+        sink.closeSync();
       }
     });
 
@@ -33,13 +34,13 @@ class _DelayWhenStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  void onError(Object error, StackTrace st) => sink.addError(error, st);
+  void onError(Object error, StackTrace st) => sink.addErrorSync(error, st);
 
   @override
   void onDone() {
     closed = true;
     if (subscriptions.isEmpty) {
-      sink.close();
+      sink.closeSync();
     }
   }
 

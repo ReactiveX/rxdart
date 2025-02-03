@@ -72,7 +72,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
@@ -93,7 +93,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     queue.clear();
 
     _windowSubscription?.cancel();
-    sink.close();
+    sink.closeSync();
   }
 
   @override
@@ -108,7 +108,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
   @override
   void onResume() => _windowSubscription?.resume();
 
-  void maybeCreateWindow(S event, EventSink<T> sink) {
+  void maybeCreateWindow(S event, EnhancedEventSink<T> sink) {
     switch (_strategy) {
       // for example throttle
       case WindowStrategy.eventAfterLastWindow:
@@ -142,29 +142,30 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     }
   }
 
-  void maybeCloseWindow(EventSink<T> sink) {
+  void maybeCloseWindow(EnhancedEventSink<T> sink) {
     if (_closeWindowWhen != null && _closeWindowWhen!(unmodifiableQueue)) {
       resolveWindowEnd(sink);
     }
   }
 
-  StreamSubscription<dynamic> singleWindow(S event, EventSink<T> sink) =>
+  StreamSubscription<dynamic> singleWindow(
+          S event, EnhancedEventSink<T> sink) =>
       buildStream(event, sink).take(1).listen(
             null,
-            onError: sink.addError,
+            onError: sink.addErrorSync,
             onDone: () => resolveWindowEnd(sink, _mainClosed),
           );
 
   // opens a new Window which is kept open until the main Stream
   // closes.
-  StreamSubscription<dynamic> multiWindow(S event, EventSink<T> sink) =>
+  StreamSubscription<dynamic> multiWindow(S event, EnhancedEventSink<T> sink) =>
       buildStream(event, sink).listen(
         (dynamic _) => resolveWindowEnd(sink),
-        onError: sink.addError,
+        onError: sink.addErrorSync,
         onDone: () => resolveWindowEnd(sink),
       );
 
-  Stream<void> buildStream(S event, EventSink<T> sink) {
+  Stream<void> buildStream(S event, EnhancedEventSink<T> sink) {
     Stream<void> stream;
 
     _windowSubscription?.cancel();
@@ -174,27 +175,28 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
     return stream;
   }
 
-  void resolveWindowStart(S event, EventSink<T> sink) {
+  void resolveWindowStart(S event, EnhancedEventSink<T> sink) {
     if (_onWindowStart != null) {
-      sink.add(_onWindowStart!(event));
+      sink.addSync(_onWindowStart!(event));
     }
   }
 
-  void resolveWindowEnd(EventSink<T> sink, [bool isControllerClosing = false]) {
+  void resolveWindowEnd(EnhancedEventSink<T> sink,
+      [bool isControllerClosing = false]) {
     if (isControllerClosing &&
         _strategy == WindowStrategy.eventAfterLastWindow) {
       if (_dispatchOnClose &&
           _hasData &&
           queue.length > 1 &&
           _onWindowEnd != null) {
-        sink.add(_onWindowEnd!(unmodifiableQueue));
+        sink.addSync(_onWindowEnd!(unmodifiableQueue));
       }
 
       queue.clear();
       _windowSubscription?.cancel();
       _windowSubscription = null;
 
-      sink.close();
+      sink.closeSync();
       return;
     }
 
@@ -211,7 +213,7 @@ class _BackpressureStreamSink<S, T> extends ForwardingSink<S, T> {
 
     if (_hasData && (queue.isNotEmpty || !_ignoreEmptyWindows)) {
       if (_onWindowEnd != null) {
-        sink.add(_onWindowEnd!(unmodifiableQueue));
+        sink.addSync(_onWindowEnd!(unmodifiableQueue));
       }
 
       // prepare the buffer for the next window.

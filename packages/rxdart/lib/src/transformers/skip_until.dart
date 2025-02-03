@@ -13,17 +13,17 @@ class _SkipUntilStreamSink<S, T> extends ForwardingSink<S, S> {
   @override
   void onData(S data) {
     if (_canAdd) {
-      sink.add(data);
+      sink.addSync(data);
     }
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     _otherSubscription?.cancel();
-    sink.close();
+    sink.closeSync();
   }
 
   @override
@@ -32,7 +32,7 @@ class _SkipUntilStreamSink<S, T> extends ForwardingSink<S, S> {
   @override
   void onListen() => _otherSubscription = _otherStream
       .take(1)
-      .listen(null, onError: sink.addError, onDone: () => _canAdd = true);
+      .listen(null, onError: sink.addErrorSync, onDone: () => _canAdd = true);
 
   @override
   void onPause() => _otherSubscription?.pause();

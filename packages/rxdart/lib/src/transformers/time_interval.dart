@@ -9,7 +9,7 @@ class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
   @override
   void onData(S data) {
     _stopwatch.stop();
-    sink.add(
+    sink.addSync(
       TimeInterval<S>(
         data,
         Duration(
@@ -23,10 +23,10 @@ class _TimeIntervalStreamSink<S> extends ForwardingSink<S, TimeInterval<S>> {
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() => sink.close();
+  void onDone() => sink.closeSync();
 
   @override
   FutureOr<void> onCancel() {}

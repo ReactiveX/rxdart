@@ -12,7 +12,7 @@ class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   _OnErrorResumeStreamSink(this._recoveryFn);
 
   @override
-  void onData(S data) => sink.add(data);
+  void onData(S data) => sink.addSync(data);
 
   @override
   void onError(Object e, StackTrace st) {
@@ -21,16 +21,16 @@ class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
     try {
       recoveryStream = _recoveryFn(e, st);
     } catch (newError, newSt) {
-      sink.addError(newError, newSt);
+      sink.addErrorSync(newError, newSt);
       return;
     }
 
     final subscription =
-        recoveryStream.listen(sink.add, onError: sink.addError);
+        recoveryStream.listen(sink.addSync, onError: sink.addErrorSync);
     subscription.onDone(() {
       _recoverySubscriptions.remove(subscription);
       if (closed && _recoverySubscriptions.isEmpty) {
-        sink.close();
+        sink.closeSync();
       }
     });
     _recoverySubscriptions.add(subscription);
@@ -40,7 +40,7 @@ class _OnErrorResumeStreamSink<S> extends ForwardingSink<S, S> {
   void onDone() {
     closed = true;
     if (_recoverySubscriptions.isEmpty) {
-      sink.close();
+      sink.closeSync();
     }
   }
 

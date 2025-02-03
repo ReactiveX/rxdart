@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
@@ -8,59 +7,23 @@ import 'package:rxdart/src/utils/forwarding_stream.dart';
 class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   final S _startValue;
 
-  late final queue = Queue<StreamNotification<S>>()
-    ..add(StreamNotification.data(_startValue));
-  var _isCancelled = false;
-
   _StartWithStreamSink(this._startValue);
 
   @override
-  void onData(S data) {
-    if (queue.isEmpty) {
-      sink.add(data);
-    } else {
-      queue.add(StreamNotification.data(data));
-    }
-  }
+  void onData(S data) => sink.addSync(data);
 
   @override
-  void onError(Object e, StackTrace st) {
-    if (queue.isEmpty) {
-      sink.addError(e, st);
-    } else {
-      queue.add(StreamNotification.error(e, st));
-    }
-  }
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() {
-    if (queue.isEmpty) {
-      sink.close();
-    } else {
-      queue.add(DoneNotification());
-    }
-  }
+  void onDone() => sink.closeSync();
 
   @override
-  FutureOr<void> onCancel() {
-    _isCancelled = true;
-  }
+  FutureOr<void> onCancel() {}
 
   @override
   void onListen() {
-    scheduleMicrotask(() {
-      final add = sink.add;
-      final addError = sink.addError;
-      final close = sink.close;
-
-      while (queue.isNotEmpty) {
-        if (_isCancelled) {
-          queue.clear();
-          return;
-        }
-        queue.removeFirst().when(data: add, error: addError, done: close);
-      }
-    });
+    sink.add(_startValue);
   }
 
   @override
