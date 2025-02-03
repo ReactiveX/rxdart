@@ -21,14 +21,14 @@ class _TakeLastStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     if (queue.isNotEmpty) {
-      queue.toList(growable: false).forEach(sink.add);
+      queue.toList(growable: false).forEach(sink.addSync);
     }
-    sink.close();
+    sink.closeSync();
   }
 
   @override

@@ -29,32 +29,33 @@ class _FlatMapStreamSink<S, T> extends ForwardingSink<S, T> {
     try {
       mappedStream = _mapper(data);
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
       return;
     }
 
-    final subscription = mappedStream.listen(sink.add, onError: sink.addError);
+    final subscription =
+        mappedStream.listen(sink.addSync, onError: sink.addErrorSync);
     subscription.onDone(() {
       _subscriptions.remove(subscription);
 
       if (queue.isNotEmpty) {
         listenInner(queue.removeFirst());
       } else if (_inputClosed && _subscriptions.isEmpty) {
-        sink.close();
+        sink.closeSync();
       }
     });
     _subscriptions.add(subscription);
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     _inputClosed = true;
 
     if (_subscriptions.isEmpty) {
-      sink.close();
+      sink.closeSync();
     }
   }
 
