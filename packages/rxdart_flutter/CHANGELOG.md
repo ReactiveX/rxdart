@@ -1,6 +1,6 @@
 ## 0.0.1 (2025-02-15)
 
-Thanks to [@GiancarloCante](https://github.com/GiancarloCante) for the contribution to this release,
+Thanks to [@GiancarloCante](https://github.com/GiancarloCante) for the contribution to this release 
 via PR [#782](https://github.com/ReactiveX/rxdart/pull/782).
 
 - Add new widgets:
