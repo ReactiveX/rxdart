@@ -1,9 +1,5 @@
 # RxDart Flutter
 
-<p align="right">
-<a href="https://flutter.dev/docs/development/packages-and-plugins/favorites"><img src="https://docs.flutter.dev/assets/images/docs/development/packages-and-plugins/FlutterFavoriteLogo.png" width="100" alt="build"></a>
-</p>
-
 <p align="center">
 <img src="https://github.com/ReactiveX/rxdart/blob/master/packages/rxdart/screenshots/logo.png?raw=true" height="200" alt="RxDart" />
 </p>
