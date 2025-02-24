@@ -1,7 +1,7 @@
 name: rxdart_flutter
 description: RxDart Flutter - Flutter Widgets that make it easy to use Streams with Flutter.
 version: 0.0.1
-repository: https://github.com/ReactiveX/rxdart
+repository: https://github.com/ReactiveX/rxdart/tree/master/packages/rxdart_flutter
 
 environment:
   sdk: '>=2.12.0 <4.0.0'
