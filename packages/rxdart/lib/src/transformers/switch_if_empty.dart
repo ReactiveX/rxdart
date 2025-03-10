@@ -14,24 +14,24 @@ class _SwitchIfEmptyStreamSink<S> extends ForwardingSink<S, S> {
   @override
   void onData(S data) {
     _isEmpty = false;
-    sink.add(data);
+    sink.addSync(data);
   }
 
   @override
   void onError(Object error, StackTrace st) {
-    sink.addError(error, st);
+    sink.addErrorSync(error, st);
   }
 
   @override
   void onDone() {
     if (_isEmpty) {
       _fallbackSubscription = _fallbackStream.listen(
-        sink.add,
-        onError: sink.addError,
-        onDone: sink.close,
+        sink.addSync,
+        onError: sink.addErrorSync,
+        onDone: sink.closeSync,
       );
     } else {
-      sink.close();
+      sink.closeSync();
     }
   }
 

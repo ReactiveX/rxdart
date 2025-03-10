@@ -22,18 +22,18 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
       try {
         combinedValue = _combiner(data, List<T>.unmodifiable(_latestValues!));
       } catch (e, s) {
-        sink.addError(e, s);
+        sink.addErrorSync(e, s);
         return;
       }
-      sink.add(combinedValue);
+      sink.addSync(combinedValue);
     }
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() => sink.close();
+  void onDone() => sink.closeSync();
 
   @override
   Future<void>? onCancel() {
@@ -58,7 +58,7 @@ class _WithLatestFromStreamSink<S, T, R> extends ForwardingSink<S, R> {
           }
           _latestValues![index] = value;
         },
-        onError: sink.addError,
+        onError: sink.addErrorSync,
       );
     }
 

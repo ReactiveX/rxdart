@@ -10,15 +10,15 @@ class _TakeUntilStreamSink<S, T> extends ForwardingSink<S, S> {
   _TakeUntilStreamSink(this._otherStream);
 
   @override
-  void onData(S data) => sink.add(data);
+  void onData(S data) => sink.addSync(data);
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     _otherSubscription?.cancel();
-    sink.close();
+    sink.closeSync();
   }
 
   @override
@@ -27,7 +27,7 @@ class _TakeUntilStreamSink<S, T> extends ForwardingSink<S, S> {
   @override
   void onListen() => _otherSubscription = _otherStream
       .take(1)
-      .listen(null, onError: sink.addError, onDone: sink.close);
+      .listen(null, onError: sink.addErrorSync, onDone: sink.closeSync);
 
   @override
   void onPause() => _otherSubscription?.pause();

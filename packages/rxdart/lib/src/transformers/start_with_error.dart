@@ -10,20 +10,20 @@ class _StartWithErrorStreamSink<S> extends ForwardingSink<S, S> {
   _StartWithErrorStreamSink(this._e, this._st);
 
   @override
-  void onData(S data) => sink.add(data);
+  void onData(S data) => sink.addSync(data);
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() => sink.close();
+  void onDone() => sink.closeSync();
 
   @override
   FutureOr<void> onCancel() {}
 
   @override
   void onListen() {
-    sink.addError(_e, _st);
+    sink.addErrorSync(_e, _st);
   }
 
   @override
