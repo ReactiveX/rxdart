@@ -1,7 +1,7 @@
 # RxDart Flutter
 
 <p align="center">
-<img src="https://github.com/ReactiveX/rxdart/blob/master/packages/rxdart_ext/screenshots/logo.png?raw=true" height="200" alt="RxDart" />
+<img src="https://github.com/ReactiveX/rxdart/blob/master/packages/rxdart_flutter/screenshots/logo.png?raw=true" height="200" alt="RxDart" />
 </p>
 
 [![Pub](https://img.shields.io/pub/v/rxdart_flutter.svg)](https://pub.dartlang.org/packages/rxdart_flutter)
