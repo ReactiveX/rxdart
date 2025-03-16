@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:rxdart_ext/state_stream.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../api/github_api.dart';
 import 'search_state.dart';
 
 class SearchBloc {
   final Sink<String> onTextChanged;
-  final StateStream<SearchState> state;
+  final ValueStream<SearchState> state;
 
   final StreamSubscription<void> _subscription;
 
@@ -25,7 +25,7 @@ class SearchBloc {
         // to the View.
         .switchMap<SearchState>((String term) => _search(term, api))
         // The initial state to deliver to the screen.
-        .publishState(const SearchNoTerm());
+        .publishValueSeeded(const SearchNoTerm());
 
     final subscription = state.connect();
 
