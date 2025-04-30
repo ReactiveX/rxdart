@@ -15,15 +15,15 @@ class _SkipLastStreamSink<T> extends ForwardingSink<T, T> {
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     final limit = queue.length - count;
     if (limit > 0) {
-      queue.sublist(0, limit).forEach(sink.add);
+      queue.sublist(0, limit).forEach(sink.addSync);
     }
-    sink.close();
+    sink.closeSync();
   }
 
   @override

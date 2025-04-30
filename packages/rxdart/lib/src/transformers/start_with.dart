@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/forwarding_stream.dart';
 
@@ -9,13 +10,13 @@ class _StartWithStreamSink<S> extends ForwardingSink<S, S> {
   _StartWithStreamSink(this._startValue);
 
   @override
-  void onData(S data) => sink.add(data);
+  void onData(S data) => sink.addSync(data);
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() => sink.close();
+  void onDone() => sink.closeSync();
 
   @override
   FutureOr<void> onCancel() {}
