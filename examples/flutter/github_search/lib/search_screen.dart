@@ -22,9 +22,7 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.api});
 
   @override
-  SearchScreenState createState() {
-    return SearchScreenState();
-  }
+  SearchScreenState createState() => SearchScreenState();
 }
 
 class SearchScreenState extends State<SearchScreen> {
@@ -47,6 +45,7 @@ class SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return ValueStreamBuilder<SearchState>(
       stream: bloc.state,
+      buildWhen: (previous, current) => previous != current,
       builder: (context, state, child) {
         return Scaffold(
           appBar: AppBar(

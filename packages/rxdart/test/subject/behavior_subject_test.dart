@@ -1471,5 +1471,14 @@ void main() {
         );
       });
     });
+
+    test('isReplayValueStream', () {
+      expect(BehaviorSubject<int>().isReplayValueStream, isTrue);
+      expect(BehaviorSubject<int>.seeded(42).isReplayValueStream, isTrue);
+
+      expect(BehaviorSubject<int>().stream.isReplayValueStream, isTrue);
+      expect(
+          BehaviorSubject<int>.seeded(42).stream.isReplayValueStream, isTrue);
+    });
   });
 }

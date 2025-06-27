@@ -1,7 +1,9 @@
 import 'package:rxdart/src/utils/collection_extensions.dart';
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 
-/// An [Stream] that provides synchronous access to the emitted values
+/// A [Stream] that provides synchronous access to the emitted values,
+/// and replays its emitted events (data and error events)
+/// to new listeners when they subscribe.
 abstract class ReplayStream<T> implements Stream<T> {
   /// Synchronously get the values stored in Subject. May be empty.
   List<T> get values;

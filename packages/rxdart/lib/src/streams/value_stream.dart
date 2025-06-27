@@ -43,6 +43,12 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Returns the last emitted event (either data/value or error event).
   /// `null` if no value or error events have been emitted yet.
   StreamNotification<T>? get lastEventOrNull;
+
+  /// Returns `true` if this [ValueStream] replays its last emitted event
+  /// (either a value/data event or an error event) to new listeners when they subscribe.
+  ///
+  /// See also [lastEventOrNull].
+  bool get isReplayValueStream;
 }
 
 /// Extension methods on [ValueStream] related to [lastEventOrNull].

@@ -51,7 +51,7 @@ class ValueStreamListener<T> extends StatefulWidget {
     required this.stream,
     required this.listener,
     required this.child,
-    this.isReplayValueStream = true,
+    this.isReplayValueStream,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
@@ -67,9 +67,12 @@ class ValueStreamListener<T> extends StatefulWidget {
 
   /// Whether or not the [stream] emits the last value
   /// like [BehaviorSubject] does.
+  /// See [ValueStream.isReplayValueStream] for more information.
   ///
-  /// Defaults to `true`.
-  final bool isReplayValueStream;
+  /// If this argument is `null`, the [ValueStream.isReplayValueStream] is used instead.
+  ///
+  /// Defaults to `null`.
+  final bool? isReplayValueStream;
 
   @override
   State<ValueStreamListener<T>> createState() => _ValueStreamListenerState<T>();
@@ -79,8 +82,8 @@ class ValueStreamListener<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
-      ..add(
-          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
+      ..add(DiagnosticsProperty<bool>('isReplayValueStream',
+          isReplayValueStream ?? stream.isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamWidgetListener<T>>.has(
           'listener', listener))
       ..add(ObjectFlagProperty<Widget>.has('child', child));
@@ -127,21 +130,28 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
       _currentValue = stream.value;
     }
 
-    final int skipCount;
-
-    if (widget.isReplayValueStream) {
-      skipCount = _initialized ? 0 : 1;
+    if (widget.isReplayValueStream ?? stream.isReplayValueStream) {
+      final skipCount = _initialized ? 0 : 1;
+      _subscribeIfNeeded(skipCount > 0 ? stream.skip(skipCount) : stream);
     } else {
-      skipCount = 0;
       if (_initialized) {
         _ambiguate(WidgetsBinding.instance)!.addPostFrameCallback((_) {
+          if (widget.stream != stream) {
+            return;
+          }
           _notifyListener(stream.value);
+          _subscribeIfNeeded(stream);
         });
+      } else {
+        _subscribeIfNeeded(stream);
       }
     }
+  }
 
-    final streamToListen = skipCount > 0 ? stream.skip(skipCount) : stream;
-
+  void _subscribeIfNeeded(Stream<T> streamToListen) {
+    if (_subscription != null) {
+      return;
+    }
     _subscription = streamToListen.listen(
       (value) {
         if (!mounted) return;
@@ -164,6 +174,7 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
 
   void _unsubscribe() {
     _subscription?.cancel();
+    _subscription = null;
   }
 
   @override

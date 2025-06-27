@@ -123,6 +123,9 @@ class ValueSubject<T> extends Subject<T> implements ValueStream<T> {
     // no event
     return null;
   }
+
+  @override
+  bool get isReplayValueStream => false;
 }
 
 class _ValueSubjectStream<T> extends Stream<T> implements ValueStream<T> {
@@ -184,6 +187,9 @@ class _ValueSubjectStream<T> extends Stream<T> implements ValueStream<T> {
 
   @override
   T? get valueOrNull => _subject.valueOrNull;
+
+  @override
+  bool get isReplayValueStream => _subject.isReplayValueStream;
 }
 
 /// Class that holds latest value and lasted error emitted from Stream.
