@@ -126,40 +126,48 @@ Stream<R> _forward<T, R>(
   return controller.stream;
 }
 
-class _MultiControllerSink<T> implements EventSink<T>, EnhancedEventSink<T> {
-  final MultiStreamController<T> controller;
+class _MultiControllerSink<T> implements EnhancedEventSink<T> {
+  final MultiStreamController<T> _controller;
 
-  _MultiControllerSink(this.controller);
-
-  @override
-  void add(T event) => controller.addSync(event);
+  _MultiControllerSink(this._controller);
 
   @override
-  void addError(Object error, [StackTrace? stackTrace]) =>
-      controller.addErrorSync(error, stackTrace);
+  void addSync(T event) => _controller.addSync(event);
 
   @override
-  void close() => controller.closeSync();
+  void addErrorSync(Object error, [StackTrace? stackTrace]) =>
+      _controller.addErrorSync(error, stackTrace);
 
   @override
-  bool get isPaused => controller.isPaused;
+  void closeSync() => _controller.closeSync();
+
+  @override
+  bool get isPaused => _controller.isPaused;
+
+  @override
+  void add(T event) => _controller.add(event);
 }
 
 class _EnhancedEventSink<T> implements EnhancedEventSink<T> {
   final StreamController<T> _controller;
 
-  _EnhancedEventSink(this._controller);
+  _EnhancedEventSink(this._controller) {
+    assert(_controller.runtimeType.toString().startsWith('_Sync'));
+  }
 
   @override
-  void add(T event) => _controller.add(event);
+  void addSync(T event) => _controller.add(event);
 
   @override
-  void addError(Object error, [StackTrace? stackTrace]) =>
+  void addErrorSync(Object error, [StackTrace? stackTrace]) =>
       _controller.addError(error, stackTrace);
 
   @override
-  void close() => _controller.close();
+  void closeSync() => _controller.close();
 
   @override
   bool get isPaused => _controller.isPaused;
+
+  @override
+  void add(T event) => _controller.add(event);
 }

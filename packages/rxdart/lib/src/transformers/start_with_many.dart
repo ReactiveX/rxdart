@@ -9,20 +9,20 @@ class _StartWithManyStreamSink<S> extends ForwardingSink<S, S> {
   _StartWithManyStreamSink(this._startValues);
 
   @override
-  void onData(S data) => sink.add(data);
+  void onData(S data) => sink.addSync(data);
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
-  void onDone() => sink.close();
+  void onDone() => sink.closeSync();
 
   @override
   FutureOr<void> onCancel() {}
 
   @override
   void onListen() {
-    _startValues.forEach(sink.add);
+    _startValues.forEach(sink.addSync);
   }
 
   @override

@@ -30,14 +30,14 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onData?.call(data);
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
     try {
       _onEach?.call(StreamNotification.data(data));
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
-    sink.add(data);
+    sink.addSync(data);
   }
 
   @override
@@ -45,14 +45,14 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onError?.call(e, st);
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
     try {
       _onEach?.call(StreamNotification.error(e, st));
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
-    sink.addError(e, st);
+    sink.addErrorSync(e, st);
   }
 
   @override
@@ -60,14 +60,14 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onDone?.call();
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
     try {
       _onEach?.call(StreamNotification.done());
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
-    sink.close();
+    sink.closeSync();
   }
 
   @override
@@ -78,7 +78,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onListen?.call();
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
   }
 
@@ -87,7 +87,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onPause?.call();
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
   }
 
@@ -96,7 +96,7 @@ class _DoStreamSink<S> extends ForwardingSink<S, S> {
     try {
       _onResume?.call();
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
     }
   }
 }
