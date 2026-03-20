@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:meta/meta.dart';
 
 const _bullet = ' • ';
 const _indent = '   ';
