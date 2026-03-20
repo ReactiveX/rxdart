@@ -391,4 +391,27 @@ void main() {
 
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
+
+  test(
+    'Rx.combineLatest2.stream.first does not hang with open-ended async* streams and switchMap',
+    () async {
+      // Regression test for: https://github.com/ReactiveX/rxdart/issues/816
+      // Stream.first was hanging because onCancel returned a never-completing
+      // Future when underlying async* streams are stuck at an unresolvable await.
+      Stream<T> emitOnceAndNeverClose<T>(T value) async* {
+        yield value;
+        await Completer<void>().future;
+      }
+
+      final stream = Rx.combineLatest2(
+        emitOnceAndNeverClose('left'),
+        Stream.value('right').switchMap(emitOnceAndNeverClose),
+        (left, right) => '$left|$right',
+      );
+
+      final value =
+          await stream.first.timeout(const Duration(milliseconds: 500));
+      expect(value, 'left|right');
+    },
+  );
 }

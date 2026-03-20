@@ -344,7 +344,7 @@ class CombineLatestStream<T, R> extends StreamView<R> {
     controller.onResume = () => subscriptions.resumeAll();
     controller.onCancel = () {
       values = null;
-      return subscriptions.cancelAll();
+      subscriptions.cancelAll();
     };
 
     return controller;
