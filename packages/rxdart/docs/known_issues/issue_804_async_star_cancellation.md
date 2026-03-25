@@ -109,10 +109,10 @@ The Dart VM compiles every `async*` function into a state machine driven by
 
 ```dart
 bool add(T event) {
-  controller.add(event);           // deliver event to listener
-  if (!controller.hasListener) return true;
-  scheduleGenerator();             // queue a microtask to resume the body
-  isSuspendedAtYield = true;       // mark: "generator is paused at a yield"
+  controller.add(event);                     // deliver event to listener
+  if (!controller.hasListener) return true;  // ← cancel check at yield: if already cancelled, tell generator to stop
+  scheduleGenerator();                       // queue a microtask to resume the body
+  isSuspendedAtYield = true;                 // mark: "generator is paused at a yield"
   return false;
 }
 ```
@@ -196,7 +196,18 @@ Now if `cancel()` is called:
 
 - `onCancel()` checks `isSuspendedAtYield` → it's `false`
 - Generator is **not resumed** (by design — see SDK comment)
-- Body never returns → `close()` never called → `cancellationFuture` **never completes**
+- What happens next depends on whether the `await`ed future is **finite or
+  infinite**:
+
+**Finite `await`** (e.g. `await Future.delayed(Duration(seconds: 1))`):
+the future eventually completes → generator resumes → body returns →
+`close()` is called → `cancellationFuture` completes. Cancellation is
+**delayed**, not blocked. ✅
+
+**Infinite `await`** (e.g. `await Completer<void>().future` where no one
+calls `.complete()`): the future never completes → generator never resumes →
+body never returns → `close()` never called → `cancellationFuture` **never
+completes**. ❌ ← this is the repro case.
 
 > The Dart SDK comment says explicitly:
 > *"Only resume the generator if it is suspended at a yield.
