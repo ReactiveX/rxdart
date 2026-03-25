@@ -81,10 +81,10 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  void onCancel() {
+  FutureOr<void> onCancel() {
     _isCancelled = true;
 
-    _mapperSubscription?.cancel();
+    return _mapperSubscription?.cancel();
   }
 
   @override

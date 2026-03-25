@@ -398,19 +398,25 @@ void main() {
       // Regression test for: https://github.com/ReactiveX/rxdart/issues/816
       // Stream.first was hanging because onCancel returned a never-completing
       // Future when underlying async* streams are stuck at an unresolvable await.
-      Stream<T> emitOnceAndNeverClose<T>(T value) async* {
+      Stream<T> emitOnceAndNeverClose<T>(T value, String label) async* {
+        print('Emitting... $value');
         yield value;
+        print('Emitted $value, now waiting forever');
         await Completer<void>().future;
       }
 
       final stream = Rx.combineLatest2(
-        emitOnceAndNeverClose('left'),
-        Stream.value('right').switchMap(emitOnceAndNeverClose),
+        emitOnceAndNeverClose('left', 'left'),
+        // Stream.value('right').switchMap((v) => emitOnceAndNeverClose(v, 'right')),
+        // Stream.value('right').switchMap((v) => Stream.value(v)),
+        // emitOnceAndNeverClose('right', 'right').switchMap((v) => emitOnceAndNeverClose(v, 'right')),
+        emitOnceAndNeverClose('right', 'right').delay(const Duration(milliseconds: 1)),
         (left, right) => '$left|$right',
       );
 
       final value =
           await stream.first.timeout(const Duration(milliseconds: 500));
+      print('Got value: $value');
       expect(value, 'left|right');
     },
   );
