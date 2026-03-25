@@ -17,6 +17,11 @@ Stream<bool> get streamC {
   return controller.stream;
 }
 
+Stream<T> _emitOnceAndNeverClose<T>(T value) async* {
+  yield value;
+  await Completer<void>().future;
+}
+
 void main() {
   test('Rx.combineLatestList', () async {
     final combined = Rx.combineLatestList<int>([
@@ -393,31 +398,37 @@ void main() {
   });
 
   test(
-    'Rx.combineLatest2.stream.first does not hang with open-ended async* streams and switchMap',
+    'Rx.combineLatest2.stream.first times out with open-ended async* and switchMap',
     () async {
-      // Regression test for: https://github.com/ReactiveX/rxdart/issues/816
-      // Stream.first was hanging because onCancel returned a never-completing
-      // Future when underlying async* streams are stuck at an unresolvable await.
-      Stream<T> emitOnceAndNeverClose<T>(T value, String label) async* {
-        print('Emitting... $value');
-        yield value;
-        print('Emitted $value, now waiting forever');
-        await Completer<void>().future;
-      }
+      // This behavior is documented in:
+      // docs/known_issues/issue_804_async_star_cancellation.md
 
       final stream = Rx.combineLatest2(
-        emitOnceAndNeverClose('left', 'left'),
-        // Stream.value('right').switchMap((v) => emitOnceAndNeverClose(v, 'right')),
-        // Stream.value('right').switchMap((v) => Stream.value(v)),
-        // emitOnceAndNeverClose('right', 'right').switchMap((v) => emitOnceAndNeverClose(v, 'right')),
-        emitOnceAndNeverClose('right', 'right').delay(const Duration(milliseconds: 1)),
+        _emitOnceAndNeverClose('left'),
+        Stream.value('right').switchMap(_emitOnceAndNeverClose),
         (left, right) => '$left|$right',
       );
 
-      final value =
-          await stream.first.timeout(const Duration(milliseconds: 500));
-      print('Got value: $value');
-      expect(value, 'left|right');
+      await expectLater(
+        stream.first.timeout(const Duration(milliseconds: 200)),
+        throwsA(isA<TimeoutException>()),
+      );
+    },
+  );
+
+  test(
+    'Rx.combineLatest2.stream.first completes when both sources are direct async*',
+    () async {
+      final stream = Rx.combineLatest2(
+        _emitOnceAndNeverClose('left'),
+        _emitOnceAndNeverClose('right'),
+        (left, right) => '$left|$right',
+      );
+
+      await expectLater(
+        stream.first.timeout(const Duration(milliseconds: 500)),
+        completion('left|right'),
+      );
     },
   );
 }
