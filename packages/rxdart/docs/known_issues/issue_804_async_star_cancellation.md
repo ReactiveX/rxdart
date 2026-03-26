@@ -311,12 +311,23 @@ MT2: B's body starts → yield 'right' → add()
      ├─ controller.add('right') → combineLatest has both → emits 'left|right'
      │   └─ Stream.first receives value (synchronously)
      │       └─ cancel() → onCancel() for A
-     │           └─ isSuspendedAtYield is STILL true ✅ (MT3 hasn't fired yet)
-     │               → future will complete via close()
+     │           ├─ cancellationFuture = _Future()
+     │           ├─ isSuspendedAtYield is STILL true ✅ (MT3 hasn't fired yet)
+     │           ├─ scheduleGenerator() → NO-OP (isScheduled already true from MT1's add())
+     │           │   The already-queued MT3 will handle cancellation.
+     │           └─ returns cancellationFuture (pending)
      ├─ scheduleGenerator() → appends to queue                → [MT3, MT4: B runBody]
      └─ isSuspendedAtYield = true
 
-(MT3 & MT4: generators already cancelled → exit cleanly)
+MT3: A's runBody() fires (queued during MT1's add())
+     ├─ isScheduled = false
+     ├─ isSuspendedAtYield = false
+     └─ asyncStarBody!(!controller.hasListener)
+          → !hasListener = true (subscription was cancelled)
+            → body receives "cancelled" signal → runs finally → returns
+              → close() called → cancellationFuture completes ✅
+
+(MT4: B's generator already cancelled → exits cleanly)
 ```
 
 The key: **MT2 (B yields) was queued at subscription time, BEFORE MT3 (A's
