@@ -1,4 +1,4 @@
-# I. Original Issue #804
+# I. Original Issue [#804](https://github.com/ReactiveX/rxdart/issues/804)
 
 We hit this in a real Flutter app and reduced it to the minimal repro below.
 
