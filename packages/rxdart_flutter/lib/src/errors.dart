@@ -1,4 +1,5 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
+import 'package:meta/meta.dart' show internal;
 import 'package:rxdart/rxdart.dart';
 
 const _bullet = ' • ';
