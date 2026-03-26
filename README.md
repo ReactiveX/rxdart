@@ -8,7 +8,7 @@
 <img src="https://github.com/ReactiveX/rxdart/blob/master/assets/logo.png?raw=true" height="200" alt="RxDart" />
 </p>
 
-[![Build Status](https://github.com/ReactiveX/rxdart/workflows/Dart%20CI/badge.svg)](https://github.com/ReactiveX/rxdart/actions)
+[![Dart CI](https://github.com/ReactiveX/rxdart/actions/workflows/rxdart-test.yml/badge.svg?branch=master)](https://github.com/ReactiveX/rxdart/actions/workflows/rxdart-test.yml)
 [![codecov](https://codecov.io/gh/ReactiveX/rxdart/branch/master/graph/badge.svg)](https://codecov.io/gh/ReactiveX/rxdart)
 [![Pub](https://img.shields.io/pub/v/rxdart.svg)](https://pub.dartlang.org/packages/rxdart)
 [![Pub Version (including pre-releases)](https://img.shields.io/pub/v/rxdart?include_prereleases&color=%23A0147B)](https://pub.dartlang.org/packages/rxdart)
