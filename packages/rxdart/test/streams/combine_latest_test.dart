@@ -17,6 +17,11 @@ Stream<bool> get streamC {
   return controller.stream;
 }
 
+Stream<T> _emitOnceAndNeverClose<T>(T value) async* {
+  yield value;
+  await Completer<void>().future;
+}
+
 void main() {
   test('Rx.combineLatestList', () async {
     final combined = Rx.combineLatestList<int>([
@@ -391,4 +396,39 @@ void main() {
 
     subscription.pause(Future<void>.delayed(const Duration(milliseconds: 80)));
   });
+
+  test(
+    'Rx.combineLatest2.stream.first times out with open-ended async* and switchMap',
+    () async {
+      // This behavior is documented in:
+      // docs/known_issues/issue_804_async_star_cancellation.md
+
+      final stream = Rx.combineLatest2(
+        _emitOnceAndNeverClose('left'),
+        Stream.value('right').switchMap(_emitOnceAndNeverClose),
+        (left, right) => '$left|$right',
+      );
+
+      await expectLater(
+        stream.first.timeout(const Duration(milliseconds: 200)),
+        throwsA(isA<TimeoutException>()),
+      );
+    },
+  );
+
+  test(
+    'Rx.combineLatest2.stream.first completes when both sources are direct async*',
+    () async {
+      final stream = Rx.combineLatest2(
+        _emitOnceAndNeverClose('left'),
+        _emitOnceAndNeverClose('right'),
+        (left, right) => '$left|$right',
+      );
+
+      await expectLater(
+        stream.first.timeout(const Duration(milliseconds: 500)),
+        completion('left|right'),
+      );
+    },
+  );
 }
