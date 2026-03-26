@@ -409,3 +409,46 @@ regardless of whether rxdart is involved.
 
 **Source**: [`_AsyncStarStreamController`][async_patch] in the Dart SDK (VM
 runtime).
+
+---
+
+## License attribution for Dart SDK code excerpts
+
+This document quotes source code from the Dart SDK for educational/diagnostic
+purposes. The Dart SDK is licensed under a BSD-style license. The original
+copyright notice is reproduced below.
+
+> Copyright 2012, the Dart project authors.
+>
+> Redistribution and use in source and binary forms, with or without
+> modification, are permitted provided that the following conditions are met:
+>
+> 1. Redistributions of source code must retain the above copyright notice,
+>    this list of conditions and the following disclaimer.
+> 2. Redistributions in binary form must reproduce the above copyright notice,
+>    this list of conditions and the following disclaimer in the documentation
+>    and/or other materials provided with the distribution.
+> 3. Neither the name of the copyright holder nor the names of its
+>    contributors may be used to endorse or promote products derived from this
+>    software without specific prior written permission.
+>
+> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+> AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+> ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+> LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+> CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+> SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+> INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+> CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+> ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+> POSSIBILITY OF SUCH DAMAGE.
+
+**Pinned revision**: the excerpts in this document were taken from
+[`sdk/lib/_internal/vm/lib/async_patch.dart`][async_patch_pinned] at Dart SDK
+commit [`3.7.0`][dart_tag] (December 2024). If the Dart SDK has since changed,
+refer to that revision to reconcile any differences.
+
+[async_patch_pinned]: https://github.com/dart-lang/sdk/blob/3.7.0/sdk/lib/_internal/vm/lib/async_patch.dart
+[dart_tag]: https://github.com/dart-lang/sdk/releases/tag/3.7.0
+
