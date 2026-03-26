@@ -122,6 +122,7 @@ It will resume later, in a **scheduled microtask** via `runBody()`:
 
 ```dart
 void runBody() {
+  isScheduled = false;             // allow future scheduleGenerator() calls
   isSuspendedAtYield = false;      // mark: "generator is running"
   asyncStarBody!(!controller.hasListener);
 }
@@ -363,8 +364,12 @@ MT2: Stream.value delivers 'right' to switchMap
         └─ onListen → scheduleMicrotask → appends      → [MT3, MT4: B body]
 
 MT3: A's runBody() fires ← THIS IS THE PROBLEM
+     ├─ isScheduled = false
      ├─ isSuspendedAtYield = false
-     └─ generator resumes past yield → enters await Completer().future (stuck forever)
+     └─ asyncStarBody!(!controller.hasListener)
+          → !hasListener = false (A still has a listener — not cancelled yet)
+            → body resumes normally past yield
+              → enters await Completer().future → stuck forever
 
 MT4: B's body starts → yield 'right' → add()
      ├─ controller.add('right') → combineLatest emits 'left|right'
