@@ -85,7 +85,7 @@ class ValueStreamConsumer<T> extends StatefulWidget {
     required this.builder,
     this.buildWhen,
     this.child,
-    this.isReplayValueStream = true,
+    this.isReplayValueStream,
   }) : super(key: key);
 
   /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
@@ -117,9 +117,12 @@ class ValueStreamConsumer<T> extends StatefulWidget {
 
   /// Whether or not the [stream] emits the last value
   /// like [BehaviorSubject] does.
+  /// See [ValueStream.isReplayValueStream] for more information.
   ///
-  /// Defaults to `true`.
-  final bool isReplayValueStream;
+  /// If this argument is `null`, the [ValueStream.isReplayValueStream] is used instead.
+  ///
+  /// Defaults to `null`.
+  final bool? isReplayValueStream;
 
   @override
   State<ValueStreamConsumer<T>> createState() => _ValueStreamConsumerState<T>();
@@ -129,8 +132,8 @@ class ValueStreamConsumer<T> extends StatefulWidget {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty<ValueStream<T>>('stream', stream))
-      ..add(
-          DiagnosticsProperty<bool>('isReplayValueStream', isReplayValueStream))
+      ..add(DiagnosticsProperty<bool>('isReplayValueStream',
+          isReplayValueStream ?? stream.isReplayValueStream))
       ..add(ObjectFlagProperty<ValueStreamWidgetBuilder<T>>.has(
         'builder',
         builder,
