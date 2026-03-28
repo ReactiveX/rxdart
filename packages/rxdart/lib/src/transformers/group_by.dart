@@ -37,7 +37,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
       );
     }
 
-    sink.add(groupByStream);
+    sink.addSync(groupByStream);
     return groupedController;
   }
 
@@ -47,7 +47,7 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
     try {
       key = grouper(data);
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
       return;
     }
 
@@ -55,12 +55,12 @@ class _GroupByStreamSink<T, K> extends ForwardingSink<T, GroupedStream<T, K>> {
   }
 
   @override
-  void onError(e, st) => sink.addError(e, st);
+  void onError(e, st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     _closeAll();
-    sink.close();
+    sink.closeSync();
   }
 
   @override
