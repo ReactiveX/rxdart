@@ -87,6 +87,69 @@ void main() {
       expect(numCalls, 0);
     });
 
+    testWidgets('explicit isReplayValueStream false overrides replay behavior',
+        (tester) async {
+      final stream = BehaviorSubject<int>.seeded(0);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ValueStreamListener<int>(
+          stream: stream,
+          isReplayValueStream: false,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+          child: const MaterialApp(
+            key: ListenerApp.materialAppKey,
+            home: SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 1);
+      expect(previousValues, [0]);
+      expect(currentValues, [0]);
+    });
+
+    testWidgets('explicit isReplayValueStream true keeps replay behavior',
+        (tester) async {
+      final stream = BehaviorSubject<int>.seeded(0);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ValueStreamListener<int>(
+          stream: stream,
+          isReplayValueStream: true,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+          child: const MaterialApp(
+            key: ListenerApp.materialAppKey,
+            home: SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 0);
+
+      stream.add(1);
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 1);
+      expect(previousValues, [0]);
+      expect(currentValues, [1]);
+    });
+
     testWidgets('recovers when changing from invalid stream to valid stream',
         (tester) async {
       final previousOnError = FlutterError.onError;
