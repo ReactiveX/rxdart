@@ -56,7 +56,6 @@ class _BuilderAppState<T> extends State<BuilderApp<T>> {
   Widget build(BuildContext context) {
     return ValueStreamBuilder<T>(
       stream: stream,
-      isReplayValueStream: false,
       buildWhen: widget.buildWhen,
       child: widget.child,
       builder: (context, value, child) {

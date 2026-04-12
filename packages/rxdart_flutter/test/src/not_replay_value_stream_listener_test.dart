@@ -54,7 +54,6 @@ class _ListenerAppState<T> extends State<ListenerApp<T>> {
   Widget build(BuildContext context) {
     return ValueStreamListener<T>(
       stream: stream,
-      isReplayValueStream: false,
       listener: widget.listener,
       child: MaterialApp(
         key: ListenerApp.materialAppKey,
@@ -110,7 +109,6 @@ void main() {
       await tester.pumpWidget(
         ValueStreamListener<int>(
           stream: invalidStream,
-          isReplayValueStream: false,
           listener: (_, previous, current) {
             numCalls++;
             previousValues.add(previous);
@@ -133,7 +131,6 @@ void main() {
       await tester.pumpWidget(
         ValueStreamListener<int>(
           stream: validStream,
-          isReplayValueStream: false,
           listener: (_, previous, current) {
             numCalls++;
             previousValues.add(previous);
