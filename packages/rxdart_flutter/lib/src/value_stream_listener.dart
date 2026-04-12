@@ -102,6 +102,12 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
   /// or emits an error. Causes [build] to render an [ErrorWidget].
   ErrorAndStackTrace? _error;
 
+  /// True once the subscription's listen callback has delivered at least one
+  /// event for the current stream. Used to skip the synthetic post-frame
+  /// notification when a real event has already been delivered — avoids a
+  /// spurious listener call where previous == current.
+  bool _hasReceivedEvent = false;
+
   /// False only during [initState]. Distinguishes first subscription
   /// (seed _currentValue from stream.value, no synthetic notification)
   /// from subsequent subscriptions triggered by [didUpdateWidget]
@@ -186,6 +192,11 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
           if (widget.stream != stream) {
             return;
           }
+          // Skip if a real event already arrived via the subscription
+          // (avoids a spurious call where previous == current).
+          if (_hasReceivedEvent) {
+            return;
+          }
           _notifyListener(stream.value);
         });
       }
@@ -200,9 +211,11 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
     if (_subscription != null) {
       return;
     }
+    _hasReceivedEvent = false;
     _subscription = streamToListen.listen(
       (value) {
         if (!mounted) return;
+        _hasReceivedEvent = true;
         _notifyListener(value);
       },
       onError: (Object e, StackTrace s) {
