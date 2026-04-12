@@ -195,6 +195,10 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
         // re-emit its current value, so we fire a synthetic notification
         // in a post-frame callback (can't call listener during build phase).
         _ambiguate(WidgetsBinding.instance)!.addPostFrameCallback((_) {
+          // Guard: widget was disposed between scheduling and execution.
+          if (!mounted) {
+            return;
+          }
           // Staleness guard: if the stream changed again between scheduling
           // and execution of this callback, skip — a newer _subscribe() call
           // will handle it.
