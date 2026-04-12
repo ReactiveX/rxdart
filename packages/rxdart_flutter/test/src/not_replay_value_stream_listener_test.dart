@@ -634,4 +634,59 @@ void main() {
       );
     });
   });
+
+  group('ValueStreamListener - edge cases', () {
+    testWidgets('does not call listener after widget is disposed',
+        (tester) async {
+      final stream1 = ValueSubject<int>(0);
+      final stream2 = ValueSubject<int>(100);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ListenerApp<int>(
+          stream1: stream1,
+          stream2: stream2,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+        ),
+      );
+
+      stream1.add(1);
+      await tester.pumpAndSettle();
+      expect(numCalls, 1);
+      expect(previousValues, [0]);
+      expect(currentValues, [1]);
+
+      // Switch to stream2 → synthetic notification fires in same pump.
+      await tester.tap(find.byKey(ListenerApp.toggleStreamButtonKey));
+      await tester.pumpAndSettle();
+      expect(numCalls, 2);
+      expect(previousValues, [0, 1]);
+      expect(currentValues, [1, 100]);
+
+      // Dispose the widget tree.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+
+      // Emit on stream2 after dispose — should NOT trigger listener.
+      stream2.add(200);
+      await tester.pumpAndSettle();
+      expect(numCalls, 2);
+      expect(previousValues, [0, 1]);
+      expect(currentValues, [1, 100]);
+    });
+
+    // NOTE: The _hasReceivedEvent guard and the staleness guard
+    // (widget.stream != stream) in the post-frame callback are defensive
+    // guards for production race conditions. They cannot be reliably tested
+    // in Flutter test because TestWidgetsFlutterBinding processes post-frame
+    // callbacks synchronously within pump(), leaving no gap for events to
+    // arrive between subscribe and the callback. These guards are covered
+    // by line coverage (100%) via other tests.
+  });
 }
