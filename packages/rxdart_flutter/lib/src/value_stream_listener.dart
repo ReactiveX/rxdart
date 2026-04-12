@@ -108,22 +108,19 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
   /// spurious listener call where previous == current.
   bool _hasReceivedEvent = false;
 
-  /// Whether [_subscribe] has been called at least once (i.e. after [initState]).
+  /// Becomes true after the first successful subscribe setup.
   ///
-  /// - **false** (during [initState]): first subscription — seed [_currentValue]
-  ///   from `stream.value`, no synthetic notification needed.
-  /// - **true** (during [didUpdateWidget]): stream was swapped — keep the old
-  ///   [_currentValue] as `previous`, and for non-replay streams schedule a
-  ///   synthetic post-frame notification for the new stream's current value.
-  bool _hasSubscribedOnce = false;
+  /// While false: seed [_currentValue] from `stream.value` and skip synthetic
+  /// notifications.
+  ///
+  /// While true: keep old [_currentValue] as `previous` when switching streams,
+  /// and for non-replay streams schedule the synthetic post-frame notification.
+  bool _hasSubscribedSuccessfully = false;
 
   @override
   void initState() {
     super.initState();
     _subscribe();
-    // Mark as "has subscribed once" so future _subscribe() calls
-    // (from didUpdateWidget) take the "stream changed" path.
-    _hasSubscribedOnce = true;
   }
 
   @override
@@ -154,7 +151,8 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
   ///
   /// **Non-replay stream**:
   ///   Does NOT re-emit on listen, so we subscribe immediately to avoid
-  ///   missing any events. When the stream is swapped (_hasSubscribedOnce == true),
+  ///   missing any events. When the stream is swapped after at least one
+  ///   successful subscribe,
   ///   we also schedule a post-frame callback to synthetically notify the
   ///   listener about the new stream's current value (since it won't be
   ///   re-emitted). The callback includes a staleness guard:
@@ -168,10 +166,12 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
       return;
     }
 
+    final hasSuccessfulSubscriptionBefore = _hasSubscribedSuccessfully;
+
     // First subscription: seed _currentValue from the stream's current value.
     // On subsequent calls (stream changed), we intentionally keep the old
     // _currentValue so the listener receives the correct `previous` argument.
-    if (!_hasSubscribedOnce) {
+    if (!hasSuccessfulSubscriptionBefore) {
       _currentValue = stream.value;
     }
 
@@ -185,12 +185,14 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
       // Stream changed (didUpdateWidget): no skip — the replayed value
       //   IS the notification we need (previous = old stream's value,
       //   current = new stream's replayed value).
-      _subscribeIfNeeded(!_hasSubscribedOnce ? stream.skip(1) : stream);
+      _subscribeIfNeeded(
+        !hasSuccessfulSubscriptionBefore ? stream.skip(1) : stream,
+      );
     } else {
       // Non-replay stream: subscribe immediately so no events are dropped.
       _subscribeIfNeeded(stream);
 
-      if (_hasSubscribedOnce) {
+      if (hasSuccessfulSubscriptionBefore) {
         // Stream was swapped via didUpdateWidget. The new stream won't
         // re-emit its current value, so we fire a synthetic notification
         // in a post-frame callback (can't call listener during build phase).
@@ -214,6 +216,10 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
         });
       }
     }
+
+    // Only mark as subscribed after validation has passed and subscription
+    // logic has been set up successfully.
+    _hasSubscribedSuccessfully = true;
   }
 
   /// Subscribes to [streamToListen] only if there is no active subscription.
