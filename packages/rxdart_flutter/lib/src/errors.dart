@@ -1,7 +1,6 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart' show FlutterError, FlutterErrorDetails;
+import 'package:meta/meta.dart' show internal;
 import 'package:rxdart/rxdart.dart';
-import 'package:meta/meta.dart';
 
 const _bullet = ' • ';
 const _indent = '   ';

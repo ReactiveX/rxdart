@@ -39,3 +39,6 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
+
+# Flutter ephemeral files
+**/ios/Flutter/ephemeral/
