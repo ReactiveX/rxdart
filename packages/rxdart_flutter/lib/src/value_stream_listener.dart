@@ -54,18 +54,18 @@ class ValueStreamListener<T> extends StatefulWidget {
     this.isReplayValueStream,
   }) : super(key: key);
 
-  /// The [ValueStream] that the [ValueStreamConsumer] will interact with.
+  /// The [ValueStream] that the [ValueStreamListener] will interact with.
   final ValueStream<T> stream;
 
   /// Takes the `BuildContext` along with the `previous` and `current` values
-  ///  and is responsible for executing in response to `value` changes.
+  /// and is responsible for executing in response to `value` changes.
   final ValueStreamWidgetListener<T> listener;
 
   /// The widget which will be rendered as a descendant of the
   /// [ValueStreamListener].
   final Widget child;
 
-  /// Whether or not the [stream] emits the last value
+  /// Whether or not the [stream] re-emits the last value to new listeners
   /// like [BehaviorSubject] does.
   /// See [ValueStream.isReplayValueStream] for more information.
   ///
@@ -152,11 +152,11 @@ class _ValueStreamListenerState<T> extends State<ValueStreamListener<T>> {
   /// **Non-replay stream**:
   ///   Does NOT re-emit on listen, so we subscribe immediately to avoid
   ///   missing any events. When the stream is swapped after at least one
-  ///   successful subscribe,
-  ///   we also schedule a post-frame callback to synthetically notify the
-  ///   listener about the new stream's current value (since it won't be
-  ///   re-emitted). The callback includes a staleness guard:
-  ///   if widget.stream changed again before the callback fires, bail out.
+  ///   successful subscribe, we also schedule a post-frame callback to
+  ///   synthetically notify the listener about the new stream's current
+  ///   value (since it won't be re-emitted). The callback includes a
+  ///   staleness guard: if widget.stream changed again before the callback
+  ///   fires, bail out.
   void _subscribe() {
     // Capture stream reference at schedule time for staleness comparison.
     final stream = widget.stream;

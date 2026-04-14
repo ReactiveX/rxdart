@@ -98,7 +98,7 @@ class ValueStreamConsumer<T> extends StatefulWidget {
   final ValueStreamWidgetBuilder<T> builder;
 
   /// Takes the `BuildContext` along with the `previous` and `current` values
-  ///  and is responsible for executing in response to `value` changes.
+  /// and is responsible for executing in response to `value` changes.
   final ValueStreamWidgetListener<T> listener;
 
   /// Takes the previous `value` and the current `value` and is responsible for
@@ -115,7 +115,7 @@ class ValueStreamConsumer<T> extends StatefulWidget {
   /// would be no useful [child].
   final Widget? child;
 
-  /// Whether or not the [stream] emits the last value
+  /// Whether or not the [stream] re-emits the last value to new listeners
   /// like [BehaviorSubject] does.
   /// See [ValueStream.isReplayValueStream] for more information.
   ///

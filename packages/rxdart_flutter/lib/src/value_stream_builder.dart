@@ -120,7 +120,7 @@ class ValueStreamBuilder<T> extends StatefulWidget {
   /// would be no useful [child].
   final Widget? child;
 
-  /// Whether or not the [stream] emits the last value
+  /// Whether or not the [stream] re-emits the last value to new listeners
   /// like [BehaviorSubject] does.
   /// See [ValueStream.isReplayValueStream] for more information.
   ///
