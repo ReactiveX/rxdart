@@ -186,11 +186,7 @@ void main() {
         ),
       );
 
-      expect(
-        capturedErrors.whereType<ValueStreamHasNoValueError<int>>().length,
-        1,
-      );
-      expect(capturedErrors.length, 1);
+      expect(capturedErrors, [isA<ValueStreamHasNoValueError<int>>()]);
       expect(find.byType(ErrorWidget), findsOneWidget);
 
       await tester.pumpWidget(
