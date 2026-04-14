@@ -36,6 +36,14 @@ class _ListenerAppState<T> extends State<ListenerApp<T>> {
     stream = widget.stream1;
   }
 
+  @override
+  void didUpdateWidget(covariant ListenerApp<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.stream1 != oldWidget.stream1) {
+      stream = widget.stream1;
+    }
+  }
+
   void toggleStream() {
     setState(() {
       if (widget.stream2 != null) {
@@ -85,6 +93,125 @@ void main() {
       );
 
       expect(numCalls, 0);
+    });
+
+    testWidgets('explicit isReplayValueStream false overrides replay behavior',
+        (tester) async {
+      final stream = BehaviorSubject<int>.seeded(0);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ValueStreamListener<int>(
+          stream: stream,
+          isReplayValueStream: false,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+          child: const MaterialApp(
+            key: ListenerApp.materialAppKey,
+            home: SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 1);
+      expect(previousValues, [0]);
+      expect(currentValues, [0]);
+    });
+
+    testWidgets('explicit isReplayValueStream true keeps replay behavior',
+        (tester) async {
+      final stream = BehaviorSubject<int>.seeded(0);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ValueStreamListener<int>(
+          stream: stream,
+          isReplayValueStream: true,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+          child: const MaterialApp(
+            key: ListenerApp.materialAppKey,
+            home: SizedBox(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 0);
+
+      stream.add(1);
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 1);
+      expect(previousValues, [0]);
+      expect(currentValues, [1]);
+    });
+
+    testWidgets('recovers when changing from invalid stream to valid stream',
+        (tester) async {
+      final previousOnError = FlutterError.onError;
+      final capturedErrors = <Object>[];
+      FlutterError.onError = (errorDetails) {
+        capturedErrors.add(errorDetails.exception);
+      };
+      addTearDown(() {
+        FlutterError.onError = previousOnError;
+      });
+
+      final invalidStream = BehaviorSubject<int>();
+      final validStream = BehaviorSubject<int>.seeded(100);
+      var numCalls = 0;
+      final previousValues = <int>[];
+      final currentValues = <int>[];
+
+      await tester.pumpWidget(
+        ListenerApp<int>(
+          stream1: invalidStream,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+        ),
+      );
+
+      expect(capturedErrors, [isA<ValueStreamHasNoValueError<int>>()]);
+      expect(find.byType(ErrorWidget), findsOneWidget);
+
+      await tester.pumpWidget(
+        ListenerApp<int>(
+          stream1: validStream,
+          listener: (_, previous, current) {
+            numCalls++;
+            previousValues.add(previous);
+            currentValues.add(current);
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(ListenerApp.materialAppKey), findsOneWidget);
+      expect(find.byType(ErrorWidget), findsNothing);
+      expect(capturedErrors.length, 1);
+      expect(numCalls, 0);
+
+      validStream.add(101);
+      await tester.pumpAndSettle();
+
+      expect(numCalls, 1);
+      expect(previousValues, [100]);
+      expect(currentValues, [101]);
     });
 
     testWidgets('calls listener when stream emits new values', (tester) async {

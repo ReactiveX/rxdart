@@ -1,7 +1,8 @@
 import 'package:rxdart/src/utils/error_and_stacktrace.dart';
 import 'package:rxdart/src/utils/notification.dart';
 
-/// A [Stream] that provides synchronous access to the last emitted value (aka. data event).
+/// A [Stream] that provides synchronous access to the last emitted value
+/// (aka. data event) and error.
 abstract class ValueStream<T> implements Stream<T> {
   /// Returns the last emitted value, failing if there is no value.
   /// See [hasValue] to determine whether [value] has already been set.
@@ -43,6 +44,23 @@ abstract class ValueStream<T> implements Stream<T> {
   /// Returns the last emitted event (either data/value or error event).
   /// `null` if no value or error events have been emitted yet.
   StreamNotification<T>? get lastEventOrNull;
+
+  /// Returns `true` if this [ValueStream] re-emits its last emitted event
+  /// (either a value/data event or an error event) to new listeners
+  /// when they subscribe.
+  ///
+  /// When `true` (e.g. `BehaviorSubject`), a newly added listener will
+  /// receive the last emitted event as its first event.
+  ///
+  /// When `false`, a newly added listener will only receive events
+  /// emitted after subscription, but can still access the last value
+  /// or error synchronously via [value], [error], etc.
+  ///
+  /// **Note:** this is different from [ReplayStream], which replays
+  /// *all* previously emitted events to new listeners.
+  ///
+  /// See also [lastEventOrNull].
+  bool get isReplayValueStream;
 }
 
 /// Extension methods on [ValueStream] related to [lastEventOrNull].

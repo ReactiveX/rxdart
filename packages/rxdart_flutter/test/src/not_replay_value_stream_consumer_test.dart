@@ -57,7 +57,6 @@ class _ConsumerAppState<T> extends State<ConsumerApp<T>> {
   Widget build(BuildContext context) {
     return ValueStreamConsumer<T>(
       stream: stream,
-      isReplayValueStream: false,
       buildWhen: widget.buildWhen,
       listener: widget.listener,
       child: widget.child,

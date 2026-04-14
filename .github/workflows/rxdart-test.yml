@@ -18,8 +18,11 @@ jobs:
 
     strategy:
       matrix:
-        #        sdk: [ beta, stable, 2.17.0, 2.15.0, 2.12.0 ]
-        flutter: [ beta, stable, 3.0.0, 2.8.0, 2.0.1 ]
+        # Minimum Flutter 3.0.0 (Dart 2.17.0) — required for pubspec_overrides.yaml support,
+        # which melos bootstrap uses to link local packages (e.g. rxdart_flutter → local rxdart).
+        # Older Flutter/Dart versions silently ignore pubspec_overrides.yaml and resolve
+        # from pub.dev, causing failures when local packages have unpublished APIs.
+        flutter: [ beta, stable, 3.0.0 ]
 
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +49,9 @@ jobs:
         run: flutter --version
 
       - name: Install dependencies
-        run: melos run pub-get-no-private
+        # --no-private skips packages with `publish_to: none` (examples),
+        # which may require a higher SDK than the current matrix entry.
+        run: melos bootstrap --no-private
 
       - name: Analyze
         if: ${{ matrix.flutter == 'stable' }}

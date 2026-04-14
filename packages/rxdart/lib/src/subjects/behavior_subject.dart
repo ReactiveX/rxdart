@@ -187,6 +187,9 @@ class BehaviorSubject<T> extends Subject<T> implements ValueStream<T> {
     // no event
     return null;
   }
+
+  @override
+  bool get isReplayValueStream => true;
 }
 
 class _Wrapper<T> {
@@ -272,4 +275,7 @@ class _BehaviorSubjectStream<T> extends Stream<T> implements ValueStream<T> {
 
   @override
   StreamNotification<T>? get lastEventOrNull => _subject.lastEventOrNull;
+
+  @override
+  bool get isReplayValueStream => _subject.isReplayValueStream;
 }

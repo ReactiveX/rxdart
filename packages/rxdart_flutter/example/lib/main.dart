@@ -90,12 +90,12 @@ Current: $current''';
       home: SafeArea(
         child: Scaffold(
           body: Builder(builder: (context) {
-            return ValueStreamListener(
+            return ValueStreamListener<int>(
               stream: valueStream,
               listener: _valueStreamListenerListener,
               child: ListView(
                 children: [
-                  ValueStreamConsumer(
+                  ValueStreamConsumer<int>(
                     stream: valueStream,
                     listener: _valueStreamConsumerListener,
                     builder: (context, value, child) {
@@ -105,7 +105,7 @@ Current: $current''';
                       );
                     },
                   ),
-                  ValueStreamBuilder(
+                  ValueStreamBuilder<int>(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isEven,
                     builder: (context, value, child) {
@@ -115,7 +115,7 @@ Current: $current''';
                       );
                     },
                   ),
-                  ValueStreamBuilder(
+                  ValueStreamBuilder<int>(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isOdd,
                     builder: (context, value, child) {
@@ -164,24 +164,30 @@ class ValueCard extends StatelessWidget {
   }
 
   Color get _color {
-    return switch (_valueShape) {
-      DataCardValueShape.circle => Colors.green.shade700,
-      DataCardValueShape.square => Colors.blue.shade700,
-    };
+    switch (_valueShape) {
+      case DataCardValueShape.circle:
+        return Colors.green.shade700;
+      case DataCardValueShape.square:
+        return Colors.blue.shade700;
+    }
   }
 
   double get _size {
-    return switch (_valueShape) {
-      DataCardValueShape.circle => 75,
-      DataCardValueShape.square => 150,
-    };
+    switch (_valueShape) {
+      case DataCardValueShape.circle:
+        return 75;
+      case DataCardValueShape.square:
+        return 150;
+    }
   }
 
   double get _borderRadius {
-    return switch (_valueShape) {
-      DataCardValueShape.circle => _size / 2,
-      DataCardValueShape.square => 0,
-    };
+    switch (_valueShape) {
+      case DataCardValueShape.circle:
+        return _size / 2;
+      case DataCardValueShape.square:
+        return 0;
+    }
   }
 
   @override
