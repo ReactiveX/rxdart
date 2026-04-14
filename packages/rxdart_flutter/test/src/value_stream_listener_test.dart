@@ -36,6 +36,14 @@ class _ListenerAppState<T> extends State<ListenerApp<T>> {
     stream = widget.stream1;
   }
 
+  @override
+  void didUpdateWidget(covariant ListenerApp<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.stream1 != oldWidget.stream1) {
+      stream = widget.stream1;
+    }
+  }
+
   void toggleStream() {
     setState(() {
       if (widget.stream2 != null) {
@@ -168,17 +176,13 @@ void main() {
       final currentValues = <int>[];
 
       await tester.pumpWidget(
-        ValueStreamListener<int>(
-          stream: invalidStream,
+        ListenerApp<int>(
+          stream1: invalidStream,
           listener: (_, previous, current) {
             numCalls++;
             previousValues.add(previous);
             currentValues.add(current);
           },
-          child: const MaterialApp(
-            key: ListenerApp.materialAppKey,
-            home: SizedBox(),
-          ),
         ),
       );
 
@@ -190,17 +194,13 @@ void main() {
       expect(find.byType(ErrorWidget), findsOneWidget);
 
       await tester.pumpWidget(
-        ValueStreamListener<int>(
-          stream: validStream,
+        ListenerApp<int>(
+          stream1: validStream,
           listener: (_, previous, current) {
             numCalls++;
             previousValues.add(previous);
             currentValues.add(current);
           },
-          child: const MaterialApp(
-            key: ListenerApp.materialAppKey,
-            home: SizedBox(),
-          ),
         ),
       );
       await tester.pumpAndSettle();
