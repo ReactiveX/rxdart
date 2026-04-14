@@ -46,7 +46,7 @@ jobs:
         run: flutter --version
 
       - name: Install dependencies
-        run: melos run pub-get-no-private
+        run: melos bootstrap
 
       - name: Analyze
         if: ${{ matrix.flutter == 'stable' }}
