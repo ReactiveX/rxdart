@@ -90,12 +90,12 @@ Current: $current''';
       home: SafeArea(
         child: Scaffold(
           body: Builder(builder: (context) {
-            return ValueStreamListener(
+            return ValueStreamListener<int>(
               stream: valueStream,
               listener: _valueStreamListenerListener,
               child: ListView(
                 children: [
-                  ValueStreamConsumer(
+                  ValueStreamConsumer<int>(
                     stream: valueStream,
                     listener: _valueStreamConsumerListener,
                     builder: (context, value, child) {
@@ -105,7 +105,7 @@ Current: $current''';
                       );
                     },
                   ),
-                  ValueStreamBuilder(
+                  ValueStreamBuilder<int>(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isEven,
                     builder: (context, value, child) {
@@ -115,7 +115,7 @@ Current: $current''';
                       );
                     },
                   ),
-                  ValueStreamBuilder(
+                  ValueStreamBuilder<int>(
                     stream: valueStream,
                     buildWhen: (previous, current) => current.isOdd,
                     builder: (context, value, child) {
