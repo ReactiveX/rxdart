@@ -29,6 +29,7 @@ export 'src/transformers/scan.dart';
 export 'src/transformers/skip_last.dart';
 export 'src/transformers/skip_until.dart';
 export 'src/transformers/start_with.dart';
+export 'src/transformers/start_with_error.dart';
 export 'src/transformers/start_with_many.dart';
 export 'src/transformers/switch_if_empty.dart';
 export 'src/transformers/switch_map.dart';
