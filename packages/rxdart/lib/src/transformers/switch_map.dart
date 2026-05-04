@@ -17,7 +17,7 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
     try {
       mappedStream = _mapper(data);
     } catch (e, s) {
-      sink.addError(e, s);
+      sink.addErrorSync(e, s);
       return;
     }
 
@@ -32,7 +32,7 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
     pauseSubscription();
     mapperSubscription.cancel().onError<Object>((e, s) {
       if (!_isCancelled) {
-        sink.addError(e, s);
+        sink.addErrorSync(e, s);
       }
     }).whenComplete(() => resumeAndListenToInner(mappedStream));
   }
@@ -50,13 +50,13 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
     assert(_mapperSubscription == null);
 
     _mapperSubscription = mappedStream.listen(
-      sink.add,
-      onError: sink.addError,
+      sink.addSync,
+      onError: sink.addErrorSync,
       onDone: () {
         _mapperSubscription = null;
 
         if (_inputClosed) {
-          sink.close();
+          sink.closeSync();
         }
       },
     );
@@ -71,13 +71,13 @@ class _SwitchMapStreamSink<S, T> extends ForwardingSink<S, T> {
   }
 
   @override
-  void onError(Object e, StackTrace st) => sink.addError(e, st);
+  void onError(Object e, StackTrace st) => sink.addErrorSync(e, st);
 
   @override
   void onDone() {
     _inputClosed = true;
 
-    _mapperSubscription ?? sink.close();
+    _mapperSubscription ?? sink.closeSync();
   }
 
   @override
