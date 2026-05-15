@@ -1,5 +1,0 @@
-targets:
-  $default:
-    builders:
-      build_web_compilers|entrypoint:
-        generate_for: ['example/web/**']

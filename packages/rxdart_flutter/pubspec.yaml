@@ -1,0 +1,35 @@
+name: rxdart_flutter
+description: >
+  rxdart_flutter is a Flutter package that provides a set of widgets for working with rxdart.
+  This package is officially maintained in the ReactiveX/rxdart repository.
+  These widgets are specifically designed to work with ValueStreams, making it easier to build reactive UIs in Flutter.
+version: 0.0.2
+homepage: https://github.com/ReactiveX/rxdart/tree/master/packages/rxdart_flutter
+repository: https://github.com/ReactiveX/rxdart/tree/master/packages/rxdart_flutter
+issue_tracker: https://github.com/ReactiveX/rxdart/issues
+
+environment:
+  sdk: '>=2.12.0 <4.0.0'
+  flutter: '>=2.0.1'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  rxdart: ^0.28.0
+  meta: ^1.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.4
+
+topics:
+  - rxdart
+  - reactive-programming
+  - streams
+  - observables
+  - rx
+
+screenshots:
+  - description: The ReactiveX logo.
+    path: screenshots/logo.png

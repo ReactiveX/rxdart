@@ -3,69 +3,72 @@ name: Dart CI
 on:
   push:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   pull_request:
     branches: [ master ]
-    paths-ignore: [ '**.md', 'example/**' ]
+    paths-ignore: [ '**.md', 'examples/**' ]
   schedule:
     # Runs at 00:00 UTC on the 1, 8, 15, 22 and 29th of every month.
     - cron: '0 0 */7 * *'
+  workflow_dispatch:
+
 jobs:
   analyze-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        sdk: [ beta, stable, 2.17.0, 2.15.0, 2.12.0 ]
+        # Minimum Flutter 3.0.0 (Dart 2.17.0) — required for pubspec_overrides.yaml support,
+        # which melos bootstrap uses to link local packages (e.g. rxdart_flutter → local rxdart).
+        # Older Flutter/Dart versions silently ignore pubspec_overrides.yaml and resolve
+        # from pub.dev, causing failures when local packages have unpublished APIs.
+        flutter: [ beta, stable, 3.0.0 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1.3
+      - name: Setup Stable/Beta Flutter/Dart
+        if: ${{ matrix.flutter == 'stable' || matrix.flutter == 'beta' }}
+        uses: subosito/flutter-action@v2.18.0
         with:
-          sdk: ${{ matrix.sdk }}
+          channel: ${{ matrix.flutter }}
 
-      - name: Print Dart version
+      - name: Setup Older Flutter/Dart
+        if: ${{ matrix.flutter != 'stable' && matrix.flutter != 'beta' }}
+        uses: subosito/flutter-action@v2.18.0
+        with:
+          flutter-version: ${{ matrix.flutter }}
+
+      - name: Install melos
+        run: dart pub global activate melos
+
+      - name: Print Dart SDK version
         run: dart --version
 
+      - name: Print Flutter SDK version
+        run: flutter --version
+
       - name: Install dependencies
-        run: dart pub get
+        # --no-private skips packages with `publish_to: none` (examples),
+        # which may require a higher SDK than the current matrix entry.
+        run: melos bootstrap --no-private
 
       - name: Analyze
-        if: ${{ matrix.sdk == 'stable' }}
-        run: dart analyze --fatal-infos --fatal-warnings
+        if: ${{ matrix.flutter == 'stable' }}
+        run: melos run analyze-no-private
 
       - name: Format code
-        if: ${{ matrix.sdk == 'stable' }}
-        run: dart format . --set-exit-if-changed
+        if: ${{ matrix.flutter == 'stable' }}
+        run: melos run format-no-private
 
       - name: Active coverage
         run: dart pub global activate coverage
 
-      - name: Run tests
-        run: dart pub run test test/rxdart_test.dart --chain-stack-traces
+      - name: Run rxdart tests
+        run: melos run test-rxdart
 
-      - name: Start Observatory
-        run: dart
-          --disable-service-auth-codes
-          --enable-vm-service=8111
-          --pause-isolates-on-exit
-          --enable-asserts
-          test/rxdart_test.dart &
+      - uses: codecov/codecov-action@v3.1.6
+        if: ${{ matrix.flutter == 'stable' }}
 
-      - name: Collect coverage
-        run: nohup dart pub global run coverage:collect_coverage
-          --port=8111
-          --out=coverage.json
-          --wait-paused
-          --resume-isolates
-
-      - name: Format coverage
-        run: dart pub global run coverage:format_coverage
-          --lcov
-          --in=coverage.json
-          --out=lcov.info
-          --report-on=lib
-
-      - uses: codecov/codecov-action@v2.1.0
+      - name: Run rxdart_flutter tests
+        run: melos run test-rxdart-flutter

@@ -1,0 +1,29 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  create-gh-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Extract release notes
+        id: release_notes
+        uses: ffurrer2/extract-release-notes@v2
+        with:
+          changelog_file: ${{ github.workspace }}/packages/rxdart/CHANGELOG.md
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.release_notes.outputs.release_notes }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
