@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/src/subjects/behavior_subject.dart';
 import 'package:rxdart/src/utils/forwarding_sink.dart';
 import 'package:rxdart/src/utils/future.dart';
 
@@ -69,15 +71,18 @@ Stream<R> _forward<T, R>(
   Stream<T> stream,
   ForwardingSink<T, R> Function() sinkFactory,
 ) {
-  final controller = stream.isBroadcast
-      ? StreamController<R>.broadcast(sync: true)
-      : StreamController<R>(sync: true);
+  final controller = stream is ValueStream<T> && stream.isReplayValueStream
+      ? BehaviorSubject<R>(sync: true)
+      : stream.isBroadcast
+          ? StreamController<R>.broadcast(sync: true)
+          : StreamController<R>(sync: true);
 
   StreamSubscription<T>? subscription;
   var cancelled = false;
   late final sink = sinkFactory();
 
   controller.onListen = () {
+    cancelled = false;
     void listenToUpstream([void _]) {
       if (cancelled) {
         return;
