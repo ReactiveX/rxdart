@@ -197,7 +197,7 @@ class DoStreamTransformer<S> extends StreamTransformerBase<S, S> {
           onPause,
           onResume,
         ),
-        true,
+        sideEffectsOnce: true,
       );
 }
 

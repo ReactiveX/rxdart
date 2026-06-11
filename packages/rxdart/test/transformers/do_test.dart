@@ -485,5 +485,46 @@ void main() {
         (s) => s.doOnData((d) {}),
       );
     });
+
+    test('issue/657: sequential first on BehaviorSubject with doOnData',
+        () async {
+      final subject = BehaviorSubject<dynamic>()..add(1);
+      final stream = subject.doOnData((_) {});
+
+      final subscription = stream.listen((value) {
+        expect(value, 1);
+      });
+
+      expect(await stream.first, 1);
+      expect(await stream.first, 1);
+
+      await subscription.cancel();
+    });
+
+    test('issue/657: sequential first on BehaviorSubject.stream with doOnData',
+        () async {
+      final subject = BehaviorSubject<dynamic>()..add(1);
+      final stream =
+          subject.stream.cast<dynamic>().doOnError((e, tr) {}).doOnData((_) {});
+
+      final subscription = stream.listen((value) {
+        expect(value, 1);
+      });
+
+      expect(await stream.first, 1);
+      expect(await stream.first, 1);
+
+      await subscription.cancel();
+    });
+
+    test('issue/605: doOnData on seeded BehaviorSubject after cancel',
+        () async {
+      final subject = BehaviorSubject.seeded('b');
+      final stream = subject.doOnData((_) {});
+
+      await stream.listen(null).cancel();
+      expect(await stream.first, 'b');
+    });
+
   });
 }
