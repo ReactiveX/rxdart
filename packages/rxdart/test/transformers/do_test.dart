@@ -504,7 +504,8 @@ void main() {
     test('issue/657: sequential first on BehaviorSubject.stream with doOnData',
         () async {
       final subject = BehaviorSubject<dynamic>()..add(1);
-      final stream = subject.stream.doOnData((_) {});
+      final stream =
+          subject.stream.cast<dynamic>().doOnError((e, tr) {}).doOnData((_) {});
 
       final subscription = stream.listen((value) {
         expect(value, 1);
